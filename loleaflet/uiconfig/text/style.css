@@ -1,0 +1,32 @@
+
+/* 基本色 #2b579a */
+
+input:focus,
+select:focus,
+textarea:focus {
+        outline-color: #2b579a;
+}
+::selection {
+	background: #2b579a;
+	color: #ffffff;
+}
+
+.ui-dialog-titlebar {
+	background: #2b579a !important;
+	color: #ffffff !important;
+}
+
+.lo-menu a:hover,
+.lo-menu a:focus,
+.lo-menu a:active, 
+.lo-menu a.highlighted,
+.context-menu-item.context-menu-hover,
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+a.ui-button:active,
+.ui-button:active,
+.ui-button.ui-state-active:hover {
+	background: #2b579a !important;
+	color: #ffffff !important;
+}

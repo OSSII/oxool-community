@@ -1,0 +1,1335 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#: uiconfig/dialogs/ExampleDialog.js:34
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-27 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.2.5\n"
+"X-Pootle-Revision: 3609118\n"
+"X-Pootle-Path: /ko/libo_online/loleaflet-ui-ko.po\n"
+
+#: admin/admin.strings.js:6
+msgid "Admin console"
+msgstr "관리자 콘솔"
+
+#: admin/admin.strings.js:7
+msgid "Settings"
+msgstr "설정"
+
+#: admin/admin.strings.js:8
+msgid "Overview"
+msgstr "개요"
+
+#: admin/admin.strings.js:9
+msgid "(current)"
+msgstr "(현재)"
+
+#: admin/admin.strings.js:10
+msgid "Analytics"
+msgstr "분석"
+
+#: admin/admin.strings.js:11
+msgid "History"
+msgstr "기록"
+
+#: admin/admin.strings.js:12
+msgid "Dashboard"
+msgstr "대시보드"
+
+#: admin/admin.strings.js:13
+msgid "Users online"
+msgstr "사용자 연결됨"
+
+#: admin/admin.strings.js:14
+msgid "User Name"
+msgstr "사용자 이름"
+
+#: admin/admin.strings.js:15
+msgid "Documents opened"
+msgstr "문서 열림"
+
+#: admin/admin.strings.js:16
+msgid "Number of Documents"
+msgstr "문서의 수"
+
+#: admin/admin.strings.js:17
+msgid "Memory consumed"
+msgstr "메모리가 사용됨"
+
+#: admin/admin.strings.js:18
+msgid "Bytes sent"
+msgstr "보낸 바이트"
+
+#: admin/admin.strings.js:19
+msgid "Bytes received"
+msgstr "받은 바이트"
+
+#: admin/admin.strings.js:20
+msgid "PID"
+msgstr "PID"
+
+#: admin/admin.strings.js:21
+msgid "Document"
+msgstr "문서"
+
+#: admin/admin.strings.js:22
+msgid "Number of views"
+msgstr "뷰의 수"
+
+#: admin/admin.strings.js:23
+msgid "Elapsed time"
+msgstr "경과 시간"
+
+#: admin/admin.strings.js:24
+msgid "Idle time"
+msgstr "대기 시간"
+
+#: admin/admin.strings.js:25
+msgid "Modified"
+msgstr "수정됨"
+
+#: admin/admin.strings.js:26
+msgid "Kill"
+msgstr "죽이기"
+
+#: admin/admin.strings.js:27
+msgid "Graphs"
+msgstr "그래프"
+
+#: admin/admin.strings.js:28
+msgid "Memory Graph"
+msgstr "메모리 그래프"
+
+#: admin/admin.strings.js:29
+msgid "CPU Graph"
+msgstr "CPU 그래프"
+
+#: admin/admin.strings.js:30
+msgid "Network Graph"
+msgstr "네트워크 그래프"
+
+#: admin/admin.strings.js:31 src/layer/marker/Annotation.js:241
+msgid "Save"
+msgstr "저장"
+
+#: admin/admin.strings.js:32
+msgid "Cache size of memory statistics"
+msgstr "메모리 통계의 캐시 크기"
+
+#: admin/admin.strings.js:33
+msgid "Time interval of memory statistics (in ms)"
+msgstr "메모리 통계의 시간 간격 (ms)"
+
+#: admin/admin.strings.js:34
+msgid "Cache size of CPU statistics"
+msgstr "CPU 통계의 캐시 크기"
+
+#: admin/admin.strings.js:35
+msgid "Time interval of CPU statistics (in ms)"
+msgstr "CPU 통계의 시간 간격(ms)"
+
+#: admin/admin.strings.js:36
+msgid "Maximum Document process virtual memory (in MB) - reduce only"
+msgstr "최대 문서 처리 가상 메모리 (MB) - 줄이기만 가능"
+
+#: admin/admin.strings.js:37
+msgid "Maximum Document process stack memory (in KB) - reduce only"
+msgstr "최대 문서 처리 스택 메모리 (KB) - 줄이기만 가능"
+
+#: admin/admin.strings.js:38
+msgid "Maximum file size allowed to write to disk (in MB) - reduce only"
+msgstr "디스크에 저장할 수 있는 최대 파일 크기 (MB) - 줄이기만 가능"
+
+#: admin/admin.strings.js:39
+msgid "Documents:"
+msgstr "문서:"
+
+#: admin/admin.strings.js:40
+msgid "Expired:"
+msgstr "만료:"
+
+#: admin/admin.strings.js:41
+msgid "Refresh"
+msgstr "새로 고침"
+
+#: admin/admin.strings.js:42
+msgid "Server uptime"
+msgstr ""
+
+#: admin/src/AdminSocketAnalytics.js:219
+msgid "Received"
+msgstr "받음"
+
+#: admin/src/AdminSocketAnalytics.js:223
+msgid "Sent"
+msgstr "보냄"
+
+#: admin/src/AdminSocketBase.js:54
+msgid "Connection error"
+msgstr "연결 오류"
+
+#: admin/src/AdminSocketOverview.js:102
+msgid "Are you sure you want to terminate this session?"
+msgstr "이 세션을 정말 종료하겠습니까?"
+
+#: admin/src/AdminSocketOverview.js:183 admin/src/AdminSocketOverview.js:285
+msgid "Documents"
+msgstr "문서"
+
+#: admin/src/AdminSocketSettings.js:34
+msgid "Are you sure you want to shut down the server?"
+msgstr "이 서버를 정말 종료하겠습니까?"
+
+#: admin/src/AdminSocketGlobalFunction.js:19
+msgid "Are you sure you want to restart the online service?"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:28
+msgid ""
+"For security reasons, please enter your original management account and "
+"password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:30
+#: admin/src/AdminSocketGlobalFunction.js:53
+#, fuzzy
+msgid "Username"
+msgstr "사용자 이름"
+
+#: admin/src/AdminSocketGlobalFunction.js:31
+#: admin/src/AdminSocketGlobalFunction.js:54
+msgid "Password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:34
+msgid "Verification"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:35
+#: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1040
+#: js/toolbar.js:1291 src/layer/marker/Annotation.js:181 src/map/Map.js:106
+#: uiconfig/dialogs/AddTableAtEnd.js:46 uiconfig/dialogs/DeleteCell.js:86
+#: uiconfig/dialogs/ExampleDialog.js:54 uiconfig/dialogs/GotoPage.js:76
+#: uiconfig/dialogs/InsertBreak.js:57 uiconfig/dialogs/InsertCell.js:54
+#: uiconfig/dialogs/InsertTable.js:71 uiconfig/dialogs/MoveTable.js:58
+#: uiconfig/dialogs/OXSaveAs.js:48 uiconfig/dialogs/RemoveCell.js:54
+#: uiconfig/dialogs/RemoveTable.js:47 uiconfig/dialogs/RenameTable.js:49
+#: uiconfig/dialogs/ShowTable.js:55 uiconfig/dialogs/TraceChangeMode.js:65
+msgid "Cancel"
+msgstr "취소"
+
+#: admin/src/AdminSocketGlobalFunction.js:51
+msgid "Please enter a new account and password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:55
+msgid "Confirm password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:58 src/map/Map.js:105
+#: uiconfig/dialogs/AddTableAtEnd.js:39 uiconfig/dialogs/DeleteCell.js:66
+#: uiconfig/dialogs/ExampleDialog.js:48 uiconfig/dialogs/GotoPage.js:63
+#: uiconfig/dialogs/InsertBreak.js:50 uiconfig/dialogs/InsertCell.js:41
+#: uiconfig/dialogs/InsertTable.js:64 uiconfig/dialogs/MoveTable.js:51
+#: uiconfig/dialogs/OXSaveAs.js:38 uiconfig/dialogs/RemoveCell.js:41
+#: uiconfig/dialogs/RemoveTable.js:40 uiconfig/dialogs/RenameTable.js:42
+#: uiconfig/dialogs/ShowTable.js:46 uiconfig/dialogs/TraceChangeMode.js:58
+msgid "OK"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:71
+msgid "The password does not match the confirmation password!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:86
+msgid "Restart service"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:87
+msgid "Change account password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:128
+msgid "The account or password is inconsistent with the system!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:138
+msgid ""
+"The account and password have been updated and will take effect after the "
+"next service restart."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:142
+msgid "Version"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:147
+#: admin/src/AdminSocketGlobalFunction.js:152
+msgid "Core"
+msgstr ""
+
+#: admin/src/Util.js:14
+msgid "kB"
+msgstr "kB"
+
+#: admin/src/Util.js:14
+msgid "MB"
+msgstr "MB"
+
+#: admin/src/Util.js:14
+msgid "GB"
+msgstr "GB"
+
+#: admin/src/Util.js:14
+msgid "TB"
+msgstr "TB"
+
+#: admin/src/Util.js:43 admin/src/Util.js:45
+msgid " hrs"
+msgstr " 시간"
+
+#: admin/src/Util.js:49 admin/src/Util.js:51
+msgid " mins"
+msgstr " 분"
+
+#: admin/src/Util.js:54
+msgid " s"
+msgstr " 초"
+
+#: js/toolbar.js:684 js/toolbar.js:1850 uiconfig/dialogs/InsertBreak.js:19
+msgid "None"
+msgstr "없음"
+
+#: js/toolbar.js:685
+msgid "Wipe"
+msgstr ""
+
+#: js/toolbar.js:686
+msgid "Wheel"
+msgstr ""
+
+#: js/toolbar.js:687
+msgid "Uncover"
+msgstr ""
+
+#: js/toolbar.js:688
+msgid "Bars"
+msgstr ""
+
+#: js/toolbar.js:689
+msgid "Checkers"
+msgstr ""
+
+#: js/toolbar.js:690
+msgid "Shape"
+msgstr ""
+
+#: js/toolbar.js:691
+msgid "Box"
+msgstr ""
+
+#: js/toolbar.js:692
+msgid "Wedge"
+msgstr ""
+
+#: js/toolbar.js:693
+msgid "Venetian Blinds"
+msgstr ""
+
+#: js/toolbar.js:694
+msgid "Fade"
+msgstr ""
+
+#: js/toolbar.js:695
+msgid "Cut"
+msgstr ""
+
+#: js/toolbar.js:696
+msgid "Cover"
+msgstr ""
+
+#: js/toolbar.js:697
+msgid "Dissolve"
+msgstr ""
+
+#: js/toolbar.js:698
+msgid "Random"
+msgstr ""
+
+#: js/toolbar.js:699
+msgid "Comb"
+msgstr ""
+
+#: js/toolbar.js:700
+msgid "Push"
+msgstr ""
+
+#: js/toolbar.js:701
+msgid "Split"
+msgstr ""
+
+#: js/toolbar.js:702
+msgid "Diagonal"
+msgstr ""
+
+#: js/toolbar.js:703
+msgid "Tiles"
+msgstr ""
+
+#: js/toolbar.js:704
+msgid "Cube"
+msgstr ""
+
+#: js/toolbar.js:705
+msgid "Circles"
+msgstr ""
+
+#: js/toolbar.js:706
+msgid "Helix"
+msgstr ""
+
+#: js/toolbar.js:707
+msgid "Fall"
+msgstr ""
+
+#: js/toolbar.js:708
+msgid "Turn Around"
+msgstr ""
+
+#: js/toolbar.js:709
+msgid "Iris"
+msgstr ""
+
+#: js/toolbar.js:710
+msgid "Turn Down"
+msgstr ""
+
+#: js/toolbar.js:711
+msgid "Rochade"
+msgstr ""
+
+#: js/toolbar.js:712
+msgid "3D Denetian"
+msgstr ""
+
+#: js/toolbar.js:713
+msgid "Static"
+msgstr ""
+
+#: js/toolbar.js:714
+msgid "Fine Dissolve"
+msgstr ""
+
+#: js/toolbar.js:715
+msgid "Vortex"
+msgstr ""
+
+#: js/toolbar.js:716
+msgid "Ripple"
+msgstr ""
+
+#: js/toolbar.js:717
+msgid "Glitter"
+msgstr ""
+
+#: js/toolbar.js:718
+msgid "Honeycomb"
+msgstr ""
+
+#: js/toolbar.js:719
+msgid "Newsflash"
+msgstr ""
+
+#: js/toolbar.js:814
+msgid "More..."
+msgstr ""
+
+#: js/toolbar.js:875
+msgid "Borders"
+msgstr "테두리"
+
+#: js/toolbar.js:935
+msgid "Insert table"
+msgstr "표 삽입"
+
+#: js/toolbar.js:940
+msgid "Insert Local Image"
+msgstr ""
+
+#: js/toolbar.js:944
+msgid "Insert shapes"
+msgstr "도형 삽입"
+
+#: js/toolbar.js:952 js/toolbar.js:2683
+msgid "Common symbols"
+msgstr ""
+
+#: js/toolbar.js:953
+msgid "More symbols"
+msgstr ""
+
+#: js/toolbar.js:993 js/toolbar.js:1409
+msgid "Always follow the editor"
+msgstr ""
+
+#: js/toolbar.js:996 js/toolbar.js:1412
+msgid "Current"
+msgstr "현재"
+
+#: js/toolbar.js:1041 js/toolbar.js:1292
+msgid "Accept"
+msgstr "수락"
+
+#: js/toolbar.js:1074 js/toolbar.js:1339
+msgid "First sheet"
+msgstr "첫번째 시트"
+
+#: js/toolbar.js:1075 js/toolbar.js:1340
+msgid "Previous sheet"
+msgstr "이전 시트"
+
+#: js/toolbar.js:1076 js/toolbar.js:1341
+msgid "Next sheet"
+msgstr "다음 시트"
+
+#: js/toolbar.js:1077 js/toolbar.js:1342
+msgid "Last sheet"
+msgstr "마지막 시트"
+
+#: js/toolbar.js:1078 js/toolbar.js:1343
+msgid "Insert sheet"
+msgstr "시트 삽입"
+
+#: js/toolbar.js:1169 js/toolbar.js:1393
+msgid "Search:"
+msgstr "검색:"
+
+#: js/toolbar.js:1176 js/toolbar.js:1400
+msgid "Cancel the search"
+msgstr "검색 취소"
+
+#: js/toolbar.js:1208
+msgid "Delete"
+msgstr ""
+
+#: js/toolbar.js:1361 src/control/Control.Menubar.js:320
+msgid "Fullscreen presentation"
+msgstr "프레젠테이션 전체 화면"
+
+#: js/toolbar.js:1367 src/control/Control.Menubar.js:322
+#: uiconfig/dialogs/MoveTable.js:28
+msgid "Move"
+msgstr ""
+
+#: js/toolbar.js:1420
+msgid "Reset zoom"
+msgstr "배율 초기화"
+
+#: js/toolbar.js:1423
+msgid "Zoom factor"
+msgstr ""
+
+#: js/toolbar.js:1493
+msgid "%user has joined"
+msgstr "%user 참여"
+
+#: js/toolbar.js:1494
+msgid "%user has left"
+msgstr "%user 나감"
+
+#: js/toolbar.js:1814
+msgid "Number of Sheets"
+msgstr "시트 수"
+
+#: js/toolbar.js:1819
+msgid "Selected range of cells"
+msgstr "선택한 셀 범위"
+
+#: js/toolbar.js:1824 js/toolbar.js:1883
+msgid "Entering text mode"
+msgstr "텍스트 모드로 들어가기"
+
+#: js/toolbar.js:1829 js/toolbar.js:1893 js/toolbar.js:1918
+msgid "Text Language"
+msgstr "텍스트 언어"
+
+#: js/toolbar.js:1834 js/toolbar.js:1888
+msgid "Selection Mode"
+msgstr "선택 모드"
+
+#: js/toolbar.js:1839
+msgid "Choice of functions"
+msgstr "함수 선택"
+
+#: js/toolbar.js:1843
+msgid "Average"
+msgstr "Average"
+
+#: js/toolbar.js:1844
+msgid "CountA"
+msgstr "CountA"
+
+#: js/toolbar.js:1845
+msgid "Count"
+msgstr "Count"
+
+#: js/toolbar.js:1846
+msgid "Maximum"
+msgstr "Maximum"
+
+#: js/toolbar.js:1847
+msgid "Minimum"
+msgstr "Minimum"
+
+#: js/toolbar.js:1848
+msgid "Sum"
+msgstr "합계"
+
+#: js/toolbar.js:1849
+msgid "Selection count"
+msgstr "선택 수"
+
+#: js/toolbar.js:1873
+msgid "Number of Pages"
+msgstr "페이지 수"
+
+#: js/toolbar.js:1878
+msgid "Word Counter"
+msgstr "단어 수"
+
+#: js/toolbar.js:1913
+msgid "Number of Slides"
+msgstr "슬라이드 수"
+
+#: js/toolbar.js:1950
+msgid "%n users"
+msgstr "사용자 %n 명"
+
+#: js/toolbar.js:1951
+msgid "1 user"
+msgstr "사용자 1명"
+
+#: js/toolbar.js:1952
+msgid "0 users"
+msgstr "사용자 0명"
+
+#: js/toolbar.js:2147
+msgid "Document saved"
+msgstr "문서 저장됨"
+
+#: js/toolbar.js:2308 uiconfig/dialogs/InsertBreak.js:30
+msgid "Style"
+msgstr "스타일"
+
+#: js/toolbar.js:2331
+msgid "Font"
+msgstr "글꼴"
+
+#: js/toolbar.js:2352
+msgid "Previous slide"
+msgstr "이전 슬라이드"
+
+#: js/toolbar.js:2353
+msgid "Next slide"
+msgstr "다음 슬라이드"
+
+#: js/toolbar.js:2439
+msgid ""
+"Conflict Undo/Redo with multiple users. Please use document repair to resolve"
+msgstr "여러 사용자에 의한 실행 취소/다시 실행이 서로 충돌했습니다. 이 문제를 해결하려면 문서 복구를 사용하십시오."
+
+#: js/toolbar.js:2850 src/control/Control.DocumentRepair.js:95
+msgid "You"
+msgstr "본인"
+
+#: js/toolbar.js:2856
+msgid "Readonly"
+msgstr "읽기 전용"
+
+#: src/control/Control.AlertDialog.js:42
+msgid "Open link"
+msgstr ""
+
+#: src/control/Control.AlertDialog.js:54
+msgid "Edit"
+msgstr ""
+
+#: src/control/Control.AlertDialog.js:75
+msgid "The server encountered a %0 error while parsing the %1 command."
+msgstr "서버에서 %1 명령을 구문 분석하는 동안 %0 오류가 발생했습니다."
+
+#: src/control/Control.DocumentRepair.js:33
+msgid "Repair Document"
+msgstr "문서 복구"
+
+#: src/control/Control.DocumentRepair.js:44 uiconfig/dialogs/InsertBreak.js:26
+msgid "Type"
+msgstr "유형"
+
+#: src/control/Control.DocumentRepair.js:46
+msgid "Index"
+msgstr "차례"
+
+#: src/control/Control.DocumentRepair.js:48 src/layer/tile/TileLayer.js:270
+msgid "Comment"
+msgstr "추가 설명"
+
+#: src/control/Control.DocumentRepair.js:50
+msgid "User name"
+msgstr "사용자 이름"
+
+#: src/control/Control.DocumentRepair.js:52
+msgid "Timestamp"
+msgstr "타임스탬프"
+
+#: src/control/Control.DocumentRepair.js:56
+msgid "Jump to state"
+msgstr "상태로 이동"
+
+#: src/control/Control.Menubar.js:14 src/control/Control.Menubar.js:241
+#: src/control/Control.Menubar.js:344
+msgid "Share..."
+msgstr ""
+
+#: src/control/Control.Menubar.js:16 src/control/Control.Menubar.js:243
+#: src/control/Control.Menubar.js:346
+msgid "See revision history"
+msgstr "개정 내역 확인"
+
+#: src/control/Control.Menubar.js:17 src/control/Control.Menubar.js:244
+#: src/control/Control.Menubar.js:347
+msgid "Download as"
+msgstr "다음 형식으로 내려 받기"
+
+#: src/control/Control.Menubar.js:18 src/control/Control.Menubar.js:245
+#: src/control/Control.Menubar.js:349
+msgid "PDF Document (.pdf)"
+msgstr "PDF 문서 (.pdf)"
+
+#: src/control/Control.Menubar.js:19
+msgid "TEXT Document (.txt)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:20 src/control/Control.Menubar.js:246
+#: src/control/Control.Menubar.js:348
+msgid "HTML Document (.html)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:21
+msgid "ODF text document (.odt)"
+msgstr "ODF 텍스트 문서 (.odt)"
+
+#: src/control/Control.Menubar.js:22
+msgid "Word 2003 Document (.doc)"
+msgstr "Word 2003 문서 (.doc)"
+
+#: src/control/Control.Menubar.js:23
+msgid "Word Document (.docx)"
+msgstr "Word 문서 (.docx)"
+
+#: src/control/Control.Menubar.js:24
+msgid "Rich Text (.rtf)"
+msgstr "서식 있는 텍스트 (.rtf)"
+
+#: src/control/Control.Menubar.js:25
+msgid "Sign document"
+msgstr ""
+
+#: src/control/Control.Menubar.js:32 src/control/Control.Menubar.js:256
+#: src/control/Control.Menubar.js:360
+msgid "Repair"
+msgstr "복구"
+
+#: src/control/Control.Menubar.js:63 src/control/Control.Menubar.js:273
+#: src/control/Control.Menubar.js:377
+msgid "Local Image..."
+msgstr ""
+
+#: src/control/Control.Menubar.js:80 src/control/Control.Menubar.js:82
+msgid "All"
+msgstr "전체"
+
+#: src/control/Control.Menubar.js:93
+msgid "Horizontal Line"
+msgstr ""
+
+#: src/control/Control.Menubar.js:218 src/control/Control.Menubar.js:220
+#: src/control/Control.Menubar.js:222 src/control/Control.Menubar.js:332
+#: src/control/Control.Menubar.js:448
+msgid "None (Do not check spelling)"
+msgstr "없음 (맞춤법 검사 안함)"
+
+#: src/control/Control.Menubar.js:232 src/control/Control.Menubar.js:335
+#: src/control/Control.Menubar.js:451 uiconfig/dialogs/ShowKeyboardHelp.js:59
+msgid "Keyboard shortcuts"
+msgstr "키보드 단축키"
+
+#: src/control/Control.Menubar.js:233 src/control/Control.Menubar.js:336
+#: src/control/Control.Menubar.js:452
+msgid "About"
+msgstr "정보"
+
+#: src/control/Control.Menubar.js:247
+msgid "ODF presentation (.odp)"
+msgstr "ODF 프레젠테이션 (.odp)"
+
+#: src/control/Control.Menubar.js:248
+msgid "PowerPoint 2003 Presentation (.ppt)"
+msgstr "PowerPoint 2003 프레젠테이션 (.ppt)"
+
+#: src/control/Control.Menubar.js:249
+msgid "PowerPoint Presentation (.pptx)"
+msgstr "PowerPoint 프레젠테이션 (.pptx)"
+
+#: src/control/Control.Menubar.js:350
+msgid "ODF spreadsheet (.ods)"
+msgstr "ODF 스프레드시트 (.ods)"
+
+#: src/control/Control.Menubar.js:351
+msgid "Excel 2003 Spreadsheet (.xls)"
+msgstr "Excel 2003 스프레드시트 (.xls)"
+
+#: src/control/Control.Menubar.js:352
+msgid "Excel Spreadsheet (.xlsx)"
+msgstr "Excel 스프레드시트 (.xlsx)"
+
+#: src/control/Control.Menubar.js:353
+msgid "CSV (.csv)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:529
+msgid "Reset to Default Language"
+msgstr "기본 언어로 다시 설정"
+
+#: src/control/Control.Menubar.js:773
+msgid "All contents of the header will be deleted and can not be restored."
+msgstr ""
+
+#: src/control/Control.Menubar.js:775
+msgid "All contents of the footer will be deleted and can not be restored."
+msgstr ""
+
+#: src/control/Control.Scroll.Annotation.js:10
+msgid "Scroll up annotations"
+msgstr "주석 스크롤 올리기"
+
+#: src/control/Control.Scroll.Annotation.js:12
+msgid "Scroll down annotations"
+msgstr "주석 스크롤 내리기"
+
+#: src/control/Control.Tabs.js:70
+msgid "Insert sheet before this"
+msgstr "현재 시트 앞에 시트 삽입"
+
+#: src/control/Control.Tabs.js:76
+msgid "Insert sheet after this"
+msgstr "현재 시트 뒤에 시트 삽입"
+
+#: src/control/Ruler.js:97
+msgid "Left Margin"
+msgstr ""
+
+#: src/control/Ruler.js:98
+msgid "Right Margin"
+msgstr ""
+
+#: src/control/Toolbar.js:338 src/control/Toolbar.js:350
+msgid "Downloading..."
+msgstr "내려 받는 중..."
+
+#: src/control/Toolbar.js:366 src/map/Map.js:1245
+msgid "Saving..."
+msgstr "저장 중..."
+
+#: src/control/Toolbar.js:377
+msgid "Renaming..."
+msgstr ""
+
+#: src/control/Toolbar.js:696
+msgid "This version of %productName is powered by"
+msgstr "%productName 의 이 버전 제공자: "
+
+#: src/core/Socket.js:79
+msgid ""
+"IE11 has reached its maximum number of connections. Please see this document "
+"to increase this limit if needed: https://docs.microsoft.com/en-us/previous-"
+"versions/windows/internet-explorer/ie-developer/general-info/"
+"ee330736(v=vs.85)#websocket-maximum-server-connections"
+msgstr ""
+"IE11의 최대 연결 수에 도달했습니다. 이 설정값을 변경하려면 다음 문서를 참고하십시오. https://docs.microsoft.com"
+"/en-us/previous-versions/windows/internet-explorer/ie-developer/general-"
+"info/ee330736(v=vs.85)#websocket-maximum-server-connections"
+
+#: src/core/Socket.js:81
+msgid "Oops, there is a problem connecting to LibreOffice Online : "
+msgstr "리브레오피스 온라인에 연결하는데 문제가 발생하였습니다. : "
+
+#: src/core/Socket.js:274
+msgid "Unsupported server version."
+msgstr "지원하지 않는 서버 버전"
+
+#: src/core/Socket.js:331
+msgid "Session terminated by document owner"
+msgstr "문서 소유자에 의해 세션이 만료되었습니다."
+
+#: src/core/Socket.js:335
+msgid "Idle document - please click to reload and resume editing"
+msgstr "대기중인 문서 - 편집을 계속하려면 클릭하십시오.(새로 고침됨)"
+
+#: src/core/Socket.js:342
+msgid "Server is shutting down for maintenance (auto-saving)"
+msgstr "유지보수를 위해 서버가 종료됩니다.(자동 저장됨)"
+
+#: src/core/Socket.js:346
+msgid "Oops, there is a problem connecting the document"
+msgstr "문서를 여는데 문제가 발생했습니다."
+
+#: src/core/Socket.js:350
+msgid "Server is recycling and will be available shortly"
+msgstr "서버를 재부팅하는 중으로 곧 사용이 가능합니다."
+
+#: src/core/Socket.js:382
+msgid ""
+"Document has changed in storage. Loading the new document. Your version is "
+"available as revision."
+msgstr "저장소의 문서가 변경되었습니다. 새 문서를 불러 옵니다. 작업한 내용은 개정 이력에서 확인할 수 있습니다."
+
+#: src/core/Socket.js:388
+msgid ""
+"Restoring older revision. Any unsaved changes will be available in version "
+"history"
+msgstr "이전 버전으로 복구합니다. 저장되지 않은 변경 사항은 개정 내역에서 확인할 수 있습니다."
+
+#: src/core/Socket.js:510
+msgid ""
+"Document has been changed in storage. What would you like to do with your "
+"unsaved changes?"
+msgstr "저장소에 있는 문서가 변경되었습니다. 변경 사항을 어떻게 처리하겠습니까?"
+
+#: src/core/Socket.js:515
+msgid "Discard"
+msgstr "버리기"
+
+#: src/core/Socket.js:520
+msgid "Overwrite"
+msgstr "덮어쓰기"
+
+#: src/core/Socket.js:525
+msgid "Save to new file"
+msgstr "새 파일로 저장"
+
+#: src/core/Socket.js:596
+msgid "Document requires password to view."
+msgstr "문서를 보려면 암호를 입력해야 합니다."
+
+#: src/core/Socket.js:599
+msgid "Document requires password to modify."
+msgstr "문서를 수정하려면 암호를 입력해야 합니다."
+
+#: src/core/Socket.js:601
+msgid "Hit Cancel to open in view-only mode."
+msgstr "보기 전용 모드로 열려면 [취소]를 클릭하십시오."
+
+#: src/core/Socket.js:605
+msgid "Wrong password provided. Please try again."
+msgstr "암호가 틀렸습니다. 다시 시도하십시오"
+
+#: src/core/Socket.js:721
+msgid "Connecting..."
+msgstr "연결하는 중.."
+
+#: src/core/Socket.js:881
+msgid ""
+"Well, this is embarrassing, we cannot connect to your document. Please try "
+"again."
+msgstr "문서에 연결할 수 없습니다. 다시 시도하십시오."
+
+#: src/errormessages.js:13
+msgid ""
+"No disk space left on server, please contact the server administrator to "
+"continue."
+msgstr "서버에 남아있는 디스크 공간이 없으므로, 계속하려면 서버 관리자에게 문의하십시오."
+
+#: src/errormessages.js:14
+msgid ""
+"The host URL is empty. The loolwsd server is probably misconfigured, please "
+"contact the administrator."
+msgstr "호스트 URL이 비어 있습니다. loolwsd 서버가 잘못 구성된 것일 수 있습니다. 관리자에게 문의하십시오."
+
+#: src/errormessages.js:15
+msgid ""
+"This is an unsupported version of {productname}. To avoid the impression "
+"that it is suitable for deployment in enterprises, this message appears when "
+"more than {docs} documents or {connections} connections are in use "
+"concurrently"
+msgstr ""
+"지원되지 않는 {productname} 버전입니다. 기업용 배포에 적합하다는 인상을 피하기 위해 {docs} 문서 또는 "
+"{connections} 개 이상의 연결을 동시에 사용하는 경우에 이 메시지가 표시됩니다."
+
+#: src/errormessages.js:16
+msgid "More information and support"
+msgstr "더 많은 정보와 지원"
+
+#: src/errormessages.js:17
+msgid ""
+"This service is limited to %0 documents, and %1 connections total by the "
+"admin. This limit has been reached. Please try again later."
+msgstr ""
+"이 서비스는 관리자에 의해 %0 문서, 총 %1 개의 연결로 제한되었습니다. 이 한도에 도달했습니다. 나중에 다시 시도 해주십시오."
+
+#: src/errormessages.js:18
+msgid ""
+"Service is unavailable. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr "서비스를 사용할 수 없습니다. 나중에 다시 시도하거나 이 문제가 지속되면 관리자에게 문의하십시오."
+
+#: src/errormessages.js:19
+msgid ""
+"Unauthorized WOPI host. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr "인증되지 않은 WOPI 호스트입니다. 나중에 다시 시도하거나 이 문제가 지속되면 경우 관리자에게 문의하십시오."
+
+#: src/errormessages.js:20
+msgid "Wrong or missing WOPISrc parameter, please contact support."
+msgstr "WOPISrc 매개 변수가 잘못되었거나 누락되었습니다. 지원팀에 문의하십시오."
+
+#: src/errormessages.js:21
+msgid ""
+"Your session will expire in %time. Please save your work and refresh the "
+"session (or webpage) to continue."
+msgstr "세션이 %time 내에 만료됩니다. 계속하려면 작업을 저장하고 세션(또는 웹페이지)를 새로 고침하십시오."
+
+#: src/errormessages.js:22
+msgid ""
+"Your session has been expired. Further changes to document might not be "
+"saved. Please refresh the session (or webpage) to continue."
+msgstr "세션이 만료되었습니다. 이후의 변경 사항은 저장되지 않습니다. 계속하려면 세션(또는 웹페이지)를 새로 고침하십시오."
+
+#: src/errormessages.js:23
+msgid ""
+"Failed to load the document. Please ensure the file type is supported and "
+"not corrupted, and try again."
+msgstr "문서를 불러오지 못했습니다. 지원되는 파일 형식인지, 망가진 파일이 아닌지 확인하고 재시도하십시오."
+
+#: src/errormessages.js:24
+msgid ""
+"Failed to load the document. This document is either malformed or is taking "
+"more resources than allowed. Please contact the administrator."
+msgstr ""
+
+#: src/errormessages.js:25
+msgid "Invalid link: '%url'"
+msgstr ""
+
+#: src/errormessages.js:26
+msgid "You are leaving the editor, are you sure you want to proceed?"
+msgstr ""
+
+#: src/errormessages.js:29
+#, javascript-format
+msgid ""
+"Failed to read document from storage. Please contact your storage server "
+"(%storageserver) administrator."
+msgstr "저장소에서 문서를 읽지 못했습니다. 스토리지 서버(%storageserver) 관리자에게 문의하십시오."
+
+#: src/errormessages.js:30
+#, javascript-format
+msgid ""
+"Save failed due to no disk space left on storage server. Document will now "
+"be read-only. Please contact the server (%storageserver) administrator to "
+"continue editing."
+msgstr ""
+"스토리지 서버에 남아있는 디스크 공간이 없기 때문에 문서 저장을 할 수 없습니다. 계속 편집하려면 서버(%storageserver) "
+"관리자에게 문의하십시오."
+
+#: src/errormessages.js:31
+msgid "Document cannot be saved due to expired or invalid access token."
+msgstr "만료되었거나 유효하지 않은 액세스 토큰으로 인해 문서를 저장할 수 없습니다."
+
+#: src/errormessages.js:32
+msgid ""
+"Document cannot be saved. Check your permissions or contact the storage "
+"server administrator."
+msgstr "문서를 저장할 수 없습니다. 사용 권한을 확인하거나 스토리지 서버 관리자에게 문의하십시오."
+
+#: src/layer/marker/Annotation.js:210
+msgid "Accept change"
+msgstr "변경 사항 적용"
+
+#: src/layer/marker/Annotation.js:215
+msgid "Reject change"
+msgstr "변경 사항 거부"
+
+#: src/layer/marker/Annotation.js:224
+msgid "Open menu"
+msgstr "메뉴 열기"
+
+#: src/layer/marker/Annotation.js:244 src/layer/tile/TileLayer.js:240
+msgid "Reply"
+msgstr "답변"
+
+#: src/layer/tile/TileLayer.js:234
+msgid "Modify"
+msgstr "수정"
+
+#: src/layer/tile/TileLayer.js:246
+msgid "Remove"
+msgstr "제거하기"
+
+#: src/map/Map.js:214
+msgid "Initializing..."
+msgstr "초기화하는 중..."
+
+#: src/map/Map.js:332
+msgid "Last modification"
+msgstr ""
+
+#: src/map/Map.js:829
+msgid "Please enter a command starting with \".uno:\" or \"macro:///\""
+msgstr ""
+
+#: src/map/Map.js:832
+msgid "Invalid Command."
+msgstr ""
+
+#: src/map/Map.js:1105
+msgid "Inactive document - please click to resume editing"
+msgstr "비활성화된 문서 - 편집을 계속하려면 클릭하십시오."
+
+#: src/map/Map.js:1248
+msgid "Loading..."
+msgstr "불러오는 중..."
+
+#: src/map/handler/Map.FileInserter.js:105
+msgid "Uploading..."
+msgstr "업로드 중..."
+
+#: src/map/handler/Map.WOPI.js:103
+msgid "Creating new file from template..."
+msgstr ""
+
+#: src/map/handler/Map.WOPI.js:318
+msgid "Creating copy..."
+msgstr ""
+
+#: uiconfig/dialogs/Action.js:87
+msgid "Are you sure you want to delete this slide?"
+msgstr "이 슬라이드를 정말 삭제하겠습니까?"
+
+#: uiconfig/dialogs/AddTableAtEnd.js:20 uiconfig/dialogs/RenameTable.js:23
+msgid "Enter new sheet name"
+msgstr "새 시트 이름을 입력하십시오"
+
+#: uiconfig/dialogs/AddTableAtEnd.js:21 uiconfig/dialogs/InsertTable.js:29
+msgid "Automatic naming"
+msgstr ""
+
+#: uiconfig/dialogs/AddTableAtEnd.js:60 uiconfig/dialogs/InsertTable.js:92
+#: uiconfig/dialogs/RenameTable.js:64
+msgid ""
+"Invalid sheet name.\n"
+"The sheet name must not be empty or a duplicate of \n"
+"an existing name and may not contain the characters [ ] * ? : / \\ \n"
+"or the character ' (apostrophe) as first or last character."
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:20 uiconfig/dialogs/InsertCell.js:18
+#: uiconfig/dialogs/RemoveCell.js:18
+msgid "Selection"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:21
+msgid "Delete all"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:24
+msgid "Text"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:25
+msgid "Numbers"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:28
+msgid "Date & time"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:29
+msgid "Formulas"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:32
+#, fuzzy
+msgid "Comments"
+msgstr "추가 설명"
+
+#: uiconfig/dialogs/DeleteCell.js:33
+msgid "Formats"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:36
+msgid "Objects"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/InsertCell.js:27
+#: uiconfig/dialogs/RemoveCell.js:27
+msgid "Close"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:27
+msgid "Line break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:28
+msgid "Column break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:29
+msgid "Page break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:32
+msgid "Change page number"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:19
+msgid "Shift cells down"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:20
+msgid "Shift cells right"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:21
+msgid "Entire row"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:22
+msgid "Entire column"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:21
+msgid "Position"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:22
+msgid "Before current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:23
+msgid "After current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:27
+msgid "Sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:28
+msgid "No. of sheets"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:29
+msgid "Name"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:26
+msgid "- move to end position -"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:29
+msgid "Copy"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:30
+msgid "Insert before"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:20
+msgid "File name:"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:24
+msgid "Please enter a new filename."
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:19
+msgid "Shift cells up"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:20
+msgid "Shift cells left"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:21
+msgid "Delete entire row(s)"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:22
+msgid "Delete entire column(s)"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveTable.js:22
+msgid "Are you sure you want to delete sheet, %sheet% ?"
+msgstr "%sheet% 시트를 정말 삭제하겠습니까?"
+
+#: uiconfig/dialogs/ShowTable.js:29
+msgid "Hidden Sheets"
+msgstr ""
+
+#: uiconfig/dialogs/TraceChangeMode.js:41
+msgid "Stop tracking changes, will lose information about the changes."
+msgstr ""
+
+#: uiconfig/dialogs/TraceChangeMode.js:44
+msgid "Warning"
+msgstr ""
+
+#~ msgid "Are you sure you want to delete this page?"
+#~ msgstr "이 페이지를 정말 삭제하겠습니까?"
+
+#~ msgid "Internal Paste Special"
+#~ msgstr "내부 선택하여 붙여 넣기"
+
+#~ msgid "Document repair"
+#~ msgstr "문서 복구"
+
+#~ msgid "Function"
+#~ msgstr "함수"
+
+#~ msgid "No users"
+#~ msgstr "사용자 없음"
+
+#~ msgid "Internal Cut"
+#~ msgstr "내부 잘라 내기"
+
+#~ msgid "Internal Copy"
+#~ msgstr "내부 복사하기"
+
+#~ msgid "Internal Paste"
+#~ msgstr "내부 붙여 넣기"
+
+#~ msgid "Text orientation"
+#~ msgstr "텍스트 방향"
+
+#~ msgid "Close document"
+#~ msgstr "문서 닫기"
+
+#~ msgid "Textwrap"
+#~ msgstr "자동 줄 바꿈"
+
+#~ msgid "No wrap"
+#~ msgstr "줄 바꿈 없음"
+
+#~ msgid "Page wrap"
+#~ msgstr "페이지 줄 바꿈"

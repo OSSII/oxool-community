@@ -1,0 +1,139 @@
+# spec file for package loolwsd
+#
+# Copyright (c) 2015 Collabora
+#
+# This file is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+%define config_options --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192
+%define loroot /opt/oxoffice
+
+Name:           @PACKAGE_NAME@
+Version:        @PACKAGE_VERSION@
+Release:        @LOOLWSD_VERSION_DIST@.community%{?dist}
+Vendor:         %{vendor}
+Summary:        OxOffice Online WebSocket Daemon
+License:        MPL
+Source0:        @PACKAGE_NAME@-%{version}.tar.gz
+BuildRequires:  libcap-devel libpng-devel poco-devel >= 1.7.5
+%if 0%{?fedora} || 0%{?rhel} >= 7
+BuildRequires:  libpcap kernel-headers
+%endif
+Requires:       systemd
+Requires(post): coreutils grep sed
+%if 0%{?fedora} || 0%{?rhel} >= 7
+# loolwsd dependencies
+Requires:       expat keyutils-libs krb5-libs libattr libcap libcom_err libgcc libpng openssl-libs pcre zlib
+Requires:       poco-crypto >= 1.7.5 poco-foundation >= 1.7.5 poco-json >= 1.7.5 poco-net >= 1.7.5 poco-netssl >= 1.7.5 poco-util >= 1.7.5 poco-xml >= 1.7.5
+%endif
+
+%description
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%configure \
+	--enable-silent-rules \
+	--with-lokit-path=bundled/include \
+	--with-lo-path=%{loroot} \
+	--disable-setcap \
+%if 0%{?config_options:1}
+	%{config_options}
+%endif
+
+make %{?_smp_mflags}
+
+%check
+#make check
+
+%install
+%make_install
+
+%__install -D -m 444 %{name}.service %{buildroot}%{_unitdir}/%{name}.service
+
+%files
+%{_bindir}/*
+%dir /usr/share/%{name}
+/usr/share/%{name}/loleaflet
+/usr/share/%{name}/discovery.xml
+/usr/share/%{name}/favicon.ico
+/usr/share/%{name}/extensions
+/usr/share/doc/%{name}/README
+/usr/share/doc/%{name}/README.vars
+/usr/share/doc/%{name}/protocol.txt
+/usr/share/doc/%{name}/reference.md
+%{_mandir}
+%{_unitdir}/%{name}.service
+%config(noreplace) /etc/sysconfig/%{name}
+
+%dir /etc/%{name}
+%config(noreplace) /etc/cron.d/%{name}.cron
+%config(noreplace) /etc/pam.d/%{name}
+%config(noreplace) %attr(640, lool, root) /etc/%{name}/%{name}.xml
+%config /etc/%{name}/*.xcu
+%config(noreplace) /etc/%{name}/*.pem
+%config %attr(440, root, root) /etc/sudoers.d/lool
+
+%doc README
+
+%pre
+getent group lool >/dev/null || groupadd -r lool
+getent passwd lool >/dev/null || useradd -g lool -r lool
+
+%post
+setcap cap_net_bind_service=+ep /usr/bin/oxool
+setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/oxoolforkit
+fc-cache -f
+
+mkdir -p /var/cache/%{name} && chown lool:lool /var/cache/%{name}
+rm -rf /var/cache/%{name}/*
+
+touch /var/log/%{name}.log && chown lool:lool /var/log/%{name}.log
+
+# Figure out where LO is installed, let's hope it is not a mount point
+# Create a directory for oxloolwsd on the same file system
+loroot=%{loroot}
+loolparent=`cd ${loroot} && cd .. && /bin/pwd`
+
+rm -rf ${loolparent}/%{name}
+mkdir -p ${loolparent}/%{name}/child-roots
+chown lool:lool ${loolparent}/%{name}
+chown lool:lool ${loolparent}/%{name}/child-roots
+
+fc-cache ${loroot}/share/fonts/truetype
+su lool -c "oxool-systemplate-setup ${loolparent}/%{name}/systemplate ${loroot} "%{_datadir}/%{name}/extensions" >/dev/null 2>&1"
+
+%if 0%{?fedora} || 0%{?rhel} >= 7
+%systemd_post %{name}.service
+%endif
+
+
+%preun
+%if 0%{?fedora} || 0%{?rhel} >= 7
+%systemd_preun %{name}.service
+%endif
+
+%postun
+arg="$1"
+fc-cache -f
+%if 0%{?fedora} || 0%{?rhel} >= 7
+%systemd_postun %{name}.service
+%endif
+
+# Real uninstall
+# 如果是1，表示是 upgrade，不需要刪除檔案
+if [ $arg = 0 ] ; then
+    # log file
+    rm -f /var/log/%{name}.log
+    # cache dir
+    rm -fr /var/cache/%{name}
+    # systemplate & child root
+    loroot=%{loroot}
+    loolparent=`cd ${loroot} && cd .. && /bin/pwd`
+    rm -rf ${loolparent}/%{name}
+fi
+ 
+
+%changelog

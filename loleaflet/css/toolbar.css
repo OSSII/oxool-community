@@ -1,0 +1,499 @@
+
+.mCSB_scrollTools_vertical {
+	width: 38px !important;
+}
+.mCSB_scrollTools_vertical .mCSB_dragger_bar {
+	position: fixed !important;
+	margin-top: 8px !important;
+	height: 48px !important;
+	width: 48px !important;
+	right: -16px;
+	border-radius: 100px !important;
+	background: url('images/lc_scrollbar_mobile.svg') no-repeat center #fff !important;
+	background-size: 24px !important;
+	box-shadow: 0 1px 3px 1px #00000050;
+}
+
+/*@media (max-width: 767px), (max-device-height: 767px) {
+	#mCSB_2_dragger_horizontal, #mCSB_1_dragger_horizontal {
+		display: none !important;
+	}
+}*/
+
+#toolbar-up.w2ui-toolbar {
+    left: 0;
+    right: 0;
+    height: 41px;
+    padding-left: 9px;
+    text-align: center;
+    overflow: visible !important;
+}
+
+#toolbar-down {
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 0;
+    position: fixed;
+    bottom: 0;
+    height: 37px;
+    border-top: 1px solid #bbbbbb;
+}
+
+#document-signing-bar {
+    background-color: #dd000088;
+}
+
+.w2ui-toolbar {
+    background-color: #fafafa !important;
+}
+
+#spreadsheet-toolbar {
+    left: 0;
+    text-align: center;
+    bottom: 37px;
+    padding: 0;
+    position: absolute;
+    border-top: 1px solid #bbbbbb;
+}
+
+#spreadsheet-toolbar.mobile-view {
+    bottom: 0px;
+}
+
+#formulabar {
+    border-top: 1px solid #bbbbbb;
+    height: 41px;
+}
+
+#presentation-toolbar {
+    background-color: #fafafa;
+    text-align: center;
+    position: absolute;
+    width: 250px;
+    border-top: 1px solid #bbbbbb;
+    border-right: 1px solid #bbbbbb;
+}
+
+#mobileEditBar {
+    top: 41px;
+    position: absolute;
+    height: 41px;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #bbbbbb;
+    font-size: 14px;
+}
+
+/* For MS Edge 40, the select2 combo boxes need to have higher z-index than #map
+ * Ideal would be to add the class to select2-container <span>, but
+ * https://github.com/select2/select2/issues/285
+ * So, for now just define the z-index here separately for the same class that select2 uses
+ * as a container
+ */
+.select2-container {
+    z-index: 11;
+}
+
+.w2ui-scroll-left,
+.w2ui-scroll-right {
+    z-index: 15;
+}
+
+/* center the toolbar */
+#tb_presentation-toolbar_item_left {
+    width: 50%;
+}
+
+#addressInput {
+    height: 29px;
+    width: 100px;
+}
+
+#formulaInput {
+    height: 29px;
+    width: 100%;
+}
+
+#tb_formulabar_item_formula {
+    width: 100%;
+}
+
+#tb_formulabar_item_formula div table {
+    width: 100%;
+}
+
+
+#document-name-input {
+    padding: 1px;
+    font-size: 14px;
+    border: 1px solid transparent;
+    background-color: transparent;
+    width: 200px;
+}
+
+#document-name-input.editable:focus {
+    border: 1px solid #bbbbbb;
+    background-color: white;
+    width: 200px;
+}
+
+#document-name-input.editable:hover {
+    border: 1px solid #bbbbbb;
+    background-color: transparent;
+    background-image: url('images/lc_editdoc.svg');
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 20px;
+    width: 181px;
+}
+
+#tb_editbar_item_edit {
+    display: none;
+}
+
+#closebuttonwrapper {
+    position: fixed;
+    z-index: 1050;
+    right: 4px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+}
+
+#closebutton {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    border: 1px solid;
+    border-color: transparent;
+    border-radius: 5px;
+}
+#closebutton:hover {
+    border-color: #ccc;
+    background-color: #eee;
+}
+.closebuttonimage{ background: url('images/lc_closedoc.svg') no-repeat center !important; }
+
+#tb_actionbar_item_left {
+    width: 45%;
+}
+#tb_actionbar_item_right {
+    width: 100%;
+}
+
+.w2ui-button{
+    margin:0 !important;
+}
+
+.w2ui-tb-image {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.w2ui-break {
+	margin:0 4px !important;
+}
+
+.leaflet-bar a {
+    float: left;
+}
+
+div .leaflet-bar a:last-child {
+    border-bottom: 1px solid #ccc;
+}
+
+.leaflet-control-zoom.leaflet-bar {
+    margin-left: 0.5em;
+}
+
+div.leaflet-control-zoom leaflet-bar {
+    width: 53px;
+}
+
+div .leaflet-bar a:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+div .leaflet-bar a:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+label.leaflet-control-editviewswitch {
+    padding: 0.2em 0.4em 0.2em 0em;
+}
+
+input.leaflet-control-search-bar {
+    padding: 0.3em;
+	max-width: 100px;
+}
+
+.leaflet-control-fonts-container {
+	display: inline;
+}
+
+select {
+	padding: 0.2em 0.4em 0.4em 0em;
+	background-color: white;
+}
+
+button.leaflet-control-search-prev {
+    margin-left: 0.2em;
+}
+
+button.leaflet-control-search-next
+, leaflet-control-search-cancel {
+    margin-right: 0.2em;
+}
+
+#toolbar label
+, .leaflet-control-search {
+    background-color: #fafafa;
+}
+
+.search-not-found {
+    background-color: red !important;
+    -webkit-transition: background-color 0.8s linear;
+       -moz-transition: background-color 0.8s linear;
+         -o-transition: background-color 0.8s linear;
+            transition: background-color 0.8s linear;
+
+}
+
+#zoomlevel {
+    min-width: 36px;
+    font-size: 14px;
+}
+
+/* select box */
+.select2-results__option {
+    padding: 5px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.select2-selection__rendered {
+    font-size: 14px;
+}
+.styles-select {
+    width: 180px;
+}
+.fonts-select {
+    width: 150px;
+}
+.fontsizes-select {
+    width: 64px !important;
+}
+.evo-cp-wrap {
+    /* hide the color pick div */
+    width: 1px !important;
+}
+
+.font-color-indicator,
+.back-color-indicator {
+    width: 24px;
+    height: 6px;
+    margin-top: -7px !important;
+    margin-left: 5px !important;
+    position: fixed;
+    background: transparent;
+}
+
+.back-color-indicator {
+    border-width: 1px;
+    border-style: solid;
+}
+
+#setborderstyle-grid tr td {
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+    position: relative;
+    padding: 2px;
+    border: 1px solid #ccc;
+    overflow: auto; /* child margins otherwise don't expand *this* element (parent) */
+}
+
+#setborderstyle-grid td:hover {
+    border: 1px solid #888;
+}
+
+#conditionalformatmenu-grid tr td {
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+    position: relative;
+    padding: 2px;
+    border: 1px solid #ccc;
+    overflow: auto; /* child margins otherwise don't expand *this* element (parent) */
+}
+
+#conditionalformatmenu-grid td:hover {
+    border: 1px solid #888;
+}
+
+.inserttable-pop {
+    z-index: 1000;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+#fontcolor-wrapper {
+    position: relative;
+    right: 200px; /* fontcolor popup has 200px width, place it to the left from its right edge */
+}
+
+#backcolor-wrapper {
+    position: relative;
+    right: 200px; /* backcolor popup has 200px width, place it to the left from its right edge */
+}
+
+#backcolor-wrapper .evo-pop {
+    z-index: 1000; /* Override default value of 10000 of evo-pop class */
+}
+
+#fontcolor-wrapper .evo-pop {
+    z-index: 1000; /* Override default value of 10000 of evo-pop class */
+}
+
+/* for 10x10 grid 10x20+10*.col.margin */
+.inserttable-grid {
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+    position: relative;
+    padding: 2px;
+    display: block;
+    width: 243px;
+}
+
+.inserttable-grid .row {
+    height: 20px;
+    margin: 3px;
+}
+
+.inserttable-grid .col {
+    height: 100%;
+    float: left;
+    padding: 2px;
+    width: 20px;
+    border: 1px;
+    border-style: solid;
+    border-color: rgba(120, 120, 120, 0.5);
+    background: rgba(255, 255, 255, 1);
+    margin: 3px 0 0 3px;
+}
+
+.inserttable-grid .col.bright {
+    border: 0px;
+    background: rgba(66, 151, 215, 1);
+}
+
+/* Insert shape grid - based on inserttable grid */
+.insertshape-grid {
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+    position: relative;
+    padding: 2px;
+    display: block;
+    overflow: auto; /* child margins otherwise don't expand *this* element (parent) */
+    width: 344px;
+}
+
+.insertshape-grid .row {
+    height: 30px;
+}
+
+.insertshape-grid .col {
+    height: 100%;
+    float: left;
+    padding: 2px;
+    width: 30px;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 1);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    -moz-background-size:contain;
+    -webkit-background-size:contain;
+    -o-background-size:contain;
+    cursor: pointer;
+}
+
+.insertshape-grid .row-header {
+    height: 30px;
+    text-align: center;
+    padding: 5px;
+    clear: both;
+}
+
+.insertshape-grid .col:hover {
+    border: 1px solid #ccc;
+}
+
+.animationeffects-grid {
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+    position: relative;
+    padding: 2px;
+    display: block;
+    overflow: auto; /* child margins otherwise don't expand *this* element (parent) */
+    width: 148px;
+}
+
+.animationeffects-grid .row {
+    height: 30px;
+}
+
+.animationeffects-grid .col {
+    height: 100%;
+    float: left;
+    padding: 2px;
+    width: 32px;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 1);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    -moz-background-size:contain;
+    -webkit-background-size:contain;
+    -o-background-size:contain;
+    cursor: pointer;
+}
+
+.animationeffects-grid .col:hover {
+    border: 1px solid #ccc;
+}
+
+tr.useritem:hover {
+    cursor: default;
+    background-color: rgba(67, 172, 232, 0.25);
+}
+
+tr.useritem > td {
+    padding: 7px;
+}
+
+tr.useritem > td.usercolor {
+    display: inline-block;
+    top: 5px;
+    left: 3px;
+    position: relative;
+}
+
+tr.useritem-avatar:hover {
+    cursor: default;
+    background-color: rgba(67, 172, 232, 0.25);
+}
+
+tr.useritem-avatar > td {
+    padding: 7px;
+}
+
+tr.useritem-avatar > td.usercolor {
+    display: inline-block;
+    top: 0px;
+    left: 3px;
+    position: relative;
+}
+
+.context-menu-link {
+    text-decoration: none;
+    color: black;
+}

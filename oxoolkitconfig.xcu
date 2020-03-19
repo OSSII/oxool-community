@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<!-- tdf#106488 - reverse hostname lookup can go badly wrong -->
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="UseLocking" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Dialogs have limited real estate, limit drop-down height -->
+<item oor:path="/org.openoffice.Office.Common/Accessibility"><prop oor:name="ListBoxMaximumLineCount" oor:op="fuse"><value>11</value></prop></item>
+
+<!-- The Help root URL, or empty for no help (hides the help buttons) -->
+<item oor:path="/org.openoffice.Office.Common/Help"><prop oor:name="HelpRootURL" oor:op="fuse"><value>https://help.libreoffice.org/help.html?</value></prop></item>
+
+<!-- Enable spell-checking by default -->
+<item oor:path="/org.openoffice.Office.Linguistic/SpellChecking"><prop oor:name="IsSpellAuto" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Save memory by avoiding collecting autocompletion words  -->
+<item oor:path="/org.openoffice.Office.Writer/AutoFunction/Completion"><prop oor:name="Enable" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Set a work path which is valid in chroot -->
+<item oor:path="/org.openoffice.Office.Paths/Variables"><prop oor:name="Work" oor:op="fuse"><value>file:///tmp</value></prop></item>
+
+<!-- Enable thumbnail generation by default (disabling saves CPU time) -->
+<item oor:path="/org.openoffice.Office.Common/Save/Document"><prop oor:name="GenerateThumbnail" oor:op="fuse"><value>true</value></prop></item>
+
+</oor:items>

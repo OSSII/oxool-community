@@ -1,0 +1,6 @@
+## Path:	Network/Remote access/OXLOOL
+## Description:	OxOffice Online WebSocket Daemon settings
+## Type:	string
+## Default:	""
+## ServiceRestart: oxool
+#

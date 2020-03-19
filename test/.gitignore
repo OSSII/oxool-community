@@ -1,0 +1,12 @@
+# Autofoo
+.deps
+Makefile
+Makefile.in
+*.log
+*.trs
+.libs
+*.la
+*.lo
+*.o
+test
+run_unit.sh

@@ -1,0 +1,1309 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#: uiconfig/dialogs/ExampleDialog.js:34
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-27 15:46+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.2.5\n"
+"X-Pootle-Revision: 3609182\n"
+"X-Pootle-Path: /ro/libo_online/loleaflet-ui-ro.po\n"
+
+#: admin/admin.strings.js:6
+msgid "Admin console"
+msgstr "Consolă administrativă"
+
+#: admin/admin.strings.js:7
+msgid "Settings"
+msgstr "Opțiuni"
+
+#: admin/admin.strings.js:8
+msgid "Overview"
+msgstr "Prezentarea generală"
+
+#: admin/admin.strings.js:9
+msgid "(current)"
+msgstr "(curent)"
+
+#: admin/admin.strings.js:10
+msgid "Analytics"
+msgstr "Analizări"
+
+#: admin/admin.strings.js:11
+msgid "History"
+msgstr "Istoric"
+
+#: admin/admin.strings.js:12
+msgid "Dashboard"
+msgstr "Pagina principală"
+
+#: admin/admin.strings.js:13
+msgid "Users online"
+msgstr "Utilizatori activi"
+
+#: admin/admin.strings.js:14
+#, fuzzy
+msgid "User Name"
+msgstr "Nume utilizator"
+
+#: admin/admin.strings.js:15
+msgid "Documents opened"
+msgstr "Documente deschise"
+
+#: admin/admin.strings.js:16
+msgid "Number of Documents"
+msgstr "Număr de documente"
+
+#: admin/admin.strings.js:17
+msgid "Memory consumed"
+msgstr "Memorie utilizată"
+
+#: admin/admin.strings.js:18
+msgid "Bytes sent"
+msgstr "Bytes trimiși"
+
+#: admin/admin.strings.js:19
+msgid "Bytes received"
+msgstr "Bytes primiți"
+
+#: admin/admin.strings.js:20
+msgid "PID"
+msgstr "PID"
+
+#: admin/admin.strings.js:21
+msgid "Document"
+msgstr "Document"
+
+#: admin/admin.strings.js:22
+msgid "Number of views"
+msgstr "Numărul vizualizărilor"
+
+#: admin/admin.strings.js:23
+msgid "Elapsed time"
+msgstr "Timp scurs"
+
+#: admin/admin.strings.js:24
+msgid "Idle time"
+msgstr "Timp de inactivitate"
+
+#: admin/admin.strings.js:25
+msgid "Modified"
+msgstr "Modificat"
+
+#: admin/admin.strings.js:26
+msgid "Kill"
+msgstr "Omoară"
+
+#: admin/admin.strings.js:27
+msgid "Graphs"
+msgstr "Grafice"
+
+#: admin/admin.strings.js:28
+msgid "Memory Graph"
+msgstr ""
+
+#: admin/admin.strings.js:29
+msgid "CPU Graph"
+msgstr ""
+
+#: admin/admin.strings.js:30
+msgid "Network Graph"
+msgstr ""
+
+#: admin/admin.strings.js:31 src/layer/marker/Annotation.js:241
+msgid "Save"
+msgstr "Salvează"
+
+#: admin/admin.strings.js:32
+msgid "Cache size of memory statistics"
+msgstr "Mărimea statistici despre memorie"
+
+#: admin/admin.strings.js:33
+msgid "Time interval of memory statistics (in ms)"
+msgstr "Intervalul statistici despre memorie (ms)"
+
+#: admin/admin.strings.js:34
+msgid "Cache size of CPU statistics"
+msgstr "Mărimea statistici despre CPU"
+
+#: admin/admin.strings.js:35
+msgid "Time interval of CPU statistics (in ms)"
+msgstr "Intervalul statistici despre CPU (ms) "
+
+#: admin/admin.strings.js:36
+msgid "Maximum Document process virtual memory (in MB) - reduce only"
+msgstr ""
+
+#: admin/admin.strings.js:37
+msgid "Maximum Document process stack memory (in KB) - reduce only"
+msgstr ""
+
+#: admin/admin.strings.js:38
+msgid "Maximum file size allowed to write to disk (in MB) - reduce only"
+msgstr ""
+
+#: admin/admin.strings.js:39
+#, fuzzy
+msgid "Documents:"
+msgstr "Document"
+
+#: admin/admin.strings.js:40
+msgid "Expired:"
+msgstr ""
+
+#: admin/admin.strings.js:41
+msgid "Refresh"
+msgstr "Actualizează"
+
+#: admin/admin.strings.js:42
+msgid "Server uptime"
+msgstr ""
+
+#: admin/src/AdminSocketAnalytics.js:219
+msgid "Received"
+msgstr ""
+
+#: admin/src/AdminSocketAnalytics.js:223
+msgid "Sent"
+msgstr ""
+
+#: admin/src/AdminSocketBase.js:54
+msgid "Connection error"
+msgstr "Eroare de conexiune"
+
+#: admin/src/AdminSocketOverview.js:102
+msgid "Are you sure you want to terminate this session?"
+msgstr "Sigur doriți să închideți sesiunea?"
+
+#: admin/src/AdminSocketOverview.js:183 admin/src/AdminSocketOverview.js:285
+#, fuzzy
+msgid "Documents"
+msgstr "Document"
+
+#: admin/src/AdminSocketSettings.js:34
+msgid "Are you sure you want to shut down the server?"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:19
+msgid "Are you sure you want to restart the online service?"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:28
+msgid ""
+"For security reasons, please enter your original management account and "
+"password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:30
+#: admin/src/AdminSocketGlobalFunction.js:53
+#, fuzzy
+msgid "Username"
+msgstr "Nume utilizator"
+
+#: admin/src/AdminSocketGlobalFunction.js:31
+#: admin/src/AdminSocketGlobalFunction.js:54
+msgid "Password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:34
+msgid "Verification"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:35
+#: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1040
+#: js/toolbar.js:1291 src/layer/marker/Annotation.js:181 src/map/Map.js:106
+#: uiconfig/dialogs/AddTableAtEnd.js:46 uiconfig/dialogs/DeleteCell.js:86
+#: uiconfig/dialogs/ExampleDialog.js:54 uiconfig/dialogs/GotoPage.js:76
+#: uiconfig/dialogs/InsertBreak.js:57 uiconfig/dialogs/InsertCell.js:54
+#: uiconfig/dialogs/InsertTable.js:71 uiconfig/dialogs/MoveTable.js:58
+#: uiconfig/dialogs/OXSaveAs.js:48 uiconfig/dialogs/RemoveCell.js:54
+#: uiconfig/dialogs/RemoveTable.js:47 uiconfig/dialogs/RenameTable.js:49
+#: uiconfig/dialogs/ShowTable.js:55 uiconfig/dialogs/TraceChangeMode.js:65
+msgid "Cancel"
+msgstr "Renunţă"
+
+#: admin/src/AdminSocketGlobalFunction.js:51
+msgid "Please enter a new account and password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:55
+msgid "Confirm password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:58 src/map/Map.js:105
+#: uiconfig/dialogs/AddTableAtEnd.js:39 uiconfig/dialogs/DeleteCell.js:66
+#: uiconfig/dialogs/ExampleDialog.js:48 uiconfig/dialogs/GotoPage.js:63
+#: uiconfig/dialogs/InsertBreak.js:50 uiconfig/dialogs/InsertCell.js:41
+#: uiconfig/dialogs/InsertTable.js:64 uiconfig/dialogs/MoveTable.js:51
+#: uiconfig/dialogs/OXSaveAs.js:38 uiconfig/dialogs/RemoveCell.js:41
+#: uiconfig/dialogs/RemoveTable.js:40 uiconfig/dialogs/RenameTable.js:42
+#: uiconfig/dialogs/ShowTable.js:46 uiconfig/dialogs/TraceChangeMode.js:58
+msgid "OK"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:71
+msgid "The password does not match the confirmation password!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:86
+msgid "Restart service"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:87
+msgid "Change account password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:128
+msgid "The account or password is inconsistent with the system!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:138
+msgid ""
+"The account and password have been updated and will take effect after the "
+"next service restart."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:142
+msgid "Version"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:147
+#: admin/src/AdminSocketGlobalFunction.js:152
+msgid "Core"
+msgstr ""
+
+#: admin/src/Util.js:14
+msgid "kB"
+msgstr "kB"
+
+#: admin/src/Util.js:14
+msgid "MB"
+msgstr "MB"
+
+#: admin/src/Util.js:14
+msgid "GB"
+msgstr "GB"
+
+#: admin/src/Util.js:14
+msgid "TB"
+msgstr "TB"
+
+#: admin/src/Util.js:43 admin/src/Util.js:45
+msgid " hrs"
+msgstr " ore"
+
+#: admin/src/Util.js:49 admin/src/Util.js:51
+msgid " mins"
+msgstr " minute"
+
+#: admin/src/Util.js:54
+msgid " s"
+msgstr " s"
+
+#: js/toolbar.js:684 js/toolbar.js:1850 uiconfig/dialogs/InsertBreak.js:19
+msgid "None"
+msgstr "Nimic"
+
+#: js/toolbar.js:685
+msgid "Wipe"
+msgstr ""
+
+#: js/toolbar.js:686
+msgid "Wheel"
+msgstr ""
+
+#: js/toolbar.js:687
+msgid "Uncover"
+msgstr ""
+
+#: js/toolbar.js:688
+msgid "Bars"
+msgstr ""
+
+#: js/toolbar.js:689
+msgid "Checkers"
+msgstr ""
+
+#: js/toolbar.js:690
+msgid "Shape"
+msgstr ""
+
+#: js/toolbar.js:691
+msgid "Box"
+msgstr ""
+
+#: js/toolbar.js:692
+msgid "Wedge"
+msgstr ""
+
+#: js/toolbar.js:693
+msgid "Venetian Blinds"
+msgstr ""
+
+#: js/toolbar.js:694
+msgid "Fade"
+msgstr ""
+
+#: js/toolbar.js:695
+msgid "Cut"
+msgstr ""
+
+#: js/toolbar.js:696
+msgid "Cover"
+msgstr ""
+
+#: js/toolbar.js:697
+msgid "Dissolve"
+msgstr ""
+
+#: js/toolbar.js:698
+msgid "Random"
+msgstr ""
+
+#: js/toolbar.js:699
+msgid "Comb"
+msgstr ""
+
+#: js/toolbar.js:700
+msgid "Push"
+msgstr ""
+
+#: js/toolbar.js:701
+msgid "Split"
+msgstr ""
+
+#: js/toolbar.js:702
+msgid "Diagonal"
+msgstr ""
+
+#: js/toolbar.js:703
+msgid "Tiles"
+msgstr ""
+
+#: js/toolbar.js:704
+msgid "Cube"
+msgstr ""
+
+#: js/toolbar.js:705
+msgid "Circles"
+msgstr ""
+
+#: js/toolbar.js:706
+msgid "Helix"
+msgstr ""
+
+#: js/toolbar.js:707
+msgid "Fall"
+msgstr ""
+
+#: js/toolbar.js:708
+msgid "Turn Around"
+msgstr ""
+
+#: js/toolbar.js:709
+msgid "Iris"
+msgstr ""
+
+#: js/toolbar.js:710
+msgid "Turn Down"
+msgstr ""
+
+#: js/toolbar.js:711
+msgid "Rochade"
+msgstr ""
+
+#: js/toolbar.js:712
+msgid "3D Denetian"
+msgstr ""
+
+#: js/toolbar.js:713
+msgid "Static"
+msgstr ""
+
+#: js/toolbar.js:714
+msgid "Fine Dissolve"
+msgstr ""
+
+#: js/toolbar.js:715
+msgid "Vortex"
+msgstr ""
+
+#: js/toolbar.js:716
+msgid "Ripple"
+msgstr ""
+
+#: js/toolbar.js:717
+msgid "Glitter"
+msgstr ""
+
+#: js/toolbar.js:718
+msgid "Honeycomb"
+msgstr ""
+
+#: js/toolbar.js:719
+msgid "Newsflash"
+msgstr ""
+
+#: js/toolbar.js:814
+msgid "More..."
+msgstr ""
+
+#: js/toolbar.js:875
+msgid "Borders"
+msgstr ""
+
+#: js/toolbar.js:935
+msgid "Insert table"
+msgstr "Inserează un tabel"
+
+#: js/toolbar.js:940
+msgid "Insert Local Image"
+msgstr ""
+
+#: js/toolbar.js:944
+msgid "Insert shapes"
+msgstr ""
+
+#: js/toolbar.js:952 js/toolbar.js:2683
+msgid "Common symbols"
+msgstr ""
+
+#: js/toolbar.js:953
+msgid "More symbols"
+msgstr ""
+
+#: js/toolbar.js:993 js/toolbar.js:1409
+msgid "Always follow the editor"
+msgstr ""
+
+#: js/toolbar.js:996 js/toolbar.js:1412
+msgid "Current"
+msgstr ""
+
+#: js/toolbar.js:1041 js/toolbar.js:1292
+msgid "Accept"
+msgstr "Acceptă"
+
+#: js/toolbar.js:1074 js/toolbar.js:1339
+msgid "First sheet"
+msgstr "Prima foaie"
+
+#: js/toolbar.js:1075 js/toolbar.js:1340
+msgid "Previous sheet"
+msgstr "Foaia precedentă"
+
+#: js/toolbar.js:1076 js/toolbar.js:1341
+msgid "Next sheet"
+msgstr "Foaia următoare"
+
+#: js/toolbar.js:1077 js/toolbar.js:1342
+msgid "Last sheet"
+msgstr "Ultima foaie"
+
+#: js/toolbar.js:1078 js/toolbar.js:1343
+msgid "Insert sheet"
+msgstr ""
+
+#: js/toolbar.js:1169 js/toolbar.js:1393
+msgid "Search:"
+msgstr "Caută:"
+
+#: js/toolbar.js:1176 js/toolbar.js:1400
+msgid "Cancel the search"
+msgstr "Anulează căutarea"
+
+#: js/toolbar.js:1208
+msgid "Delete"
+msgstr ""
+
+#: js/toolbar.js:1361 src/control/Control.Menubar.js:320
+msgid "Fullscreen presentation"
+msgstr "Prezentare pe tot ecranul"
+
+#: js/toolbar.js:1367 src/control/Control.Menubar.js:322
+#: uiconfig/dialogs/MoveTable.js:28
+msgid "Move"
+msgstr ""
+
+#: js/toolbar.js:1420
+msgid "Reset zoom"
+msgstr "Reinițializează apropierea"
+
+#: js/toolbar.js:1423
+msgid "Zoom factor"
+msgstr ""
+
+#: js/toolbar.js:1493
+msgid "%user has joined"
+msgstr ""
+
+#: js/toolbar.js:1494
+msgid "%user has left"
+msgstr ""
+
+#: js/toolbar.js:1814
+msgid "Number of Sheets"
+msgstr "Număr de foi"
+
+#: js/toolbar.js:1819
+msgid "Selected range of cells"
+msgstr "Zone de celule selectate"
+
+#: js/toolbar.js:1824 js/toolbar.js:1883
+msgid "Entering text mode"
+msgstr "Intrare în mod text"
+
+#: js/toolbar.js:1829 js/toolbar.js:1893 js/toolbar.js:1918
+msgid "Text Language"
+msgstr ""
+
+#: js/toolbar.js:1834 js/toolbar.js:1888
+msgid "Selection Mode"
+msgstr "Regim selecție"
+
+#: js/toolbar.js:1839
+msgid "Choice of functions"
+msgstr "Lista funcțiilor"
+
+#: js/toolbar.js:1843
+msgid "Average"
+msgstr "Medie"
+
+#: js/toolbar.js:1844
+msgid "CountA"
+msgstr "NumărătoareA"
+
+#: js/toolbar.js:1845
+msgid "Count"
+msgstr "Număr"
+
+#: js/toolbar.js:1846
+msgid "Maximum"
+msgstr "Maxim"
+
+#: js/toolbar.js:1847
+msgid "Minimum"
+msgstr "Minim"
+
+#: js/toolbar.js:1848
+msgid "Sum"
+msgstr "Sum"
+
+#: js/toolbar.js:1849
+msgid "Selection count"
+msgstr "Numărul selecției"
+
+#: js/toolbar.js:1873
+msgid "Number of Pages"
+msgstr "Număr de pagini"
+
+#: js/toolbar.js:1878
+msgid "Word Counter"
+msgstr "Numărul de cuvinte"
+
+#: js/toolbar.js:1913
+msgid "Number of Slides"
+msgstr "Numărul diapozitivelor"
+
+#: js/toolbar.js:1950
+msgid "%n users"
+msgstr ""
+
+#: js/toolbar.js:1951
+msgid "1 user"
+msgstr ""
+
+#: js/toolbar.js:1952
+msgid "0 users"
+msgstr ""
+
+#: js/toolbar.js:2147
+msgid "Document saved"
+msgstr "Document salvat"
+
+#: js/toolbar.js:2308 uiconfig/dialogs/InsertBreak.js:30
+msgid "Style"
+msgstr "Stil"
+
+#: js/toolbar.js:2331
+msgid "Font"
+msgstr "Font"
+
+#: js/toolbar.js:2352
+msgid "Previous slide"
+msgstr "Diapozitivul precedent"
+
+#: js/toolbar.js:2353
+msgid "Next slide"
+msgstr "Diapozitivul următor"
+
+#: js/toolbar.js:2439
+msgid ""
+"Conflict Undo/Redo with multiple users. Please use document repair to resolve"
+msgstr ""
+
+#: js/toolbar.js:2850 src/control/Control.DocumentRepair.js:95
+msgid "You"
+msgstr ""
+
+#: js/toolbar.js:2856
+msgid "Readonly"
+msgstr ""
+
+#: src/control/Control.AlertDialog.js:42
+msgid "Open link"
+msgstr ""
+
+#: src/control/Control.AlertDialog.js:54
+msgid "Edit"
+msgstr ""
+
+#: src/control/Control.AlertDialog.js:75
+msgid "The server encountered a %0 error while parsing the %1 command."
+msgstr ""
+
+#: src/control/Control.DocumentRepair.js:33
+msgid "Repair Document"
+msgstr ""
+
+#: src/control/Control.DocumentRepair.js:44 uiconfig/dialogs/InsertBreak.js:26
+msgid "Type"
+msgstr ""
+
+#: src/control/Control.DocumentRepair.js:46
+msgid "Index"
+msgstr ""
+
+#: src/control/Control.DocumentRepair.js:48 src/layer/tile/TileLayer.js:270
+msgid "Comment"
+msgstr "Comentariu"
+
+#: src/control/Control.DocumentRepair.js:50
+#, fuzzy
+msgid "User name"
+msgstr "Nume utilizator"
+
+#: src/control/Control.DocumentRepair.js:52
+msgid "Timestamp"
+msgstr ""
+
+#: src/control/Control.DocumentRepair.js:56
+msgid "Jump to state"
+msgstr ""
+
+#: src/control/Control.Menubar.js:14 src/control/Control.Menubar.js:241
+#: src/control/Control.Menubar.js:344
+msgid "Share..."
+msgstr ""
+
+#: src/control/Control.Menubar.js:16 src/control/Control.Menubar.js:243
+#: src/control/Control.Menubar.js:346
+msgid "See revision history"
+msgstr "Istoricul versiunilor"
+
+#: src/control/Control.Menubar.js:17 src/control/Control.Menubar.js:244
+#: src/control/Control.Menubar.js:347
+msgid "Download as"
+msgstr "Descarcă ca"
+
+#: src/control/Control.Menubar.js:18 src/control/Control.Menubar.js:245
+#: src/control/Control.Menubar.js:349
+msgid "PDF Document (.pdf)"
+msgstr "PDF Document (.pdf)"
+
+#: src/control/Control.Menubar.js:19
+msgid "TEXT Document (.txt)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:20 src/control/Control.Menubar.js:246
+#: src/control/Control.Menubar.js:348
+msgid "HTML Document (.html)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:21
+msgid "ODF text document (.odt)"
+msgstr "ODF text document (.odt)"
+
+#: src/control/Control.Menubar.js:22
+msgid "Word 2003 Document (.doc)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:23
+msgid "Word Document (.docx)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:24
+msgid "Rich Text (.rtf)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:25
+msgid "Sign document"
+msgstr ""
+
+#: src/control/Control.Menubar.js:32 src/control/Control.Menubar.js:256
+#: src/control/Control.Menubar.js:360
+msgid "Repair"
+msgstr ""
+
+#: src/control/Control.Menubar.js:63 src/control/Control.Menubar.js:273
+#: src/control/Control.Menubar.js:377
+msgid "Local Image..."
+msgstr ""
+
+#: src/control/Control.Menubar.js:80 src/control/Control.Menubar.js:82
+msgid "All"
+msgstr ""
+
+#: src/control/Control.Menubar.js:93
+msgid "Horizontal Line"
+msgstr ""
+
+#: src/control/Control.Menubar.js:218 src/control/Control.Menubar.js:220
+#: src/control/Control.Menubar.js:222 src/control/Control.Menubar.js:332
+#: src/control/Control.Menubar.js:448
+msgid "None (Do not check spelling)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:232 src/control/Control.Menubar.js:335
+#: src/control/Control.Menubar.js:451 uiconfig/dialogs/ShowKeyboardHelp.js:59
+msgid "Keyboard shortcuts"
+msgstr "Scurtături de taste"
+
+#: src/control/Control.Menubar.js:233 src/control/Control.Menubar.js:336
+#: src/control/Control.Menubar.js:452
+msgid "About"
+msgstr "Despre"
+
+#: src/control/Control.Menubar.js:247
+msgid "ODF presentation (.odp)"
+msgstr "ODF presentation (.odp)"
+
+#: src/control/Control.Menubar.js:248
+msgid "PowerPoint 2003 Presentation (.ppt)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:249
+msgid "PowerPoint Presentation (.pptx)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:350
+msgid "ODF spreadsheet (.ods)"
+msgstr "ODF spreadsheet (.ods)"
+
+#: src/control/Control.Menubar.js:351
+msgid "Excel 2003 Spreadsheet (.xls)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:352
+msgid "Excel Spreadsheet (.xlsx)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:353
+msgid "CSV (.csv)"
+msgstr ""
+
+#: src/control/Control.Menubar.js:529
+msgid "Reset to Default Language"
+msgstr ""
+
+#: src/control/Control.Menubar.js:773
+msgid "All contents of the header will be deleted and can not be restored."
+msgstr ""
+
+#: src/control/Control.Menubar.js:775
+msgid "All contents of the footer will be deleted and can not be restored."
+msgstr ""
+
+#: src/control/Control.Scroll.Annotation.js:10
+msgid "Scroll up annotations"
+msgstr ""
+
+#: src/control/Control.Scroll.Annotation.js:12
+msgid "Scroll down annotations"
+msgstr ""
+
+#: src/control/Control.Tabs.js:70
+msgid "Insert sheet before this"
+msgstr "Inserează foia înainte"
+
+#: src/control/Control.Tabs.js:76
+msgid "Insert sheet after this"
+msgstr "Inserează foia după"
+
+#: src/control/Ruler.js:97
+msgid "Left Margin"
+msgstr ""
+
+#: src/control/Ruler.js:98
+msgid "Right Margin"
+msgstr ""
+
+#: src/control/Toolbar.js:338 src/control/Toolbar.js:350
+msgid "Downloading..."
+msgstr "Descărcare..."
+
+#: src/control/Toolbar.js:366 src/map/Map.js:1245
+msgid "Saving..."
+msgstr "Salvare..."
+
+#: src/control/Toolbar.js:377
+msgid "Renaming..."
+msgstr ""
+
+#: src/control/Toolbar.js:696
+msgid "This version of %productName is powered by"
+msgstr "Această versiune a %productName este creat de "
+
+#: src/core/Socket.js:79
+msgid ""
+"IE11 has reached its maximum number of connections. Please see this document "
+"to increase this limit if needed: https://docs.microsoft.com/en-us/previous-"
+"versions/windows/internet-explorer/ie-developer/general-info/"
+"ee330736(v=vs.85)#websocket-maximum-server-connections"
+msgstr ""
+
+#: src/core/Socket.js:81
+msgid "Oops, there is a problem connecting to LibreOffice Online : "
+msgstr "A intervenit o problemă de conectare la LibreOffice Online: "
+
+#: src/core/Socket.js:274
+msgid "Unsupported server version."
+msgstr "Versiune server nesuportată."
+
+#: src/core/Socket.js:331
+msgid "Session terminated by document owner"
+msgstr ""
+
+#: src/core/Socket.js:335
+msgid "Idle document - please click to reload and resume editing"
+msgstr ""
+
+#: src/core/Socket.js:342
+msgid "Server is shutting down for maintenance (auto-saving)"
+msgstr ""
+
+#: src/core/Socket.js:346
+msgid "Oops, there is a problem connecting the document"
+msgstr ""
+
+#: src/core/Socket.js:350
+msgid "Server is recycling and will be available shortly"
+msgstr ""
+
+#: src/core/Socket.js:382
+msgid ""
+"Document has changed in storage. Loading the new document. Your version is "
+"available as revision."
+msgstr ""
+
+#: src/core/Socket.js:388
+msgid ""
+"Restoring older revision. Any unsaved changes will be available in version "
+"history"
+msgstr ""
+
+#: src/core/Socket.js:510
+msgid ""
+"Document has been changed in storage. What would you like to do with your "
+"unsaved changes?"
+msgstr ""
+
+#: src/core/Socket.js:515
+msgid "Discard"
+msgstr ""
+
+#: src/core/Socket.js:520
+msgid "Overwrite"
+msgstr ""
+
+#: src/core/Socket.js:525
+msgid "Save to new file"
+msgstr ""
+
+#: src/core/Socket.js:596
+msgid "Document requires password to view."
+msgstr "Documentul necesită parolă pentru vizualizare."
+
+#: src/core/Socket.js:599
+msgid "Document requires password to modify."
+msgstr "Documentul necesită parolă pentru modificare. "
+
+#: src/core/Socket.js:601
+msgid "Hit Cancel to open in view-only mode."
+msgstr "Dacă apăsați pe Renunță documentul se deschide în mod vizualizare."
+
+#: src/core/Socket.js:605
+msgid "Wrong password provided. Please try again."
+msgstr "Parolă greșită. Încercați din nou."
+
+#: src/core/Socket.js:721
+msgid "Connecting..."
+msgstr ""
+
+#: src/core/Socket.js:881
+msgid ""
+"Well, this is embarrassing, we cannot connect to your document. Please try "
+"again."
+msgstr "Ne pare rău, dar nu se poate conecta la document. Încercați mai târziu."
+
+#: src/errormessages.js:13
+msgid ""
+"No disk space left on server, please contact the server administrator to "
+"continue."
+msgstr ""
+"Nu este spațiu disponibil pe server, contactați administratorul de rețea."
+
+#: src/errormessages.js:14
+msgid ""
+"The host URL is empty. The loolwsd server is probably misconfigured, please "
+"contact the administrator."
+msgstr ""
+"URL-ul este gol. Serverul loolwsd probabil este configurat greșit. "
+"Contactați administratorul."
+
+#: src/errormessages.js:15
+msgid ""
+"This is an unsupported version of {productname}. To avoid the impression "
+"that it is suitable for deployment in enterprises, this message appears when "
+"more than {docs} documents or {connections} connections are in use "
+"concurrently"
+msgstr ""
+
+#: src/errormessages.js:16
+msgid "More information and support"
+msgstr ""
+
+#: src/errormessages.js:17
+msgid ""
+"This service is limited to %0 documents, and %1 connections total by the "
+"admin. This limit has been reached. Please try again later."
+msgstr ""
+
+#: src/errormessages.js:18
+msgid ""
+"Service is unavailable. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr ""
+
+#: src/errormessages.js:19
+msgid ""
+"Unauthorized WOPI host. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr ""
+
+#: src/errormessages.js:20
+msgid "Wrong or missing WOPISrc parameter, please contact support."
+msgstr ""
+
+#: src/errormessages.js:21
+msgid ""
+"Your session will expire in %time. Please save your work and refresh the "
+"session (or webpage) to continue."
+msgstr ""
+
+#: src/errormessages.js:22
+msgid ""
+"Your session has been expired. Further changes to document might not be "
+"saved. Please refresh the session (or webpage) to continue."
+msgstr ""
+
+#: src/errormessages.js:23
+msgid ""
+"Failed to load the document. Please ensure the file type is supported and "
+"not corrupted, and try again."
+msgstr ""
+
+#: src/errormessages.js:24
+msgid ""
+"Failed to load the document. This document is either malformed or is taking "
+"more resources than allowed. Please contact the administrator."
+msgstr ""
+
+#: src/errormessages.js:25
+msgid "Invalid link: '%url'"
+msgstr ""
+
+#: src/errormessages.js:26
+msgid "You are leaving the editor, are you sure you want to proceed?"
+msgstr ""
+
+#: src/errormessages.js:29
+#, javascript-format
+msgid ""
+"Failed to read document from storage. Please contact your storage server "
+"(%storageserver) administrator."
+msgstr ""
+
+#: src/errormessages.js:30
+#, javascript-format
+msgid ""
+"Save failed due to no disk space left on storage server. Document will now "
+"be read-only. Please contact the server (%storageserver) administrator to "
+"continue editing."
+msgstr ""
+
+#: src/errormessages.js:31
+msgid "Document cannot be saved due to expired or invalid access token."
+msgstr ""
+
+#: src/errormessages.js:32
+msgid ""
+"Document cannot be saved. Check your permissions or contact the storage "
+"server administrator."
+msgstr ""
+
+#: src/layer/marker/Annotation.js:210
+msgid "Accept change"
+msgstr ""
+
+#: src/layer/marker/Annotation.js:215
+msgid "Reject change"
+msgstr ""
+
+#: src/layer/marker/Annotation.js:224
+msgid "Open menu"
+msgstr ""
+
+#: src/layer/marker/Annotation.js:244 src/layer/tile/TileLayer.js:240
+msgid "Reply"
+msgstr "Răspuns"
+
+#: src/layer/tile/TileLayer.js:234
+msgid "Modify"
+msgstr ""
+
+#: src/layer/tile/TileLayer.js:246
+msgid "Remove"
+msgstr ""
+
+#: src/map/Map.js:214
+msgid "Initializing..."
+msgstr "Se inițializează..."
+
+#: src/map/Map.js:332
+msgid "Last modification"
+msgstr ""
+
+#: src/map/Map.js:829
+msgid "Please enter a command starting with \".uno:\" or \"macro:///\""
+msgstr ""
+
+#: src/map/Map.js:832
+msgid "Invalid Command."
+msgstr ""
+
+#: src/map/Map.js:1105
+msgid "Inactive document - please click to resume editing"
+msgstr ""
+
+#: src/map/Map.js:1248
+msgid "Loading..."
+msgstr "Se încarcă..."
+
+#: src/map/handler/Map.FileInserter.js:105
+#, fuzzy
+msgid "Uploading..."
+msgstr "Se încarcă..."
+
+#: src/map/handler/Map.WOPI.js:103
+msgid "Creating new file from template..."
+msgstr ""
+
+#: src/map/handler/Map.WOPI.js:318
+msgid "Creating copy..."
+msgstr ""
+
+#: uiconfig/dialogs/Action.js:87
+msgid "Are you sure you want to delete this slide?"
+msgstr "Sigur doriți să ștergeți diapozitivul?"
+
+#: uiconfig/dialogs/AddTableAtEnd.js:20 uiconfig/dialogs/RenameTable.js:23
+msgid "Enter new sheet name"
+msgstr "Introduceți noua denumire a foii"
+
+#: uiconfig/dialogs/AddTableAtEnd.js:21 uiconfig/dialogs/InsertTable.js:29
+msgid "Automatic naming"
+msgstr ""
+
+#: uiconfig/dialogs/AddTableAtEnd.js:60 uiconfig/dialogs/InsertTable.js:92
+#: uiconfig/dialogs/RenameTable.js:64
+msgid ""
+"Invalid sheet name.\n"
+"The sheet name must not be empty or a duplicate of \n"
+"an existing name and may not contain the characters [ ] * ? : / \\ \n"
+"or the character ' (apostrophe) as first or last character."
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:20 uiconfig/dialogs/InsertCell.js:18
+#: uiconfig/dialogs/RemoveCell.js:18
+msgid "Selection"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:21
+msgid "Delete all"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:24
+msgid "Text"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:25
+msgid "Numbers"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:28
+msgid "Date & time"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:29
+msgid "Formulas"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:32
+#, fuzzy
+msgid "Comments"
+msgstr "Comentariu"
+
+#: uiconfig/dialogs/DeleteCell.js:33
+msgid "Formats"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:36
+msgid "Objects"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/InsertCell.js:27
+#: uiconfig/dialogs/RemoveCell.js:27
+msgid "Close"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:27
+msgid "Line break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:28
+msgid "Column break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:29
+msgid "Page break"
+msgstr ""
+
+#: uiconfig/dialogs/InsertBreak.js:32
+msgid "Change page number"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:19
+msgid "Shift cells down"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:20
+msgid "Shift cells right"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:21
+msgid "Entire row"
+msgstr ""
+
+#: uiconfig/dialogs/InsertCell.js:22
+msgid "Entire column"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:21
+msgid "Position"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:22
+msgid "Before current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:23
+msgid "After current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:27
+msgid "Sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:28
+msgid "No. of sheets"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:29
+msgid "Name"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:26
+msgid "- move to end position -"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:29
+msgid "Copy"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:30
+msgid "Insert before"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:20
+msgid "File name:"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:24
+msgid "Please enter a new filename."
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:19
+msgid "Shift cells up"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:20
+msgid "Shift cells left"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:21
+msgid "Delete entire row(s)"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveCell.js:22
+msgid "Delete entire column(s)"
+msgstr ""
+
+#: uiconfig/dialogs/RemoveTable.js:22
+msgid "Are you sure you want to delete sheet, %sheet% ?"
+msgstr "Sigur doriți să ștergeți foaia %sheet% ?"
+
+#: uiconfig/dialogs/ShowTable.js:29
+msgid "Hidden Sheets"
+msgstr ""
+
+#: uiconfig/dialogs/TraceChangeMode.js:41
+msgid "Stop tracking changes, will lose information about the changes."
+msgstr ""
+
+#: uiconfig/dialogs/TraceChangeMode.js:44
+msgid "Warning"
+msgstr ""
+
+#~ msgid "Are you sure you want to delete this page?"
+#~ msgstr "Sigur doriți să ștergeți pagina?"
+
+#~ msgid "Function"
+#~ msgstr "Funcție"
+
+#~ msgid "Close document"
+#~ msgstr "Închide documentul"
+
+#, fuzzy
+#~ msgid "No wrap"
+#~ msgstr "Fără realiniere"

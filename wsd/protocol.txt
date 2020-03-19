@@ -1,0 +1,784 @@
+All communication consists of messages that are one line of
+human-readable UTF-8 text (with no terminating newline), optionally
+followed by a single newline and arbitrary (potentialy even binary)
+data.
+
+The WebSocket distinction between 'text' and 'binary' frames has no
+meaning for us for messages that don't contain additional binary data;
+such messages can be either 'binary' or 'text' from the WebSocket
+point of view even if we require them (the single line) to be
+UTF-8. In other words, an implementation is free to send such a
+single-line message as a WebSocket 'binary' frame, and the receiving
+implementation must treat that equally as if it was a 'text' frame.
+
+The WebSocket protocol says that 'text' frames are to be "interpreted"
+as UTF-8, so it is probably best to indeed use 'binary' frames for
+messages that contain optional non-UTF-8 data.
+
+The protocol is not a request-response one. Messages may be sent in
+either direction at any time, either in response to some message, or
+spontaneously. For 'tile' messages, the client may send a bunch of
+tile requests without waiting for return messages. The server may send
+tiles proactively (guessing what the client might need). Etc.
+
+client -> server
+================
+
+canceltiles
+
+    All outstanding tile messages from the client to the server are
+    dropped and will not be handled, except tile messages with an id
+    parameter. There is no guarantee of exactly which tile: messages
+    might still be sent back to the client.
+
+tileprocessed tile=<tileid>
+
+    Previously sent tile (server -> client) arrived and processed by the client.
+    Tileid has the next stucture : <selected part>:<tile x coord>:<tile y coord>:<tile width in twips>:<tile height in twips>
+
+downloadas name=<fileName> id=<id> format=<document format> options=<SkipImages, etc>
+
+    Exports the current document to the desired format and returns a download URL
+    The id identifies the request on the client. id can take following values:
+    * 'print': When request for download is basically for print purposes
+    * 'slideshow': When request for download is for showing slideshow
+    * 'export': Just a simple download
+
+getchildid
+
+    Requests the child id so that it knows where the files needs to be sent when it is
+    inserted in the document
+
+gettextselection mimetype=<mimeType>
+
+    Request selection's content
+
+paste mimetype=<mimeType>
+<binaryPasteData>
+
+    Paste content at the current cursor position.
+
+insertfile name=<name> type=<type>
+
+    Inserts the file with the name <name> into the document, we currently
+    support:
+
+        type = 'graphic': The file has been previously uploaded using insertfile POST
+
+        type = 'graphicurl': The file is supposed to be downloaded by the core
+	                     itself; it does so from the URL provided in 'name'
+
+key type=<type> char=<charcode> key=<keycode>
+
+    <type> is 'input' or 'up', <charcode> and <keycode> are numbers.
+
+load <pathname>
+
+    Deprecated.
+
+load [part=<partNumber>] url=<url> [timestamp=<time>] [lang=<locale>] [options=<options>]
+
+    part is an optional parameter. <partNumber> is a number.
+
+    timestamp is an optional parameter.  <time> is provided in microseconds
+    since the Unix epoch - midnight, January 1, 1970.
+
+    lang specifies the locale to which we should switch before loading the
+    document
+
+    options are the whole rest of the line, not URL-encoded, and must be valid JSON.
+
+loolclient <major.minor[-patch]>
+
+    Upon connection, a client must announce the version number it supports.
+    Major: an integer that must always match between client and server,
+           otherwise there are no guarantees of any sensible
+           compatibility. This is bumped when API changes.
+    Minor: an integer is more flexible and is at the discretion of either party.
+           Security fixes that do not alter the API would bump the minor version number.
+    Patch: an optional string that is informational.
+
+mouse type=<type> x=<x> y=<y> count=<count>
+
+    <type> is 'buttondown', 'buttonup' or 'move', others are numbers.
+
+ping
+
+    requests a 'pong' server message.
+
+renderfont font=<font> char=<characters>
+
+    requests the rendering of the given font.
+    The font parameter is URL encoded
+    The char parameter is URL encoded
+
+requestloksession
+
+    requests the initialization of a LOK process in an attempt to predict the user's
+    interaction with the document
+
+resetselection
+
+saveas url=<url> format=<format> options=<options>
+
+    <url> is a URL, encoded. <format> is also URL-encoded, i.e. spaces as %20 and it can be empty
+    options are the whole rest of the line, not URL-encoded, and can be empty
+    If <url> uses 'wopi:' as the protocol, the path is treated as the path on
+    the wopi host.
+
+selecttext type=<type> x=<x> y=<y>
+
+    <type> is 'start', 'end' or 'reset', <x> and <y> are numbers.
+
+selectgraphic type=<type> x=<x> y=<y>
+
+    <type> is 'start' or 'end' <x> and <y> are numbers.
+
+setclientpart part=<partNumber>
+
+    Informs the server that the client changed to part <partNumber>.
+
+status
+
+styles
+
+tile part=<partNumber> width=<width> height=<height> tileposx=<xpos> tileposy=<ypos> tilewidth=<tileWidth> tileheight=<tileHeight> [timestamp=<time>] [id=<id> broadcast=<yesOrNo>] [oldwid=<wireId>]
+
+    Parameters are numbers except broadcast which is 'yes' or 'no' and
+    wireId which is an opaque string identifier unique to this tile.
+
+    Note: id must be echoed back in the response verbatim. It and the
+    following parameter, broadcast, are used when rendering slide
+    previews of presentation documents, and not for anything else. It
+    is only useful to loleaflet and will break it if not returned in
+    the response.
+
+tilecombine <parameters>
+
+    Accepts same parameters as the 'tile' message except that
+    parameters 'tileposx', 'tileposy' and 'oldwid are
+    comma-separated lists, and the number of elements in each must be
+    same.
+
+dialog <command>
+
+    <command> is unique identifier for the dialog that needs to be painted.
+
+uno <command>
+
+    <command> is a line of text.
+
+save dontTerminateEdit=<value> dontSaveIfUnmodified=<value>
+
+    A wrapper over UNO save command. A non-zero <value> is considered true.
+    'dontTerminateEdit' means not terminating the edit session in
+    spreadsheets when saving the document. In most cases, you should set it to
+    non-zero. 'dontSaveIfUnmodified' when set to non-zero skips saving the document when it is
+    unmodified.
+
+savetostorage force=<value>
+
+    Saves the files to storage. A 'save' command automatically saves the file to
+    storage almost always except in the case where there is a document conflict
+    i.e document in the storage is changed behind our back. We might need to do
+    call this command with force=1 in that case to forcefully save it to storage
+    after asking from the user.
+
+clientvisiblearea x=<x> y=<y> width=<width> height=<height>
+
+    Invokes lok::Document::setClientVisibleArea().
+
+outlinestate type=<type> level=<level> index=<index> state=<state>
+
+    <type> is 'column' or 'row', <level> and <index> are numbers, <state> is 'visible' or 'hidden'.
+
+    Invokes  lok::Document::setOutlineState().
+
+useractive
+
+    Sent when the user regains focus or clicks within the active area to
+    disable the inactive state.
+    Will send invalidation and update notifications to force refreshing the screen.
+
+    See 'userinactive'.
+
+userinactive
+
+    Sent when the user has switched tabs or away from the Browser altogether.
+    It should throttle updates until the user is active again.
+
+    See 'useractive'.
+
+closedocument
+
+    This gives document owners the ability to terminate all sessions currently
+    having that document opened. This functionality is enabled only in case WOPI
+    host mentions 'EnableOwnerTermination' flag in its CheckFileInfo response
+
+versionrestore <action>
+
+    Version restore related messages.
+
+    <action> can take following values:
+    - prerestore: The storage is about restore the document to an earlier
+    revision.
+
+asksignaturestatus
+
+    Requests a signing status of the document.
+
+signdocument
+
+    Sign the current document with the input cetificate and private key.
+
+removesession <viewid>
+    Requests the removal of a given view from the document. Lower
+    privilege views cannot remove higher ones, eg. a readonly view
+    can't remove an editor.
+
+server -> client
+================
+
+loolserver <loolwsd version> <loolwsd git hash> <major.minor[-patch]>
+
+    Upon connection, the server must announce the version number it supports.
+    Major: an integer that must always match between client and server,
+           otherwise there are no guarantees of any sensible
+           compatibility. This is bumped when API changes.
+    Minor: an integer is more flexible and is at the discretion of either party.
+           Security fixes that do not alter the API would bump the minor version number.
+    Patch: an optional string that is informational.
+
+lokitversion <JSON string>
+
+    JSON string contains version information in format:
+    {ProductName: <>, ProductVersion: <>, ProductExtension: <>, BuildId: <>}
+
+    Eg: {"ProductName": "LibreOffice",
+         "ProductVersion": "5.3",
+         "ProductExtension": ".0.0.alpha0",
+         "BuildId": "<full 40 char git hash>"}
+
+contextmenu: <json description of the context menu>
+
+    When the user right-clicks in the document, the content of the context
+    menu is sent back via this callback.
+
+    The structure of the context menu is a JSON, and looks like:
+
+        {
+            "menu": [
+                { "text": "label text1", "type": "command", "command": ".uno:Something1", "enabled": "true" },
+                { "text": "label text2", "type": "command", "command": ".uno:Something2", "enabled": "false" },
+                { "type": "separator" },
+                { "text": "label text2", "type": "menu", "menu": [ { ... }, { ... }, ... ] },
+                ...
+            ]
+        }
+
+downloadas: jail=<jail directory> dir=<a tmp dir> name=<name> port=<port>
+
+    The client should then request http://server:port/jail/dir/name in order to download
+    the document
+
+error: cmd=<command> kind=<kind> [code=<error_code>] [params=1,2,3,...,N]
+<freeErrorText>
+
+    <command> is the command part of the corresponding client->server
+    message that caused the error.
+
+    <command> can also take following values:
+    'internal': for errors generated without directly corresponding to a client
+    message.
+    'storage': for errors pertaining to storage (filesysytem, wopi etc.)
+
+    <kind> is some single-word classification
+
+    <code> (when provided) further specifies the error as forwarded from
+    LibreOffice
+
+close: <reason>
+
+    Ask a client to close the websocket connection with <reason>.
+    Exactly similar fields are also available in WebSocket protocol's
+    CLOSE frame, but some browser implementation (google-chrome) doesn't seem to
+    handle that well. This is a temporary application-level close websocket
+    to circumvent the same.
+
+    <reason> can have following values:
+    * ownertermination - If the session close is due to 'Document owner'
+    terminating the session.
+    (Document owner is the one who has the file ownership and hence have the
+    ability to kill all other sessions if EnableOwnerTermination flag in WOPI
+    CheckFileInfo is 'true' (assumed to be 'false' by default).
+
+    * shuttingdown - Sent when the server is going down in a graceful fashion.
+    The server doesn't disconnect from clients yet, but starts
+    saving document and tearing down internals.
+
+    * recycling - The last message sent from the server when it is gracefully
+    shutting down to let clients know they can try connecting
+    after a short interval.
+
+    * documentconflict - All sessions of this document are going down
+    because file was changed in storage and we want to load the new document
+    from the storage.
+
+    * versionrestore payload - Version restore message is also sent as part of
+      the close frame. See `versionrestore:` message for details.
+
+getchildid: id=<id>
+
+    Returns the child id
+
+invalidatetiles: part=<partNumber> x=<x> y=<y> width=<width> height=<height>
+
+    All parameters are numbers. Tells the client to invalidate any
+    cached tiles for the document area specified (in twips), at any
+    zoom level.
+
+invalidatetiles: EMPTY
+
+nextmessage: size=<byteSize>
+
+    <byteSize> is the size, in bytes, of the next message, in case it
+    is "large". (In practice, nextmessage: messages precede each tile:
+    message). Can be ignored by clients using an API that can read
+    arbitrarily large buffers from a WebSocket (like JavaScript), but
+    must be handled by clients that cannot (like those using Poco
+    1.6.0.
+
+pong rendercount=<num>
+
+    sent in reply to a 'ping' message, where <num> is the total number
+    of rendered tiles of the document.
+
+saveas: url=<url> name=<name>
+
+    <url> is a wopi URL of the newly created file, including the access token.
+    <name> is the resulting name (without path) that was created on the wopi
+    host. It can differ from what was requested in case the file already existed.
+
+status: type=<typeName> parts=<numberOfParts> current=<currentPartNumber> width=<width> height=<height> viewid=<viewId> [partNames]
+
+    <typeName> is 'text, 'spreadsheet', 'presentation', 'drawing' or 'other. Others are numbers.
+    if the document has multiple parts and those have names, part names follow separated by '\n'
+
+styles: {"styleFamily": ["styles in family"], etc. }
+
+statechanged: <key>=<value>
+
+    Notifies client of state changed events of <key>.
+    Eg: 'statechanged: .uno:Undo=enabled'
+
+textselectioncontent: <content>
+
+    Current selection's content
+
+tile: part=<partNumber> width=<width> height=<height> tileposx=<xpos> tileposy=<ypos> tilewidth=<tileWidth> tileheight=<tileHeight> [timestamp=<time>] [renderid=<id>] [wid=<wireId>]
+<binaryPngImage>
+
+    The parameters from the corresponding 'tile' command.
+
+    In a debug build, the renderid is either a unique identifier,
+    different for each actual call to LibreOfficeKit to render a tile,
+    or the string 'cached' if the tile was found in the cache. WireId
+    is a unique reference to a hashed tile on the server, and can
+    be included by the client in the next 'tile' message requesting
+    the same tile.
+
+commandresult: <payload>
+    This is used to acknowledge the commands from the client.
+    <payload> is { command: <command name>, success: 'true' }
+
+Each LOK_CALLBACK_FOO_BAR callback except
+LOK_CALLBACK_INVALIDATE_TILES causes a corresponding message to the
+client, consisting of the FOO_BAR part in lowercase, without
+underscore, followed by a colon, space and the callback
+payload. (LOK_CALLBACK_INVALIDATE_TILES causes an invalidatetiles:
+message as documented above.) For instance:
+
+invalidatecursor: <payload>
+
+    The payload contains a rectangle describing the cursor position
+    and the id of the view which triggered the invalidation. JSON payload.
+
+    The communication between the parent process (the one keeping open the
+    Websocket connections to the clients) and a child process (handling
+    one document through LibreOfficeKit) uses the same protocol, with
+    the following additions and changes:
+
+unocommandresult: <payload>
+
+Callback that an UNO command has finished.
+See LOK_CALLBACK_UNO_COMMAND_RESULT for details.
+
+invalidateviewcursor:
+
+    Per-view cursor position invalidation. JSON payload.
+
+textviewselection:
+
+    Per-view text selection bounds. JSON payload.
+
+cellviewcursor:
+
+    Per-view cell cursor position. JSON payload.
+
+graphicviewselection:
+
+    Per-view graphic selection. JSON payload.
+
+viewcursorvisible:
+
+    Per-view cursor visible. JSON payload.
+
+viewlock:
+
+    Per-view lock rectangle. JSON payload.
+
+viewinfo: <payload>
+
+    Message is sent everytime there is any change in view information.
+    <payload> consists of an array of JSON objects. Structure of JSON
+    objects is like : {"id": <viewid>, "username": <Full Name of the user>}
+
+redlinetablechanged:
+
+    Signals that the redlines table has been modified.
+    Redlines are used for tracking changes.
+
+comment:
+
+    Signals that comment has either been added, removed or modified. See
+    LOK_CALLBACK_COMMENT for JSON structure.
+
+celladdress: <payload>
+
+    Message is sent anytime the content of the address input box should be updated.
+    The <payload> is a string representing the new content.
+
+stats: <key> <value>
+
+    Contains statistical data. Eg: 'stats: wopiloadduration 5' means that
+    wopi calls made in loading of document took 5 seconds.
+
+perm: <permission>
+
+    <permission> can be one of 'edit', 'view', 'readonly'. Client must
+    change the UI accordingly (disabling buttons etc.)
+
+wopi: <JSON>
+
+     Sent only in case storage is WOPI. Contains WOPI related
+     capabilities/information for loleaflet to act accordingly.
+
+     Properties mentioned:
+     + PostMessageOrigin: See WOPI specs for more information
+     + HideSaveOption: (boolean): If loleaflet should hide the save options
+     + HidePrintOption: (boolean): If loleaflet should hide print options
+     + HideExportOption: (boolean): If loleaflet should hide the export options
+       this implies 'Download as' options in file menu
+
+versionrestore: <action>
+
+     Possible values for <action>:
+
+     - prerestore_ack: The host can go ahead with restoring the document to an
+       earlier revision.
+
+clipboardchanged: <selection>
+
+    Sent when the content of the internal clipboard has changed.
+
+context: <applicationId> <context>
+
+    Sent when the editing context changes in the application; like when the
+    user switches from editing a textframe to editing a graphic object, etc.
+    Can be used eg. for contextual change of the toolbars.
+
+signaturestatus: <sign status>
+    Possible values:
+        0xffff - Unknown
+        0 - NOSIGNATURES
+        1 - OK
+        2 - BROKEN
+        3 - INVALID (signature is OK, but doc is modified now)
+        4 - NOTVALIDATED (signature is OK, but certificate could not be validated)
+        5 - PARTIAL_OK (signature and certificate are ok, but not all files are signed - old documents only)
+
+child -> parent
+===============
+
+curpart: part=<partNumber>
+
+    Sent to the parent process before certain messages that the parent
+    needs to act on in addition to passing them on to the client, like
+    invalidatetiles:
+
+errortoall: cmd=<command> kind=<kind> [code=<error_code>]
+
+    Causes the parent to send the corresponding error: message to all
+    clients.
+
+nextmessage: size=<upperlimit>
+
+    each tile: message sent from the child to the parent is preceded
+    by a nextmessage: message that gives an upper limit on the size of
+    the tile: message that will follow. (We assume it is only tile:
+    messages that can be "large".) Once we depend on Poco 1.6.1, where
+    one doesn't need to use a pre-allocated buffer when receiving
+    WebSocket messages, this will go away.
+
+saveas: url=<url> filename=<filename>
+
+    <url> is a URL of the destination, encoded. Sent from the child to the
+    parent after a saveAs() completed.
+    <filename> is the resulting jailed filename of the newly created file.
+
+client-<sessionId> <Payload Message>
+
+    Forwarding message between a child and its parent session.
+    The payload message is forwarded to the ClientSession.
+
+procmemstats: pid=<pid> pss=<pss in kb> dirty=<private dirty in kb>
+
+    Memory information sent periodically to parent process by each of
+    the kit processes.
+
+parent -> child
+===============
+
+child-<sessionId> <Payload Message>
+
+    Forwarding message between a parent and its child session.
+    The payload message is forwarded to the ChildSession.
+
+disconnect
+
+    Signals to the child that the client for the respective connection
+    has disconnected.
+
+exit
+
+    Signals to the child that the process must end and exit.
+
+Admin console
+===============
+
+Client can query admin console to get information about currently opened
+documents. Following information about the document is exposed:
+
+* PID of the process hosting the document
+* Number of client views opening this document
+* Name of the document (URL encoded)
+* Memory consumed by the process (in kilobytes)
+* Elapsed time since first view of document was opened (in seconds)
+
+Admin console can also opt to get notified of various events on the server. For
+example, getting notified when a new document is opened or closed. Notifications
+are commands sent from server to the client over established websocket.
+
+Before doing anything, clients must authenticate by providing an auth token with
+'auth' command.
+
+client -> admin
+==============
+
+auth jwt=<jwtToken>
+
+    Authenticate the client with provided jwtToken. This is necessary before any
+    other command.
+
+subscribe <space seperated list of commands>
+
+    Where list of commands are the ones that client wants to get notified
+    about. For eg. 'subscribe adddoc rmdoc'
+
+version
+
+    Queries the server for current version of lokit and loolserver. See
+    'lokitversion' and 'loolserver' in admin -> client for the format of
+    response message.
+
+documents
+
+    Queries the server for list of opened documents. See `documents` command
+    in admin -> client section for format of the response message
+
+history
+
+    Queries the server for list of opened and expired documents with their
+    snapshots. Returns a json object and it looks like:
+
+    { "History" :
+            {
+                "documents": [
+                    {
+                        "filename":"hello-world.odt",
+                        "start":1492104619,
+                        "end":1492104680,
+                        "pid":12302,
+                        "snapshots": [
+                            {
+                                "creationTime":1492104619,
+                                "memoryDirty":0,
+                                "activeViews":1,
+                                "views":["0008", ...],
+                                "lastActivity":1492104619
+                            },
+                            {
+                            ...
+                            }
+                        ]
+                    },
+                    {
+                    ...
+                    }
+                ],
+                "expiredDocuments" : [...]
+            }
+    }
+
+mem_consumed
+sent_bytes
+recv_bytes
+
+    Queries for total memory or bandwidth being consumed by the server
+    in kilobytes. For mem_consumed this includes processes - loolwsd,
+    loolforkit, and child processes hosting various documents. For
+    sent/recv_bytes this includes only external traffic.
+
+active_docs_count
+
+    Returns total number of documents opened
+
+active_users_count
+
+    Returns total number of users connected. This is a summation of number
+    of views opened of each document.
+
+settings
+
+    Queries the server for configurable settings from admin console.
+
+set <setting1=value1> <setting2=value2> ...
+
+    Sets a particular setting (must be one returned as response to
+    `settings` command) to value.
+
+    There are only 4 configurable settings as of now.
+
+    mem_stats_size: Number of memory consumed values that server caches
+    atmost.
+    mem_stats_interval: Time after which server calculates its total memory
+    consumption
+    cpu_stats_size: Number of cpu usage values that server caches atmost.
+    cpu_stats_interval: Time after which server calculates its total cpu
+    usage.
+
+    Note: cpu stats gathering is a TODO, so  not functional as of now.
+
+kill <pid>
+
+     <pid> process id of the document to kill. All sessions of document would be
+     killed. There is no way yet to kill individual sessions.
+
+admin -> client
+===============
+
+Commands marked with [*] are notifications that are delivered only if client is
+subscribed to these commands using `subscribe` (see client->admin
+section). Others are just response messages to some client command.
+
+[*] adddoc <pid> <filename> <viewid> <memory consumed>
+
+    <pid> process id hosting the document
+    <filename> URL encoded name of the file
+    <viewid> string identifying the view of this document
+    <memory consumed> RSS of <pid> in kilobytes
+
+[*] rmdoc <pid> <viewid>
+
+    <pid> process id hosting the document
+    <viewid> view which was closed
+
+[*] mem_stats <memory consumed>
+
+    <memory consumed> in kilobytes sent from admin -> client after every
+    mem_stats_interval (see `set` command for list of settings)
+
+[*] propchange <pid> <property> <new-value>
+
+    Notifies of a property change on a pid's property. Properties can
+    include:
+       "mem" <memory consumed> - in kilobytes of the process.
+
+[*] resetidle <pid>
+
+    <pid> process id hosting the document
+    reset the idle time counter for the document
+
+InvalidAuthToken
+
+    This is sent when invalid auth token is provided in 'auth' command. See
+    above.
+
+NotAuthenticated
+
+    When client sends an admin command that requires authentication.
+
+documents <pid> <filename> <number of views> <memory consumed> <elapsed time> <idle time>
+<pid> <filename> ....
+...
+
+    <elapsed time> is in seconds since the first view of the document was opened
+    <idle time> is in seconds since some user did something in his view of the document (even just moving
+        the insertion cursor)
+    <number of views> Number of users/views opening this(<pid>) document
+    Other parameters are same as mentioned in `adddoc`
+
+    Each set document attributes is separated by a newline.
+
+mem_consumed <memory>
+    Total memory being consumed by LibreOffice Online.
+total_avail_mem <memory>
+    Total memory available to whole LibreOffice Online. This takes into account
+    the memproportion setting, if set by the user, when calculating the amount
+    of memory available to the process.
+
+sent_bytes <memory>
+recv_bytes <memory>
+
+    <memory> in kilobytes
+
+active_docs_count <count>
+
+active_users_count <count>
+
+settings <setting1=value1> <setting2=value2> ...
+
+    Current value of each configurable setting.
+
+mem_stats <comma separated list of memory consumed values>
+
+     The length of the list is equal to the value of setting
+     mem_stats_size`
+
+loolserver <JSON string>
+
+    The returned JSON string contains information in the following format:
+    {Version: <>, Hash: <>}
+
+    Eg: {"Version": "master..",
+         "Hash": "4897710"}
+
+lokitversion <JSON string>
+
+    JSON string contains version information in format:
+    {ProductName: <>, ProductVersion: <>, ProductExtension: <>, BuildId: <>}
+
+    Eg: {"ProductName": "LibreOffice",
+         "ProductVersion": "5.3",
+         "ProductExtension": ".0.0.alpha0",
+         "BuildId": "<full 40 char git hash>"}

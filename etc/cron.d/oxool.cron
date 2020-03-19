@@ -1,0 +1,2 @@
+#Remove old tiles once every 10 days at midnight
+0 0 */1 * * root find /var/cache/oxool -type f -a -atime +10 -exec rm {} \;
