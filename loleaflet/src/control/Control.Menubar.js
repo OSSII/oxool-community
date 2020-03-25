@@ -446,8 +446,11 @@ L.Control.Menubar = L.Control.extend({
 
 		commandStates: {},
 
+		// Only these menu options will be visible in view mode
+		allowedViewMenus: ['file', 'downloadas', 'view', 'help'],
+
 		// Only these menu options will be visible in readonly mode
-		allowedReadonlyMenus: ['file', 'downloadas', 'view', 'help'],
+		allowedReadonlyMenus: ['help'],
 
 		allowedViewModeActions: [
 			'downloadas-pdf', 'downloadas-odt', 'downloadas-doc', 'downloadas-docx', 'downloadas-rtf', // file menu
@@ -885,10 +888,23 @@ L.Control.Menubar = L.Control.extend({
 				continue;
 			}
 
+			var found = false, j;
 			if (this._map._permission === 'readonly' && menu[i].type === 'menu') {
-				var found = false;
-				for (var j in this.options.allowedReadonlyMenus) {
+				found = false;
+				for (j in this.options.allowedReadonlyMenus) {
 					if (this.options.allowedReadonlyMenus[j] === menu[i].id) {
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					continue;
+			}
+
+			if (this._map._permission === 'view' && menu[i].type === 'menu') {
+				found = false;
+				for (j in this.options.allowedViewMenus) {
+					if (this.options.allowedViewMenus[j] === menu[i].id) {
 						found = true;
 						break;
 					}
@@ -1110,8 +1126,10 @@ L.Control.Menubar = L.Control.extend({
 		$('#main-menu').attr('tabindex', 0);
 
 		// 將所有蒐集到的 uno 指令，一次送出，要求自動回報狀態
-		var getunostates = 'getunostates ' + encodeURI(this._unos.join(','));
-		this._map._socket.sendMessage(getunostates);
+		if (this._unos.length > 0) {
+			var getunostates = 'getunostates ' + encodeURI(this._unos.join(','));
+			this._map._socket.sendMessage(getunostates);
+		}
 	}
 });
 
