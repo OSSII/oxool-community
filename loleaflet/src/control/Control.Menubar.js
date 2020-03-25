@@ -555,9 +555,7 @@ L.Control.Menubar = L.Control.extend({
 			this._initializeMenu(this.options.presentation);
 		}
 
-		if (this._map._permission !== 'readonly') {
-			this._createFileIcon();
-		}
+		this._createFileIcon();
 	},
 
 	_onStyleMenu: function (e) {
