@@ -1,3 +1,9 @@
+oxool (3.2.5-1.community) unstable; urgency=low
+
+  * Bump package version to 3.2.5-1
+
+ -- Firefly <firefly@ossii.com.tw>  Fri, 27 Mar 2020 13:23:23 +0800
+
 oxool (3.2.4-1.community) unstable; urgency=low
 
   * Initial release
