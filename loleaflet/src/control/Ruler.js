@@ -31,6 +31,14 @@ L.Control.Ruler = L.Control.extend({
 		return this._initLayout();
 	},
 
+	_hide: function() {
+		L.DomUtil.setStyle(this._rWrapper, 'display', 'none');
+	},
+
+	_show: function() {
+		L.DomUtil.setStyle(this._rWrapper, 'display', '');
+	},
+
 	_updatePaintTimer: function(e) {
 		if (e.extraSize)
 			this.options.extraSize = e.extraSize.x;
@@ -41,6 +49,7 @@ L.Control.Ruler = L.Control.extend({
 	_changeInteractions: function(e) {
 		if (this._lMarginDrag) {
 			if (e.perm === 'edit') {
+				this._show();
 				this._lMarginDrag.style.cursor = 'e-resize';
 				this._rMarginDrag.style.cursor = 'w-resize';
 
@@ -48,6 +57,7 @@ L.Control.Ruler = L.Control.extend({
 				L.DomEvent.on(this._lMarginDrag, 'mousedown', this._initiateDrag, this);
 			}
 			else {
+				this._hide();
 				this._lMarginDrag.style.cursor = 'default';
 				this._rMarginDrag.style.cursor = 'default';
 
@@ -59,6 +69,7 @@ L.Control.Ruler = L.Control.extend({
 
 	_initLayout: function() {
 		this._rWrapper = L.DomUtil.create('div', 'loleaflet-ruler leaflet-bar leaflet-control leaflet-control-custom');
+		this._hide();
 		this._rFace = L.DomUtil.create('div', 'loleaflet-ruler-face', this._rWrapper);
 		this._rMarginWrapper = L.DomUtil.create('div', 'loleaflet-ruler-marginwrapper', this._rFace);
 		// BP => Break Points
