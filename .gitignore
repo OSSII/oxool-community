@@ -93,3 +93,7 @@ pocolib-symlink
 ICU.dat
 Mobile/Mobile/Assets.xcassets/AppIcon.appiconset
 debian/oxool.postinst
+oxool
+oxool_fuzzer
+oxool.spec
+oxool.xml

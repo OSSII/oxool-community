@@ -153,7 +153,7 @@ L.Map = L.Evented.extend({
 				this._fireInitComplete('updatepermission');
 			}
 
-			if (e.perm === 'readonly') {
+			if (e.perm !== 'edit') {
 				L.DomUtil.addClass(this._container.parentElement, 'readonly');
 				if (!L.Browser.mobile) {
 					L.DomUtil.addClass(L.DomUtil.get('toolbar-wrapper'), 'readonly');

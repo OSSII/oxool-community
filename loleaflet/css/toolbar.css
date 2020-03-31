@@ -159,6 +159,7 @@
     top: 0;
     width: 28px;
     height: 28px;
+    display: none;
 }
 
 #closebutton {
