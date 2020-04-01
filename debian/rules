@@ -16,7 +16,7 @@ export BUILDING_FROM_RPMBUILD=yes
 	dh $@ --with=systemd
 
 override_dh_auto_configure:
-	./configure --build=x86_64-linux-gnu --prefix=/usr --includedir=\${prefix}/include --mandir=\${prefix}/share/man --infodir=\${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-silent-rules --libdir=\${prefix}/lib/x86_64-linux-gnu --libexecdir=\${prefix}/lib/x86_64-linux-gnu --disable-dependency-tracking --enable-silent-rules --with-lokit-path=/home/tommy/work/oxool-community/bundled/include --disable-setcap --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192 --with-lo-path=/opt/oxoffice
+	dh_auto_configure -- $(CONFFLAGS)
 
 override_dh_auto_test:
 	# do not test
