@@ -9,3 +9,5 @@ sudo apt install -y libodbc1 libpcre16-3 libpcre3-dev libpcre32-3 libpcrecpp0v5
 sudo apt install -y openjdk-8-jdk libgumbo1 hunspell
 sudo apt install -y python-pip
 sudo pip install polib
+# more dependencies
+sudo apt install -y libpam0g-dev
