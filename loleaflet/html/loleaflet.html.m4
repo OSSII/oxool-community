@@ -90,6 +90,10 @@ ifelse(MOBILEAPP,[true],
        </div>
     </nav>
 
+    <div id="toolbar-viewer-wrapper" style="display:none">
+      <div id="toolbar-viewer"></div>
+    </div>
+
     <table id="toolbar-wrapper">
     <tr>
       <td id="toolbar-logo"></td>
