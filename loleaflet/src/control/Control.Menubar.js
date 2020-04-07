@@ -371,7 +371,7 @@ L.Control.Menubar = L.Control.extend({
 				{name: '.uno:InsertAnnotation', id: 'insertcomment', type: 'action', hotkey: 'Ctrl+Alt+C'},
 				{uno: '.uno:DrawText'},
 				{type: '--'},
-				{uno: '.uno:HyperlinkDialog', hotkey: 'Ctrk+K'},
+				{uno: '.uno:HyperlinkDialog', hotkey: 'Ctrl+K'},
 				{uno: '.uno:InsertSymbol'},
 				{uno: '.uno:EditHeaderAndFooter'}
 			]},
@@ -491,18 +491,27 @@ L.Control.Menubar = L.Control.extend({
 		this._menubarCont.insertBefore(liItem, this._menubarCont.firstChild);
 	},
 
-	_createUnoMenuItem: function (caption, command, tag) {
-		var liItem, aItem;
-		liItem = L.DomUtil.create('li', '');
-		aItem = L.DomUtil.create('a', '', liItem);
+	_createUnoMenuItem: function (caption, commandOrId, tagOrFunction) {
+		var liItem = L.DomUtil.create('li', '');
+		var aItem = L.DomUtil.create('a', '', liItem);
+		var obj = {name: commandOrId};
 		$(aItem).text(caption);
-		$(aItem).data('type', 'unocommand');
-		$(aItem).data('uno', command);
-		$(aItem).data('tag', tag);
+		if (this._map.isUnoCommand(commandOrId)) {
+			$(aItem).data('type', 'unocommand');
+			$(aItem).data('uno', commandOrId);
+			$(aItem).data('tag', tagOrFunction);
+		} else {
+			liItem.id = commandOrId;
+			$(aItem).data('type', 'action');
+			$(aItem).data('id', commandOrId);
+			obj.callback = tagOrFunction;
+		}
+		this._map.addAllowedCommand(obj);
 		return liItem;
 	},
 
 	_onInitMenu: function (e) {
+		console.debug('commandvalues : ', e);
 		if (e.commandName === '.uno:LanguageStatus' && L.Util.isArray(e.commandValues)) {
 			var translated, neutral;
 			var constDefa = 'Default_RESET_LANGUAGES';
@@ -539,38 +548,29 @@ L.Control.Menubar = L.Control.extend({
 	},
 
 	_onRefresh: function() {
-		this._unos = [];
 		// clear initial menu
 		while (this._menubarCont.hasChildNodes()) {
 			this._menubarCont.removeChild(this._menubarCont.firstChild);
 		}
 
 		// Add document specific menu
-		var docType = this._map.getDocType();
-		if (docType === 'text') {
-			this._initializeMenu(this.options.text);
-		} else if (docType === 'spreadsheet') {
-			this._initializeMenu(this.options.spreadsheet);
-		} else if (docType === 'presentation' || docType === 'drawing') {
-			this._initializeMenu(this.options.presentation);
-		}
-
+		this._loadMenubar(this._map.getDocType());
 		this._createFileIcon();
 	},
 
 	_onStyleMenu: function (e) {
+		console.debug('toolbarcommandvalues : ', e);
 		if (e.commandName === '.uno:StyleApply') {
-			var style;
-			var constArg = '&';
-			var constHeader = '.uno:InsertPageHeader?PageStyle:string=';
-			var constFooter = '.uno:InsertPageFooter?PageStyle:string=';
-			var $menuHeader = $('#menu-insertheader').parent();
-			var $menuFooter = $('#menu-insertfooter').parent();
+			var $header = $('#menu-insertheader');
+			var $footer = $('#menu-insertfooter');
+			var $menuHeader = $header.parent();
+			var $menuFooter = $footer.parent();
 			var pageStyles = e.commandValues['HeaderFooter'];
+			var style;
 			for (var iterator in pageStyles) {
 				style = pageStyles[iterator];
-				$menuHeader.append(this._createUnoMenuItem(_(style), constHeader + encodeURIComponent(style) + constArg, style));
-				$menuFooter.append(this._createUnoMenuItem(_(style), constFooter + encodeURIComponent(style) + constArg, style));
+				$menuHeader.append(this._createUnoMenuItem(_(style), '.uno:InsertPageHeader', style));
+				$menuFooter.append(this._createUnoMenuItem(_(style), '.uno:InsertPageFooter', style));
 			}
 		}
 	},
@@ -648,19 +648,20 @@ L.Control.Menubar = L.Control.extend({
 		var items = $(menu).children().children('a').not('.has-submenu');
 		L.hideAllToolbarPopup();
 		$(items).each(function() {
+			var constUno = 'uno';
 			var aItem = this;
 			var type = $(aItem).data('type');
 			var id = $(aItem).data('id');
+			var stateUno = $(aItem).data('state');
+			var unoCommand = stateUno || $(aItem).data(constUno) || id;
 			if (self._map._permission === 'edit') {
-				if (type === 'unocommand') { // enable all depending on stored commandStates
+				if (unoCommand !== undefined) { // enable all depending on stored commandStates
 					var data, lang;
-					var constUno = 'uno';
 					var constState = 'stateChangeHandler';
 					var constChecked = 'lo-menu-item-checked';
 					var constLanguage = '.uno:LanguageStatus';
 					var constPageHeader = '.uno:InsertPageHeader';
 					var constPageFooter = '.uno:InsertPageFooter';
-					var unoCommand = $(aItem).data(constUno);
 					var itemState = self._map[constState].getItemValue(unoCommand);
 					if (itemState === 'disabled') {
 						$(aItem).addClass('disabled');
@@ -726,73 +727,8 @@ L.Control.Menubar = L.Control.extend({
 
 	_executeAction: function(item) {
 		var id = $(item).data('id');
-		if (id === 'save') {
-			this._map.save(true, true);
-		} else if (id === 'saveas') {
-			this._map.fire('postMessage', {msgId: 'UI_SaveAs'});
-		} else if (id === 'ASUSsaveas') {
-			this._map.fire('executeDialog', {dialog: 'saveAs'});
-		} else if (id === 'shareas') {
-			this._map.fire('postMessage', {msgId: 'UI_Share'});
-		} else if (id === 'print') {
-			this._map.print();
-		} else if (id.startsWith('downloadas-')) {
-			var format = id.substring('downloadas-'.length);
-			var fileName = this._map['wopi'].BaseFileName;
-			fileName = fileName.substr(0, fileName.lastIndexOf('.'));
-			fileName = fileName === '' ? 'document' : fileName;
-			this._map.downloadAs(fileName + '.' + format, format);
-		} else if (id === 'signdocument') {
-			this._map.showSignDocument();
-		} else if (id === 'insertcomment') {
-			this._map.insertComment();
-		} else if (id === 'insertgraphic') {
-			L.DomUtil.get('insertgraphic').click();
-		} else if (id === 'insertgraphicremote') {
-			this._map.fire('postMessage', {msgId: 'UI_InsertGraphic'});
-		} else if (id === 'zoomin' && this._map.getZoom() < this._map.getMaxZoom()) {
-			this._map.zoomIn(1);
-		} else if (id === 'zoomout' && this._map.getZoom() > this._map.getMinZoom()) {
-			this._map.zoomOut(1);
-		} else if (id === 'zoomreset') {
-			this._map.setZoom(this._map.options.zoom);
-		} else if (id === 'fullscreen') {
-			L.toggleFullScreen();
-		} else if (id === 'fullscreen-presentation' && this._map.getDocType() === 'presentation') {
-			this._map.fire('fullscreen');
-		} else if (id === 'insertpage') {
-			this._map.insertPage();
-		} else if (id === 'duplicatepage') {
-			this._map.duplicatePage();
-		} else if (id === 'deletepage') {
-			var map = this._map;
-			vex.dialog.confirm({
-				message: _('Are you sure you want to delete this slide?'),
-				callback: function(e) {
-					if (e) {
-						map.deletePage();
-					}
-				}
-			});
-		} else if (id === 'about') {
-			this._map.showLOAboutDialog();
-		} else if (id === 'keyboard-shortcuts') {
-			this._map.showLOKeyboardHelp();
-		} else if (revHistoryEnabled && (id === 'rev-history')) {
-			// if we are being loaded inside an iframe, ask
-			// our host to show revision history mode
-			this._map.fire('postMessage', {msgId: 'rev-history', args: {Deprecated: true}});
-			this._map.fire('postMessage', {msgId: 'UI_FileVersions'});
-		} else if (id === 'closedocument') {
-			if (window.ThisIsAMobileApp) {
-				window.webkit.messageHandlers.lool.postMessage('BYE', '*');
-			} else {
-				this._map.fire('postMessage', {msgId: 'close', args: {EverModified: this._map._everModified, Deprecated: true}});
-				this._map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: this._map._everModified}});
-			}
-			this._map.remove();
-		} else if (id === 'repair') {
-			this._map._socket.sendMessage('commandvalues command=.uno:DocumentRepair');
+		if (!this._map.executeAllowedCommand(id)) {
+			console.debug('未執行的 id :' + id)
 		}
 		// Inform the host if asked
 		if ($(item).data('postmessage') === 'true') {
@@ -801,11 +737,33 @@ L.Control.Menubar = L.Control.extend({
 	},
 
 	_sendCommand: function (item) {
-		var unoCommand = $(item).data('uno');
-		if (unoCommand.startsWith('.uno:InsertPageHeader') || unoCommand.startsWith('.uno:InsertPageFooter')) {
-			unoCommand = unoCommand + ($(item).hasClass('lo-menu-item-checked') ? 'On:bool=false' : 'On:bool=true');
+		var unoCommand = $(item).data('uno') || $(item).data('id');
+		if (unoCommand === '.uno:InsertPageHeader' || unoCommand ==='.uno:InsertPageFooter') {
+			var tag = $(item).data('tag');
+			var state = $(item).hasClass('lo-menu-item-checked');
+			var args = '?PageStyle:string='+ tag + '&On:bool=' + !state;
+			if (state) {
+				var warningMsg;
+				if (unoCommand === '.uno:InsertPageHeader')
+					warningMsg = _('All contents of the header will be deleted and can not be restored.');
+				else
+					warningMsg = _('All contents of the footer will be deleted and can not be restored.');
+
+				var map = this._map;
+				vex.dialog.confirm({
+					message: warningMsg,
+					callback: function(e) {
+						if (e) {
+							map.sendUnoCommand(unoCommand + args);
+						}
+					}
+				});
+			} else {
+				this._map.sendUnoCommand(unoCommand + args);
+			}
+			return;
 		}
-		this._map.sendUnoCommand(unoCommand);
+		this._map.executeAllowedCommand(unoCommand);
 	},
 
 	_onItemSelected: function(e, item) {
@@ -868,12 +826,12 @@ L.Control.Menubar = L.Control.extend({
 
 		var $docLogo = $(aItem);
 		$docLogo.bind('click', {self: this}, this._createDocument);
-
 	},
 
 	_createMenu: function(menu) {
+		var map = this._map;
 		var itemList = [];
-		var docType = this._map.getDocType();
+		var docType = map.getDocType();
 		// Add by Firefly <firefly@ossii.com.tw>
 		var lastItem = null; // 最近新增的 Item;
 		this._level ++;
@@ -887,8 +845,8 @@ L.Control.Menubar = L.Control.extend({
 			}
 
 			var found = false, j;
-			if (this._map._permission === 'readonly' && menu[i].type === 'menu') {
-				found = false;
+			if (this._map._permission === 'readonly' && menu[i].menu !== undefined) {
+
 				for (j in this.options.allowedReadonlyMenus) {
 					if (this.options.allowedReadonlyMenus[j] === menu[i].id) {
 						found = true;
@@ -899,8 +857,7 @@ L.Control.Menubar = L.Control.extend({
 					continue;
 			}
 
-			if (this._map._permission === 'view' && menu[i].type === 'menu') {
-				found = false;
+			if (this._map._permission === 'view' && menu[i].menu !== undefined) {
 				for (j in this.options.allowedViewMenus) {
 					if (this.options.allowedViewMenus[j] === menu[i].id) {
 						found = true;
@@ -911,11 +868,9 @@ L.Control.Menubar = L.Control.extend({
 					continue;
 			}
 
-			if (menu[i].type === 'action') {
-				if ((menu[i].id === 'rev-history' && !revHistoryEnabled) ||
-					(menu[i].id === 'closedocument' && !closebutton)) {
-					continue;
-				}
+			if ((menu[i].id === 'rev-history' && !revHistoryEnabled) ||
+				(menu[i].id === 'closedocument' && !closebutton)) {
+				continue;
 			}
 
 			if (menu[i].id === 'print' && this._map['wopi'].HidePrintOption)
@@ -939,12 +894,12 @@ L.Control.Menubar = L.Control.extend({
 			if (menu[i].id === 'changesmenu' && this._map['wopi'].HideChangeTrackingControls)
 				continue;
 
-			// Keep track of all 'downloadas-' options and register them as
+			// Keep track of all 'dialog:DownloadAs?ext=' options and register them as
 			// export formats with docLayer which can then be publicly accessed unlike
 			// this Menubar control for which there doesn't seem to be any easy way
 			// to get access to.
-			if (menu[i].id && menu[i].id.startsWith('downloadas-')) {
-				var format = menu[i].id.substring('downloadas-'.length);
+			if (menu[i].id && menu[i].id.startsWith('dialog:DownloadAs?ext=')) {
+				var format = menu[i].id.substring('dialog:DownloadAs?ext='.length);
 				this._map._docLayer.registerExportFormat(menu[i].name, format);
 
 				if (this._map['wopi'].HideExportOption)
@@ -955,15 +910,19 @@ L.Control.Menubar = L.Control.extend({
 			// 1. 第一行不能是分隔線
 			// 2. 不能重複出現分隔線
 			// 3. 最後一行不能是分隔線
-			if (menu[i].type !== undefined && menu[i].type === 'separator') {
+			if (menu[i].type !== undefined && menu[i].type === '--') {
 				// 1. 第一行不能是分隔線
 				if (itemList.length === 0)
 					continue;
 				// 2. 不能重複出現分隔線
-				if (lastItem && lastItem.type !== undefined && lastItem.type === 'separator')
+				if (lastItem && lastItem.type !== undefined && lastItem.type === '--')
 					continue;
 			}
-			lastItem = menu[i]; // 紀錄現在的 Item
+
+			// 紀錄最近的 Item
+			if (menu[i].hide !== true) {
+				lastItem = menu[i];
+			}
 
 			var liItem = L.DomUtil.create('li', '');
 			if (menu[i].id) {
@@ -978,27 +937,30 @@ L.Control.Menubar = L.Control.extend({
 			var unoIcon = '';
 			var itemName = '';
 			if (menu[i].name !== undefined) {
-				// 若 menu[i].name 是 '.uno:' 開頭
-				if (menu[i].name.startsWith('.uno:')) {
+				// 若 menu[i].name 是 UNO 指令
+				if (this._map.isUnoCommand(menu[i].name)) {
 					itemName = _UNO(menu[i].name, docType, true); // 翻譯選項
 					// 不是 menubar 選項，把這個 uno command 當作選項圖示
 					if (this._level > 1) {
 						unoIcon = menu[i].name;
 					}
 				} else {
-					itemName = menu[i].name;
+					itemName = _(menu[i].name);
 				}
 			} else if (menu[i].uno !== undefined) {
 				unoIcon = menu[i].uno; // 把這個 uno command 當作選項圖示
 				itemName = _UNO(menu[i].uno, docType, true); // 翻譯選項
+			} else if (menu[i].id !== undefined && this._map.isUnoCommand(menu[i].id)) {
+				unoIcon = menu[i].id; // 把這個 uno command 當作選項圖示
+				itemName = _UNO(menu[i].id, docType, true); // 翻譯選項
 			} else {
 				itemName = '';
 			}
 			aItem.appendChild(document.createTextNode(itemName));
 			// 增加 icon 元件
 			if (menu[i].icon !== undefined) { // 有指定 icon
-				// icon 開頭是 .uno: 改用這個 uno icon
-				if (menu[i].icon.startsWith('.uno:')) {
+				// icon 開頭是 UNO 指令，改用這個 uno icon
+				if (this._map.isUnoCommand(menu[i].icon)) {
 					unoIcon = menu[i].icon; // 如果 icon 指定某個 uno 指令，優先使用這個圖示
 				} else if (unoIcon === '') { // 只有沒有 uno icon 時，才會把 icon 內容當作 class
 					L.DomUtil.addClass(iconItem, menu[i].icon);
@@ -1016,6 +978,13 @@ L.Control.Menubar = L.Control.extend({
 				spanItem.innerHTML = menu[i].hotkey;
 			}
 
+			if (menu[i].type === undefined) {
+				if ($.isArray(menu[i].menu)) {
+					menu[i].type = 'menu';
+				} else if (menu[i].uno === undefined) {
+					menu[i].type = 'action';
+				}
+			}
 			switch (menu[i].type) {
 			case 'menu': // 選單
 				var ulItem = L.DomUtil.create('ul', '', liItem);
@@ -1034,8 +1003,30 @@ L.Control.Menubar = L.Control.extend({
 				break;
 
 			case 'action': // 自行處理的功能，需實作功能
-				$(aItem).data('type', 'action');
+				var obj = {
+					name: menu[i].id,
+					hotkey: menu[i].hotkey,
+					hide: menu[i].hide
+				};
+				// 如果 name 是 UNO 指令
+				if (map.isUnoCommand(menu[i].name)) {
+					// 該指令放進白名單，該指令不會被執行，但可以取得狀態回報
+					map.addAllowedCommand({name: menu[i].name});
+					$(aItem).data('state', menu[i].name);
+				}
+				if (map.isUnoCommand(menu[i].id)) {
+					$(aItem).data('type', 'unocommand');
+				} else {
+					$(aItem).data('type', 'action');
+				}
 				$(aItem).data('id', menu[i].id);
+
+				if (menu[i].hotkey !== undefined) {
+					$(aItem).addClass('item-has-hotkey');
+				}
+
+				// 最後將該 Action ID 加入白名單中
+				map.addAllowedCommand(obj);
 				break;
 
 			default:
@@ -1044,16 +1035,17 @@ L.Control.Menubar = L.Control.extend({
 					$(aItem).data('type', 'unocommand');
 					$(aItem).data('uno', menu[i].uno);
 					$(aItem).data('tag', menu[i].tag);
-					this._unos.push(menu[i].uno);
+					if (menu[i].hotkey !== undefined) {
+						$(aItem).addClass('item-has-hotkey');
+					}
+					// 將該指令加入白名單中
+					map.addAllowedCommand({name: menu[i].uno, hotkey: menu[i].hotkey, hide: menu[i].hide});
 				}
 				break;
 			}
 
-			if (menu[i].tablet == false && window.mode.isTablet()) {
-				$(aItem).css('display', 'none');
-			}
-
-			if (menu[i].mobile == false && window.mode.isMobile()) {
+			// 被 hide(有可能是功能尚未完成，故不顯示)
+			if (menu[i].hide === true) {
 				$(aItem).css('display', 'none');
 			}
 
@@ -1094,14 +1086,25 @@ L.Control.Menubar = L.Control.extend({
 
 	hideItem: function(targetId) {
 		var item = this._getItem(targetId);
-		if (item)
+		if (item) {
 			$(item).css('display', 'none');
+		}
 	},
 
 	showItem: function(targetId) {
 		var item = this._getItem(targetId);
 		if (item)
 			$(item).css('display', '');
+	},
+
+	_loadMenubar: function(docType) {
+		if (docType === 'text') {
+			this._initializeMenu(this.options.text);
+		} else if (docType === 'spreadsheet') {
+			this._initializeMenu(this.options.spreadsheet);
+		} else if (docType === 'presentation' || docType === 'drawing') {
+			this._initializeMenu(this.options.presentation);
+		}
 	},
 
 	_initializeMenu: function(menu) {
@@ -1122,12 +1125,6 @@ L.Control.Menubar = L.Control.extend({
 			subIndicatorsPos: 'append'
 		});
 		$('#main-menu').attr('tabindex', 0);
-
-		// 將所有蒐集到的 uno 指令，一次送出，要求自動回報狀態
-		if (this._unos.length > 0) {
-			var getunostates = 'getunostates ' + encodeURI(this._unos.join(','));
-			this._map._socket.sendMessage(getunostates);
-		}
 	}
 });
 
