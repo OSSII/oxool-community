@@ -6,186 +6,9 @@
         margin: 2px 2px;
         display: block;
 }
-.animationeffects { background: url('images/lc_animationeffects.svg') no-repeat center/contain !important;}
-.transition-none { background: url('images/transition-none.svg') no-repeat center/contain !important;}
-.transition-wipe { background: url('images/transition-wipe.svg') no-repeat center/contain !important;}
-.transition-wheel { background: url('images/transition-wheel.svg') no-repeat center/contain !important;}
-.transition-uncover { background: url('images/transition-uncover.svg') no-repeat center/contain !important;}
-.transition-bars { background: url('images/transition-random-bars.svg') no-repeat center/contain !important;}
-.transition-checkers { background: url('images/transition-checkerboard.svg') no-repeat center/contain !important;}
-.transition-shape { background: url('images/transition-shape.svg') no-repeat center/contain !important;}
-.transition-box { background: url('images/transition-box.svg') no-repeat center/contain !important;}
-.transition-wedge { background: url('images/transition-wedge.svg') no-repeat center/contain !important;}
-.transition-venetian { background: url('images/transition-venetian-blinds.svg') no-repeat center/contain !important;}
-.transition-fade { background: url('images/transition-fade.svg') no-repeat center/contain !important;}
-.transition-cut { background: url('images/transition-cut.svg') no-repeat center/contain !important;}
-.transition-cover { background: url('images/transition-cover.svg') no-repeat center/contain !important;}
-.transition-dissolve { background: url('images/transition-dissolve.svg') no-repeat center/contain !important;}
-.transition-random { background: url('images/transition-random.svg') no-repeat center/contain !important;}
-.transition-comb { background: url('images/transition-comb.svg') no-repeat center/contain !important;}
-.transition-push { background: url('images/transition-push.svg') no-repeat center/contain !important;}
-.transition-split { background: url('images/transition-split.svg') no-repeat center/contain !important;}
-.transition-diagonal { background: url('images/transition-diagonal-squares.svg') no-repeat center/contain !important;}
-.transition-tiles { background: url('images/transition-tile-flip.svg') no-repeat center/contain !important;}
-.transition-cube { background: url('images/transition-cube-turning.svg') no-repeat center/contain !important;}
-.transition-circles { background: url('images/transition-revolving-circles.svg') no-repeat center/contain !important;}
-.transition-helix { background: url('images/transition-turning-helix.svg') no-repeat center/contain !important;}
-.transition-fall { background: url('images/transition-fall.svg') no-repeat center/contain !important;}
-.transition-turn-around { background: url('images/transition-turn-around.svg') no-repeat center/contain !important;}
-.transition-iris { background: url('images/transition-iris.svg') no-repeat center/contain !important;}
-.transition-turn-down { background: url('images/transition-turn-down.svg') no-repeat center/contain !important;}
-.transition-rochade { background: url('images/transition-rochade.svg') no-repeat center/contain !important;}
-.transition-3d-venetian { background: url('images/transition-venetian-blinds-3d.svg') no-repeat center/contain !important;}
-.transition-static { background: url('images/transition-static.svg') no-repeat center/contain !important;}
-.transition-fine-dissolve { background: url('images/transition-finedissolve.svg') no-repeat center/contain !important;}
-.transition-vortex { background: url('images/transition-vortex.svg') no-repeat center/contain !important;}
-.transition-ripple { background: url('images/transition-ripple.svg') no-repeat center/contain !important;}
-.transition-glitter { background: url('images/transition-glitter.svg') no-repeat center/contain !important;}
-.transition-honeycomb { background: url('images/transition-honeycomb.svg') no-repeat center/contain !important;}
-.transition-newsflash { background: url('images/transition-newsflash.svg') no-repeat center/contain !important;}
+.animationeffects { background: url('images/cmd/animationeffects.svg') no-repeat center/contain !important;}
 
-.basicshapes_rectangle { background: url('images/lc_rect.svg') no-repeat center/contain !important;}
-.basicshapes_round-rectangle { background: url('images/lc_rect_rounded.svg') no-repeat center/contain !important;}
-.basicshapes_quadrat { background: url('images/lc_square.svg') no-repeat center/contain !important;}
-.basicshapes_round-quadrat { background: url('images/lc_basicshapes.round-quadrat.svg') no-repeat center/contain !important;}
-.basicshapes_circle { background: url('images/lc_circle.svg') no-repeat center/contain !important;}
-.basicshapes_ellipse { background: url('images/lc_ellipse.svg') no-repeat center/contain !important;}
-.basicshapes_circle-pie { background: url('images/lc_pie.svg') no-repeat center/contain !important;}
-.basicshapes_isosceles-triangle { background: url('images/lc_basicshapes.isosceles-triangle.svg') no-repeat center/contain !important;}
-.basicshapes_right-triangle { background: url('images/lc_basicshapes.right-triangle.svg') no-repeat center/contain !important;}
-.basicshapes_trapezoid { background: url('images/lc_basicshapes.trapezoid.svg') no-repeat center/contain !important;}
-.basicshapes_diamond { background: url('images/lc_basicshapes.diamond.svg') no-repeat center/contain !important;}
-.basicshapes_parallelogram { background: url('images/lc_flowchartshapes.flowchart-data.svg') no-repeat center/contain !important;}
-.basicshapes_pentagon { background: url('images/lc_basicshapes.pentagon.svg') no-repeat center/contain !important;}
-.basicshapes_hexagon { background: url('images/lc_basicshapes.hexagon.svg') no-repeat center/contain !important;}
-.basicshapes_octagon { background: url('images/lc_basicshapes.octagon.svg') no-repeat center/contain !important;}
-.basicshapes_cross { background: url('images/lc_basicshapes.cross.svg') no-repeat center/contain !important;}
-.basicshapes_ring { background: url('images/lc_basicshapes.ring.svg') no-repeat center/contain !important;}
-.basicshapes_block-arc { background: url('images/lc_basicshapes.block-arc.svg') no-repeat center/contain !important;}
-.basicshapes_can { background: url('images/lc_basicshapes.can.svg') no-repeat center/contain !important;}
-.basicshapes_cube { background: url('images/lc_cube.svg') no-repeat center/contain !important;}
-.basicshapes_paper { background: url('images/lc_basicshapes.paper.svg') no-repeat center/contain !important;}
-.basicshapes_frame { background: url('images/lc_basicshapes.frame.svg') no-repeat center/contain !important;}
-
-.symbolshapes { background: url('images/lc_symbolshapes.svg') no-repeat center/contain !important;}
-.symbolshapes_sun { background: url('images/lc_symbolshapes.sun.svg') no-repeat center/contain !important;}
-.symbolshapes_moon { background: url('images/lc_symbolshapes.moon.svg') no-repeat center/contain !important;}
-.symbolshapes_lightning { background: url('images/lc_symbolshapes.lightning.svg') no-repeat center/contain !important;}
-.symbolshapes_heart { background: url('images/lc_symbolshapes.heart.svg') no-repeat center/contain !important;}
-.symbolshapes_flower { background: url('images/lc_symbolshapes.flower.svg') no-repeat center/contain !important;}
-.symbolshapes_cloud { background: url('images/lc_symbolshapes.cloud.svg') no-repeat center/contain !important;}
-.symbolshapes_forbidden { background: url('images/lc_symbolshapes.forbidden.svg') no-repeat center/contain !important;}
-.symbolshapes_puzzle { background: url('images/lc_symbolshapes.puzzle.svg') no-repeat center/contain !important;}
-.symbolshapes_bracket-pair { background: url('images/lc_symbolshapes.bracket-pair.svg') no-repeat center/contain !important;}
-.symbolshapes_left-bracket { background: url('images/lc_symbolshapes.left-bracket.svg') no-repeat center/contain !important;}
-.symbolshapes_right-bracket { background: url('images/lc_symbolshapes.right-bracket.svg') no-repeat center/contain !important;}
-.symbolshapes_brace-pair { background: url('images/lc_symbolshapes.brace-pair.svg') no-repeat center/contain !important;}
-.symbolshapes_left-brace { background: url('images/lc_symbolshapes.left-brace.svg') no-repeat center/contain !important;}
-.symbolshapes_right-brace { background: url('images/lc_symbolshapes.right-brace.svg') no-repeat center/contain !important;}
-.symbolshapes_quad-bevel { background: url('images/lc_symbolshapes.quad-bevel.svg') no-repeat center/contain !important;}
-.symbolshapes_octagon-bevel { background: url('images/lc_symbolshapes.octagon-bevel.svg') no-repeat center/contain !important;}
-.symbolshapes_diamond-bevel { background: url('images/lc_symbolshapes.diamond-bevel.svg') no-repeat center/contain !important;}
-
-.arrowshapes_left-arrow { background: url('images/lc_arrowshapes.left-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_right-arrow { background: url('images/lc_arrowshapes.right-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_up-arrow { background: url('images/lc_arrowshapes.up-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_down-arrow { background: url('images/lc_arrowshapes.down-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_left-right-arrow { background: url('images/lc_arrowshapes.svg') no-repeat center/contain !important;}
-.arrowshapes_up-down-arrow { background: url('images/lc_arrowshapes.up-down-arrow.svg') no-repeat center/contain !important;}
-
-.arrowshapes_up-right-arrow { background: url('images/lc_arrowshapes.up-right-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_up-right-down-arrow { background: url('images/lc_arrowshapes.up-right-down-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_quad-arrow { background: url('images/lc_arrowshapes.quad-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_corner-right-arrow { background: url('images/lc_arrowshapes.corner-right-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_split-arrow { background: url('images/lc_arrowshapes.split-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_striped-right-arrow { background: url('images/lc_arrowshapes.striped-right-arrow.svg') no-repeat center/contain !important;}
-
-.arrowshapes_notched-right-arrow { background: url('images/lc_arrowshapes.notched-right-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_pentagon-right { background: url('images/lc_arrowshapes.pentagon-right.svg') no-repeat center/contain !important;}
-.arrowshapes_chevron { background: url('images/lc_arrowshapes.chevron.svg') no-repeat center/contain !important;}
-.arrowshapes_right-arrow-callout { background: url('images/lc_arrowshapes.right-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_left-arrow-callout { background: url('images/lc_arrowshapes.left-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_up-arrow-callout { background: url('images/lc_arrowshapes.up-arrow-callout.svg') no-repeat center/contain !important;}
-
-.arrowshapes_down-arrow-callout { background: url('images/lc_arrowshapes.down-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_left-right-arrow-callout { background: url('images/lc_arrowshapes.left-right-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_up-down-arrow-callout { background: url('images/lc_arrowshapes.up-down-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_up-right-arrow-callout { background: url('images/lc_arrowshapes.up-right-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_quad-arrow-callout { background: url('images/lc_arrowshapes.quad-arrow-callout.svg') no-repeat center/contain !important;}
-.arrowshapes_circular-arrow { background: url('images/lc_arrowshapes.circular-arrow.svg') no-repeat center/contain !important;}
-
-.arrowshapes_split-round-arrow { background: url('images/lc_arrowshapes.split-round-arrow.svg') no-repeat center/contain !important;}
-.arrowshapes_s-sharped-arrow { background: url('images/lc_arrowshapes.s-sharped-arrow.svg') no-repeat center/contain !important;}
-
-.starshapes_bang { background: url('images/lc_starshapes.bang.svg') no-repeat center/contain !important;}
-.starshapes_star4 { background: url('images/lc_starshapes.star4.svg') no-repeat center/contain !important;}
-.starshapes_star5 { background: url('images/lc_starshapes.star5.svg') no-repeat center/contain !important;}
-.starshapes_star6 { background: url('images/lc_starshapes.star6.svg') no-repeat center/contain !important;}
-.starshapes_star8 { background: url('images/lc_starshapes.star8.svg') no-repeat center/contain !important;}
-.starshapes_star12 { background: url('images/lc_starshapes.star12.svg') no-repeat center/contain !important;}
-
-.starshapes_star24 { background: url('images/lc_starshapes.star24.svg') no-repeat center/contain !important;}
-.starshapes_concave-star6 { background: url('images/lc_starshapes.concave-star6.svg') no-repeat center/contain !important;}
-.starshapes_vertical-scroll { background: url('images/lc_starshapes.vertical-scroll.svg') no-repeat center/contain !important;}
-.starshapes_horizontal-scroll { background: url('images/lc_starshapes.horizontal-scroll.svg') no-repeat center/contain !important;}
-.starshapes_signet { background: url('images/sc_signature.svg') no-repeat center/contain !important;}
-.starshapes_doorplate { background: url('images/lc_starshapes.doorplate.svg') no-repeat center/contain !important;}
-
-.calloutshapes_rectangular-callout { background: url('images/lc_calloutshapes.rectangular-callout.svg') no-repeat center/contain !important;}
-.calloutshapes_round-rectangular-callout { background: url('images/lc_calloutshapes.svg') no-repeat center/contain !important;}
-.calloutshapes_round-callout { background: url('images/lc_calloutshapes.round-callout.svg') no-repeat center/contain !important;}
-.calloutshapes_cloud-callout { background: url('images/lc_calloutshapes.cloud-callout.svg') no-repeat center/contain !important;}
-.calloutshapes_line-callout-1 { background: url('images/sc_calloutshapes.line-callout-1.svg') no-repeat center/contain !important;}
-.calloutshapes_line-callout-2 { background: url('images/sc_calloutshapes.line-callout-2.svg') no-repeat center/contain !important;}
-.calloutshapes_line-callout-3 { background: url('images/sc_calloutshapes.line-callout-3.svg') no-repeat center/contain !important;}
-
-.flowchartshapes_flowchart-process { background: url('images/lc_square.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-alternate-process { background: url('images/lc_basicshapes.round-quadrat.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-decision { background: url('images/lc_flowchartshapes.flowchart-decision.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-data { background: url('images/lc_flowchartshapes.flowchart-data.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-predefined-process { background: url('images/lc_flowchartshapes.flowchart-predefined-process.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-internal-storage { background: url('images/lc_flowchartshapes.flowchart-internal-storage.svg') no-repeat center/contain !important;}
-
-.flowchartshapes_flowchart-document { background: url('images/lc_flowchartshapes.flowchart-document.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-multidocument { background: url('images/lc_flowchartshapes.flowchart-multidocument.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-terminator { background: url('images/lc_flowchartshapes.flowchart-terminator.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-preparation { background: url('images/lc_flowchartshapes.flowchart-preparation.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-manual-input { background: url('images/lc_flowchartshapes.flowchart-manual-input.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-manual-operation { background: url('images/lc_basicshapes.trapezoid.svg') no-repeat center/contain !important;}
-
-.flowchartshapes_flowchart-connector { background: url('images/lc_circle.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-off-page-connector { background: url('images/lc_flowchartshapes.flowchart-off-page-connector.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-card { background: url('images/lc_flowchartshapes.flowchart-card.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-punched-tape { background: url('images/lc_fontworkshapetype.fontwork-wave.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-summing-junction { background: url('images/lc_flowchartshapes.flowchart-summing-junction.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-or { background: url('images/lc_flowchartshapes.flowchart-or.svg') no-repeat center/contain !important;}
-
-.flowchartshapes_flowchart-collate { background: url('images/lc_flowchartshapes.flowchart-collate.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-sort { background: url('images/lc_flowchartshapes.flowchart-sort.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-extract { background: url('images/lc_basicshapes.isosceles-triangle.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-merge { background: url('images/lc_fontworkshapetype.fontwork-triangle-down.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-stored-data { background: url('images/lc_flowchartshapes.flowchart-stored-data.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-delay { background: url('images/lc_flowchartshapes.flowchart-delay.svg') no-repeat center/contain !important;}
-
-.flowchartshapes_flowchart-sequential-access { background: url('images/lc_flowchartshapes.flowchart-sequential-access.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-magnetic-disk { background: url('images/lc_basicshapes.can.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-direct-access-storage { background: url('images/lc_flowchartshapes.flowchart-direct-access-storage.svg') no-repeat center/contain !important;}
-.flowchartshapes_flowchart-display { background: url('images/lc_flowchartshapes.flowchart-display.svg') no-repeat center/contain !important;}
-
-.formatgroup { background: url('images/lc_formatgroup.svg') no-repeat center/contain !important;}
-.formatungroup { background: url('images/lc_formatungroup.svg') no-repeat center/contain !important;}
-.entergroup { background: url('images/lc_entergroup.svg') no-repeat center/contain !important;}
-.leavegroup { background: url('images/lc_leavegroup.svg') no-repeat center/contain !important;}
-
-.selectobject { background: url('images/lc_selectobject.svg') no-repeat center/contain !important;}
-.linearrowend { background: url('images/lc_linearrowend.svg') no-repeat center/contain !important;}
-.linecirclearrow { background: url('images/lc_linecirclearrow.svg') no-repeat center/contain !important;}
-.linesquarearrow { background: url('images/lc_linesquarearrow.svg') no-repeat center/contain !important;}
-.linearrows { background: url('images/lc_linearrows.svg') no-repeat center/contain !important;}
-.linearrowstart { background: url('images/lc_linearrowstart.svg') no-repeat center/contain !important;}
-.linearrowcircle { background: url('images/lc_linearrowcircle.svg') no-repeat center/contain !important;}
-.linearrowsquare { background: url('images/lc_linearrowsquare.svg') no-repeat center/contain !important;}
-.line { background: url('images/lc_line.svg') no-repeat center/contain !important;}
+.insertdraw { background: url('images/cmd/insertdraw.svg') no-repeat center/contain !important;}
 
 .frame01 { background: url('images/fr01.svg') no-repeat center/contain !important;}
 .frame02 { background: url('images/fr02.svg') no-repeat center/contain !important;}
@@ -293,94 +116,89 @@
                                       width: 94px !important;}
 
 .ossiilogo {background: url('images/ossii.png') no-repeat center/contain !important;}
-.accepttrackedchanges{ background: url('images/lc_accepttrackedchanges.svg') no-repeat center/contain !important;}
-.alignblock{ background: url('images/lc_alignblock.svg') no-repeat center/contain !important;}
-.alignhorizontal{ background: url('images/lc_alignhorizontalcenter.svg') no-repeat center/contain !important;}
-.alignleft{ background: url('images/lc_alignleft.svg') no-repeat center/contain !important;}
-.alignright{ background: url('images/lc_alignright.svg') no-repeat center/contain !important;}
-.aligntop{ background: url('images/lc_aligntop.svg') no-repeat center/contain !important;}
-.alignmiddle{ background: url('images/lc_alignmiddle.svg') no-repeat center/contain !important;}
-.alignbottom{ background: url('images/lc_alignbottom.svg') no-repeat center/contain !important;}
-.functionwizard{ background: url('images/lc_functionwizard.svg') no-repeat center/contain !important;}
-.autosum{ background: url('images/lc_autosum.svg') no-repeat center/contain !important;}
-.backcolor{ background: url('images/lc_backcolor.svg') no-repeat center/contain !important;}
-.bold{ background: url('images/lc_bold.svg') no-repeat center/contain !important;}
-.annotation{ background: url('images/lc_showannotations.svg') no-repeat center/contain !important;}
-.insertannotation{ background: url('images/lc_insertannotation.svg') no-repeat center/contain !important;}
-.inserthyperlink{ background: url('images/lc_inserthyperlink.svg') no-repeat center/contain !important;}
-.bullet{ background: url('images/lc_defaultbullet.svg') no-repeat center/contain !important;}
-.cancel{ background: url('images/lc_cancel.svg') no-repeat center/contain !important;}
-.fontcolor{ background: url('images/lc_color.svg') no-repeat center/contain !important;}
-.decrementindent{ background: url('images/lc_decrementindent.svg') no-repeat center/contain !important;}
-.deletepage{ background: url('images/lc_deletepage.svg') no-repeat center/contain !important;}
-.duplicatepage{ background: url('images/lc_duplicatepage.svg') no-repeat center/contain !important;}
-.edit{ background: url('images/lc_editdoc.svg') no-repeat center/contain !important;}
+.accepttrackedchanges{ background: url('images/cmd/ok.svg') no-repeat center/contain !important;}
+.alignblock{ background: url('images/cmd/alignblock.svg') no-repeat center/contain !important;}
+.alignhorizontal{ background: url('images/cmd/alignhorizontalcenter.svg') no-repeat center/contain !important;}
+.alignleft{ background: url('images/cmd/alignleft.svg') no-repeat center/contain !important;}
+.alignright{ background: url('images/cmd/alignright.svg') no-repeat center/contain !important;}
+.aligntop{ background: url('images/cmd/aligntop.svg') no-repeat center/contain !important;}
+.alignmiddle{ background: url('images/cmd/alignmiddle.svg') no-repeat center/contain !important;}
+.alignbottom{ background: url('images/cmd/alignbottom.svg') no-repeat center/contain !important;}
+.functionwizard{ background: url('images/cmd/dbviewfunctions.svg') no-repeat center/contain !important;}
+.autosum{ background: url('images/cmd/autosum.svg') no-repeat center/contain !important;}
+.backcolor{ background: url('images/cmd/backcolor.svg') no-repeat center/contain !important;}
+.bold{ background: url('images/cmd/bold.svg') no-repeat center/contain !important;}
+.annotation{ background: url('images/cmd/showannotations.svg') no-repeat center/contain !important;}
+.insertannotation{ background: url('images/cmd/shownote.svg') no-repeat center/contain !important;}
+.inserthyperlink{ background: url('images/cmd/inserthyperlink.svg') no-repeat center/contain !important;}
+.bullet{ background: url('images/cmd/defaultbullet.svg') no-repeat center/contain !important;}
+.cancel{ background: url('images/cmd/cancel.svg') no-repeat center/contain !important;}
+.fontcolor{ background: url('images/cmd/color.svg') no-repeat center/contain !important;}
+.decrementindent{ background: url('images/cmd/decrementindent.svg') no-repeat center/contain !important;}
+.deletepage{ background: url('images/cmd/deletepage.svg') no-repeat center/contain !important;}
+.duplicatepage{ background: url('images/cmd/duplicatepage.svg') no-repeat center/contain !important;}
+.edit{ background: url('images/cmd/editdoc.svg') no-repeat center/contain !important;}
 .equal{ background: url('images/lc26049.svg') no-repeat center/contain !important;}
-.helpindex{ background: url('images/lc_helpindex.svg') no-repeat center/contain !important;}
-.incrementindent{ background: url('images/lc_decrementlevel.svg') no-repeat center/contain !important;}
-.insertpage{ background: url('images/lc_insertpage.svg') no-repeat center/contain !important;}
-.insertsheet{ background: url('images/lc_insert.svg') no-repeat center/contain !important;}
-.italic{ background: url('images/lc_italic.svg') no-repeat center/contain !important;}
-.insertgraphic{ background: url('images/lc_insertgraphic.svg') no-repeat center/contain !important;}
-.inserttable{ background: url('images/lc_inserttable.svg') no-repeat center/contain !important;}
-.setborderstyle{ background: url('images/lc_setborderstyle.svg') no-repeat center/contain !important;}
-.conditionalformatdialog{ background: url('images/lc_conditionalformatdialog.svg') no-repeat center/contain !important;}
+.incrementindent{ background: url('images/cmd/decrementlevel.svg') no-repeat center/contain !important;}
+.insertpage{ background: url('images/cmd/insertpage.svg') no-repeat center/contain !important;}
+.insertsheet{ background: url('images/cmd/insertspreadsheet.svg') no-repeat center/contain !important;}
+.italic{ background: url('images/cmd/italic.svg') no-repeat center/contain !important;}
+.insertgraphic{ background: url('images/cmd/insertgraphic.svg') no-repeat center/contain !important;}
+.inserttable{ background: url('images/cmd/inserttable.svg') no-repeat center/contain !important;}
+.setborderstyle{ background: url('images/cmd/setborderstyle.svg') no-repeat center/contain !important;}
+.conditionalformatdialog{ background: url('images/cmd/conditionalformatdialog.svg') no-repeat center/contain !important;}
 .next{ background: url('images/lc_movedown.svg') no-repeat center/contain !important;}
-.numbering{ background: url('images/lc_defaultnumbering.svg') no-repeat center/contain !important;}
-.presentation{ background: url('images/lc_dia.svg') no-repeat center/contain !important;}
+.numbering{ background: url('images/cmd/defaultnumbering.svg') no-repeat center/contain !important;}
+.presentation{ background: url('images/cmd/presentation.svg') no-repeat center/contain !important;}
 .prev{ background: url('images/lc_moveup.svg') no-repeat center/contain !important;}
-.print{ background: url('images/lc_print.svg') no-repeat center/contain !important;}
-.redo{ background: url('images/lc_redo.svg') no-repeat center/contain !important;}
-.copyformat{ background: url('images/lc_formatpaintbrush.svg') no-repeat center/contain !important;}
-.deleteformat{ background: url('images/lc_resetattributes.svg') no-repeat center/contain !important;}
-.linespacing{ background: url('images/lc_linespacing.svg') no-repeat center/contain !important;}
-.save{ background: url('images/lc_save.svg') no-repeat center/contain !important;}
-.saveas{ background: url('images/lc_saveas.svg') no-repeat center/contain !important;}
+.print{ background: url('images/cmd/print.svg') no-repeat center/contain !important;}
+.redo{ background: url('images/cmd/redo.svg') no-repeat center/contain !important;}
+.copyformat{ background: url('images/cmd/formatpaintbrush.svg') no-repeat center/contain !important;}
+.deleteformat{ background: url('images/cmd/resetattributes.svg') no-repeat center/contain !important;}
+.linespacing{ background: url('images/cmd/spacepara15.svg') no-repeat center/contain !important;}
+.save{ background: url('images/cmd/save.svg') no-repeat center/contain !important;}
+.saveas{ background: url('images/cmd/saveas.svg') no-repeat center/contain !important;}
 .savemodified{ background: url('images/savemodified_large.svg') no-repeat center/contain !important;}
-.strikeout{ background: url('images/lc_strikeout.svg') no-repeat center/contain !important;}
-.insertfootnote{ background: url('images/lc_insertfootnote.svg') no-repeat center/contain !important;}
-.underline{ background: url('images/lc_underline.svg') no-repeat center/contain !important;}
-.undo{ background: url('images/lc_undo.svg') no-repeat center/contain !important;}
-.zoomin{ background: url('images/lc_zoomin.svg') no-repeat center/contain !important;}
-.zoomout{ background: url('images/lc_zoomout.svg') no-repeat center/contain !important;}
-.zoomreset{ background: url('images/lc_view100.svg') no-repeat center/contain !important;}
+.strikeout{ background: url('images/cmd/strikeout.svg') no-repeat center/contain !important;}
+.underline{ background: url('images/cmd/underline.svg') no-repeat center/contain !important;}
+.undo{ background: url('images/cmd/undo.svg') no-repeat center/contain !important;}
+.zoomin{ background: url('images/cmd/zoomin.svg') no-repeat center/contain !important;}
+.zoomout{ background: url('images/cmd/zoomout.svg') no-repeat center/contain !important;}
+.zoomreset{ background: url('images/cmd/zoom100percent.svg') no-repeat center/contain !important;}
 .keyboard{ background: url('images/keyboard.svg') no-repeat center/contain !important;}
 .keyboard_hide{ background: url('images/keyboard_hide.svg') no-repeat center/contain !important;}
 
-.mobilecut{ background: url('images/lc_cut.svg') no-repeat center/contain !important;}
-.mobilecopy{ background: url('images/lc_copy.svg') no-repeat center/contain !important;}
-.mobilepaste{ background: url('images/lc_paste.svg') no-repeat center/contain !important;}
-.search{ background: url('images/lc_search.svg') no-repeat center/contain !important;}
-.more{ background: url('images/lc_downsearch.svg') no-repeat center/contain !important;}
-.firstrecord{ background: url('images/lc_firstrecord.svg') no-repeat center/contain !important;}
-.nextrecord{ background: url('images/lc_nextrecord.svg') no-repeat center/contain !important;}
-.prevrecord{ background: url('images/lc_prevrecord.svg') no-repeat center/contain !important;}
-.lastrecord{ background: url('images/lc_lastrecord.svg') no-repeat center/contain !important;}
-.wraptext{ background: url('images/lc_wraptext.svg') no-repeat center/contain !important;}
-.togglemergecells{ background: url('images/lc_togglemergecells.svg') no-repeat center/contain !important;}
-.numberformatcurrency{ background: url('images/lc_currencyfield.svg') no-repeat center/contain !important;}
-.numberformatpercent{ background: url('images/lc_numberformatpercent.svg') no-repeat center/contain !important;}
-.numberformatdecimal{ background: url('images/lc_numberformatdecimal.svg') no-repeat center/contain !important;}
-.numberformatdate{ background: url('images/lc_numberformatdate.svg') no-repeat center/contain !important;}
-.numberformatincdecimals{ background: url('images/lc_numberformatincdecimals.svg') no-repeat center/contain !important;}
-.numberformatdecdecimals{ background: url('images/lc_numberformatdecdecimals.svg') no-repeat center/contain !important;}
-.sortascending{ background: url('images/lc_sortascending.svg') no-repeat center/contain !important;}
-.sortdescending{ background: url('images/lc_sortdescending.svg') no-repeat center/contain !important;}
-.selected{ background: url('images/lc_ok.svg') no-repeat center/contain !important;}
-.repair{ background: url('images/lc_backward.svg') no-repeat center/contain !important;}
-.insertsymbol{ background: url('images/lc_insertsymbol.svg') no-repeat center/contain !important;}
-.fold{ background: url('images/fold.svg') no-repeat center/contain !important;}
-.unfold{ background: url('images/unfold.svg') no-repeat center/contain !important;}
+.mobilecut{ background: url('images/cmd/cut.svg') no-repeat center/contain !important;}
+.mobilecopy{ background: url('images/cmd/copy.svg') no-repeat center/contain !important;}
+.mobilepaste{ background: url('images/cmd/paste.svg') no-repeat center/contain !important;}
+.search{ background: url('images/cmd/recsearch.svg') no-repeat center/contain !important;}
+.more{ background: url('images/cmd/downsearch.svg') no-repeat center/contain !important;}
+.firstrecord{ background: url('images/cmd/firstrecord.svg') no-repeat center/contain !important;}
+.nextrecord{ background: url('images/cmd/nextrecord.svg') no-repeat center/contain !important;}
+.prevrecord{ background: url('images/cmd/prevrecord.svg') no-repeat center/contain !important;}
+.lastrecord{ background: url('images/cmd/lastrecord.svg') no-repeat center/contain !important;}
+.wraptext{ background: url('images/cmd/wraptext.svg') no-repeat center/contain !important;}
+.togglemergecells{ background: url('images/cmd/togglemergecells.svg') no-repeat center/contain !important;}
+.numberformatcurrency{ background: url('images/cmd/currencyfield.svg') no-repeat center/contain !important;}
+.numberformatpercent{ background: url('images/cmd/numberformatpercent.svg') no-repeat center/contain !important;}
+.numberformatdate{ background: url('images/cmd/numberformatdate.svg') no-repeat center/contain !important;}
+.numberformatincdecimals{ background: url('images/cmd/numberformatincdecimals.svg') no-repeat center/contain !important;}
+.numberformatdecdecimals{ background: url('images/cmd/numberformatdecdecimals.svg') no-repeat center/contain !important;}
+.sortascending{ background: url('images/cmd/sortascending.svg') no-repeat center/contain !important;}
+.sortdescending{ background: url('images/cmd/sortdescending.svg') no-repeat center/contain !important;}
+.insertsymbol{ background: url('images/cmd/insertsymbol.svg') no-repeat center/contain !important;}
+.fold{ background: url('images/cmd/upsearch.svg') no-repeat center/contain !important;}
+.unfold{ background: url('images/cmd/downsearch.svg') no-repeat center/contain !important;}
 .hamburger{ background: url('images/hamburger.svg') no-repeat center/contain !important;}
-.insertobjectchart{ background: url('images/lc_drawchart.svg') no-repeat center/contain !important;}
+.insertobjectchart{ background: url('images/cmd/drawchart.svg') no-repeat center/contain !important;}
 .users{ background: url('images/contacts-dark.svg') no-repeat center/contain !important;}
-.fullscreen{ background: url('images/lc_fullscreen.svg') no-repeat center/contain !important;}
+.fullscreen{ background: url('images/cmd/fullscreen.svg') no-repeat center/contain !important;}
 .closemobile{ background: url('images/lc_closedocmobile.svg') no-repeat center/contain !important;}
-.datadatapilotrun{ background: url('images/lc_datadatapilotrun.svg') no-repeat center/contain !important;}
-.movepagefirst{ background: url('images/lc_movepagefirst.svg') no-repeat center/contain !important;}
-.movepageup{ background: url('images/lc_movepageup.svg') no-repeat center/contain !important;}
-.movepagedown{ background: url('images/lc_movepagedown.svg') no-repeat center/contain !important;}
-.movepagelast{ background: url('images/lc_movepagelast.svg') no-repeat center/contain !important;}
-.movepage{ background: url('images/lc_movepage.svg') no-repeat center/contain !important;}
-.linenumberdialog{background: url('images/lc_linenumberdialog.svg') no-repeat center/contain !important;}
-.textbox{ background: url('images/lc_text.svg') no-repeat center/contain !important;}
+.datadatapilotrun{ background: url('images/cmd/datadatapilotrun.svg') no-repeat center/contain !important;}
+.movepagefirst{ background: url('images/cmd/movepagefirst.svg') no-repeat center/contain !important;}
+.movepageup{ background: url('images/cmd/upsearch.svg') no-repeat center/contain !important;}
+.movepagedown{ background: url('images/cmd/downsearch.svg') no-repeat center/contain !important;}
+.movepagelast{ background: url('images/cmd/movepagelast.svg') no-repeat center/contain !important;}
+.movepage{ background: url('images/cmd/movepage.svg') no-repeat center/contain !important;}
+.gotopage{ background: url('images/cmd/gotopage.svg') no-repeat center/contain !important;}
+

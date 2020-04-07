@@ -26,21 +26,21 @@
 }
 
 .writer-icon-img {
-        background-image: url('images/lc_logo_odt_scale1.svg');
+        background-image: url('images/writer_icon.png');
         background-size: 30px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
 }
 
 .calc-icon-img {
-        background-image: url('images/lc_logo_ods_scale1.svg');
+        background-image: url('images/calc_icon.png');
         background-size: 30px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
 }
 
 .impress-icon-img {
-        background-image: url('images/lc_logo_odp_scale1.svg');
+        background-image: url('images/impress_icon.png');
         background-size: 30px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
@@ -73,10 +73,7 @@
     font-size:12px;
     font-family:"Lucida Sans Unicode", "Lucida Sans", "Lucida Grande", Arial, sans
 serif;
-    margin-left: 12px;
     position: absolute;
-    text-align: right;
-    width: 150px;
     right: 13px;
     display: inline-block;
 }
@@ -150,8 +147,14 @@ serif;
 
 /* Menu Item */
 .lo-menu a, .lo-menu a:hover, .lo-menu a:focus, .lo-menu a:active, .lo-menu a.highlighted {
-    padding: 5px 104px 5px 48px; /* ICON */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 48px;/* ICON */
+    padding-right: 24px;
     color: #000;
+}
+.item-has-hotkey {
+    padding-right: 132px !important;
 }
 .lo-menu a:hover, .lo-menu a:focus, .lo-menu a:active, .lo-menu a.highlighted {
     background: #538ecd;
@@ -201,7 +204,7 @@ serif;
 }
 .lo-menu a.separator {
     height: 1px;
-    margin: 4px 0;
+    margin: 4px 0px 4px 44px;
     overflow: hidden;
     padding-top: 0;
     padding-bottom: 0;

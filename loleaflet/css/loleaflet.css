@@ -363,6 +363,9 @@ body {
 .context-menu-icon-lo-checkmark:before {
 	content: '\2713';
 }
+.context-menu-separator {
+    margin: .35em 0 0.35em 44px !important;
+}
 
 .loleaflet-annotation {
 	position: absolute;
@@ -469,23 +472,23 @@ body {
 }
 
 .loleaflet-redline-accept-button {
-        background: url('images/lc_accepttrackedchanges.svg') no-repeat center !important;
+        background: url('images/cmd/accepttrackedchanges.svg') no-repeat center !important;
 }
 
 .loleaflet-redline-reject-button {
-        background: url('images/lc_rejecttrackedchange.svg') no-repeat center !important;
+        background: url('images/cmd/rejecttrackedchange.svg') no-repeat center !important;
 }
 
 .loleaflet-context-copy {
-        background: url('images/lc_copy.svg') no-repeat center !important;
+        background: url('images/cmd/copy.svg') no-repeat center !important;
 }
 
 .loleaflet-context-cut {
-        background: url('images/lc_cut.svg') no-repeat center !important;
+        background: url('images/cmd/cut.svg') no-repeat center !important;
 }
 
 .loleaflet-context-paste {
-        background: url('images/lc_paste.svg') no-repeat center !important;
+        background: url('images/cmd/paste.svg') no-repeat center !important;
 }
 
 .loleaflet-annotation-menu, .loleaflet-annotation-menu-redline {

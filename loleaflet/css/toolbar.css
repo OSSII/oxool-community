@@ -141,11 +141,23 @@
 #document-name-input.editable:hover {
     border: 1px solid #bbbbbb;
     background-color: transparent;
-    background-image: url('images/lc_editdoc.svg');
+    background-image: url('images/cmd/editdoc.svg');
     background-position: right;
     background-repeat: no-repeat;
     padding-right: 20px;
     width: 181px;
+}
+
+#tb_editbar_item_fold table.w2ui-button {
+	border-radius: 20px;
+	background-color: #f4f4f4 !important;
+	padding: 0px 4px;
+	box-shadow: inset 0px 0px 1px 2px #00000020;
+}
+
+#tb_editbar_item_fold table.w2ui-button.over {
+	background-color: #fff !important;
+	box-shadow: inset 0px 0px 1px 2px #0000;
 }
 
 #tb_editbar_item_edit {
@@ -174,7 +186,7 @@
     border-color: #ccc;
     background-color: #eee;
 }
-.closebuttonimage{ background: url('images/lc_closedoc.svg') no-repeat center !important; }
+.closebuttonimage{ background: url('images/cmd/quit.svg') no-repeat center !important; }
 
 #tb_actionbar_item_left {
     width: 45%;
