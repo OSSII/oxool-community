@@ -1,0 +1,22 @@
+language: cpp
+sudo: required
+dist: bionic
+os: linux
+before_script:
+- ./install_build_require_ubuntu.sh
+- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+- curl https://ezgo.goodhorse.idv.tw/apt/ezgo/ezgo.gpg.key | sudo apt-key add
+- echo "deb https://ezgo.goodhorse.idv.tw/apt/ezgo/ oxool8 main" > tmpoxool
+- echo "deb-src https://ezgo.goodhorse.idv.tw/apt/ezgo/ oxool8 main" >> tmpoxool
+- sudo mv tmpoxool /etc/apt/sources.list.d/oxool.list
+- sudo apt update
+- sudo apt install oxoffice8 libpoco60 fakeroot
+- export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+- chmod +x $NVM_DIR/nvm.sh
+- $NVM_DIR/nvm.sh
+- nvm install v10
+- nvm use v10
+- sudo ln -s `which npm` /usr/bin/
+- sudo ln -s `which node` /usr/bin/
+script: 
+- debuild -b -us -uc
