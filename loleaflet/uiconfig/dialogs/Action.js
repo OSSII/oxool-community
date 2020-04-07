@@ -169,6 +169,42 @@ L.dialog.Action = {
 		case 'nonelanguage': // 語言(所有文字)：無(不拼字檢查)
 			map.sendUnoCommand('.uno:LanguageStatus?Language:string=Default_LANGUAGE_NONE');
 			break;
+		case 'gotopage':
+			map.fire('executeDialog', {dialog: 'GotoPage'});
+			break;
+		case 'zoom30':
+			map.setZoom(4);
+			break;
+		case 'zoom40':
+			map.setZoom(5);
+			break;
+		case 'zoom50':
+			map.setZoom(6);
+			break;
+		case 'zoom60':
+			map.setZoom(7);
+			break;
+		case 'zoom70':
+			map.setZoom(8);
+			break;
+		case 'zoom85':
+			map.setZoom(9);
+			break;
+		case 'zoom100':
+			map.setZoom(10);
+			break;
+		case 'zoom120':
+			map.setZoom(11);
+			break;
+		case 'zoom150':
+			map.setZoom(12);
+			break;
+		case 'zoom175':
+			map.setZoom(13);
+			break;
+		case 'zoom200':
+			map.setZoom(14);
+			break;
 		default:
 			console.debug('Found unknow action ID : ' + id);
 			break;

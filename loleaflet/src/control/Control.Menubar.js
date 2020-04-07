@@ -548,6 +548,11 @@ L.Control.Menubar = L.Control.extend({
 	},
 
 	_onRefresh: function() {
+		// 非編輯模式，不顯示選單，所以也沒必要載入選單
+		if (this._map._permission !== 'edit') {
+			$('.main-nav').hide();
+			return;
+		}
 		// clear initial menu
 		while (this._menubarCont.hasChildNodes()) {
 			this._menubarCont.removeChild(this._menubarCont.firstChild);

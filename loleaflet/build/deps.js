@@ -444,6 +444,11 @@ var deps = {
 		desc: 'Contains LibreOffice programmatic to UI name style mappings'
 	},
 
+	Preview: {
+		src: ['control/Preview.js'],
+		desc: 'Toolbar for preview mode.'
+	},
+
 	Ruler: {
 		src: ['control/Ruler.js'],
 		desc: 'Ruler to be displayed on the map.'

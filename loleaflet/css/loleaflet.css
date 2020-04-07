@@ -9,12 +9,10 @@
 }
 
 #document-container.tablet,
+#document-container.readonly,
 #document-container.readonly.tablet {
     top: 41px;
-}
-
-#document-container.readonly {
-    top: 31px;
+    bottom: 0px;
 }
 
 #toolbar-wrapper.readonly {
@@ -136,7 +134,8 @@ body {
 }
 
 #presentation-controls-wrapper.readonly {
-    top: 31px;
+    top: 41px;
+    bottom: 0px;
 }
 
 #sidebar-dock-wrapper {
@@ -161,6 +160,15 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 	z-index: 1200;
+}
+
+#toolbar-viewer-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 11;
+    -webkit-box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
 }
 
 #toolbar-wrapper {

@@ -3,6 +3,10 @@
 	bottom: 37px;
 }
 
+#document-container.parts-preview-document.readonly {
+	bottom: 0px;
+}
+
 #slide-sorter {
 	height: 100%;
 }

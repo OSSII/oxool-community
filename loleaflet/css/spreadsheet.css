@@ -8,7 +8,8 @@
 #document-container.spreadsheet-document.tablet,
 #document-container.spreadsheet-document.readonly,
 #document-container.spreadsheet-document.readonly.tablet {
-        top: 51px;
+        top: 61px;
+        bottom: 0px;
 }
 
 .spreadsheet-tabs-container {
@@ -76,7 +77,8 @@
 }
 
 #spreadsheet-row-column-frame.readonly {
-        top: 31px;
+    top: 41px;
+	bottom: 0px;
 }
 
 #spreadsheet-row-column-frame.tablet,

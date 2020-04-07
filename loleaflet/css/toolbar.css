@@ -20,11 +20,17 @@
 	}
 }*/
 
+#toolbar-viewer.w2ui-toolbar {
+    background-color: #d0d0d0 !important;
+}
+
+#toolbar-viewer.w2ui-toolbar,
 #toolbar-up.w2ui-toolbar {
     left: 0;
     right: 0;
     height: 41px;
     padding-left: 9px;
+    padding-right: 9px;
     text-align: center;
     overflow: visible !important;
 }
@@ -38,6 +44,10 @@
     bottom: 0;
     height: 37px;
     border-top: 1px solid #bbbbbb;
+}
+
+#toolbar-down.readonly {
+    display: none;
 }
 
 #document-signing-bar {
@@ -197,6 +207,10 @@
 
 .w2ui-button{
     margin:0 !important;
+}
+
+.w2ui-tb-caption {
+    font-size: 16px !important;
 }
 
 .w2ui-tb-image {

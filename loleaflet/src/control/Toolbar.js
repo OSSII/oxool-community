@@ -488,6 +488,10 @@ L.Map.include({
 			var callback = command.callback;
 			var hide = command.hide;
 			var isExists = (this._allowCommands[name] !== undefined); // 是否已經存在了
+			// 如果存在，調出來
+			if (isExists) {
+				obj = this._allowCommands[name];
+			}
 			// 有 hotkey 的話，另外存入 hotkeys 命令列表
 			if (hotkey !== undefined) {
 				// 轉成小寫

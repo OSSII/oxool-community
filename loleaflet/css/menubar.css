@@ -21,27 +21,27 @@
 
 .document-logo {
     position: relative;
-    width: 22px;
+    width: 24px;
     height: 30px;
 }
 
 .writer-icon-img {
         background-image: url('images/writer_icon.png');
-        background-size: 30px 30px;
+        background-size: 20px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
 }
 
 .calc-icon-img {
         background-image: url('images/calc_icon.png');
-        background-size: 30px 30px;
+        background-size: 20px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
 }
 
 .impress-icon-img {
         background-image: url('images/impress_icon.png');
-        background-size: 30px 30px;
+        background-size: 20px 30px;
         background-repeat: no-repeat;
         background-position: bottom;
 }
@@ -287,10 +287,6 @@ serif;
 
 #main-menu-state:checked ~ #main-menu {
     display: block;
-}
-
-.readonly {
-    top: 3px;
 }
 
 @media (max-width: 767px),(max-device-height: 767px) {
