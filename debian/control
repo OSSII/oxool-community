@@ -8,7 +8,7 @@ Standards-Version: 3.9.7
 Package: oxool
 Section: web
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, fontconfig, libsm6, libssl1.0.0, libodbc1, libxinerama1, libxrender1, libcairo2, libgl1-mesa-glx, libcups2, libdbus-glib-1-2, cpio, libcap2-bin, ${lo:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, fontconfig, libsm6, libssl1.0.0, libodbc1, libxinerama1, libxrender1, libcairo2, libgl1-mesa-glx, libcups2, libdbus-glib-1-2, cpio, libcap2-bin, oxoffice8, libpoco60, libgumbo1, libgumbo-dev ${lo:Depends}
 Description: OxOffice Online WebSocket Daemon
  oxool is a daemon that talks to web browser clients and provides OxOffice
  services.

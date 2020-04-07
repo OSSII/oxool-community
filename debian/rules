@@ -16,6 +16,7 @@ export BUILDING_FROM_RPMBUILD=yes
 	dh $@ --with=systemd
 
 override_dh_auto_configure:
+	./autogen.sh
 	dh_auto_configure -- $(CONFFLAGS)
 
 override_dh_auto_test:
