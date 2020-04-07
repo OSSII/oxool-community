@@ -957,7 +957,7 @@ function createToolbar() {
 				{id: 'remotegraphic', text: _UNO('.uno:InsertGraphic', '', true)},
 			]},
 		{type: 'button',  id: 'insertobjectchart',  img: 'insertobjectchart', hint: _UNO('.uno:InsertObjectChart', '', true), uno: 'InsertObjectChart', mobile: false},
-		{type: 'drop',  id: 'insertshapes',  img: 'basicshapes_ellipse', hint: _('Insert shapes'), overlay: {onShow: insertShapes},
+		{type: 'drop',  id: 'insertshapes',  img: 'insertdraw', hint: _('Insert shapes'), overlay: {onShow: insertShapes},
 			html: '<div id="insertshape-wrapper"><div id="insertshape-popup" class="insertshape-pop ui-widget ui-corner-all"><div class="insertshape-grid"></div></div></div>', mobile: false},
 		{type: 'drop',  id: 'animationeffects',  img: 'animationeffects', hint: _UNO('.uno:SlideChangeWindow', 'presentation'), overlay: {onShow: animationEffects},
 			html: '<div id="animationeffects-wrapper"><div id="animationeffects-popup" class="ui-widget ui-widget-content ui-corner-all"><div class="animationeffects-grid"></div></div></div>', hidden: true, mobile: false},
