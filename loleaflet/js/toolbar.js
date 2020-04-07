@@ -1843,7 +1843,9 @@ function onDocLayerInit() {
 				{type: 'break', id: 'break8', mobile: false}
 			]);
 
-			$('#spreadsheet-toolbar').show();
+			if (map._permission === 'edit') {
+				$('#spreadsheet-toolbar').show();
+			}
 		}
 		$('#formulabar').show();
 		// Remove irrelevant toolbars
@@ -2402,6 +2404,7 @@ function onUpdatePermission(e) {
 	// always enabled items
 	var enabledButtons = ['closemobile', 'undo', 'redo'];
 
+	_showOrHideCloseButton(); // 是否要顯示 close button
 	// 手機模式
 	if (_inMobileMode()) {
 		var toolbarUp;
@@ -2414,6 +2417,10 @@ function onUpdatePermission(e) {
 		// 非唯讀，顯示搜尋按鈕
 		if (e.perm !== 'readonly') {
 			statusbar.show('searchBtn', 'break-searchBtn');
+		}
+		// 手機模式時，文字文件與試算表顯示「前往頁面」按鈕
+		if (map.getDocType() === 'text' || map.getDocType() == 'spreadsheet') {
+			statusbar.show('goToPage');
 		}
 		//
 		if (e.perm === 'edit') {
@@ -2844,21 +2851,20 @@ $(window).resize(function() {
 });
 
 $(document).ready(function() {
-	if (!closebutton) {
-		$('#closebuttonwrapper').hide();
-	} else if (closebutton && !L.Browser.mobile) {
-		$('#closebuttonwrapper').show();
-	}
-
-	$('#closebutton').click(function() {
-		map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
-		map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
-		map.remove();
-	});
-
 	// Attach insert file action
 	$('#insertgraphic').on('change', onInsertFile);
 });
+
+function _showOrHideCloseButton() {
+	if (closebutton && !L.Browser.mobile && map._permission === 'edit') {
+		$('#closebuttonwrapper').show();
+		$('#closebutton').click(function() {
+			map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
+			map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
+			map.remove();
+		});
+	}
+}
 
 function setupToolbar(e) {
 	map = e;
