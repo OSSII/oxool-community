@@ -214,7 +214,7 @@ AC_SUBST(LOOLWSD_LOGLEVEL)
 AC_SUBST(LOOLWSD_LOG_TO_FILE)
 AC_SUBST(LOLEAFLET_LOGGING)
 
-APP_NAME="【ODF Web 文件應用元件】"
+APP_NAME="【OxOffice Online 社群版】
 if test -n "$with_app_name"; then
    APP_NAME="$with_app_name"
 fi
