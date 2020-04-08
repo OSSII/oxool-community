@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 
-AC_INIT([oxool], [3.2.5], [develop@ossii.com.tw])
+AC_INIT([oxool], [3.2.6], [develop@ossii.com.tw])
 LT_INIT([shared, disable-static, dlopen])
 
 AM_INIT_AUTOMAKE([1.10 subdir-objects tar-pax -Wno-portability])
@@ -214,7 +214,7 @@ AC_SUBST(LOOLWSD_LOGLEVEL)
 AC_SUBST(LOOLWSD_LOG_TO_FILE)
 AC_SUBST(LOLEAFLET_LOGGING)
 
-APP_NAME="【OxOffice Online 社群版】
+APP_NAME="【OxOffice Online 社群版】"
 if test -n "$with_app_name"; then
    APP_NAME="$with_app_name"
 fi
