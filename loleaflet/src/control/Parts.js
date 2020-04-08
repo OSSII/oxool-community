@@ -196,6 +196,7 @@ L.Map.include({
 			this._socket.sendMessage('uno .uno:InsertPage');
 		}
 		else if (this.getDocType() === 'spreadsheet') {
+			this.forceCellCommit();
 			var command = {
 				'Name': {
 					'type': 'string',
@@ -252,6 +253,7 @@ L.Map.include({
 			this._socket.sendMessage('uno .uno:DeletePage');
 		}
 		else if (this.getDocType() === 'spreadsheet') {
+			this.forceCellCommit();
 			var command = {
 				'Index': {
 					'type': 'long',
@@ -313,6 +315,7 @@ L.Map.include({
 
 	showPage: function (sheetName) {
 		if (this.getDocType() === 'spreadsheet' && this.hasAnyHiddenPart()) {
+			this.forceCellCommit();
 			var args = {
 				'aTableName': {
 					type: 'string',
@@ -325,6 +328,7 @@ L.Map.include({
 
 	hidePage: function () {
 		if (this.getDocType() === 'spreadsheet' && this.getNumberOfVisibleParts() > 1) {
+			this.forceCellCommit();
 			this._socket.sendMessage('uno .uno:Hide');
 		}
 	},

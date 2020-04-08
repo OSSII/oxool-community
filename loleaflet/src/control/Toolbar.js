@@ -631,7 +631,7 @@ L.Map.include({
 						for (var idx in params) {
 							if (params[idx].length) {
 								var keyvalue = params[idx].split('=');
-								args[keyvalue[0]] = keyvalue[1]; 
+								args[keyvalue[0]] = keyvalue[1];
 							}
 						}
 					}
@@ -672,7 +672,33 @@ L.Map.include({
 		this.fire('inserturl', {url: url});
 	},
 
-	cellEnterString: function (string) {
+	/*
+ 	 * 強制寫入試算表儲存格
+ 	 */
+	forceCellCommit: function () {
+		var map = this;
+		// 如果試試算表，檢查儲存格是否有資料未輸入
+		if (map._permission === 'edit' && map.getDocType() === 'spreadsheet') {
+			var $input = $('#formulaInput');
+			// 取得儲存格輸入資料
+			var value = $input.val();
+			// 有資料就強制寫入儲存格
+			if (value !== '') {
+				map.focus();
+				map._docLayer._postKeyboardEvent('input',
+					map.keyboard.keyCodes.enter,
+					map.keyboard._toUNOKeyCode(map.keyboard.keyCodes.enter));
+				$input.val(''); // 清空輸入資料避免重複輸入
+			}
+		}
+	},
+
+	/*
+	 * 字串寫入試算表儲存格
+	 * @string - 字串內容
+	 * @forceCommit - true(強制)
+ 	 */
+	cellEnterString: function (string, forceCommit) {
 		var command = {
 			'StringName': {
 				type: 'string',
@@ -680,7 +706,7 @@ L.Map.include({
 			},
 			'DontCommit': {
 				type: 'boolean',
-				value: true
+				value: (forceCommit === true) ? false : true
 			}
 		};
 

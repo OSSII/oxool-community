@@ -88,9 +88,10 @@ map.loadDocument();
 
 window.addEventListener('beforeunload', function () {
 	if (map && map._socket) {
+		map.forceCellCommit();
 		map._socket.close();
 	}
-});
+}, true);
 
 if (!L.Browser.mobile) {
 	L.DomEvent.on(document, 'contextmenu', L.DomEvent.preventDefault);
