@@ -88,7 +88,7 @@ void Config::displayHelp()
     HelpFormatter helpFormatter(options());
     helpFormatter.setCommand(commandName());
     helpFormatter.setUsage("COMMAND [OPTIONS]");
-    helpFormatter.setHeader("loolconfig - Configuration tool for LibreOffice Online.\n"
+    helpFormatter.setHeader("oxoolconfig - Configuration tool for OxOffice Online.\n"
                             "\n"
                             "Some options make sense only with a specific command.\n\n"
                             "Options:");
@@ -99,9 +99,6 @@ void Config::displayHelp()
     std::cout << std::endl
               << "Commands: " << std::endl
               << "    set-admin-password" << std::endl
-#if ENABLE_SUPPORT_KEY
-              << "    set-support-key" << std::endl
-#endif
               << "    set <key> <value>" << std::endl
               << "    update-system-template" << std::endl << std::endl;
 }
@@ -130,13 +127,6 @@ void Config::defineOptions(OptionSet& optionSet)
                         .required(false)
                         .repeatable(false)
                         .argument("number"));
-
-#if ENABLE_SUPPORT_KEY
-    optionSet.addOption(Option("support-key", "", "Specify the support key [set-support-key].")
-                        .required(false)
-                        .repeatable(false)
-                        .argument("key"));
-#endif
 }
 
 void Config::handleOption(const std::string& optionName, const std::string& optionValue)
@@ -275,43 +265,6 @@ int Config::main(const std::vector<std::string>& args)
         return Application::EXIT_UNAVAILABLE;
 #endif
     }
-#if ENABLE_SUPPORT_KEY
-    else if (args[0] == "set-support-key")
-    {
-        std::string supportKeyString;
-        if (SupportKeyStringProvided)
-            supportKeyString = SupportKeyString;
-        else
-        {
-            std::cout << "Enter support key: ";
-            std::getline(std::cin, supportKeyString);
-        }
-
-        if (!supportKeyString.empty())
-        {
-            SupportKey key(supportKeyString);
-            if (!key.verify())
-                std::cerr << "Invalid key\n";
-            else {
-                int validDays =  key.validDaysRemaining();
-                if (validDays <= 0)
-                    std::cerr << "Valid but expired key\n";
-                else
-                {
-                    std::cerr << "Valid for " << validDays << " days - setting to config\n";
-                    _loolConfig.setString("support_key", supportKeyString);
-                    changed = true;
-                }
-            }
-        }
-        else
-        {
-            std::cerr << "Removing empty support key\n";
-            _loolConfig.remove("support_key");
-            changed = true;
-        }
-    }
-#endif
     else if (args[0] == "set")
     {
         if (args.size() == 3)
