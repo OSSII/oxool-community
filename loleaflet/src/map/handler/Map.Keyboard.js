@@ -192,7 +192,7 @@ L.Map.Keyboard = L.Handler.extend({
 	/*
 	 * Returns true whenever the key event shall be ignored.
 	 * This means shift+insert and shift+delete (or "insert or delete when holding
-	 * shift down"). Those events are handled elsewhere to trigger "cut" and 
+	 * shift down"). Those events are handled elsewhere to trigger "cut" and
 	 * "paste" events, and need to be ignored in order to avoid double-handling them.
 	 */
 	_ignoreKeyEvent: function(e) {
@@ -259,9 +259,11 @@ L.Map.Keyboard = L.Handler.extend({
 			return;
 		}
 		var docLayer = this._map._docLayer;
+		var isDocumentInput = false; // 預設按鍵來源不是文件本身(例如:dialog)
 		if (!keyEventFn) {
 			// default is to post keyboard events on the document
 			keyEventFn = L.bind(docLayer._postKeyboardEvent, docLayer);
+			isDocumentInput = true; // 未指定按鍵處理，才能當作按鍵來源是文件本身
 		}
 		if (!compEventFn) {
 			// document has winid=0
@@ -307,6 +309,11 @@ L.Map.Keyboard = L.Handler.extend({
 			if (this._handleCtrlCommand(e)) {
 				return;
 			}
+		}
+
+		// 按鍵來源是文件本身才執行 hotkey 攔截
+		if (isDocumentInput && this._map.executeHotkey(e)) {
+			return;
 		}
 
 		var charCode = e.originalEvent.charCode;
@@ -546,59 +553,12 @@ L.Map.Keyboard = L.Handler.extend({
 			e.originalEvent.preventDefault();
 		}
 
-		if (e.originalEvent.ctrlKey && e.originalEvent.shiftKey && e.originalEvent.key === '?') {
-			this._map.showLOKeyboardHelp();
-			e.originalEvent.preventDefault();
-			return true;
-		}
-
-		if (e.originalEvent.ctrlKey && (e.originalEvent.key === 'z' || e.originalEvent.key === 'Z')) {
-			this._map._socket.sendMessage('uno .uno:Undo');
-			e.originalEvent.preventDefault();
-			return true;
-		}
-
-		if (e.originalEvent.ctrlKey && (e.originalEvent.key === 'y' || e.originalEvent.key === 'Y')) {
-			this._map._socket.sendMessage('uno .uno:Redo');
-			e.originalEvent.preventDefault();
-			return true;
-		}
-
 		if (e.originalEvent.altKey || e.originalEvent.shiftKey) {
-
-			// need to handle Ctrl + Alt + C separately for Firefox
-			if (e.originalEvent.key === 'c' && e.originalEvent.altKey) {
-				this._map.insertComment();
-				return true;
-			}
-
-			// Ctrl + Alt
-			if (!e.originalEvent.shiftKey) {
-				switch (e.originalEvent.keyCode) {
-				case 53: // 5
-					this._map._socket.sendMessage('uno .uno:Strikeout');
-					return true;
-				case 70: // f
-					this._map._socket.sendMessage('uno .uno:InsertFootnote');
-					return true;
-				case 67: // c
-				case 77: // m
-					this._map._socket.sendMessage('uno .uno:InsertAnnotation');
-					return true;
-				case 68: // d
-					this._map._socket.sendMessage('uno .uno:InsertEndnote');
-					return true;
-				}
-			} else if (e.originalEvent.altKey) {
+			if (e.originalEvent.altKey) {
 				switch (e.originalEvent.keyCode) {
 				case 68: // Ctrl + Shift + Alt + d for tile debugging mode
 					this._map._docLayer.toggleTileDebugMode();
 					break;
-/*
-				case 85: // Ctrl + Shift + Alt + u for input uno command
-					this._map.executeUnoCommand();
-					break;
-*/
 				}
 			}
 
@@ -606,19 +566,6 @@ L.Map.Keyboard = L.Handler.extend({
 		}
 
 		switch (e.originalEvent.keyCode) {
-		case 51: // 3
-			if (this._map.getDocType() === 'spreadsheet') {
-				this._map._socket.sendMessage('uno .uno:SetOptimalColumnWidthDirect');
-				this._map._socket.sendMessage('commandvalues command=.uno:ViewRowColumnHeaders');
-				return true;
-			}
-			return false;
-		case 53: // 5
-			if (this._map.getDocType() === 'spreadsheet') {
-				this._map._socket.sendMessage('uno .uno:Strikeout');
-				return true;
-			}
-			return false;
 		case 67: // c
 		case 88: // x
 		case 99: // c (Safari)
@@ -630,24 +577,12 @@ L.Map.Keyboard = L.Handler.extend({
 			this._map.focus();
 			this._map._clipboardContainer.select();
 			return true;
-		case 80: // p
-			this._map.print();
-			return true;
 		case 83: // s
 			this._map.save(false /* An explicit save should terminate cell edit */,
 			               false /* An explicit save should save it again */);
 			return true;
 		case 86: // v
 		case 118: // v (Safari)
-			return true;
-		case 112: // f1
-			this._map._socket.sendMessage('uno .uno:NoteVisible');
-			return true;
-		case 188: // ,
-			this._map._socket.sendMessage('uno .uno:SubScript');
-			return true;
-		case 190: // .
-			this._map._socket.sendMessage('uno .uno:SuperScript');
 			return true;
 		}
 		if (e.type === 'keypress' && (e.originalEvent.ctrlKey || e.originalEvent.metaKey) &&
