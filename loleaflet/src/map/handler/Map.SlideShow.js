@@ -9,6 +9,8 @@ L.Map.mergeOptions({
 
 L.Map.SlideShow = L.Handler.extend({
 
+	_slideURL: '', // svg 存放 URL
+
 	initialize: function (map) {
 		this._map = map;
 	},
@@ -23,7 +25,7 @@ L.Map.SlideShow = L.Handler.extend({
 		this._map.off('slidedownloadready', this._onSlideDownloadReady, this);
 	},
 
-	_onFullScreen: function () {
+	_onFullScreen: function (e) {
 		if (window.ThisIsTheiOSApp) {
 			window.webkit.messageHandlers.lool.postMessage('SLIDESHOW', '*');
 			return;
@@ -46,6 +48,11 @@ L.Map.SlideShow = L.Handler.extend({
 				this._onFullScreenChange, this);
 
 		this.fullscreen = true;
+		this._startSlideNumber = 0; // 預設從第 0 頁開始播放
+		if (e.startSlideNumber !== undefined) {
+			this._startSlideNumber = e.startSlideNumber;
+		}
+
 		this._map.downloadAs('slideshow.svg', 'svg', null, 'slideshow');
 	},
 
@@ -61,7 +68,13 @@ L.Map.SlideShow = L.Handler.extend({
 	},
 
 	_onSlideDownloadReady: function (e) {
-		this._slideShow.src = e.url;
+		this._slideURL = e.url;
+		console.debug('slide file url : ', this._slideURL);
+		this._startPlaying();
+	},
+
+	_startPlaying: function() {
+		this._slideShow.src = this._slideURL + '?StartSlideNumber=' + this._startSlideNumber;
 		this._slideShow.contentWindow.focus();
 		clearInterval(this._slideShow.contentWindow.spinnerInterval);
 	}

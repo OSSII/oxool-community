@@ -315,7 +315,8 @@ L.Control.Menubar = L.Control.extend({
 				{name: '.uno:DuplicateSlide', id: 'duplicatepage', type: 'action'},
 				{name: '.uno:DeleteSlide', id: 'deletepage', type: 'action'},
 				{type: '--', id: 'fullscreen-presentation-separator'},
-				{name: _('Fullscreen presentation'), id: 'fullscreen-presentation', type: 'action', icon: '.uno:Dia'},
+				{name: '.uno:Presentation', id: 'fullscreen-presentation', type: 'action', hotkey: 'F5'},
+				{name: '.uno:PresentationCurrentSlide', id: 'presentation-currentslide', type: 'action', hotkey: 'Shift+F5'}
 			]},
 			{name: '.uno:ToolsMenu', id: 'tools', type: 'menu', menu: [
 				{uno: '.uno:SpellOnline'},

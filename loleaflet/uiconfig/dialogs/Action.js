@@ -71,9 +71,14 @@ L.dialog.Action = {
 		case 'fullscreen': // 全螢幕
 			L.toggleFullScreen();
 			break;
-		case 'fullscreen-presentation': // 全螢幕播放
+		case 'fullscreen-presentation': // 從第一張投影片開始播放
 			if (docType === 'presentation') {
 				map.fire('fullscreen');
+			}
+			break;
+		case 'presentation-currentslide': // 從目前投影片開始播放
+			if (docType === 'presentation') {
+				map.fire('fullscreen', {startSlideNumber: map.getCurrentPartNumber()});
 			}
 			break;
 		case 'insertpage': // 新增頁面
