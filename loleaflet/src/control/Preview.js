@@ -205,7 +205,7 @@ L.Control.Preview = L.Control.extend({
 					{id: 'downloadas-html', text: _('HTML Document (.html)')},
 					{id: 'downloadas-odp', text: _('ODF presentation (.odp)')},
 					{id: 'downloadas-ppt', text: _('PowerPoint 2003 Presentation (.ppt)')},
-					{id: 'downloadas-xlsx', text: _('PowerPoint Presentation (.pptx)')},
+					{id: 'downloadas-pptx', text: _('PowerPoint Presentation (.pptx)')},
 				]
 			}
 		};
