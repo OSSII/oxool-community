@@ -757,7 +757,11 @@ bool ChildSession::downloadAs(const char* /*buffer*/, int /*length*/, const std:
             filterOptions += Poco::cat(std::string(" "), tokens.begin() + 5, tokens.end());
         }
         //HACK = add watermark to filteroptions
-        filterOptions += std::string(",Watermark=") + getWatermarkText() + std::string("WATERMARKEND");
+        std::string watermarkText = getWatermarkText();
+        if (!watermarkText.empty())
+        {
+            filterOptions += std::string(",Watermark=") + watermarkText + std::string("WATERMARKEND");
+        }
     }
 
     // The file is removed upon downloading.
@@ -1116,7 +1120,7 @@ bool ChildSession::unoCommand(const char* /*buffer*/, int /*length*/, const std:
         std::string macroFile = "/tmp/" + macroCmd;
         if (File(macroFile).exists())
         {
-            LOG_DBG("Macro result return file exist: " + macroFile); 
+            LOG_DBG("Macro result return file exist: " + macroFile);
             Poco::FileInputStream istr(macroFile, std::ios::binary);
             std::ostringstream ostr;
             Poco::StreamCopier::copyStream(istr, ostr);
@@ -1125,7 +1129,7 @@ bool ChildSession::unoCommand(const char* /*buffer*/, int /*length*/, const std:
         }
         else
         {
-            LOG_DBG("Did not find the result of the macro result: " + macroFile); 
+            LOG_DBG("Did not find the result of the macro result: " + macroFile);
         }
     }
     //--------------------------------------------------------
