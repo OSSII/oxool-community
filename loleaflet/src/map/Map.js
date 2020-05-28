@@ -16,7 +16,7 @@ function moveObjectVertically(obj, diff) {
 	}
 }
 
-/* global timeago closebutton vex revHistoryEnabled $ _ */
+/* global closebutton vex revHistoryEnabled $ _ */
 L.Map = L.Evented.extend({
 
 	options: {
@@ -364,27 +364,32 @@ L.Map = L.Evented.extend({
 
 	// 紀錄最後更新時間
 	updateModificationIndicator: function(newModificationTime) {
-		this._lastmodtime = newModificationTime;
+		var timeout;
+
+		if (typeof newModificationTime === 'string') {
+			this._lastmodtime = newModificationTime;
+		}
+
+		clearTimeout(this._modTimeout);
+
 		if (this.lastModIndicator !== null && this.lastModIndicator !== undefined) {
-			// 非編輯模式，顯示最近存檔時間
-			if (this._permission !== 'edit') {
-				var dd = $.timeago.parse(this._lastmodtime);
-				this.lastModIndicator.innerHTML = dd.toLocaleString();
-				return;
+			var dateTime = new Date(this._lastmodtime.replace(/,.*/, 'Z'));
+			var dateValue = dateTime.toLocaleDateString(String.locale,
+				{ year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+			var elapsed = Date.now() - dateTime;
+			if (elapsed < 60000) {
+				dateValue = Math.round(elapsed / 1000) + ' ' + _('seconds ago');
+				timeout = 6000;
+			} else if (elapsed < 3600000) {
+				dateValue = Math.round(elapsed / 60000) + ' ' + _('minutes ago');
+				timeout = 60000;
 			}
 
-			// Get locale
-			var special = [ 'bn_IN', 'hi_IN', 'id_ID', 'nb_NO', 'nn_NO', 'pt_BR', 'zh_CN', 'zh_TW'];
-			var locale = String.locale;
-			locale = locale.replace('-', '_');
-			if ($.inArray(locale, special) < 0) {
-				if (locale.indexOf('_') > 0) {
-					locale = locale.substring(0, locale.indexOf('_'));
-				}
+			this.lastModIndicator.innerHTML = dateValue;
+
+			if (timeout) {
+				this._modTimeout = setTimeout(L.bind(this.updateModificationIndicator, this, -1), timeout);
 			}
-			// Real-time auto update
-			this.lastModIndicator.setAttribute('datetime', newModificationTime);
-			timeago().render(this.lastModIndicator, locale);
 		}
 	},
 
