@@ -98,6 +98,7 @@ L.Map = L.Evented.extend({
 		this._serverRecycling = false;
 		this._documentIdle = false;
 		this._helpTarget = null; // help page that fits best the current context
+		this._lastmodtime = '';
 
 		vex.dialogID = -1;
 		// Add by Firefly <firefly@ossii.com.tw>
@@ -848,7 +849,7 @@ L.Map = L.Evented.extend({
 				this.sendUnoCommand(cmd);
 			}
 		}
-	},	
+	},
 
 	_fireInitComplete: function (condition) {
 		if (this.initComplete) {
