@@ -1165,7 +1165,7 @@ bool ChildSession::runMacro(const char* /*buffer*/, int /*size*/, const std::vec
     }
 
     std::string macro = tokens[1];
-    for (int i = 2 ; i < tokens.size() ; i++)
+    for (unsigned int i = 2 ; i < tokens.size() ; i++)
     {
         macro += tokens[i];
     }
