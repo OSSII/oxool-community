@@ -88,6 +88,7 @@ LOLEAFLET_CSS =\
 	$(builddir)/node_modules/select2/dist/css/select2.css \
 	$(builddir)/node_modules/smartmenus/dist/css/sm-core-css.css \
 	$(builddir)/node_modules/smartmenus/dist/css/sm-simple/sm-simple.css \
+	$(builddir)/node_modules/spectrum-colorpicker2/dist/spectrum.css \
 	$(srcdir)/css/menubar.css \
 	$(builddir)/fonts/font-awesome.min.css \
 	$(builddir)/node_modules/jquery-ui/jquery-ui.css
@@ -105,6 +106,7 @@ NODE_MODULES_JS =\
 	node_modules/jquery-ui/jquery-ui.js \
 	node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js \
 	node_modules/smartmenus/dist/jquery.smartmenus.js \
+	node_modules/spectrum-colorpicker2/dist/spectrum.js \
 	node_modules/autolinker/dist/Autolinker.js \
 	node_modules/json-js/json2.js \
 	node_modules/select2/dist/js/select2.js \

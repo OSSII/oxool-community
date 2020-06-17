@@ -2740,6 +2740,14 @@
         "jquery": "2.2.4"
       }
     },
+    "spectrum-colorpicker2": {
+      "version": "2.0.0",
+      "resolved": "file:node_shrinkwrap/spectrum-colorpicker2-2.0.0.tgz",
+      "dev": true,
+      "requires": {
+        "jquery": "2.2.4"
+      }
+    },
     "source-map": {
       "version": "0.5.7",
       "resolved": "file:node_shrinkwrap/source-map-0.5.7.tgz",
