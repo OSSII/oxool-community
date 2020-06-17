@@ -225,6 +225,16 @@ L.Control.Menubar = L.Control.extend({
 				{type: '--'},
 				{name: '.uno:AutoFormatMenu', type: 'menu', menu: [
 					{uno: '.uno:OnlineAutoFormat'}]},
+				{type: '--'},
+				{name: _('Binding line'), type: 'menu', menu: [
+					{name: _('Insert on the left side of page'), id: 'macro:///OxOOL.BindingLine.insertLeft()'},
+					{name: _('Insert on the right side of page'), id: 'macro:///OxOOL.BindingLine.insertRight()'},
+					{name: _('Insert on the top side of page'), id: 'macro:///OxOOL.BindingLine.insertTop()'},
+					{name: _('Insert on the bottom side of page'), id: 'macro:///OxOOL.BindingLine.insertBottom()'},
+					{type: '--'},
+					{name: _('Customize'), id: 'dialog:BindingLineDialog'},
+
+				]},
 			]},
 			{name: '.uno:HelpMenu', id: 'help', type: 'menu', menu: [
 				{name: _('Keyboard shortcuts'), id: 'keyboard-shortcuts', type: 'action', icon: '.uno:HelpIndex', hotkey: 'Ctel+Shift+?'},
