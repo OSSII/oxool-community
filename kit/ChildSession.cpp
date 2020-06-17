@@ -1164,11 +1164,17 @@ bool ChildSession::runMacro(const char* /*buffer*/, int /*size*/, const std::vec
         return false;
     }
 
+    std::string macro = tokens[1];
+    for (int i = 2 ; i < tokens.size() ; i++)
+    {
+        macro += tokens[i];
+    }
+
     std::unique_lock<std::mutex> lock(_docManager.getDocumentMutex());
     getLOKitDocument()->setView(_viewId);
 
-    bool ret = getLOKit()->runMacro(tokens[1].c_str());
-    LOG_DBG("Run macro : " + tokens[1] + " -> " + (ret ? "success." : "fail."));
+    bool ret = getLOKit()->runMacro(macro.c_str());
+    LOG_DBG("Run macro : " + macro + " -> " + (ret ? "success." : "fail."));
 
     return ret;
 }
