@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-02 11:17+0800\n"
+"POT-Creation-Date: 2020-06-17 14:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,8 +218,9 @@ msgstr "驗證"
 
 #: admin/src/AdminSocketGlobalFunction.js:35
 #: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1040
-#: js/toolbar.js:1291 src/layer/marker/Annotation.js:181 src/map/Map.js:106
-#: uiconfig/dialogs/AddTableAtEnd.js:46 uiconfig/dialogs/ColumnWidth.js:66
+#: js/toolbar.js:1291 src/layer/marker/Annotation.js:181 src/map/Map.js:107
+#: uiconfig/dialogs/AddTableAtEnd.js:46
+#: uiconfig/dialogs/BindingLineDialog.js:134 uiconfig/dialogs/ColumnWidth.js:66
 #: uiconfig/dialogs/DeleteCell.js:86 uiconfig/dialogs/ExampleDialog.js:54
 #: uiconfig/dialogs/GotoPage.js:76 uiconfig/dialogs/InsertBreak.js:57
 #: uiconfig/dialogs/InsertCell.js:54 uiconfig/dialogs/InsertTable.js:71
@@ -238,8 +239,9 @@ msgstr "請輸入新的帳號及密碼"
 msgid "Confirm password"
 msgstr "確認密碼"
 
-#: admin/src/AdminSocketGlobalFunction.js:58 src/map/Map.js:105
-#: uiconfig/dialogs/AddTableAtEnd.js:39 uiconfig/dialogs/ColumnWidth.js:49
+#: admin/src/AdminSocketGlobalFunction.js:58 src/map/Map.js:106
+#: uiconfig/dialogs/AddTableAtEnd.js:39
+#: uiconfig/dialogs/BindingLineDialog.js:113 uiconfig/dialogs/ColumnWidth.js:49
 #: uiconfig/dialogs/DeleteCell.js:66 uiconfig/dialogs/ExampleDialog.js:48
 #: uiconfig/dialogs/GotoPage.js:63 uiconfig/dialogs/InsertBreak.js:50
 #: uiconfig/dialogs/InsertCell.js:41 uiconfig/dialogs/InsertTable.js:64
@@ -635,7 +637,7 @@ msgstr "文件已儲存"
 msgid "Style"
 msgstr "樣式"
 
-#: js/toolbar.js:2334
+#: js/toolbar.js:2334 uiconfig/dialogs/BindingLineDialog.js:36
 msgid "Font"
 msgstr "字型"
 
@@ -684,7 +686,7 @@ msgstr "類型"
 msgid "Index"
 msgstr "索引"
 
-#: src/control/Control.DocumentRepair.js:48 src/layer/tile/TileLayer.js:270
+#: src/control/Control.DocumentRepair.js:48 src/layer/tile/TileLayer.js:272
 msgid "Comment"
 msgstr "註解"
 
@@ -806,15 +808,39 @@ msgstr "鍵盤快捷鍵"
 msgid "About"
 msgstr "關於"
 
-#: src/control/Control.Menubar.js:115
+#: src/control/Control.Menubar.js:39 uiconfig/dialogs/BindingLineDialog.js:98
+msgid "Binding line"
+msgstr "裝訂線"
+
+#: src/control/Control.Menubar.js:40
+msgid "Insert on the left side of page"
+msgstr "插入頁面左側"
+
+#: src/control/Control.Menubar.js:41
+msgid "Insert on the right side of page"
+msgstr "插入頁面右側"
+
+#: src/control/Control.Menubar.js:42
+msgid "Insert on the top side of page"
+msgstr "插入頁面上方"
+
+#: src/control/Control.Menubar.js:43
+msgid "Insert on the bottom side of page"
+msgstr "插入頁面底部"
+
+#: src/control/Control.Menubar.js:44
+msgid "Customize"
+msgstr "自訂"
+
+#: src/control/Control.Menubar.js:121
 msgid "Reset to Default Language"
 msgstr "重設回預設語言"
 
-#: src/control/Control.Menubar.js:347
+#: src/control/Control.Menubar.js:353
 msgid "All contents of the header will be deleted and can not be restored."
 msgstr "會刪除此頁首的所有內容，而且無法復原。"
 
-#: src/control/Control.Menubar.js:349
+#: src/control/Control.Menubar.js:355
 msgid "All contents of the footer will be deleted and can not be restored."
 msgstr "會刪除此頁尾的所有內容，而且無法復原。"
 
@@ -850,7 +876,7 @@ msgstr "右邊距"
 msgid "Downloading..."
 msgstr "下載中..."
 
-#: src/control/Toolbar.js:370 src/map/Map.js:1259
+#: src/control/Toolbar.js:370 src/map/Map.js:1260
 msgid "Saving..."
 msgstr "儲存中..."
 
@@ -858,7 +884,7 @@ msgstr "儲存中..."
 msgid "Renaming..."
 msgstr "正在更改檔名…"
 
-#: src/control/Toolbar.js:732
+#: src/control/Toolbar.js:735
 msgid "This version of %productName is powered by"
 msgstr "此 %productName 版本源自"
 
@@ -1078,47 +1104,47 @@ msgstr "拒絕更改"
 msgid "Open menu"
 msgstr "開啟選單"
 
-#: src/layer/marker/Annotation.js:244 src/layer/tile/TileLayer.js:240
+#: src/layer/marker/Annotation.js:244 src/layer/tile/TileLayer.js:242
 msgid "Reply"
 msgstr "回覆"
 
-#: src/layer/tile/TileLayer.js:234
+#: src/layer/tile/TileLayer.js:236
 msgid "Modify"
 msgstr "修改"
 
-#: src/layer/tile/TileLayer.js:246
+#: src/layer/tile/TileLayer.js:248
 msgid "Remove"
 msgstr "移除"
 
-#: src/map/Map.js:223
+#: src/map/Map.js:224
 msgid "Initializing..."
 msgstr "初始化中..."
 
-#: src/map/Map.js:341
+#: src/map/Map.js:342
 msgid "Last modification"
 msgstr "最後修改"
 
-#: src/map/Map.js:381
+#: src/map/Map.js:382
 msgid "seconds ago"
 msgstr "秒前"
 
-#: src/map/Map.js:384
+#: src/map/Map.js:385
 msgid "minutes ago"
 msgstr "分鐘前"
 
-#: src/map/Map.js:843
+#: src/map/Map.js:844
 msgid "Please enter a command starting with \".uno:\" or \"macro:///\""
 msgstr "請輸入 \".uno:\" 或 \"macro:///\" 開頭的指令"
 
-#: src/map/Map.js:846
+#: src/map/Map.js:847
 msgid "Invalid Command."
 msgstr "不合法的命令"
 
-#: src/map/Map.js:1119
+#: src/map/Map.js:1120
 msgid "Inactive document - please click to resume editing"
 msgstr "非使用中文件 - 請點按按鍵繼續編輯"
 
-#: src/map/Map.js:1262
+#: src/map/Map.js:1263
 msgid "Loading..."
 msgstr "載入中..."
 
@@ -1159,19 +1185,72 @@ msgstr ""
 "也不能包含右列之特殊符號 [ ] * ? : / \\ \n"
 "第一個或最後一個字不能用 ' (單引號)。"
 
-#: uiconfig/dialogs/ColumnWidth.js:19
-msgid "Width"
-msgstr "寬度"
+#: uiconfig/dialogs/BindingLineDialog.js:32 uiconfig/dialogs/DeleteCell.js:24
+msgid "Text"
+msgstr "文字"
 
-#: uiconfig/dialogs/ColumnWidth.js:21 uiconfig/dialogs/RowHeight.js:21
+#: uiconfig/dialogs/BindingLineDialog.js:33
+msgid "Color"
+msgstr "顏色"
+
+#: uiconfig/dialogs/BindingLineDialog.js:37
+msgid "Size"
+msgstr "大小"
+
+#: uiconfig/dialogs/BindingLineDialog.js:39
+msgid "Insert"
+msgstr "插入"
+
+#: uiconfig/dialogs/BindingLineDialog.js:40
+msgid "First page"
+msgstr "第一頁"
+
+#: uiconfig/dialogs/BindingLineDialog.js:41
+msgid "Current page"
+msgstr "目前頁面"
+
+#: uiconfig/dialogs/BindingLineDialog.js:42
+msgid "All pages"
+msgstr "全部頁面"
+
+#: uiconfig/dialogs/BindingLineDialog.js:44 uiconfig/dialogs/InsertTable.js:21
+msgid "Position"
+msgstr "位置"
+
+#: uiconfig/dialogs/BindingLineDialog.js:45
+msgid "Left"
+msgstr "左側"
+
+#: uiconfig/dialogs/BindingLineDialog.js:46
+msgid "Right"
+msgstr "右側"
+
+#: uiconfig/dialogs/BindingLineDialog.js:47
+msgid "Top"
+msgstr "上方"
+
+#: uiconfig/dialogs/BindingLineDialog.js:48
+msgid "Bottom"
+msgstr "底部"
+
+#: uiconfig/dialogs/BindingLineDialog.js:50
+msgid "Distance boundary"
+msgstr "邊距"
+
+#: uiconfig/dialogs/BindingLineDialog.js:50 uiconfig/dialogs/ColumnWidth.js:21
+#: uiconfig/dialogs/RowHeight.js:21
 msgid "cm"
 msgstr "公分"
 
-#: uiconfig/dialogs/ColumnWidth.js:31 uiconfig/dialogs/DeleteCell.js:51
-#: uiconfig/dialogs/InsertCell.js:27 uiconfig/dialogs/RemoveCell.js:27
-#: uiconfig/dialogs/RowHeight.js:31
+#: uiconfig/dialogs/BindingLineDialog.js:99 uiconfig/dialogs/ColumnWidth.js:31
+#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/InsertCell.js:27
+#: uiconfig/dialogs/RemoveCell.js:27 uiconfig/dialogs/RowHeight.js:31
 msgid "Close"
 msgstr "關閉"
+
+#: uiconfig/dialogs/ColumnWidth.js:19
+msgid "Width"
+msgstr "寬度"
 
 #: uiconfig/dialogs/DeleteCell.js:20 uiconfig/dialogs/InsertCell.js:18
 #: uiconfig/dialogs/RemoveCell.js:18
@@ -1181,10 +1260,6 @@ msgstr "選取"
 #: uiconfig/dialogs/DeleteCell.js:21
 msgid "Delete all"
 msgstr "全部刪除"
-
-#: uiconfig/dialogs/DeleteCell.js:24
-msgid "Text"
-msgstr "文字"
 
 #: uiconfig/dialogs/DeleteCell.js:25
 msgid "Numbers"
@@ -1242,10 +1317,6 @@ msgstr "整列"
 #: uiconfig/dialogs/InsertCell.js:22
 msgid "Entire column"
 msgstr "整欄"
-
-#: uiconfig/dialogs/InsertTable.js:21
-msgid "Position"
-msgstr "位置"
 
 #: uiconfig/dialogs/InsertTable.js:22
 msgid "Before current sheet"
