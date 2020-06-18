@@ -48,6 +48,6 @@ L.Map.include({
 			this._macroCallbacks[macroCmd] = callback;
 		}
 
-		this._socket.sendMessage('runmacro ' + command);
+		this._socket.sendMessage('uno ' + encodeURI(command));
 	},
 });
