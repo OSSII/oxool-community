@@ -651,6 +651,11 @@ std::unique_ptr<WopiStorage::WOPIFileInfo> WopiStorage::getWOPIFileInfo(const Au
     if (!overrideWatermarks.empty())
         watermarkText = overrideWatermarks;
 
+    // Add by Firefly <firefly@ossii.com.tw>
+    // LOOLWSD::OverrideWatermark 有最終浮水印複寫權
+    if (!LOOLWSD::OverrideWatermark.empty())
+        watermarkText = LOOLWSD::OverrideWatermark;
+
     return std::unique_ptr<WopiStorage::WOPIFileInfo>(new WOPIFileInfo(
         {userId, obfuscatedUserId, userName, userExtraInfo, watermarkText, templateSaveAs, templateSource,
          canWrite, postMessageOrigin, hidePrintOption, hideSaveOption, hideExportOption,

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-17 14:37+0800\n"
+"POT-Creation-Date: 2020-06-21 23:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,9 +223,10 @@ msgstr ""
 #: uiconfig/dialogs/GotoPage.js:76 uiconfig/dialogs/InsertBreak.js:57
 #: uiconfig/dialogs/InsertCell.js:54 uiconfig/dialogs/InsertTable.js:71
 #: uiconfig/dialogs/MoveTable.js:58 uiconfig/dialogs/OXSaveAs.js:48
-#: uiconfig/dialogs/RemoveCell.js:54 uiconfig/dialogs/RemoveTable.js:47
-#: uiconfig/dialogs/RenameTable.js:49 uiconfig/dialogs/RowHeight.js:66
-#: uiconfig/dialogs/ShowTable.js:55 uiconfig/dialogs/TraceChangeMode.js:65
+#: uiconfig/dialogs/PdfWatermarkText.js:55 uiconfig/dialogs/RemoveCell.js:54
+#: uiconfig/dialogs/RemoveTable.js:47 uiconfig/dialogs/RenameTable.js:49
+#: uiconfig/dialogs/RowHeight.js:66 uiconfig/dialogs/ShowTable.js:55
+#: uiconfig/dialogs/TraceChangeMode.js:65
 msgid "Cancel"
 msgstr ""
 
@@ -244,9 +245,10 @@ msgstr ""
 #: uiconfig/dialogs/GotoPage.js:63 uiconfig/dialogs/InsertBreak.js:50
 #: uiconfig/dialogs/InsertCell.js:41 uiconfig/dialogs/InsertTable.js:64
 #: uiconfig/dialogs/MoveTable.js:51 uiconfig/dialogs/OXSaveAs.js:38
-#: uiconfig/dialogs/RemoveCell.js:41 uiconfig/dialogs/RemoveTable.js:40
-#: uiconfig/dialogs/RenameTable.js:42 uiconfig/dialogs/RowHeight.js:49
-#: uiconfig/dialogs/ShowTable.js:46 uiconfig/dialogs/TraceChangeMode.js:58
+#: uiconfig/dialogs/PdfWatermarkText.js:40 uiconfig/dialogs/RemoveCell.js:41
+#: uiconfig/dialogs/RemoveTable.js:40 uiconfig/dialogs/RenameTable.js:42
+#: uiconfig/dialogs/RowHeight.js:49 uiconfig/dialogs/ShowTable.js:46
+#: uiconfig/dialogs/TraceChangeMode.js:58
 msgid "OK"
 msgstr ""
 
@@ -870,19 +872,20 @@ msgstr ""
 msgid "Right Margin"
 msgstr ""
 
-#: src/control/Toolbar.js:342 src/control/Toolbar.js:354
+#: src/control/Toolbar.js:355 src/control/Toolbar.js:367
+#: uiconfig/dialogs/PdfWatermarkText.js:44
 msgid "Downloading..."
 msgstr ""
 
-#: src/control/Toolbar.js:370 src/map/Map.js:1260
+#: src/control/Toolbar.js:383 src/map/Map.js:1260
 msgid "Saving..."
 msgstr ""
 
-#: src/control/Toolbar.js:381
+#: src/control/Toolbar.js:394
 msgid "Renaming..."
 msgstr ""
 
-#: src/control/Toolbar.js:735
+#: src/control/Toolbar.js:748
 msgid "This version of %productName is powered by"
 msgstr ""
 
@@ -902,77 +905,77 @@ msgstr ""
 msgid "Unsupported server version."
 msgstr ""
 
-#: src/core/Socket.js:333
+#: src/core/Socket.js:336
 msgid "Session terminated by document owner"
 msgstr ""
 
-#: src/core/Socket.js:337
+#: src/core/Socket.js:340
 msgid "Idle document - please click to reload and resume editing"
 msgstr ""
 
-#: src/core/Socket.js:344
+#: src/core/Socket.js:347
 msgid "Server is shutting down for maintenance (auto-saving)"
 msgstr ""
 
-#: src/core/Socket.js:348
+#: src/core/Socket.js:351
 msgid "Oops, there is a problem connecting the document"
 msgstr ""
 
-#: src/core/Socket.js:352
+#: src/core/Socket.js:355
 msgid "Server is recycling and will be available shortly"
 msgstr ""
 
-#: src/core/Socket.js:384
+#: src/core/Socket.js:387
 msgid ""
 "Document has changed in storage. Loading the new document. Your version is "
 "available as revision."
 msgstr ""
 
-#: src/core/Socket.js:390
+#: src/core/Socket.js:393
 msgid ""
 "Restoring older revision. Any unsaved changes will be available in version "
 "history"
 msgstr ""
 
-#: src/core/Socket.js:512
+#: src/core/Socket.js:515
 msgid ""
 "Document has been changed in storage. What would you like to do with your "
 "unsaved changes?"
 msgstr ""
 
-#: src/core/Socket.js:517
+#: src/core/Socket.js:520
 msgid "Discard"
 msgstr ""
 
-#: src/core/Socket.js:522
+#: src/core/Socket.js:525
 msgid "Overwrite"
 msgstr ""
 
-#: src/core/Socket.js:527
+#: src/core/Socket.js:530
 msgid "Save to new file"
 msgstr ""
 
-#: src/core/Socket.js:598
+#: src/core/Socket.js:601
 msgid "Document requires password to view."
 msgstr ""
 
-#: src/core/Socket.js:601
+#: src/core/Socket.js:604
 msgid "Document requires password to modify."
 msgstr ""
 
-#: src/core/Socket.js:603
+#: src/core/Socket.js:606
 msgid "Hit Cancel to open in view-only mode."
 msgstr ""
 
-#: src/core/Socket.js:607
+#: src/core/Socket.js:610
 msgid "Wrong password provided. Please try again."
 msgstr ""
 
-#: src/core/Socket.js:726
+#: src/core/Socket.js:729
 msgid "Connecting..."
 msgstr ""
 
-#: src/core/Socket.js:886
+#: src/core/Socket.js:889
 msgid ""
 "Well, this is embarrassing, we cannot connect to your document. Please try "
 "again."
@@ -1233,7 +1236,8 @@ msgstr ""
 
 #: uiconfig/dialogs/BindingLineDialog.js:99 uiconfig/dialogs/ColumnWidth.js:31
 #: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/InsertCell.js:27
-#: uiconfig/dialogs/RemoveCell.js:27 uiconfig/dialogs/RowHeight.js:31
+#: uiconfig/dialogs/PdfWatermarkText.js:26 uiconfig/dialogs/RemoveCell.js:27
+#: uiconfig/dialogs/RowHeight.js:31
 msgid "Close"
 msgstr ""
 
@@ -1340,6 +1344,18 @@ msgstr ""
 
 #: uiconfig/dialogs/OXSaveAs.js:24
 msgid "Please enter a new filename."
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:20
+msgid "Watermark text"
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:21
+msgid "If no needed, please leave it blank."
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:25
+msgid "Add watermark"
 msgstr ""
 
 #: uiconfig/dialogs/RemoveCell.js:19

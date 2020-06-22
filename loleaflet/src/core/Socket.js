@@ -287,6 +287,9 @@ L.Socket = L.Class.extend({
 				lokitVersionObj.ProductVersion + lokitVersionObj.ProductExtension + ')');
 			}
 		}
+		else if (textMsg.startsWith('watermark:')) {
+			this._map.options.watermark = JSON.parse(textMsg.substring(textMsg.indexOf('{')));
+		}
 		else if (textMsg.startsWith('perm:')) {
 			var perm = textMsg.substring('perm:'.length);
 
