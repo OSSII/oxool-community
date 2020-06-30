@@ -27,6 +27,7 @@ L.Map.WOPI = L.Handler.extend({
 	CallPythonScriptSource: null,
 	SupportsRename: false,
 	UserCanRename: false,
+	UserExtraInfo: {},
 
 	_appLoadedConditions: {
 		docloaded: false,
@@ -86,6 +87,7 @@ L.Map.WOPI = L.Handler.extend({
 		this.SupportsRename = !!wopiInfo['SupportsRename'];
 		this.UserCanRename = !!wopiInfo['UserCanRename'];
 		this.EnableShare = !!wopiInfo['EnableShare'];
+		this.UserExtraInfo = (wopiInfo['UserExtraInfo'] !== undefined) ? wopiInfo['UserExtraInfo'] : {};
 		if (wopiInfo['HideUserList'])
 			this.HideUserList = wopiInfo['HideUserList'].split(',');
 

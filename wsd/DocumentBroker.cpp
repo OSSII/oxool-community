@@ -590,6 +590,11 @@ bool DocumentBroker::load(const std::shared_ptr<ClientSession>& session, const s
         if (wopifileinfo->getHideChangeTrackingControls() != WopiStorage::WOPIFileInfo::TriState::Unset)
             wopiInfo->set("HideChangeTrackingControls", wopifileinfo->getHideChangeTrackingControls() == WopiStorage::WOPIFileInfo::TriState::True);
 
+        // Add By Firefly <firefly@ossii.com.tw>
+        // 把 userExtraInfoObj 也放到 wopiInfo
+        Poco::JSON::Parser parser;
+        wopiInfo->set("UserExtraInfo", parser.parse(userExtraInfo));
+
         std::ostringstream ossWopiInfo;
         wopiInfo->stringify(ossWopiInfo);
         const std::string wopiInfoString = ossWopiInfo.str();
