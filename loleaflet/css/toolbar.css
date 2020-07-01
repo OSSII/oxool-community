@@ -20,7 +20,7 @@
 	}
 }*/
 
-#toolbar-viewer.w2ui-toolbar {
+#toolbar-viewer-wrapper.w2ui-toolbar {
     background-color: #d0d0d0 !important;
 }
 
@@ -69,6 +69,10 @@
 
 #spreadsheet-toolbar.mobile-view {
     bottom: 0px;
+}
+
+#spreadsheet-toolbar.readonly {
+    display: none;
 }
 
 #formulabar {

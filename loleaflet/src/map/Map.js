@@ -99,6 +99,7 @@ L.Map = L.Evented.extend({
 		this._documentIdle = false;
 		this._helpTarget = null; // help page that fits best the current context
 		this._lastmodtime = '';
+		this._previewControl = null; // Preview toolbar control
 
 		vex.dialogID = -1;
 		// Add by Firefly <firefly@ossii.com.tw>
@@ -157,16 +158,25 @@ L.Map = L.Evented.extend({
 			if (e.perm !== 'edit') {
 				L.DomUtil.addClass(this._container.parentElement, 'readonly');
 				if (!L.Browser.mobile) {
+					if (this._previewControl === null) {
+						this._previewControl = L.control.preview({position:'topleft'});
+						this._previewControl.addTo(this);
+					}
 					L.DomUtil.addClass(L.DomUtil.get('toolbar-wrapper'), 'readonly');
 					L.DomUtil.addClass(L.DomUtil.get('toolbar-down'), 'readonly');
 				}
 				L.DomUtil.addClass(L.DomUtil.get('main-menu'), 'readonly');
 				L.DomUtil.addClass(L.DomUtil.get('presentation-controls-wrapper'), 'readonly');
 				L.DomUtil.addClass(L.DomUtil.get('spreadsheet-row-column-frame'), 'readonly');
+				L.DomUtil.addClass(L.DomUtil.get('spreadsheet-toolbar'), 'readonly');
 			}
 			else {
 				L.DomUtil.removeClass(this._container.parentElement, 'readonly');
 				if (!L.Browser.mobile) {
+					if (this._previewControl !== null) {
+						this.removeControl(this._previewControl);
+						this._previewControl = null;
+					}
 					L.DomUtil.removeClass(L.DomUtil.get('toolbar-wrapper'), 'readonly');
 					L.DomUtil.removeClass(L.DomUtil.get('toolbar-down'), 'readonly');
 				}
@@ -201,12 +211,6 @@ L.Map = L.Evented.extend({
 			if (!L.Browser.mobile && this._docLayer._docType == 'text') {
 				var interactiveRuler = this._permission === 'edit' ? true : false;
 				L.control.ruler({position:'topleft', interactive:interactiveRuler}).addTo(this);
-			}
-			// Add by Firefly <firefly@ossii.com.tw>
-			// 非手機裝置，且非編輯模式
-			if (!L.Browser.mobile && this._permission !== 'edit') {
-				// 啟用預覽模式
-				this.addControl(L.control.preview());
 			}
 		});
 		this.on('updatetoolbarcommandvalues', function(e) {

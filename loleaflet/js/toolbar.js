@@ -1764,20 +1764,6 @@ function onDocLayerInit() {
 	var statusbar = w2ui['actionbar'];
 	var docType = map.getDocType();
 
-	// Add by Firefly <firefly@ossii.com.tw>
-	// 唯讀模式搜尋無效，所以移除
-	if (map._permission === 'readonly') {
-		statusbar.remove('search', 'searchprev', 'searchnext', 'cancelsearch');
-		// 文字文件與試算表的上下頁無效
-		if (docType === 'text' || docType === 'spreadsheet')
-			statusbar.remove('prev', 'next', 'prevnextbreak');
-	}
-	// 檢視模式時文字文件與試算表的上下頁也不能用，一併藏起來
-	if (map._permission === 'view') {
-		if (docType === 'text' || docType === 'spreadsheet')
-			statusbar.remove('prev', 'next', 'prevnextbreak');
-	}
-
 	switch (docType) {
 	case 'spreadsheet':
 		toolbarUp.show('textalign', 'wraptext', 'breakspacing', 'insertannotation', 'conditionalformaticonset',
@@ -1842,10 +1828,6 @@ function onDocLayerInit() {
 				},
 				{type: 'break', id: 'break8', mobile: false}
 			]);
-
-			if (map._permission === 'edit') {
-				$('#spreadsheet-toolbar').show();
-			}
 			statusbar.show('goToPage');
 		}
 		$('#formulabar').show();

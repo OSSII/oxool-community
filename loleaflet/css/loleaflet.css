@@ -163,9 +163,12 @@ body {
 }
 
 #toolbar-viewer-wrapper {
-    position: relative;
-    width: 100%;
-    z-index: 11;
+    display: none;
+    position: fixed;
+    top:0;
+    left: 0;
+	width: 100%;
+	background-color: #d0d0d0;
     -webkit-box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
     -moz-box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
     box-shadow: 0 8px 6px -6px rgba(0,0,0,0.5);
@@ -188,22 +191,23 @@ body {
 }
 
 #mobile-edit-button {
-        position: absolute;
+	position: absolute;
 	text-align:center;
-        width: 56px;
-        height: 56px;
-        right: 16px;
-        bottom: 32px;
-        background-color: rgba(255, 128, 0, 0.5);
-        border-radius: 50%;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        z-index: 2000;
+	width: 56px;
+	height: 56px;
+	right: 16px;
+	bottom: 32px;
+	background-color: rgba(255, 128, 0, 0.5);
+	border-radius: 50%;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	z-index: 2000;
 }
 
 #mobile-edit-button.spreadsheet {
 	bottom: 68px;
 }
 
+#mobile-edit-button-text,
 #mobile-edit-button-icon {
 	line-height: 56px;
 	font-size: 24px;
@@ -226,7 +230,7 @@ body {
     #sidebar-dock-wrapper {
         display: none;
     }
-   
+
     #document-container.tablet {
         top: 41px;
     }
@@ -636,7 +640,7 @@ input,
 .lo-menu a:hover,
 .lo-menu a:focus,
 .lo-menu a:active,
-.vex.vex-theme-default .vex-content, 
+.vex.vex-theme-default .vex-content,
 .loleaflet-font,
 .loleaflet-controls,
 .context-menu-icon,

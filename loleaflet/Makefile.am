@@ -330,6 +330,7 @@ pot:
 		src/control/Control.Menubar.js \
 		src/control/Control.Scroll.Annotation.js \
 		src/control/Control.Tabs.js \
+		src/control/Permission.js \
 		src/control/Preview.js \
 		src/control/Ruler.js \
 		src/control/Toolbar.js \

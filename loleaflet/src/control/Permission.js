@@ -2,12 +2,39 @@
 /*
  * Document permission handler
  */
-/* global $ */
+/* global $ _ */
+
 L.Map.include({
 	setPermission: function (perm) {
 		if (perm === 'edit') {
-			if (L.Browser.mobile) {
+			var editInOdf = this.isEditInOdfFormat(); // 是否需以 ODF 格式編輯?
+			if (L.Browser.mobile || editInOdf) {
 				var button = $('#mobile-edit-button');
+				var buttonText = $('#mobile-edit-button-text');
+				// 非手機模式，變更滑鼠指標為 '手指'
+				if (!L.Browser.mobile) {
+					button.css({'cursor': 'pointer'});
+				}
+
+				if (editInOdf) {
+					button.css({
+						'padding-left': '16px',
+						'padding-right': '16px',
+						'border-radius': '16px',
+						'width': 'auto',
+						'background-color': 'rgba(0, 0, 255, 0.5)'
+					});
+					buttonText.text(' ' + _('Edit in ODF format'));
+				} else {
+					button.css({
+						'padding-left': '0',
+						'padding-right': '0',
+						'border-radius': '50%',
+						'width': '56px',
+						'background-color': 'rgba(255, 128, 0, 0.5)'
+					});
+					buttonText.text('');
+				}
 				button.show();
 				button.off('click');
 
@@ -20,12 +47,16 @@ L.Map.include({
 					// not reason enough to pop up the on-screen keyboard.
 					if (!(window.ThisIsTheiOSApp || window.ThisIsTheAndroidApp))
 						that.focus();
+					// 以 ODF 格式編輯的話，要轉檔
+					if (editInOdf) {
+						var newName = that.getDocName() + '.' + that.wopi.UserExtraInfo.SaveToOdf;
+						that.saveAs(newName);
+					}
 				});
 
 				// temporarily, before the user touches the floating action button
 				this._enterReadOnlyMode('readonly');
-			}
-			else {
+			} else {
 				this._enterEditMode(perm);
 			}
 		}
@@ -39,7 +70,7 @@ L.Map.include({
 	},
 
 	_enterEditMode: function (perm) {
-		if (this._permission == 'readonly' && L.Browser.mobile) {
+		if (this._permission == 'readonly' && (L.Browser.mobile || this.isEditInOdfFormat())) {
 			this.sendInitUNOCommands();
 		}
 		this._permission = perm;
@@ -85,5 +116,10 @@ L.Map.include({
 
 	getPermission: function () {
 		return this._permission;
+	},
+
+	isEditInOdfFormat: function () {
+		var editInOdfFormat = this.wopi.UserExtraInfo.SaveToOdf;
+		return (['odt', 'ods', 'odp'].indexOf(editInOdfFormat) >= 0);
 	}
 });

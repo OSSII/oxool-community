@@ -51,9 +51,6 @@ L.Control.Tabs = L.Control.extend({
 
 		map.on('updateparts', this._updateDisabled, this);
 
-		if (this._map._permission !== 'edit')
-			return;
-
 		L.installContextMenu({
 			selector: '.spreadsheet-tab',
 			className: 'loleaflet-font',
@@ -258,14 +255,14 @@ L.Control.Tabs = L.Control.extend({
 					var id = 'spreadsheet-tab' + i;
 					var tab = L.DomUtil.create('button', 'spreadsheet-tab', ssTabScroll);
 					L.DomEvent.enableLongTap(tab, 15, 1000);
-					
+
 					L.DomEvent.on(tab, 'contextmenu', function(j) {
 						return function() {
 							this._tabForContextMenu = j;
 							$('#spreadsheet-tab' + j).contextMenu();
 						}
 					}(i).bind(this));
-					
+
 					tab.textContent = e.partNames[i];
 					tab.id = id;
 

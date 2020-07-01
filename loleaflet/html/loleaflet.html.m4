@@ -90,10 +90,6 @@ ifelse(MOBILEAPP,[true],
        </div>
     </nav>
 
-    <div id="toolbar-viewer-wrapper" style="display:none">
-      <div id="toolbar-viewer"></div>
-    </div>
-
     <table id="toolbar-wrapper">
     <tr>
       <td id="toolbar-logo"></td>
@@ -123,7 +119,7 @@ ifelse(MOBILEAPP,[true],
 
       <div id="map"></div>
     </div>
-    <div id="spreadsheet-toolbar" style="display:none"></div>
+    <div id="spreadsheet-toolbar"></div>
 
     <div id="presentation-controls-wrapper">
       <div id="slide-sorter"></div>
@@ -136,6 +132,7 @@ ifelse(MOBILEAPP,[true],
 
     <div id="mobile-edit-button" style="display: none">
       <i id="mobile-edit-button-icon" class="fa fa-pencil"></i>
+      <span id="mobile-edit-button-text"></span>
     </div>
 
     <div id="toolbar-down" style="display:none"></div>
