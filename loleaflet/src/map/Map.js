@@ -1563,7 +1563,7 @@ L.Map = L.Evented.extend({
 		if (mainNav.css('display') === 'none') {
 			mainNav.css({'display': ''});
 			if (closebutton && !window.mode.isTablet()) {
-				$('#closebuttonwrapper').css({'display': ''});
+				$('#closebuttonwrapper').show();
 			}
 
 			obj = $('.unfold');
@@ -1573,7 +1573,7 @@ L.Map = L.Evented.extend({
 		else {
 			mainNav.css({'display': 'none'});
 			if (closebutton) {
-				$('#closebuttonwrapper').css({'display': 'none'});
+				$('#closebuttonwrapper').hide();
 			}
 
 			obj = $('.fold');

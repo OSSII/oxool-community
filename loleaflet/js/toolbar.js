@@ -1934,7 +1934,7 @@ function onDocLayerInit() {
 		// Fold menubar by default
 		// FIXME: reuse toogleMenubar / use css
 		$('.main-nav').css({'display': 'none'});
-		$('#closebuttonwrapper').css({'display': 'none'});
+		$('#closebuttonwrapper').hide();
 		var obj = $('.fold');
 		obj.removeClass('w2ui-icon fold');
 		obj.addClass('w2ui-icon unfold');
@@ -2847,6 +2847,8 @@ function _showOrHideCloseButton() {
 			map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
 			map.remove();
 		});
+	} else {
+		$('#closebuttonwrapper').hide();
 	}
 }
 
