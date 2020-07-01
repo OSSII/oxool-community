@@ -1846,6 +1846,7 @@ function onDocLayerInit() {
 			if (map._permission === 'edit') {
 				$('#spreadsheet-toolbar').show();
 			}
+			statusbar.show('goToPage');
 		}
 		$('#formulabar').show();
 		// Remove irrelevant toolbars
