@@ -155,12 +155,8 @@ L.Control.Ruler = L.Control.extend({
 		this._lMarginDrag.style.width = (DraggableConvertRatio*lMargin) + 'px';
 		this._rMarginDrag.style.width = (DraggableConvertRatio*rMargin) + 'px';
 
-		if (this.options.interactive) {
-			this._changeInteractions({perm:'edit'});
-		}
-		else {
-			this._changeInteractions({perm:'readonly'});
-		}
+		// 依據編輯模式，決定是否顯示尺規
+		this._changeInteractions({perm: this._map.getPermission()});
 	},
 
 	_fixOffset: function() {
