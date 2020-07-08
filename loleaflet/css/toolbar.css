@@ -200,7 +200,7 @@
     border-color: #ccc;
     background-color: #eee;
 }
-.closebuttonimage{ background: url('images/cmd/quit.svg') no-repeat center !important; }
+.closebuttonimage{ background: url('images/cmd/closepreview.svg') no-repeat center !important; }
 
 #tb_actionbar_item_left {
     width: 45%;
