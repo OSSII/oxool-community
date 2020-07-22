@@ -538,6 +538,11 @@ void AdminSocketHandler::handleMessage(bool /* fin */, WSOpCode /* code */,
             if (config.has(key))
             {
                 std::string p_value = addSlashes(config.getString(key, "")); // 讀取 value, 沒有的話預設為空字串
+                std::string p_default = config.getString(key + "[@default]", ""); // 讀取 default, 沒有的話預設為空字串
+                // 沒有設定值但有預設值，以預設值為準
+                if (p_value == "" && p_default != "")
+                    p_value = p_default;
+
                 std::string p_type = config.getString(key + "[@type]", ""); // 讀取 type, 沒有的話預設為空字串
                 if (p_type == "int" || p_type == "uint" || p_type == "bool" ||
                     p_value == "true" || p_value=="false")
