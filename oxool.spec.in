@@ -60,6 +60,8 @@ make %{?_smp_mflags}
 /usr/share/%{name}/discovery.xml
 /usr/share/%{name}/favicon.ico
 /usr/share/%{name}/extensions
+/etc/fonts/conf.d/*.conf
+%dir %attr(755, lool, root) /usr/share/fonts/%{name}
 /usr/share/doc/%{name}/README
 /usr/share/doc/%{name}/README.vars
 /usr/share/doc/%{name}/protocol.txt

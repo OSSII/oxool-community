@@ -665,6 +665,7 @@ AC_LINK_FILES([loleaflet/node_shrinkwrap], [loleaflet/node_shrinkwrap])
 AC_CONFIG_FILES([Makefile
                  loleaflet/Makefile
                  extensions/Makefile
+                 fonts/Makefile
                  loleaflet/npm-shrinkwrap.json
                  oxool.spec
                  oxool.xml

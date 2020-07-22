@@ -19,6 +19,8 @@ case "$1" in
 	chown lool:root /etc/@PACKAGE_NAME@/@PACKAGE_NAME@.xml
 	chmod 640 /etc/@PACKAGE_NAME@/@PACKAGE_NAME@.xml
 
+	chown lool:root /usr/share/fonts/@PACKAGE_NAME@
+
 	# We assume that the LibreOffice to be used is built TDF-style
 	# and installs in @LO_PATH@, and that /opt/@PACKAGE_NAME@ is
 	# on the same file system

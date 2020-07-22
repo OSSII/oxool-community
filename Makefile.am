@@ -12,7 +12,7 @@ SUBDIRS = loleaflet
 
 else
 
-SUBDIRS = . loleaflet extensions
+SUBDIRS = . loleaflet extensions fonts
 
 export ENABLE_DEBUG
 
