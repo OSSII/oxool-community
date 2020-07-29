@@ -672,8 +672,6 @@ AC_CONFIG_LINKS([loleaflet/package.json:loleaflet/package.json])
 AC_LINK_FILES([loleaflet/node_shrinkwrap], [loleaflet/node_shrinkwrap])
 
 AC_CONFIG_FILES([Makefile
-                 gtk/Makefile
-                 Mobile/Mobile/Info.plist
                  bundled/include/LibreOfficeKit/Makefile
                  src/include/Makefile
                  common/Makefile
@@ -687,6 +685,7 @@ AC_CONFIG_FILES([Makefile
                  loleaflet/npm-shrinkwrap.json
                  oxool.spec
                  oxool.xml
+                 oxool.pc
                  debian/oxool.postinst])
 AC_OUTPUT
 

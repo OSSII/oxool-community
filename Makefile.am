@@ -12,7 +12,7 @@ SUBDIRS = loleaflet
 
 else
 
-SUBDIRS = bundled/include/LibreOfficeKit src/include common net src/lib wsd kit loleaflet extensions
+SUBDIRS = bundled/include/LibreOfficeKit src/include common net src/lib wsd kit loleaflet extensions fonts
 
 export ENABLE_DEBUG
 
@@ -33,9 +33,9 @@ dist_doc_DATA = wsd/README \
                 wsd/protocol.txt \
                 wsd/reference.md
 
-oxoolwsddatadir = @LOOLWSD_DATADIR@
+oxooldatadir = @LOOLWSD_DATADIR@
 
-oxoolwsddata_DATA = discovery.xml \
+oxooldata_DATA = discovery.xml \
                    favicon.ico
 
 sudoersdir = ${sysconfdir}/sudoers.d
@@ -50,9 +50,9 @@ pam_DATA = etc/pam.d/oxool
 servicesysconfigdir = ${sysconfdir}/sysconfig
 servicesysconfig_DATA = etc/sysconfig/oxool
 
-oxoolwsdconfigdir = @LOOLWSD_CONFIGDIR@
+oxoolconfigdir = @LOOLWSD_CONFIGDIR@
 
-oxoolwsdconfig_DATA = oxool.xml \
+oxoolconfig_DATA = oxool.xml \
 		      oxoolkitconfig.xcu \
 		      etc/ca-chain.cert.pem \
 		      etc/cert.pem \
@@ -141,7 +141,7 @@ noinst_PROGRAMS = clientnb \
                   oxoolstress \
                   oxoolmount \
                   oxoolsocketdump \
-                  oxoolwsd \
+                  oxool \
                   oxoolforkit
 
 connect_SOURCES = tools/Connect.cpp

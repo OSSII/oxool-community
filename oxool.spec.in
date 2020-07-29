@@ -62,6 +62,7 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 %files
 %{_bindir}/*
+%{_libdir}/*.so.*
 %dir /usr/share/%{name}
 /usr/share/%{name}/loleaflet
 /usr/share/%{name}/discovery.xml
