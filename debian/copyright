@@ -1,9 +1,9 @@
 Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
-Name: loolwsd
-Maintainer: Tor Lillqvist <tml@collabora.com>
-Source: git://gerrit.libreoffice.org/online
+Name: oxool
+Maintainer: Firefly <firefly@ossii.com.tw>
+Source: https://github.com/OSSII/oxool-community
 
-Copyright: 2015 Collabora Productivity <libreoffice@collabora.com>
+Copyright: 2020 OSS Integral Institute Co., Ltd. <develop@ossii.com.tw>
 License: MPL-2
 
 Copyright: Copyright (c) 2010-2015, Vladimir Agafonkin, Copyright (c) 2010-2011, CloudMade

@@ -37,8 +37,8 @@ namespace
 {
     void alertAllUsersAndLog(const std::string& message, const std::string& cmd, const std::string& kind)
     {
-        LOG_ERR(message);
-        Util::alertAllUsers(cmd, kind);
+        LOG_ERR(message << " " << cmd << " " << kind);
+        //Util::alertAllUsers(cmd, kind);
     }
 }
 

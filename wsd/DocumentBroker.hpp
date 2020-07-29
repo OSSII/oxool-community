@@ -208,6 +208,7 @@ class ClientSession;
 /// Contains URI, physical path, etc.
 class DocumentBroker : public std::enable_shared_from_this<DocumentBroker>
 {
+    friend class previewDocumentBroker;
     class DocumentBrokerPoll;
 public:
     static Poco::URI sanitizeURI(const std::string& uri);

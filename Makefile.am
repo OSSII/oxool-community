@@ -12,7 +12,7 @@ SUBDIRS = loleaflet
 
 else
 
-SUBDIRS = . loleaflet extensions fonts
+SUBDIRS = bundled/include/LibreOfficeKit src/include common net src/lib wsd kit loleaflet extensions
 
 export ENABLE_DEBUG
 
@@ -58,6 +58,20 @@ oxoolwsdconfig_DATA = oxool.xml \
 		      etc/cert.pem \
 		      etc/key.pem
 
+oxool_modulesdir = @LOOLWSD_MODULES_DIR@
+
+oxool_module_confdir = @LOOLWSD_MODULE_CONFIG_DIR@
+
+oxool_module_datadir = @LOOLWSD_MODULE_DATA_DIR@
+
+#apache2configdir = ${sysconfdir}/apache2/conf-available
+
+#apache2config_DATA = etc/apache2/oxoolwsd.conf
+
+#nginxconfigdir = ${sysconfdir}/nginx/snippets
+
+#nginxconfig_DATA = etc/nginx/oxoolwsd.conf
+
 ACLOCAL_AMFLAGS = -I m4
 
 # quick and easy for now.
@@ -65,7 +79,7 @@ include_paths = -I${top_srcdir}/common -I${top_srcdir}/net -I${top_srcdir}/wsd -
 
 AM_CPPFLAGS = -pthread -DLOOLWSD_DATADIR='"@LOOLWSD_DATADIR@"' \
 	      -DLOOLWSD_CONFIGDIR='"@LOOLWSD_CONFIGDIR@"' \
-	      -DDEBUG_ABSSRCDIR='"@abs_srcdir@"' \
+	      -DDEBUG_ABSSRCDIR='"@abs_top_srcdir@"' \
 	      ${include_paths}
 
 if !ENABLE_DEBUG
@@ -126,18 +140,15 @@ noinst_PROGRAMS = clientnb \
                   oxoolmap \
                   oxoolstress \
                   oxoolmount \
-                  oxoolsocketdump
+                  oxoolsocketdump \
+                  oxoolwsd \
+                  oxoolforkit
 
-connect_SOURCES = tools/Connect.cpp \
-                  common/Log.cpp \
-                  common/Protocol.cpp \
-                  common/Util.cpp
+connect_SOURCES = tools/Connect.cpp
+connect_LDADD = $(top_builddir)/src/lib/liboxool.la
 
-lokitclient_SOURCES = common/IoUtil.cpp \
-                      common/Log.cpp \
-                      tools/KitClient.cpp \
-                      common/Protocol.cpp \
-                      common/Util.cpp
+lokitclient_SOURCES = tools/KitClient.cpp
+lokitclient_LDADD = $(top_builddir)/src/lib/liboxool.la
 
 oxoolforkit_sources = kit/ChildSession.cpp \
                      kit/ForKit.cpp \
@@ -156,24 +167,22 @@ clientnb_SOURCES = net/clientnb.cpp \
                    common/Util.cpp
 
 oxoolmount_SOURCES = tools/mount.cpp
+oxoolmount_LDADD = $(top_builddir)/src/lib/liboxool.la
 
 oxoolmap_SOURCES = tools/map.cpp
+oxoolmap_LDADD = $(top_builddir)/src/lib/liboxool.la
 
 oxoolconvert_SOURCES = tools/Tool.cpp
+oxoolconvert_LDADD = $(top_builddir)/src/lib/liboxool.la
 
 oxoolstress_CPPFLAGS = -DTDOC=\"$(abs_top_srcdir)/test/data\" ${include_paths}
-oxoolstress_SOURCES = tools/Stress.cpp \
-                     common/Protocol.cpp \
-                     common/Log.cpp \
-		     common/Util.cpp
+oxoolstress_SOURCES = tools/Stress.cpp
+oxoolstress_LDADD = $(top_builddir)/src/lib/liboxool.la
 
-oxoolconfig_SOURCES = tools/Config.cpp \
-		     common/Crypto.cpp \
-		     common/Log.cpp \
-		     common/Util.cpp
+oxoolconfig_SOURCES = tools/Config.cpp
 
-oxoolsocketdump_SOURCES = tools/WebSocketDump.cpp \
-			 $(shared_sources)
+oxoolsocketdump_SOURCES = tools/WebSocketDump.cpp
+oxoolsocketdump_LDADD = $(top_builddir)/src/lib/liboxool.la
 
 wsd_headers = wsd/Admin.hpp \
               wsd/AdminModel.hpp \
@@ -191,37 +200,7 @@ wsd_headers = wsd/Admin.hpp \
               wsd/TraceFile.hpp \
               wsd/UserMessages.hpp
 
-shared_headers = common/Common.hpp \
-                 common/Crypto.hpp \
-                 common/JsonUtil.hpp \
-                 common/IoUtil.hpp \
-                 common/FileUtil.hpp \
-                 common/Log.hpp \
-                 common/LOOLWebSocket.hpp \
-                 common/Protocol.hpp \
-                 common/Seccomp.hpp \
-                 common/Session.hpp \
-                 common/Unit.hpp \
-                 common/UnitHTTP.hpp \
-                 common/Util.hpp \
-                 common/Authorization.hpp \
-                 common/MessageQueue.hpp \
-                 common/Message.hpp \
-                 common/Png.hpp \
-                 common/Rectangle.hpp \
-                 common/SigUtil.hpp \
-                 common/security.h \
-                 common/SpookyV2.h \
-                 net/DelaySocket.hpp \
-                 net/FakeSocket.hpp \
-                 net/ServerSocket.hpp \
-                 net/Socket.hpp \
-                 net/WebSocketHandler.hpp \
-                 tools/Replay.hpp
-if ENABLE_SSL
-shared_headers += net/Ssl.hpp \
-                  net/SslSocket.hpp
-endif
+shared_headers = tools/Replay.hpp
 
 kit_headers = kit/ChildSession.hpp \
               kit/Delta.hpp \
@@ -231,11 +210,6 @@ kit_headers = kit/ChildSession.hpp \
               kit/Watermark.hpp
 
 noinst_HEADERS = $(wsd_headers) $(shared_headers) $(kit_headers) \
-                 bundled/include/LibreOfficeKit/LibreOfficeKit.h \
-                 bundled/include/LibreOfficeKit/LibreOfficeKit.hxx \
-                 bundled/include/LibreOfficeKit/LibreOfficeKitEnums.h \
-                 bundled/include/LibreOfficeKit/LibreOfficeKitInit.h \
-                 bundled/include/LibreOfficeKit/LibreOfficeKitTypes.h \
                  test/WopiTestServer.hpp \
                  test/countloolkits.hpp \
                  test/test.hpp \
@@ -269,6 +243,9 @@ EXTRA_DIST = discovery.xml \
              etc/sysconfig/oxool \
              scripts/unocommands.py \
              $(man_MANS)
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = oxool.pc
 
 if HAVE_LO_PATH
 
@@ -407,3 +384,13 @@ build-nocheck: all-am
 
 endif
 endif
+
+install-data-local:
+	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULES_DIR)
+	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULE_CONFIG_DIR)
+	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULE_DATA_DIR)
+
+uninstall-local:
+	rmdir $(DESTDIR)$(LOOLWSD_MODULES_DIR)
+	rmdir $(DESTDIR)$(LOOLWSD_MODULE_CONFIG_DIR)
+	rmdir $(DESTDIR)$(LOOLWSD_MODULE_DATA_DIR)

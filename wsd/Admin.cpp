@@ -40,6 +40,7 @@
 #include <common/SigUtil.hpp>
 #include <common/Authorization.hpp>
 
+#include <src/include/oxoolmodule.h>
 using namespace LOOLProtocol;
 
 using Poco::Net::HTTPResponse;
@@ -779,6 +780,21 @@ void AdminSocketHandler::handleMessage(bool /* fin */, WSOpCode /* code */,
     {
         // 通知正式升級狀態
         sendTextFrame(upgradeSoftware(tokens[0]) ? "clearUpgradeFilesOK" : "clearUpgradeFilesFail");
+    }
+    else if (tokens[0] == "module")
+    {
+        std::string moduleName = tokens[1];
+        if (apilist.find(moduleName) != apilist.end())
+        {
+            std::cout << moduleName << " found\n" ;
+            auto apiHandler = apilist.find(moduleName)->second();
+            std::string result = apiHandler->handleAdmin(firstLine);
+            sendTextFrame(result);
+        }
+        else
+        {
+            sendTextFrame("No such module");
+        }
     }
     else
     {

@@ -638,6 +638,15 @@ AC_SUBST(LOOLWSD_CACHEDIR)
 LOOLWSD_CONFIGDIR=${sysconfdir}/${PACKAGE}
 AC_SUBST(LOOLWSD_CONFIGDIR)
 
+LOOLWSD_MODULES_DIR=${libdir}/${PACKAGE}
+AC_SUBST(LOOLWSD_MODULES_DIR)
+
+LOOLWSD_MODULE_CONFIG_DIR=${sysconfdir}/${PACKAGE}/conf.d
+AC_SUBST(LOOLWSD_MODULE_CONFIG_DIR)
+
+LOOLWSD_MODULE_DATA_DIR=/var/lib/${PACKAGE}
+AC_SUBST(LOOLWSD_MODULE_DATA_DIR)
+
 LOOLWSD_DATADIR=${prefix}/share/${PACKAGE}
 AC_SUBST(LOOLWSD_DATADIR)
 
@@ -663,6 +672,15 @@ AC_CONFIG_LINKS([loleaflet/package.json:loleaflet/package.json])
 AC_LINK_FILES([loleaflet/node_shrinkwrap], [loleaflet/node_shrinkwrap])
 
 AC_CONFIG_FILES([Makefile
+                 gtk/Makefile
+                 Mobile/Mobile/Info.plist
+                 bundled/include/LibreOfficeKit/Makefile
+                 src/include/Makefile
+                 common/Makefile
+                 net/Makefile
+                 src/lib/Makefile
+                 wsd/Makefile
+                 kit/Makefile
                  loleaflet/Makefile
                  extensions/Makefile
                  fonts/Makefile
