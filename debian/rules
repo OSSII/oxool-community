@@ -27,3 +27,10 @@ override_dh_auto_build:
 
 override_dh_installinit:
 	# no init.d scripts here, assume systemd
+
+override_dh_auto_install:
+	dh_auto_install
+
+override_dh_install:
+	dh_install
+	rm -rf debian/oxool/usr/include 

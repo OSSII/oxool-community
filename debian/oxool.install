@@ -17,7 +17,6 @@
 ./etc/sudoers.d/lool
 ./etc/sysconfig/
 ./etc/sysconfig/oxool
-./usr/
 ./usr/bin/
 ./usr/bin/oxool
 ./usr/bin/oxool-systemplate-setup

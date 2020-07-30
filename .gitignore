@@ -97,3 +97,18 @@ oxool
 oxool_fuzzer
 oxool.spec
 oxool.xml
+
+# debian package
+debian/.debhelper/
+debian/files
+debian/oxool-dev.debhelper.log
+debian/oxool-dev.substvars
+debian/oxool-dev/
+debian/oxool.debhelper.log
+debian/oxool.postinst.debhelper
+debian/oxool.postrm.debhelper
+debian/oxool.prerm.debhelper
+debian/oxool.substvars
+debian/tmp/
+loleaflet/build/dist/
+
