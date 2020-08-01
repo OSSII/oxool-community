@@ -1,3 +1,9 @@
+oxool (3.2.9-1.community) bionic; urgency=medium
+
+  * Module SDK Implement
+
+ -- tommy <tommy.wu@ossii.com.tw>  Sun, 02 Aug 2020 01:20:07 +0800
+
 oxool (3.2.8-1.community) unstable; urgency=low
 
   * Bump package version to 3.2.8-1
