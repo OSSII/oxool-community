@@ -231,9 +231,8 @@
       "dev": true
     },
     "bootstrap": {
-      "version": "3.3.6",
-      "resolved": "file:node_shrinkwrap/bootstrap-3.3.6.tgz",
-      "integrity": "sha1-jej3SdyKdD8qxbUQ2Yg3Hj2qZYk=",
+      "version": "3.4.1",
+      "resolved": "file:node_shrinkwrap/bootstrap-3.4.1.tgz",
       "dev": true
     },
     "brace-expansion": {
