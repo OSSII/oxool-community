@@ -37,7 +37,13 @@ var deps = {
 		src: ['src/AdminSocketHistory.js'],
 		desc: 'Socket to query document history.',
 		deps: ['AdminCore']
-	}
+	},
+
+	AdminSocketFontManager: {
+               src: ['src/AdminSocketFontManager.js'],
+               desc: 'Socket to font manager.',
+               deps: ['AdminCore']
+       }
 };
 
 if (typeof exports !== 'undefined') {

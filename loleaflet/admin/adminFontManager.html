@@ -1,0 +1,56 @@
+{% BLOCK content %}
+<style>
+td {
+    vertical-align: middle;
+}
+</style>
+<script>
+    if (window.location.protocol == "https:") {
+        host = 'wss://' + window.location.host + '%SERVICE_ROOT%/lool/adminws/'
+    }
+    else {
+        host = 'ws://' + window.location.host + '%SERVICE_ROOT%/lool/adminws/'
+    }
+
+    Admin.FontManager(host);
+</script>
+
+<h2 class="page-header">字型管理</h2>
+
+<div class="row"><!-- row begin -->
+  <div class="col-md-4">
+      <div class="input-group">
+          <label class="input-group-btn">
+              <span class="btn btn-primary">
+                  選擇字型：<input type="file" id="fontFiles" name="fontFiles" multiple="multiple" style="display:none;" accept=".ttf,.ttc,.otf">
+              </span>
+          </label>
+          <input type="text" class="form-control" id="filename-disp" readonly>
+      </div>
+  </div>
+  <div class="col-md-2">
+      <input type="button" class="btn btn-success" id="upload" value="上傳" disabled>
+  </div>
+  <div class="col-md-6">
+    <div id="progress" style="display:none;">
+      <div class="progress-bar progress-bar-info" id="progressbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+</div><!-- row end -->
+
+<div style="text-align:right;"><span class="label label-success">共有 <span id="totalFiles"> </span> 個檔案， <span id="totalFonts"> </span> 個字型。</span></div>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr class="bg-primary">
+          <th><input type="checkbox" id="selectAllFiles">&nbsp;檔案名稱 <button id="deleteButton" class="btn btn-warning btn-xs" style="display:none;">刪除</button></button></th>
+          <th>字型名稱(預覽)</th>
+          <th>式樣</th>
+          <th style="text-align:center">彩色字型？</th>
+          <th style="text-align:center">符號字型？</th>
+        </tr>
+      </thead>
+      <tbody id="font_list"></tbody>
+    </table>
+</div>
+{% END BLOCK %}
