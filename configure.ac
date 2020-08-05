@@ -55,6 +55,14 @@ AS_IF([test `uname -s` = Linux],
        AS_IF([test -z "$SETCAP"],
        [AC_MSG_ERROR([The setcap command is needed. It might be in a package called libcap-progs.])]))
 
+#-----------------------------------------------------------------------
+# Check for fontconfig support
+#-----------------------------------------------------------------------
+PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.13.0, use_fontconfig="yes", use_fontconfig="no")
+if test "$use_fontconfig" = "no" ; then
+    AC_MSG_ERROR([Need fontconfig, but not found or version too old.])
+fi
+
 # Declare options
 AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug],

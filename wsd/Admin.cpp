@@ -14,6 +14,9 @@
 #include <sys/poll.h>
 #include <unistd.h>
 
+#include <fontconfig/fontconfig.h>
+#include <fontconfig/fcfreetype.h>
+
 #include <Poco/Net/HTTPCookie.h>
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
@@ -71,6 +74,13 @@ std::string PermFile =
 #endif
     "/perm.xml";
 
+std::string FontsDir =
+#if ENABLE_DEBUG
+    DEBUG_ABSSRCDIR "/fonts";
+#else
+    "/usr/share/fonts/" PACKAGE_NAME;
+#endif
+
 std::string addSlashes(const std::string &source)
 {
     std::string out;
@@ -94,6 +104,38 @@ void removeSpecialKeys(oxoolConfig& config, const std::string& keyName)
 
         config.remove(item);
     }
+}
+
+std::string scanFontDir()
+{
+    const std::string format = "{\"%{file|basename}\":{\"index\":%{index}, \"family\":\"%{family}\", \"familylang\":\"%{familylang}\", \"style\":\"%{style}\", \"stylelang\":\"%{stylelang}\", \"weight\":\"%{weight}\", \"slant\":\"%{slant}\", \"color\":%{color|downcase}, \"symbol\":%{symbol|downcase}, \"variable\":%{variable|downcase}, \"lang\":\"%{lang}\"}}";
+    FcFontSet *fs = FcFontSetCreate();
+    FcStrSet *dirs = FcStrSetCreate();
+    FcStrList *strlist = FcStrListCreate(dirs);
+    FcChar8 *file = (FcChar8*)FontsDir.c_str();
+    do
+    {
+        FcDirScan(fs, dirs, NULL, NULL, file, FcTrue);
+    }
+    while ((file = FcStrListNext(strlist)));
+    FcStrListDone(strlist);
+    FcStrSetDestroy(dirs);
+
+    std::string jsonStr("[");
+    for (int i = 0; i < fs->nfont; i++)
+    {
+        FcPattern *pat = fs->fonts[i];
+        FcChar8 *s = FcPatternFormat(pat, (FcChar8 *)format.c_str());
+
+        if (i > 0) jsonStr.append(",");
+
+        jsonStr.append((char *)s);
+        FcStrFree(s);
+    }
+    jsonStr.append("]");
+    FcFontSetDestroy(fs);
+    FcFini();
+    return jsonStr;
 }
 
 /// 軟體升級作業
@@ -138,6 +180,13 @@ bool AdminSocketHandler::upgradeSoftware(const std::string& command)
         in.close();
         retcode = atoi(buf);
         return (retcode == 0 ? true : false);
+    }
+    // 移動字型檔案到管理目錄
+    else if (command == "moveFontFile")
+    {
+        Poco::File font(_temporaryFile->path() + "/" + _upgradeFileName);
+        font.moveTo(FontsDir);
+        return true;
     }
     // 升級測試
     else if (command == "upgradePackageTest")
@@ -722,11 +771,27 @@ void AdminSocketHandler::handleMessage(bool /* fin */, WSOpCode /* code */,
 
         
     }
-    //  Client 準備上傳軟體升級包
-    else if (tokens[0] == "uploadUpgradeFile" && tokens.count() > 1)
+    // 傳回字型檔案列表
+    else if (tokens[0] == "getFontlist")
+    {
+        sendTextFrame("fontList: " + scanFontDir());
+    }
+    // 刪除字型
+    else if (tokens[0] == "deleteFont" && tokens.count() == 2)
+    {
+        std::string filename;
+        Poco::URI::decode(tokens[1], filename);
+        Poco::File font(FontsDir + "/" + filename);
+        font.remove();
+        LOG_DBG("Delete font file : " + filename);
+    }
+    //  Client 準備上傳軟體升級包或字型檔
+    else if ((tokens[0] == "uploadUpgradeFile"
+        || tokens[0] == "uploadFont")
+        && tokens.count() > 1)
     {
         _temporaryFile = new TemporaryFile(Path::temp());
-        LOG_DBG("Upgrade temporary dir is " + _temporaryFile->path());
+        LOG_DBG("Upload temporary dir is " + _temporaryFile->path());
         //_temporaryFile->keep(); // 保持不要自動清除
         _temporaryFile->createDirectories(); // 強制建立暫存目錄
         _upgradeFileName = "";
@@ -774,6 +839,12 @@ void AdminSocketHandler::handleMessage(bool /* fin */, WSOpCode /* code */,
     {
         // 通知正式升級狀態
         sendTextFrame(upgradeSoftware(tokens[0]) ? "upgradeSuccess" : "upgradeFail");
+    }
+    // Client 通知將暫存檔移至管理的字型目錄內
+    else if (tokens[0] == "moveFontFile" && tokens.count() == 1)
+    {
+        // 通知移動狀態
+        sendTextFrame(upgradeSoftware(tokens[0]) ? "moveFontSuccess" : "moveFontFail");
     }
     // Client 通知清除升級暫存檔
     else if (tokens[0] == "clearUpgradeFiles" && tokens.count() == 1)
