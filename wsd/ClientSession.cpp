@@ -158,6 +158,11 @@ bool ClientSession::_handleInput(const char *buffer, int length)
 
         return loadDocument(buffer, length, tokens, docBroker);
     }
+    else if (tokens[0] == "setmodified")
+    {
+        docBroker->setModified(true);
+        return true;
+    }
     else if (tokens[0] != "canceltiles" &&
              tokens[0] != "tileprocessed" &&
              tokens[0] != "clientzoom" &&
@@ -1013,7 +1018,15 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         StringTokenizer stateTokens(tokens[1], "=", StringTokenizer::TOK_IGNORE_EMPTY | StringTokenizer::TOK_TRIM);
         if (stateTokens.count() == 2 && stateTokens[0] == ".uno:ModifiedStatus")
         {
-            docBroker->setModified(stateTokens[1] == "true");
+            // Modify by Firefly <firefly@ossii.com.tw>
+            // 編輯 xls 或 xlsx 檔案時，會傳回 disabled
+            // 所以要精確判斷傳回值為 true 或 false，
+            // 避免 Put 回 WOPI host 修改旗標會設成 false
+            // 造成 WOPI host 不存檔。
+            if (stateTokens[1] == "true" || stateTokens[1] == "false")
+            {
+                docBroker->setModified(stateTokens[1] == "true");
+            }
         }
         else
         {

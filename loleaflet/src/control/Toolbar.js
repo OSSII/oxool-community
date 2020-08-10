@@ -12,20 +12,6 @@ L.Map.include({
 		'.uno:CharFontName'
 	],
 
-	_modalDialogOptions: {
-		overlayClose:true,
-		opacity: 80,
-		overlayCss: {
-			backgroundColor : '#000'
-		},
-		containerCss: {
-			overflow : 'hidden',
-			backgroundColor : '#fff',
-			padding : '20px',
-			border : '2px solid #000'
-		}
-	},
-
 	_allowCommands: {},
 
 	_hotkeyCommands: {},
@@ -694,18 +680,20 @@ L.Map.include({
  	 */
 	forceCellCommit: function () {
 		var map = this;
-		// 如果試試算表，檢查儲存格是否有資料未輸入
-		if (map._permission === 'edit' && map.getDocType() === 'spreadsheet') {
-			var $input = $('#formulaInput');
-			// 取得儲存格輸入資料
-			var value = $input.val();
-			// 有資料就強制寫入儲存格
-			if (value !== '') {
+		// 如果試試算表，檢查儲存格是否在輸入狀態
+		if (map._permission === 'edit'
+			&& map.getDocType() === 'spreadsheet'
+			&& this._hasForceCellCommit === undefined) {
+
+			this._hasForceCellCommit = true; // 設定 commit 狀態，避免重複 commit
+			// 游標在編輯狀態
+			if (map._docLayer._isCursorVisible === true) {
+				this._socket.sendMessage('setmodified'); // 設定文件為已修改狀態
+				// 送出 enter 按鍵
 				map.focus();
 				map._docLayer._postKeyboardEvent('input',
 					map.keyboard.keyCodes.enter,
 					map.keyboard._toUNOKeyCode(map.keyboard.keyCodes.enter));
-				$input.val(''); // 清空輸入資料避免重複輸入
 			}
 		}
 	},
