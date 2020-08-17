@@ -108,7 +108,7 @@ void removeSpecialKeys(oxoolConfig& config, const std::string& keyName)
 
 std::string scanFontDir()
 {
-    const std::string format = "{\"%{file|basename}\":{\"index\":%{index}, \"family\":\"%{family}\", \"familylang\":\"%{familylang}\", \"style\":\"%{style}\", \"stylelang\":\"%{stylelang}\", \"weight\":\"%{weight}\", \"slant\":\"%{slant}\", \"color\":%{color|downcase}, \"symbol\":%{symbol|downcase}, \"variable\":%{variable|downcase}, \"lang\":\"%{lang}\"}}";
+    const std::string format = "{\"%{file|basename}\":{\"index\":%{index}, \"family\":\"%{family}\", \"familylang\":\"%{familylang}\", \"style\":\"%{style}\", \"stylelang\":\"%{stylelang}\", \"weight\":\"%{weight}\", \"slant\":\"%{slant}\", \"color\":\"%{color|downcase}\", \"symbol\":\"%{symbol|downcase}\", \"variable\":\"%{variable|downcase}\", \"lang\":\"%{lang}\"}}";
     FcFontSet *fs = FcFontSetCreate();
     FcStrSet *dirs = FcStrSetCreate();
     FcStrList *strlist = FcStrListCreate(dirs);

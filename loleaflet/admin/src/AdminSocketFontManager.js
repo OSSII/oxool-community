@@ -74,8 +74,8 @@ var AdminSocketFontManager = AdminSocketBase.extend({
 			jsonIdx = textMsg.indexOf('[');
 			if (jsonIdx > 0) {
 				var json = JSON.parse(textMsg.substring(jsonIdx));
-				console.debug('Font list:', json);
 				this._updateFontList(json);
+				console.debug('Font list:', this._fontList);
 			}
 			$('#fontFiles').val('');
 		} else if (textMsg === 'readyToReceiveFile') { // Server 已準備接收檔案
@@ -110,7 +110,6 @@ var AdminSocketFontManager = AdminSocketBase.extend({
 		if (this._uploadIndex < this._uploadFileList.length) {
 			this._fileInfo = this._uploadFileList[this._uploadIndex];
 			var fileObj = {name: this._fileInfo.name, size:this._fileInfo.size};
-			console.debug(fileObj);
 			this.socket.send('uploadFont ' + JSON.stringify(fileObj));
 			var percent = Math.floor(((this._uploadIndex + 1) / this._uploadFileList.length) * 100); // 計算傳送比例
 			$('#progressbar').css('width', percent +'%')
@@ -152,7 +151,6 @@ var AdminSocketFontManager = AdminSocketBase.extend({
 		var that = this;
 		this._fontList = {}; // 清空之前的列表
 		fontList.forEach(function(item/*, index*/) {
-			//console.debug(item);
 			var file = Object.keys(item)[0];
 			var prop = item[file];
 			var newProp = {};
@@ -162,9 +160,11 @@ var AdminSocketFontManager = AdminSocketBase.extend({
 			// 2. 式樣名稱
 			newProp.style = that._getNameByLocale(prop.style, prop.stylelang);
 			// 3. 彩色字型?
-			newProp.color = prop.color;
+			newProp.color = (prop.color === 'true');
 			// 4. 符號字型?
-			newProp.symbol = prop.symbol;
+			newProp.symbol = (prop.symbol === 'true');
+			// 4.1 可變字型
+			newProp.variable = (prop.variable === 'true');
 			// 5. 支援語系?
 			newProp.lang = prop.lang;
 			// 6. index
@@ -238,7 +238,6 @@ var AdminSocketFontManager = AdminSocketBase.extend({
 			var checked = $('input[name="filename"]:checked');
 			$('#selectAllFiles').prop('checked', allFilenames.length === checked.length);
 			that._showOrHideDeleteButton();
-			console.debug('total file = ' + allFilenames.length + ', checked=' + checked.length);
 		});
 	},
 
