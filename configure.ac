@@ -58,7 +58,7 @@ AS_IF([test `uname -s` = Linux],
 #-----------------------------------------------------------------------
 # Check for fontconfig support
 #-----------------------------------------------------------------------
-PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.13.0, use_fontconfig="yes", use_fontconfig="no")
+PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.12.6, use_fontconfig="yes", use_fontconfig="no")
 if test "$use_fontconfig" = "no" ; then
     AC_MSG_ERROR([Need fontconfig, but not found or version too old.])
 fi

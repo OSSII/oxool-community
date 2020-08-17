@@ -2,7 +2,7 @@ Source: oxool
 Section: web
 Priority: optional
 Maintainer: Firefly <firefly@ossii.com.tw>
-Build-Depends: debhelper (>= 9), dh-systemd (>= 1.3), libcap-dev, libcap2-bin, libpcre3-dev, libpng-dev, libpoco-dev (>= 1.7.5), linux-libc-dev, fontconfig, libpam-dev, libcppunit-dev, pkg-config, devscripts
+Build-Depends: debhelper (>= 9), dh-systemd (>= 1.3), libcap-dev, libcap2-bin, libpcre3-dev, libpng-dev, libpoco-dev (>= 1.7.5), linux-libc-dev, libfontconfig1-dev, libpam-dev, libcppunit-dev, pkg-config, devscripts
 Standards-Version: 3.9.7
 
 Package: oxool
