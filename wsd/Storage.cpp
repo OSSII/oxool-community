@@ -605,6 +605,8 @@ std::unique_ptr<WopiStorage::WOPIFileInfo> WopiStorage::getWOPIFileInfo(const Au
 
         JsonUtil::findJSONValue(object, "Size", size);
         JsonUtil::findJSONValue(object, "UserExtraInfo", userExtraInfo);
+        if (userExtraInfo.empty())
+            userExtraInfo = "{}";
         JsonUtil::findJSONValue(object, "WatermarkText", watermarkText);
         JsonUtil::findJSONValue(object, "UserCanWrite", canWrite);
         JsonUtil::findJSONValue(object, "PostMessageOrigin", postMessageOrigin);
