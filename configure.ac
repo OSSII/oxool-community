@@ -690,6 +690,7 @@ AC_CONFIG_FILES([Makefile
                  loleaflet/Makefile
                  extensions/Makefile
                  fonts/Makefile
+                 fonts/00-oxool.conf
                  loleaflet/npm-shrinkwrap.json
                  oxool.spec
                  oxool.xml

@@ -1,6 +1,6 @@
 
 fontconfigdir = ${sysconfdir}/fonts/conf.d
-dist_fontconfig_DATA = 50-oxool.conf
+dist_fontconfig_DATA = 00-oxool.conf
 
 oxoolfontsdir = ${datarootdir}/fonts/oxool
 

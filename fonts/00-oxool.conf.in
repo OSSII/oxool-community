@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
+	<dir>@LO_PATH@/share/fonts/truetype</dir>
+
 	<alias>
 		<family>serif</family>
 		<prefer>
