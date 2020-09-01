@@ -9,6 +9,11 @@ L.Map.include({
 		if (perm === 'edit') {
 			var editInOdf = this.isEditInOdfFormat(); // 是否需以 ODF 格式編輯?
 			if (L.Browser.mobile || editInOdf) {
+				// 以 ODF 格式編輯的功能，只能由檔案 Owner 執行，其他人只能唯讀開啟
+				if (editInOdf && this.wopi.DocumentOwner !== true) {
+					this._enterReadOnlyMode('readonly');
+					return;
+				}
 				var button = $('#mobile-edit-button');
 				var buttonText = $('#mobile-edit-button-text');
 				// 非手機模式，變更滑鼠指標為 '手指'
