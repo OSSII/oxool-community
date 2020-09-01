@@ -2325,18 +2325,15 @@ private:
 
     void handleVersionRequest(const Poco::Net::HTTPRequest& request)
     {
-        std::string branding_name, branding_version;
-
         LOG_DBG("Get version request: " << request.getURI());
-        std::string version = "{\"OxOOL\":\""  LOOLWSD_VERSION  "\"";
-        if ((std::string)BRAND_NAME != "")
-        {
-            version += ",\"" BRAND_NAME "\":\"" BRAND_VERSION "\"";
-        }
-        else
-        {
-            version += ",\"OSSII\":\"" LOOLWSD_VERSION "\"";
-        }
+        std::string loVersion, hash, branch;
+        Util::getVersionInfo(loVersion, hash, branch);
+        std::string versionStr =
+            "{ \"Version\": \"" + loVersion + "\", " +
+            "\"Hash\": \"" + hash + "\", " +
+            "\"Branch\": \"" + branch + "\" }";
+        std::string version = "{\"loolserver\":" +  versionStr;
+        version += ",\"lokitversion\":" + LOOLWSD::LOKitVersion;
         version += "}";
 
         std::ostringstream oss;
