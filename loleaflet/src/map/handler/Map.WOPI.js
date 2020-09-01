@@ -19,6 +19,7 @@ L.Map.WOPI = L.Handler.extend({
 	DisableExport: false,
 	DisableCopy: false,
 	DisableInactiveMessages: false,
+	DocumentOwner: false,
 	DownloadAsPostMessage: false,
 	UserCanNotWriteRelative: true,
 	EnableInsertRemoteImage: false,
@@ -88,6 +89,7 @@ L.Map.WOPI = L.Handler.extend({
 		this.UserCanRename = !!wopiInfo['UserCanRename'];
 		this.EnableShare = !!wopiInfo['EnableShare'];
 		this.UserExtraInfo = (wopiInfo['UserExtraInfo'] !== undefined) ? wopiInfo['UserExtraInfo'] : {};
+		this.DocumentOwner = (wopiInfo['DocumentOwner'] === true);
 		if (wopiInfo['HideUserList'])
 			this.HideUserList = wopiInfo['HideUserList'].split(',');
 

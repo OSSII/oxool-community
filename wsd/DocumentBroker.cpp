@@ -594,6 +594,14 @@ bool DocumentBroker::load(const std::shared_ptr<ClientSession>& session, const s
         // 把 userExtraInfoObj 也放到 wopiInfo
         Poco::JSON::Parser parser;
         wopiInfo->set("UserExtraInfo", parser.parse(userExtraInfo));
+        // Mark the session as 'Document owner' if WOPI hosts supports it
+        if (userId == _storage->getFileInfo().getOwnerId())
+        {
+            LOG_DBG("Session [" << sessionId << "] is the document owner");
+            session->setDocumentOwner(true);
+            // 編輯該檔案者就是擁有者本人
+            wopiInfo->set("DocumentOwner", true);
+        }
 
         std::ostringstream ossWopiInfo;
         wopiInfo->stringify(ossWopiInfo);
@@ -604,13 +612,6 @@ bool DocumentBroker::load(const std::shared_ptr<ClientSession>& session, const s
         // frame. Important to send this message immediately and not enqueue it so that in case
         // document load fails, loleaflet is able to tell its parent frame via PostMessage API.
         session->sendMessage("wopi: " + wopiInfoString);
-
-        // Mark the session as 'Document owner' if WOPI hosts supports it
-        if (userId == _storage->getFileInfo().getOwnerId())
-        {
-            LOG_DBG("Session [" << sessionId << "] is the document owner");
-            session->setDocumentOwner(true);
-        }
 
         getInfoCallDuration = wopifileinfo->getCallDuration();
 
