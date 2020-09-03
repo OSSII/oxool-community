@@ -578,6 +578,12 @@ namespace Util
         hash.resize(std::min(8, (int)hash.length()));
     }
 
+    void getVersionInfo(std::string& version, std::string& hash, std::string& branch)
+    {
+        getVersionInfo(version, hash);
+        branch = std::string(LOOLWSD_BRANCH);
+    }
+
     std::string UniqueId()
     {
         static std::atomic_int counter(0);

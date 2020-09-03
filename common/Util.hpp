@@ -156,6 +156,9 @@ namespace Util
     /// Get version information
     void getVersionInfo(std::string& version, std::string& hash);
 
+    /// Get version & branch information
+    void getVersionInfo(std::string& version, std::string& hash, std::string& branch);
+
     /// Return a string that is unique across processes and calls.
     std::string UniqueId();
 
