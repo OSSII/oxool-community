@@ -1,6 +1,6 @@
 sudo apt update -y
 # Install for oxool-community
-sudo apt install -y build-essential libsqlite3-dev libcurl4-openssl-dev libcppunit-dev libcap-dev libtool libpng-dev automake m4 wget curl autoconf pkg-config openssl net-tools libgumbo-dev ccache
+sudo apt install -y build-essential libsqlite3-dev libcurl4-openssl-dev libcppunit-dev libcap-dev libtool libpng-dev automake m4 wget curl autoconf pkg-config openssl net-tools libgumbo-dev ccache fontconfig
 # Install for build deb package
 sudo apt install -y devscripts debhelper dh-systemd dh-exec
 # Install for poco
