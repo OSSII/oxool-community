@@ -3,7 +3,7 @@
 ./etc/cron.d/oxool.cron
 ./etc/fonts/
 ./etc/fonts/conf.d/
-./etc/fonts/conf.d/50-oxool.conf
+./etc/fonts/conf.d/00-oxool.conf
 ./etc/oxool/
 ./etc/oxool/ca-chain.cert.pem
 ./etc/oxool/cert.pem
