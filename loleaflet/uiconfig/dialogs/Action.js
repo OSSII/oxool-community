@@ -60,7 +60,7 @@ L.dialog.Action = {
 			break;
 		case 'zoomout': // 拉遠
 			// 試算表最小不能低於 100%
-			var minZoom = docType === 'spreadsheet' ? map.options.zoom : map.getMinZoom();
+			var minZoom = docType === 'spreadsheet' ? 7 : map.getMinZoom();
 			if (map.getZoom() > minZoom) {
 				map.zoomOut(1);
 			}

@@ -1774,6 +1774,9 @@ function onDocLayerInit() {
 
 		statusbar.set('zoom', {
 			items: [
+				{ id: 'zoom60', text: '60%', scale: 7},
+				{ id: 'zoom70', text: '70%', scale: 8},
+				{ id: 'zoom85', text: '85%', scale: 9},
 				{ id: 'zoom100', text: '100%', scale: 10},
 				{ id: 'zoom120', text: '120%', scale: 11},
 				{ id: 'zoom150', text: '150%', scale: 12},
