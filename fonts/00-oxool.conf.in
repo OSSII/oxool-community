@@ -3,16 +3,204 @@
 <fontconfig>
 	<dir>@LO_PATH@/share/fonts/truetype</dir>
 
-	<alias>
-		<family>serif</family>
-		<prefer>
-			<family>Source Han Serif</family>
-			<family>Source Han Serif TC</family>
-			<family>Source Han Serif HC</family>
-			<family>Source Han Serif SC</family>
-			<family>Source Han Serif K</family>
-		</prefer>
-	</alias>
+	<match target="scan">
+		<test name="family">
+			<string>Source Han Sans TC</string>
+		</test>
+		<edit name="family" mode="append_last">
+			<string>Noto Sans CJK TC</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>微軟正黑體</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>Microsoft JhengHei</string>
+		</edit>
+	</match>
+
+	<match target="scan">
+		<test name="family">
+			<string>Source Han Sans SC</string>
+		</test>
+		<edit name="family" mode="append_last">
+			<string>Noto Sans CJK SC</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>微软雅黑</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>Microsoft YaHei</string>
+		</edit>
+	</match>
+
+	<match target="scan">
+		<test name="family">
+			<string>TW-Sung</string>
+		</test>
+		<edit name="family" mode="append_last">
+			<string>新細明體</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>細明體</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>細明體_HKSCS</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>PMingLiU</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>MingLiU</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>MingLiU_HKSCS</string>
+		</edit>
+	</match>
+
+	<match target="scan">
+		<test name="family">
+			<string>TW-Sung-Ext-B</string>
+		</test>
+		<edit name="family" mode="append_last">
+			<string>新細明體-ExtB</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>細明體-ExtB</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>細明體_HKSCS-ExtB</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>PMingLiU-ExtB</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>MingLiU-ExtB</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>MingLiU_HKSCS-ExtB</string>
+		</edit>
+	</match>
+
+	<match target="scan">
+		<test name="family">
+			<string>TW-Kai</string>
+		</test>
+		<edit name="family" mode="append_last">
+			<string>標楷體</string>
+		</edit>
+		<edit name="family" mode="append_last">
+			<string>DFKai-SB</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-tw</string>
+		</test>
+		<test name="family">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans TC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-tw</string>
+		</test>
+		<test name="family">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Serif TC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-tw</string>
+		</test>
+		<test name="family">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW TC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-cn</string>
+		</test>
+		<test name="family">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans SC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-cn</string>
+		</test>
+		<test name="family">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Serif SC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-cn</string>
+		</test>
+		<test name="family">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW SC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-hk</string>
+		</test>
+		<test name="family">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-hk</string>
+		</test>
+		<test name="family">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Serif HC</string>
+		</edit>
+	</match>
+
+	<match>
+		<test name="lang">
+			<string>zh-hk</string>
+		</test>
+		<test name="family">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW HC</string>
+		</edit>
+	</match>
+
 	<alias>
 		<family>sans-serif</family>
 		<prefer>
@@ -23,6 +211,18 @@
 			<family>Source Han Sans K</family>
 		</prefer>
 	</alias>
+
+	<alias>
+		<family>serif</family>
+		<prefer>
+			<family>Source Han Sans</family>
+			<family>Source Han Sans TC</family>
+			<family>Source Han Sans HC</family>
+			<family>Source Han Sans SC</family>
+			<family>Source Han Sans K</family>
+		</prefer>
+	</alias>
+
 	<alias>
 		<family>monospace</family>
 		<prefer>
