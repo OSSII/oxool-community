@@ -22,7 +22,6 @@ L.Control.Menubar = L.Control.extend({
 					{name: _('Word 2003 Document (.doc)'), id: 'downloadas-doc', type: 'action'},
 					{name: _('Word Document (.docx)'), id: 'downloadas-docx', type: 'action'},
 					{name: _('Rich Text (.rtf)'), id: 'downloadas-rtf', type: 'action'}]},
-				{name: _('Sign document'), id: 'signdocument', type: 'action'},
 				{type: '--'},
 				{name: '.uno:CloseDoc', id: 'closedocument', type: 'action'}
 			]},
