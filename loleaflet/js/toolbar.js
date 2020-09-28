@@ -927,6 +927,7 @@ function createToolbar() {
 		},
 		{type: 'button',  id: 'numberformatcurrency',  img: 'numberformatcurrency', hint: _UNO('.uno:NumberFormatCurrency', 'spreadsheet'), hidden: true, uno: 'NumberFormatCurrency', disabled: true},
 		{type: 'button',  id: 'numberformatpercent',  img: 'numberformatpercent', hint: _UNO('.uno:NumberFormatPercent', 'spreadsheet'), hidden: true, uno: 'NumberFormatPercent', disabled: true},
+		{type: 'button',  id: 'numberformatdecimal',  img: 'numberformatdecimal', hint: _UNO('.uno:NumberFormatDecimal', 'spreadsheet'), uno: 'NumberFormatDecimal', hidden: true, disabled: true},
 		{type: 'button',  id: 'numberformatdate',  img: 'numberformatdate', hint: _UNO('.uno:NumberFormatDate', 'spreadsheet'), uno: 'NumberFormatDate', hidden: true, disabled: true},
 		{type: 'button',  id: 'numberformatdecdecimals',  img: 'numberformatdecdecimals', hint: _UNO('.uno:NumberFormatDecDecimals', 'spreadsheet'), hidden: true, uno: 'NumberFormatDecDecimals', disabled: true},
 		{type: 'button',  id: 'numberformatincdecimals',  img: 'numberformatincdecimals', hint: _UNO('.uno:NumberFormatIncDecimals', 'spreadsheet'), hidden: true, uno: 'NumberFormatIncDecimals', disabled: true},
@@ -1767,7 +1768,7 @@ function onDocLayerInit() {
 	switch (docType) {
 	case 'spreadsheet':
 		toolbarUp.show('textalign', 'wraptext', 'breakspacing', 'insertannotation', 'conditionalformaticonset',
-			'numberformatcurrency', 'numberformatpercent', 'numberformatdate',
+			'numberformatcurrency', 'numberformatpercent', 'numberformatdecimal', 'numberformatdate',
 			'numberformatincdecimals', 'numberformatdecdecimals', 'break-number', 'togglemergecells', 'breakmergecells',
 			'setborderstyle', 'sortascending', 'sortdescending', 'breaksorting');
 		toolbarUp.remove('styles');

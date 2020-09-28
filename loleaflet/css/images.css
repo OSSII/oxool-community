@@ -181,6 +181,7 @@
 .togglemergecells{ background: url('images/cmd/togglemergecells.svg') no-repeat center/contain !important;}
 .numberformatcurrency{ background: url('images/cmd/currencyfield.svg') no-repeat center/contain !important;}
 .numberformatpercent{ background: url('images/cmd/numberformatpercent.svg') no-repeat center/contain !important;}
+.numberformatdecimal{ background: url('images/cmd/numberformatdecimal.svg') no-repeat center/contain !important;}
 .numberformatdate{ background: url('images/cmd/numberformatdate.svg') no-repeat center/contain !important;}
 .numberformatincdecimals{ background: url('images/cmd/numberformatincdecimals.svg') no-repeat center/contain !important;}
 .numberformatdecdecimals{ background: url('images/cmd/numberformatdecdecimals.svg') no-repeat center/contain !important;}
