@@ -111,4 +111,4 @@ debian/oxool.prerm.debhelper
 debian/oxool.substvars
 debian/tmp/
 loleaflet/build/dist/
-
+fonts/00-oxool.conf
