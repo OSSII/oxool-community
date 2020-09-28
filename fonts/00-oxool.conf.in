@@ -4,7 +4,7 @@
 	<dir>@LO_PATH@/share/fonts/truetype</dir>
 
 	<match target="scan">
-		<test name="family">
+		<test name="family" compare="eq">
 			<string>Source Han Sans TC</string>
 		</test>
 		<edit name="family" mode="append_last">
@@ -19,7 +19,7 @@
 	</match>
 
 	<match target="scan">
-		<test name="family">
+		<test name="family" compare="eq">
 			<string>Source Han Sans SC</string>
 		</test>
 		<edit name="family" mode="append_last">
@@ -34,7 +34,7 @@
 	</match>
 
 	<match target="scan">
-		<test name="family">
+		<test name="family" compare="eq">
 			<string>TW-Sung</string>
 		</test>
 		<edit name="family" mode="append_last">
@@ -58,7 +58,7 @@
 	</match>
 
 	<match target="scan">
-		<test name="family">
+		<test name="family" compare="eq">
 			<string>TW-Sung-Ext-B</string>
 		</test>
 		<edit name="family" mode="append_last">
@@ -82,7 +82,7 @@
 	</match>
 
 	<match target="scan">
-		<test name="family">
+		<test name="family" compare="eq">
 			<string>TW-Kai</string>
 		</test>
 		<edit name="family" mode="append_last">
@@ -93,11 +93,25 @@
 		</edit>
 	</match>
 
+	<!-- Default serif font for the zh_TW locale -->
 	<match>
-		<test name="lang">
+		<test name="lang" compare="eq">
 			<string>zh-tw</string>
 		</test>
-		<test name="family">
+		<test qual="any" name="family" compare="eq">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>TW-Sung</string>
+		</edit>
+	</match>
+
+	<!-- Default sans-serif font for the zh_TW locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-tw</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
 			<string>sans-serif</string>
 		</test>
 		<edit name="family" mode="prepend">
@@ -105,23 +119,12 @@
 		</edit>
 	</match>
 
+	<!-- Default monospace font for the zh_TW locale -->
 	<match>
-		<test name="lang">
+		<test name="lang" compare="eq">
 			<string>zh-tw</string>
 		</test>
-		<test name="family">
-			<string>serif</string>
-		</test>
-		<edit name="family" mode="prepend">
-			<string>Source Han Serif TC</string>
-		</edit>
-	</match>
-
-	<match>
-		<test name="lang">
-			<string>zh-tw</string>
-		</test>
-		<test name="family">
+		<test qual="any" name="family" compare="eq">
 			<string>monospace</string>
 		</test>
 		<edit name="family" mode="prepend">
@@ -129,47 +132,44 @@
 		</edit>
 	</match>
 
+	<!-- Default font for the zh_TW locale (no fc-match pattern) -->
 	<match>
-		<test name="lang">
-			<string>zh-cn</string>
+		<test name="lang" compare="eq">
+			<string>zh-tw</string>
 		</test>
-		<test name="family">
-			<string>sans-serif</string>
-		</test>
-		<edit name="family" mode="prepend">
-			<string>Source Han Sans SC</string>
-		</edit>
-	</match>
-
-	<match>
-		<test name="lang">
-			<string>zh-cn</string>
-		</test>
-		<test name="family">
+		<test qual="all" name="family" compare="not_eq">
 			<string>serif</string>
 		</test>
-		<edit name="family" mode="prepend">
-			<string>Source Han Serif SC</string>
-		</edit>
-	</match>
-
-	<match>
-		<test name="lang">
-			<string>zh-cn</string>
+		<test qual="all" name="family" compare="not_eq">
+			<string>sans-serif</string>
 		</test>
-		<test name="family">
+		<test qual="all" name="family" compare="not_eq">
 			<string>monospace</string>
 		</test>
 		<edit name="family" mode="prepend">
-			<string>Source Han Sans HW SC</string>
+			<string>Source Han Sans TC</string>
 		</edit>
 	</match>
 
+	<!-- Default serif font for the zh_HK locale -->
 	<match>
-		<test name="lang">
+		<test name="lang" compare="eq">
 			<string>zh-hk</string>
 		</test>
-		<test name="family">
+		<test qual="any" name="family" compare="eq">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>TW-Sung</string>
+		</edit>
+	</match>
+
+	<!-- Default sans-serif font for the zh_HK locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-hk</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
 			<string>sans-serif</string>
 		</test>
 		<edit name="family" mode="prepend">
@@ -177,23 +177,12 @@
 		</edit>
 	</match>
 
+	<!-- Default monospace font for the zh_HK locale -->
 	<match>
-		<test name="lang">
+		<test name="lang" compare="eq">
 			<string>zh-hk</string>
 		</test>
-		<test name="family">
-			<string>serif</string>
-		</test>
-		<edit name="family" mode="prepend">
-			<string>Source Han Serif HC</string>
-		</edit>
-	</match>
-
-	<match>
-		<test name="lang">
-			<string>zh-hk</string>
-		</test>
-		<test name="family">
+		<test qual="any" name="family" compare="eq">
 			<string>monospace</string>
 		</test>
 		<edit name="family" mode="prepend">
@@ -201,36 +190,196 @@
 		</edit>
 	</match>
 
-	<alias>
-		<family>sans-serif</family>
-		<prefer>
-			<family>Source Han Sans</family>
-			<family>Source Han Sans TC</family>
-			<family>Source Han Sans HC</family>
-			<family>Source Han Sans SC</family>
-			<family>Source Han Sans K</family>
-		</prefer>
-	</alias>
+	<!-- Default font for the zh_HK locale (no fc-match pattern) -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-hk</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>sans-serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HC</string>
+		</edit>
+	</match>
 
-	<alias>
-		<family>serif</family>
-		<prefer>
-			<family>Source Han Sans</family>
-			<family>Source Han Sans TC</family>
-			<family>Source Han Sans HC</family>
-			<family>Source Han Sans SC</family>
-			<family>Source Han Sans K</family>
-		</prefer>
-	</alias>
+	<!-- Default serif font for the zh_CN locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-cn</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>TW-Sung</string>
+		</edit>
+	</match>
 
-	<alias>
-		<family>monospace</family>
-		<prefer>
-			<family>Source Han Sans HW</family>
-			<family>Source Han Sans HW TC</family>
-			<family>Source Han Sans HW HC</family>
-			<family>Source Han Sans HW SC</family>
-			<family>Source Han Sans HW K</family>
-		</prefer>
-	</alias>
+	<!-- Default sans-serif font for the zh_CN locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-cn</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans SC</string>
+		</edit>
+	</match>
+
+	<!-- Default monospace font for the zh_CN locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-cn</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW SC</string>
+		</edit>
+	</match>
+
+	<!-- Default font for the zh_CN locale (no fc-match pattern) -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>zh-cn</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>sans-serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans SC</string>
+		</edit>
+	</match>
+
+	<!-- Default serif font for the ja_JP locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ja</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans</string>
+		</edit>
+	</match>
+
+	<!-- Default sans-serif font for the ja_JP locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ja</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans</string>
+		</edit>
+	</match>
+
+	<!-- Default monospace font for the ja_JP locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ja</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW</string>
+		</edit>
+	</match>
+
+	<!-- Default font for the ja_JP locale (no fc-match pattern) -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ja</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>sans-serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans</string>
+		</edit>
+	</match>
+
+	<!-- Default serif font for the ko_KR locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ko</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans K</string>
+		</edit>
+	</match>
+
+	<!-- Default sans-serif font for the ko_KR locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ko</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>sans-serif</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans K</string>
+		</edit>
+	</match>
+
+	<!-- Default monospace font for the ko_KR locale -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ko</string>
+		</test>
+		<test qual="any" name="family" compare="eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans HW K</string>
+		</edit>
+	</match>
+
+	<!-- Default font for the ko_KR locale (no fc-match pattern) -->
+	<match>
+		<test name="lang" compare="eq">
+			<string>ko</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>sans-serif</string>
+		</test>
+		<test qual="all" name="family" compare="not_eq">
+			<string>monospace</string>
+		</test>
+		<edit name="family" mode="prepend">
+			<string>Source Han Sans K</string>
+		</edit>
+	</match>
 </fontconfig>
