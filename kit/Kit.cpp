@@ -379,6 +379,18 @@ namespace
             LOG_SYS("symlink(\"" << symlinkTarget << "\",\"" << symlinkSource.toString() << "\") failed");
             throw Exception("symlink() failed");
         }
+        // Add by Firefly <firefly@ossii.com.tw>
+        // 避免同時安裝 oxool & ndcodfweb 會有缺字問題
+        // 同時把 /opt/ndcodfsys link 到 /opt/oxoffice
+        else
+        {
+            Path symlinkFake(jailPath, "/opt/ndcodfsys");
+            if (symlink(symlinkTarget.c_str(), symlinkFake.toString().c_str()) == -1)
+            {
+                LOG_SYS("symlink(\"" << symlinkTarget << "\",\"" << symlinkFake.toString() << "\") failed");
+                throw Exception("symlink() failed");
+            }
+        }
     }
 #endif
 }
