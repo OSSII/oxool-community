@@ -1047,7 +1047,7 @@ function initMobileToolbar(toolItems) {
 		},
 		onRefresh: function() {
 			$('#addressInput').off('keyup', onAddressInput).on('keyup', onAddressInput);
-			$('#formulaInput').off('keyup', onFormulaInput).on('keyup', onFormulaInput);
+			$('#formulaInput').off('keyup compositionstart compositionupdate compositionend textInput', onFormulaInput).on('keyup compositionstart compositionupdate compositionend textInput', onFormulaInput);
 			$('#formulaInput').off('blur', onFormulaBarBlur).on('blur', onFormulaBarBlur);
 			$('#formulaInput').off('focus', onFormulaBarFocus).on('focus', onFormulaBarFocus);
 		}
@@ -1298,7 +1298,7 @@ function initNormalToolbar(toolItems) {
 		},
 		onRefresh: function() {
 			$('#addressInput').off('keyup', onAddressInput).on('keyup', onAddressInput);
-			$('#formulaInput').off('keyup', onFormulaInput).on('keyup', onFormulaInput);
+			$('#formulaInput').off('keyup compositionstart compositionupdate compositionend textInput', onFormulaInput).on('keyup keyupcompositionstart compositionupdate compositionend textInput', onFormulaInput)
 			$('#formulaInput').off('blur', onFormulaBarBlur).on('blur', onFormulaBarBlur);
 			$('#formulaInput').off('focus', onFormulaBarFocus).on('focus', onFormulaBarFocus);
 		}
@@ -1677,7 +1677,19 @@ function onAddressInput(e) {
 	}
 }
 
+var _isComposing = false;
 function onFormulaInput(e) {
+
+	switch (e.type) {
+	case 'compositionstart':
+	case 'compositionupdate':
+		_isComposing = true;
+		break;
+	case 'compositionend':
+		_isComposing = false;
+		break;
+	}
+
 	// keycode = 13 is 'enter'
 	if (e.keyCode === 13) {
 		// formula bar should not have focus anymore
@@ -1691,7 +1703,7 @@ function onFormulaInput(e) {
 	} else if (e.keyCode === 27) { // 27 = esc key
 		map.sendUnoCommand('.uno:Cancel');
 		map.focus();
-	} else {
+	} else if (!_isComposing) {
 		map.cellEnterString(L.DomUtil.get('formulaInput').value);
 	}
 }
