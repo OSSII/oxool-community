@@ -187,6 +187,14 @@ L.Map = L.Evented.extend({
 			}
 		}, this);
 		this.on('doclayerinit', function() {
+			var docType = this._docLayer._docType;
+			if (docType === 'draw')
+				docType = 'presentation';
+
+			// 試算表文件縮放最小為 60%
+			if (docType === 'spreadsheet')
+				this.options.minZoom = 7;
+
 			if (window._invalidateSize) {
 				this._size = new L.Point(0,0);
 				this._onResize();
@@ -196,10 +204,6 @@ L.Map = L.Evented.extend({
 				this._fireInitComplete('doclayerinit');
 				// Add by Firefly <firefly@ossii.com.tw>
 				// 動態載入該文件類型的 style.css
-				var docType = this._docLayer._docType;
-				if (docType === 'draw')
-					docType = 'presentation';
-
 				var head  = document.getElementsByTagName('head')[0];
 				var link = document.createElement('link');
 				link.rel = 'stylesheet';
@@ -208,7 +212,7 @@ L.Map = L.Evented.extend({
 				link.href = 'uiconfig/' + docType + '/style.css';
 				head.appendChild(link);
 			}
-			if (!L.Browser.mobile && this._docLayer._docType == 'text') {
+			if (!L.Browser.mobile && docType === 'text') {
 				var interactiveRuler = this._permission === 'edit' ? true : false;
 				L.control.ruler({position:'topleft', interactive:interactiveRuler}).addTo(this);
 			}
