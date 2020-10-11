@@ -202,4 +202,7 @@
 .movepagelast{ background: url('images/cmd/movepagelast.svg') no-repeat center/contain !important;}
 .movepage{ background: url('images/cmd/movepage.svg') no-repeat center/contain !important;}
 .gotopage{ background: url('images/cmd/gotopage.svg') no-repeat center/contain !important;}
-
+.textdirectionlefttoright{ background: url('images/cmd/textdirectionlefttoright.svg') no-repeat center/contain !important;}
+.textdirectiontoptobottom{ background: url('images/cmd/textdirectiontoptobottom.svg') no-repeat center/contain !important;}
+.horizontaltext{ background: url('images/cmd/text.svg') no-repeat center/contain !important;}
+.verticaltext{ background: url('images/cmd/verticaltext.svg') no-repeat center/contain !important;}
