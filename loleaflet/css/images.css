@@ -122,7 +122,7 @@
 .alignleft{ background: url('images/cmd/alignleft.svg') no-repeat center/contain !important;}
 .alignright{ background: url('images/cmd/alignright.svg') no-repeat center/contain !important;}
 .aligntop{ background: url('images/cmd/aligntop.svg') no-repeat center/contain !important;}
-.alignmiddle{ background: url('images/cmd/alignmiddle.svg') no-repeat center/contain !important;}
+.alignmiddle{ background: url('images/cmd/alignverticalcenter.svg') no-repeat center/contain !important;}
 .alignbottom{ background: url('images/cmd/alignbottom.svg') no-repeat center/contain !important;}
 .functionwizard{ background: url('images/cmd/dbviewfunctions.svg') no-repeat center/contain !important;}
 .autosum{ background: url('images/cmd/autosum.svg') no-repeat center/contain !important;}
