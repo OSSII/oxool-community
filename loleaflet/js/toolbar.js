@@ -886,14 +886,14 @@ function createToolbar() {
 		{type: 'break', id: 'breakmergecells', hidden: true},
 		{type: 'menu', id: 'textalign', img: 'alignblock', hint: _UNO('.uno:TextAlign'), hidden: true,
 			items: [
-				{id: 'alignleft', text: _UNO('.uno:AlignLeft', 'spreadsheet', true), icon: 'alignleft', uno: 'AlignLeft'},
-				{id: 'alignhorizontalcenter', text: _UNO('.uno:AlignHorizontalCenter', 'spreadsheet'), icon: 'alignhorizontal', uno: 'AlignHorizontalCenter'},
-				{id: 'alignright', text: _UNO('.uno:AlignRight', 'spreadsheet'), icon: 'alignright', uno: 'AlignRight'},
-				{id: 'alignblock', text: _UNO('.uno:AlignBlock', 'spreadsheet'), icon: 'alignblock', uno: 'AlignBlock'},
+				{id: 'alignleft', text: _UNO('.uno:AlignLeft', 'spreadsheet', true), icon: 'alignleft', uno:'LeftPara', unosheet:'AlignLeft'},
+				{id: 'alignhorizontalcenter', text: _UNO('.uno:AlignHorizontalCenter', 'spreadsheet', true), icon: 'alignhorizontal', uno:'CenterPara', unosheet:'AlignHorizontalCenter'},
+				{id: 'alignright', text: _UNO('.uno:AlignRight', 'spreadsheet', true), icon: 'alignright', uno:'RightPara', unosheet:'AlignRight'},
+				{id: 'alignblock', text: _UNO('.uno:AlignBlock', 'spreadsheet', true), icon: 'alignblock', uno:'JustifyPara', unosheet:'AlignBlock'},
 				{type: 'break'},
-				{id: 'aligntop', text: _UNO('.uno:CommonAlignTop'), icon: 'aligntop', uno: 'CommonAlignTop'},
-				{id: 'alignmiddle', text: _UNO('.uno:CommonAlignVerticalCenter'), icon: 'alignmiddle', uno: 'CommonAlignVerticalCenter'},
-				{id: 'alignbottom', text: _UNO('.uno:CommonAlignBottom'), icon: 'alignbottom', uno: 'CommonAlignBottom'},
+				{id: 'aligntop', text: _UNO('.uno:CellVertTop'), icon: 'aligntop', uno:'CellVertTop', unosheet:'CommonAlignTop'},
+				{id: 'alignmiddle', text: _UNO('.uno:CellVertCenter'), icon: 'alignmiddle', uno:'CellVertCenter', unosheet:'CommonAlignVerticalCenter'},
+				{id: 'alignbottom', text: _UNO('.uno:CellVertBottom'), icon: 'alignbottom', uno:'CellVertBottom', unosheet:'CommonAlignBottom'},
 			]},
 		{type: 'menu',  id: 'linespacing',  img: 'linespacing', hint: _UNO('.uno:FormatSpacingMenu'), hidden: true,
 			items: [
@@ -901,17 +901,17 @@ function createToolbar() {
 				{id: 'spacepara15', text: _UNO('.uno:SpacePara15'), uno: 'SpacePara15'},
 				{id: 'spacepara2', text: _UNO('.uno:SpacePara2'), uno: 'SpacePara2'},
 				{type: 'break'},
-				{id: 'paraspaceincrease', text: _UNO('.uno:ParaspaceIncrease'), uno: 'ParaspaceIncrease'},
-				{id: 'paraspacedecrease', text: _UNO('.uno:ParaspaceDecrease'), uno: 'ParaspaceDecrease'}
+				{id: 'paraspaceincrease', text: _UNO('.uno:ParaspaceIncrease', 'global', true), uno: 'ParaspaceIncrease'},
+				{id: 'paraspacedecrease', text: _UNO('.uno:ParaspaceDecrease', 'global', true), uno: 'ParaspaceDecrease'}
 			]},
 		{type: 'button',  id: 'wraptext',  img: 'wraptext', hint: _UNO('.uno:WrapText', 'spreadsheet'), hidden: true, uno: 'WrapText', disabled: true},
 		{type: 'break', id: 'breakspacing', hidden: true},
 		{type: 'button',  id: 'defaultnumbering',  img: 'numbering', hint: _UNO('.uno:DefaultNumbering'), hidden: true, uno: 'DefaultNumbering', disabled: true},
 		{type: 'button',  id: 'defaultbullet',  img: 'bullet', hint: _UNO('.uno:DefaultBullet'), hidden: true, uno: 'DefaultBullet', disabled: true},
 		{type: 'break', id: 'breakbullet', hidden: true},
-		{type: 'button',  id: 'incrementindent',  img: 'incrementindent', hint: _UNO('.uno:IncrementIndent'), uno: 'IncrementIndent', hidden: true, disabled: true},
-		{type: 'button',  id: 'decrementindent',  img: 'decrementindent', hint: _UNO('.uno:DecrementIndent'), uno: 'DecrementIndent', hidden: true, disabled: true},
-		{type: 'break', id: 'breakindent', hidden: true},
+		{type: 'button',  id: 'incrementindent',  img: 'incrementindent', hint: _UNO('.uno:IncrementIndent', 'global', true), uno: 'IncrementIndent', disabled: true},
+		{type: 'button',  id: 'decrementindent',  img: 'decrementindent', hint: _UNO('.uno:DecrementIndent', 'global', true), uno: 'DecrementIndent', disabled: true},
+		{type: 'break', id: 'breakindent', hidden: false},
 		{type: 'button',  id: 'sortascending',  img: 'sortascending', hint: _UNO('.uno:SortAscending', 'spreadsheet'), uno: 'SortAscending', disabled: true, hidden: true},
 		{type: 'button',  id: 'sortdescending',  img: 'sortdescending', hint: _UNO('.uno:SortDescending', 'spreadsheet'), uno: 'SortDescending', disabled: true, hidden: true},
 		{type: 'break', id: 'breaksorting', hidden: true},
@@ -1852,8 +1852,8 @@ function onDocLayerInit() {
 		break;
 	case 'text':
 		toolbarUp.show('leftpara', 'centerpara', 'rightpara', 'justifypara', 'breakpara', 'linespacing',
-			'breakspacing', 'defaultbullet', 'defaultnumbering', 'breakbullet', 'incrementindent', 'decrementindent',
-			'breakindent', 'inserttable', 'insertannotation');
+			'breakspacing', 'defaultbullet', 'defaultnumbering', 'breakbullet',
+			'inserttable', 'insertannotation');
 
 		if (!_inMobileMode()) {
 			statusbar.insert('left', [
@@ -1911,7 +1911,7 @@ function onDocLayerInit() {
 		}
 		// FALLTHROUGH intended
 	case 'drawing':
-		toolbarUp.show('leftpara', 'centerpara', 'rightpara', 'justifypara', 'breakpara', 'linespacing',
+		toolbarUp.show('textalign', 'linespacing',
 			'breakspacing', 'defaultbullet', 'defaultnumbering', 'breakbullet', 'inserttable');
 		statusbar.show('prev', 'next', 'prevnextbreak');
 		// Remove irrelevant toolbars
