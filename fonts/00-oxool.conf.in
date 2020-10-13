@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
-	<dir>@LO_PATH@/share/fonts/truetype</dir>
+	<!--dir>@LO_PATH@/share/fonts/truetype</dir-->
 
 	<match target="scan">
 		<test name="family" compare="eq">
