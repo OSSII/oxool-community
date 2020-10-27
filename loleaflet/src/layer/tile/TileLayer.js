@@ -823,6 +823,12 @@ L.TileLayer = L.GridLayer.extend({
 	_onShapeSelectionContent: function (textMsg) {
 		textMsg = textMsg.substring('shapeselectioncontent:'.length + 1);
 		if (this._graphicMarker) {
+			var extraInfo = this._graphicSelection.extraInfo;
+			// 存入 cache
+			if (extraInfo.id) {
+				console.debug('save SVG : ', extraInfo.id);
+				this._map._cacheSVG[extraInfo.id] = textMsg;
+			}
 			this._graphicMarker.removeEmbeddedSVG();
 			this._graphicMarker.addEmbeddedSVG(textMsg);
 		}
@@ -901,7 +907,20 @@ L.TileLayer = L.GridLayer.extend({
 			// shapeselectioncontent messages that we get back causes the WebKit process
 			// to crash on iOS.
 			if (!window.ThisIsTheiOSApp && this._graphicSelection.extraInfo.isDraggable && !this._graphicSelection.extraInfo.svg) {
-				this._map._socket.sendMessage('rendershapeselection mimetype=image/svg+xml');
+				//  有 extraInfo.id 的話，就看看這個圖片是否有 cache
+				if (extraInfo.id) {
+					// 沒有被 cache 就要求 OxOffice render SVG 圖片
+					if (this._map._cacheSVG[extraInfo.id] === undefined)
+					{
+						console.debug('request SVG');
+						this._map._socket.sendMessage('rendershapeselection mimetype=image/svg+xml');
+					} else {
+						console.debug('SVG cached(id:' + extraInfo.id + ')');
+					}
+
+				} else {
+					console.debug('Don\'t render SVG image');
+				}
 			}
 		}
 
@@ -2545,9 +2564,11 @@ L.TileLayer = L.GridLayer.extend({
 			}
 
 			var extraInfo = this._graphicSelection.extraInfo;
+			console.debug('create SVG group for id :', extraInfo.id);
 			this._graphicMarker = L.svgGroup(this._graphicSelection, {
 				draggable: extraInfo.isDraggable,
 				dragConstraint: extraInfo.dragInfo,
+				svg: this._map._cacheSVG[extraInfo.id],
 				transform: true,
 				stroke: false,
 				fillOpacity: 0,
