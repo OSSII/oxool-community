@@ -21,6 +21,7 @@ L.SVGGroup = L.Layer.extend({
 		this.on('dragstart scalestart rotatestart', this._showEmbeddedSVG, this);
 		this.on('dragend scaleend rotateend', this._hideEmbeddedSVG, this);
 	},
+
 	setVisible: function (visible) {
 		if (this._svg != null) {
 			if (visible)
@@ -29,33 +30,31 @@ L.SVGGroup = L.Layer.extend({
 				this._svg.setAttribute('visibility', 'hidden');
 		}
 	},
-	addEmbeddedSVG: function (svgString) {
-		var parser = new DOMParser();
-		var doc = parser.parseFromString(svgString, 'image/svg+xml');
+
+	sizeSVG: function () {
 		var size = L.bounds(this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
 			this._map.latLngToLayerPoint(this._bounds.getSouthEast())).getSize();
 
-		if (doc.lastChild.localName !== 'svg' || this._dragStarted)
-			return;
-
-		if (svgString.indexOf('XTEXT_PAINTSHAPE_BEGIN') !== -1) {
-			this._svg = this._path.insertBefore(doc.lastChild, this._rect._path);
-			this._rect._path.setAttribute('pointer-events', 'visibleStroke');
-			this._svg.setAttribute('pointer-events', 'none');
-		} else {
-			L.DomUtil.remove(this._rect._path);
-			this._svg = this._path.appendChild(doc.lastChild);
-			this._svg.setAttribute('pointer-events', 'visiblePainted');
-			this._dragShape = this._svg;
-			if (!this.options.manualDrag) {
-				L.DomEvent.on(this._svg, 'mousedown', this._onDragStart, this);
-			}
-		}
-
-		this._svg.setAttribute('opacity', 0);
 		this._svg.setAttribute('width', size.x);
 		this._svg.setAttribute('height', size.y);
+	},
 
+	parseSVG: function (svgString) {
+		var parser = new DOMParser();
+		return parser.parseFromString(svgString, 'image/svg+xml');
+	},
+
+	addEmbeddedSVG: function (svgString) {
+		var doc = this.parseSVG(svgString);
+
+		if (doc.lastChild.localName !== 'svg')
+			return;
+
+		this._svg = this._path.insertBefore(doc.lastChild, this._rect._path);
+		this._dragShape = this._rect._path;
+		this._svg.setAttribute('pointer-events', 'none');
+		this._svg.setAttribute('opacity', this._dragStarted ? 1 : 0);
+		this.sizeSVG();
 		this._update();
 	},
 
@@ -146,10 +145,23 @@ L.SVGGroup = L.Layer.extend({
 		this._renderer._initGroup(this);
 		this._renderer._initPath(this._rect);
 		this._renderer._addGroup(this);
+
 		if (this._path && this._rect._path) {
 			this._rect._map = this._map;
 			this._rect._renderer = this._renderer;
 			L.DomUtil.addClass(this._path, 'leaflet-control-buttons-disabled');
+
+			if (this.options.svg) {
+				var doc = this.parseSVG(this.options.svg);
+				if (doc && doc.lastChild.localName === 'svg') {
+					this._svg = this._path.appendChild(doc.lastChild);
+					this._svg.setAttribute('opacity', 0);
+					this._svg.setAttribute('pointer-events', 'none');
+					this.sizeSVG();
+				}
+				delete this.options.svg;
+			}
+
 			this._path.appendChild(this._rect._path);
 			this._dragShape = this._rect._path;
 
@@ -164,6 +176,7 @@ L.SVGGroup = L.Layer.extend({
 		this._rect._map = this._rect._renderer = null;
 		this.removeInteractiveTarget(this._rect._path);
 		L.DomUtil.remove(this._rect._path);
+		this.removeEmbeddedSVG();
 		this._renderer._removeGroup(this);
 	},
 
