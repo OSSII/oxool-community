@@ -631,18 +631,11 @@ L.TileLayer = L.GridLayer.extend({
 			var prevContext = this._docContext; // 最近的 context
 			var context = textMsg.substring('context:'.length + 1).trim().split(' ');
 			this._docContext = context[1]; // 目前的 context
-			console.debug(this._docContext);
 
 			// context 已變更
 			var contextChanged = (prevContext !== this._docContext);
 			if (contextChanged) {
 				console.debug('Context has changed.(' + prevContext + ' -> ' + this._docContext);
-			}
-
-			// 已有選取的物件，且 context 已變更，
-			// 需更新物件選取狀態
-			if (this._graphicMarker && contextChanged) {
-				this._onUpdateGraphicSelection();
 			}
 		}
 		//-- End of add.
