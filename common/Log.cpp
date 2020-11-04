@@ -25,6 +25,7 @@
 #include <string>
 
 #include <Poco/ConsoleChannel.h>
+#include <Poco/LocalDateTime.h>
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/FileChannel.h>
 #include <Poco/FormattingChannel.h>
@@ -115,7 +116,7 @@ namespace Log
 #elif defined IOS
         const auto osTid = pthread_mach_thread_np(pthread_self());
 #endif
-        Poco::DateTime time;
+        Poco::LocalDateTime time;
         snprintf(buffer, len, "%s-%.05lu %.4u-%.2u-%.2u %.2u:%.2u:%.2u.%.6u [ %s ] %s  ",
                     (Source.getInited() ? Source.getId().c_str() : "<shutdown>"),
                     osTid,
