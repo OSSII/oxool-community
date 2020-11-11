@@ -48,6 +48,7 @@
             <property name="path" desc="Log file path.">@LOOLWSD_LOGFILE@</property>
             <property name="rotation" desc="Log file rotation strategy. See Poco FileChannel.">never</property>
             <property name="archive" desc="Append either timestamp or number to the archived log filename.">timestamp</property>
+            <property name="times" desc="Specifies whether times for rotation are treated as local or UTC. Valid values are local and utc.">local</property>
             <property name="compress" desc="Enable/disable log file compression.">true</property>
             <property name="purgeAge" desc="The maximum age of log files to preserve. See Poco FileChannel.">10 days</property>
             <property name="purgeCount" desc="The maximum number of log archives to preserve. Use 'none' to disable purging. See Poco FileChannel.">10</property>
