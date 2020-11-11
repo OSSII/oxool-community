@@ -102,7 +102,7 @@ getent group lool >/dev/null || groupadd -r lool
 getent passwd lool >/dev/null || useradd -g lool -r lool
 
 %post
-setcap cap_net_bind_service=+ep /usr/bin/oxool
+setcap cap_dac_override,cap_net_bind_service=+ep /usr/bin/oxool
 setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/oxoolforkit
 fc-cache -f
 

@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
     configure)
-	setcap cap_net_bind_service=+ep /usr/bin/oxool || true
+	setcap cap_dac_override,cap_net_bind_service=+ep /usr/bin/oxool || true
 	setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/oxoolforkit || true
 
 	fc-cache -f
