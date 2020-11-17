@@ -683,7 +683,7 @@ L.Map.include({
 		// 如果試試算表，檢查儲存格是否在輸入狀態
 		if (map._permission === 'edit'
 			&& map.getDocType() === 'spreadsheet'
-			&& this._hasForceCellCommit === undefined) {
+			&& this._hasForceCellCommit !== true) {
 
 			this._hasForceCellCommit = true; // 設定 commit 狀態，避免重複 commit
 			// 游標在編輯狀態
@@ -695,6 +695,7 @@ L.Map.include({
 					map.keyboard.keyCodes.enter,
 					map.keyboard._toUNOKeyCode(map.keyboard.keyCodes.enter));
 			}
+			this._hasForceCellCommit = false;
 		}
 	},
 
