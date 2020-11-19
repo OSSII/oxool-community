@@ -1,0 +1,21 @@
+FROM centos:7
+
+# Put oxoffice & oxool-community & poco & gumbo-parser into directory rpm
+COPY /rpm /
+
+RUN yum update -y
+RUN yum localinstall -y *.rpm
+RUN yum groupinstall -y Fonts
+
+RUN localedef -c -f UTF-8 -i zh_TW zh_TW.utf8
+
+RUN echo 'LANG="zh_TW.UTF-8"' > /etc/locale.conf
+ENV LANG zh_TW.UTF-8
+ENV LC_ALL zh_TW.UTF-8
+
+EXPOSE 9980
+
+# switch to lool user (use numeric user id to be compatible with Kubernetes Pod Security Policies)
+USER lool
+
+CMD /usr/bin/oxool
