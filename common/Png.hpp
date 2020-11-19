@@ -141,7 +141,7 @@ inline bool impl_encodeSubBufferToPNG(unsigned char* pixmap, size_t startX, size
 #ifdef MOBILEAPP
     png_set_compression_level(png_ptr, Z_BEST_SPEED);
 #else
-    png_set_compression_level(png_ptr, 1);
+    png_set_compression_level(png_ptr, 4);
 #endif
 
 #ifdef IOS
