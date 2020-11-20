@@ -242,6 +242,14 @@ L.Control.Tabs = L.Control.extend({
 				}, this), 100);
 				this._tabsInitialized = true;
 			}
+
+			// 紀錄水平捲動位置
+			var horizScrollPos = 0;
+			var scrollDiv = L.DomUtil.get('spreadsheet-tab-scroll');
+			if (scrollDiv) {
+				horizScrollPos = scrollDiv.scrollLeft;
+			}
+
 			if ('partNames' in e) {
 				while (this._tabsCont.firstChild) {
 					this._tabsCont.removeChild(this._tabsCont.firstChild);
@@ -279,6 +287,17 @@ L.Control.Tabs = L.Control.extend({
 				L.DomUtil.removeClass(this._spreadsheetTabs[key], 'spreadsheet-tab-selected');
 				if (part === selectedPart) {
 					L.DomUtil.addClass(this._spreadsheetTabs[key], 'spreadsheet-tab-selected');
+				}
+			}
+
+			// 恢復水平捲動位置
+			scrollDiv = L.DomUtil.get('spreadsheet-tab-scroll');
+			if (scrollDiv) {
+				if (this._map.insertPage && this._map.insertPage.scrollToEnd) {
+					this._map.insertPage.scrollToEnd = false;
+					scrollDiv.scrollLeft = scrollDiv.scrollWidth;
+				} else {
+					scrollDiv.scrollLeft = horizScrollPos;
 				}
 			}
 		}

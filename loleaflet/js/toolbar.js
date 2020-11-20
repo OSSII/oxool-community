@@ -192,8 +192,8 @@ function onClick(e, id, item, subItem) {
 	}
 	else if (id === 'insertsheet') {
 		var nPos = $('#spreadsheet-tab-scroll')[0].childElementCount;
-		map.insertPage(nPos + 1);
-		$('#spreadsheet-tab-scroll').scrollLeft($('#spreadsheet-tab-scroll').prop('scrollWidth'));
+		map.insertPage(nPos);
+		map.insertPage.scrollToEnd = true;
 	}
 	else if (id === 'firstrecord') {
 		$('#spreadsheet-tab-scroll').scrollLeft(0);
@@ -206,7 +206,8 @@ function onClick(e, id, item, subItem) {
 		$('#spreadsheet-tab-scroll').scrollLeft($('#spreadsheet-tab-scroll').scrollLeft() - 30);
 	}
 	else if (id === 'lastrecord') {
-		$('#spreadsheet-tab-scroll').scrollLeft($('#spreadsheet-tab-scroll').scrollLeft() + 120);
+		console.debug('haha scroll : ', $('#spreadsheet-tab-scroll').scrollLeft());
+		$('#spreadsheet-tab-scroll').scrollLeft(10000000);
 	}
 	else if (id === 'insertgraphic' || item.id === 'localgraphic') {
 		map.executeAllowedCommand('insertgraphic');
