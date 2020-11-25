@@ -169,7 +169,8 @@ L.Control.Preview = L.Control.extend({
 
 		// 設定另存檔案型態列表
 		viewerbar.set('downloadas', this._getSaveAsList(docType));
-		if (map._permission === 'view') {
+		// view 模式且未被禁止輸出，才能顯示下載為XXX以及列印按鈕
+		if (map._permission === 'view' && !map['wopi'].HideExportOption) {
 			viewerbar.show('downloadas', 'print', 'outputbreak');
 		}
 
