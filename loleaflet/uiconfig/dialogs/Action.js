@@ -112,13 +112,7 @@ L.dialog.Action = {
 			}
 			break;
 		case 'closedocument': // 關閉檔案
-			if (window.ThisIsAMobileApp) {
-				window.webkit.messageHandlers.lool.postMessage('BYE', '*');
-			} else {
-				map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
-				map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
-			}
-			map.remove();
+			map.closeDocument();
 			break;
 		case 'repair': // 修復
 			map._socket.sendMessage('commandvalues command=.uno:DocumentRepair');

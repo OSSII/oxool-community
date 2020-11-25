@@ -286,13 +286,7 @@ function onClick(e, id, item, subItem) {
 		L.toggleFullScreen();
 	}
 	else if (id === 'close' || id === 'closemobile') {
-		if (window.ThisIsAMobileApp) {
-			window.webkit.messageHandlers.lool.postMessage('BYE', '*');
-		} else {
-			map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
-			map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
-		}
-		map.remove();
+		map.closeDocument();
 	}
 	else if (id === 'keyboardBtn') {
 		map._clipboardContainer.enableVirtualKeyboard();
@@ -2861,9 +2855,7 @@ function _showOrHideCloseButton() {
 	if (closebutton && !L.Browser.mobile && map._permission === 'edit') {
 		$('#closebuttonwrapper').show();
 		$('#closebutton').click(function() {
-			map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
-			map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
-			map.remove();
+			map.closeDocument();
 		});
 	} else {
 		$('#closebuttonwrapper').hide();
