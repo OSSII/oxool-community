@@ -418,6 +418,48 @@ L.Map.include({
 		this._socket.sendMessage(msg);
 	},
 
+	// Add by Firefly <firefly@ossii.com.tw>
+	// 關閉檔案
+	closeDocument: function() {
+		var map = this;
+		// 文件在可編輯狀態
+		if (this._permission === 'edit') {
+			// 有強制寫入或文件已修改過
+			if (this.forceCellCommit() || this._everModified) {
+				// 顯示檔案儲存中訊息
+				this.showBusy(_('Saving...'));
+				// 通知等待 uno:Save 結果
+				this._waitSaveResult = true;
+				// 0.5 秒後呼叫存檔
+				setTimeout(function() {
+					map.save(true, true);
+				}, 500);
+				// 超過 60 秒未結束，則直接結束
+				setTimeout(function() {
+					console.debug('Save files for more than 60 seconds. Send UI_Close signal.');
+					map.sendUICloseMessage();
+				}, 60000);
+			} else {
+				this.sendUICloseMessage();
+			}
+		} else {
+			this.sendUICloseMessage();
+		}
+	},
+
+	// Add by Firefly <firefly@ossii.com.tw>
+	// 通知關閉編輯畫面通知
+	sendUICloseMessage: function() {
+		var map = this;
+		if (window.ThisIsAMobileApp) {
+			window.webkit.messageHandlers.lool.postMessage('BYE', '*');
+		} else {
+			map.fire('postMessage', {msgId: 'close', args: {EverModified: map._everModified, Deprecated: true}});
+			map.fire('postMessage', {msgId: 'UI_Close', args: {EverModified: map._everModified}});
+		}
+		map.remove();
+	},
+
 	sendUnoCommand: function (command, json) {
 		if (this._permission === 'edit') {
 			// Add by Firefly <firefly@ossii.com.tw>
@@ -680,6 +722,7 @@ L.Map.include({
  	 */
 	forceCellCommit: function () {
 		var map = this;
+		var isModified = false;
 		// 如果試試算表，檢查儲存格是否在輸入狀態
 		if (map._permission === 'edit'
 			&& map.getDocType() === 'spreadsheet'
@@ -688,6 +731,7 @@ L.Map.include({
 			this._hasForceCellCommit = true; // 設定 commit 狀態，避免重複 commit
 			// 游標在編輯狀態
 			if (map._docLayer._isCursorVisible === true) {
+				isModified = true;
 				this._socket.sendMessage('setmodified'); // 設定文件為已修改狀態
 				// 送出 enter 按鍵
 				map.focus();
@@ -697,6 +741,7 @@ L.Map.include({
 			}
 			this._hasForceCellCommit = false;
 		}
+		return isModified;
 	},
 
 	/*

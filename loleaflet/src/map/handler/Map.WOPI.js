@@ -352,17 +352,9 @@ L.Map.WOPI = L.Handler.extend({
 
 	_postMessage: function(e) {
 		if (!this.enabled) { return; }
-		var map = this._map;
 		var msgId = e.msgId;
 		var values = e.args || {};
 		if (!!this.PostMessageOrigin && window.parent !== window.self) {
-			switch (msgId) {
-			case 'close':
-			case 'UI_Close': // 關閉檔案
-				// 如果是試算表的話，要將儲存格尚未輸入的資料，寫進儲存格
-				map.forceCellCommit();
-				break;
-			}
 			// Filter out unwanted save request response
 			if (msgId === 'Action_Save_Resp') {
 				if (!this._notifySave)
