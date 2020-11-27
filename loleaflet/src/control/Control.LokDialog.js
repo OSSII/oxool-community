@@ -3,7 +3,7 @@
  * L.Control.LokDialog used for displaying LOK dialogs
  */
 
-/* global $ L Hammer w2ui */
+/* global $ Hammer w2ui */
 L.WinUtil = {
 
 };
@@ -363,12 +363,15 @@ L.Control.LokDialog = L.Control.extend({
 			dialogClass += ' lokdialog_notitle';
 
 		var that = this;
-		var size = $(window).width();
+		var winWidth = $(window).width();
+		var winHeight = $(window).height();
 		$(dialogContainer).dialog({
-			minWidth: Math.min(width, size.x),
-			width: Math.min(width, size.x),
-			maxHeight: $(window).height(),
+			minWidth: Math.min(width, winWidth),
+			width: Math.min(width, winWidth),
+			minHeight: Math.min(height, winHeight),
+			maxHeight: winHeight,
 			height: 'auto',
+			position: {my: 'center', at: 'center', of: window},
 			title: title ? title : '',
 			modal: false,
 			closeOnEscape: true,
@@ -379,26 +382,8 @@ L.Control.LokDialog = L.Control.extend({
 			}
 		});
 
-		if (leftTwips != null && topTwips != null) {
-			// magic to re-calculate the position in twips to absolute pixel
-			// position inside the #document-container
-			var pixels = this._map._docLayer._twipsToPixels(new L.Point(leftTwips, topTwips));
-			var origin = this._map.getPixelOrigin();
-			var panePos = this._map._getMapPanePos();
-
-			var left = pixels.x + panePos.x - origin.x;
-			var top = pixels.y + panePos.y - origin.y;
-
-			if (left >= 0 && top >= 0) {
-				$(dialogContainer).dialog('option', 'position', { my: 'left top', at: 'left+' + left + ' top+' + top, of: '#document-container' });
-			}
-		}
-
 		// don't show the dialog surround until we have the dialog content
 		$(dialogContainer).parent().hide();
-
-		// Override default minHeight, which can be too large for thin dialogs.
-		L.DomUtil.setStyle(dialogContainer, 'minHeight', height + 'px');
 
 		this._dialogs[id] = {
 			width: width,
