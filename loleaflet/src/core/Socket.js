@@ -1018,6 +1018,9 @@ L.Socket = L.Class.extend({
 					command.selectedParts.push(parseInt(item));
 				});
 			}
+			else if (tokens[i].substring(0, 11) === 'partdetail=') {
+				command.partdetail = tokens[i].substring(11);
+			}
 		}
 		if (command.tileWidth && command.tileHeight && this._map._docLayer) {
 			var defaultZoom = this._map.options.zoom;
