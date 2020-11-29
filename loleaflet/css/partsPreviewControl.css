@@ -18,20 +18,43 @@
 	margin: 1em 0;
 }
 
-.preview-helper {
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
-	font-size: 14px;
-	color: #d86344;
+.preview-info-wrapper {
+	display:inline-block;
+	position: relative;
+	width: 30px;
+	height: 100px;
 	margin-right: 4px;
+	vertical-align: top;
 }
 
-.preview-slide-no {
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
+.preview-helper {
+	position: absolute;
+	width:100%;
+	top: 1px;
+	right: 1px;
+	font-size: 14px;
+	text-align: right;
+	color: #d86344;
 }
+
+.preview-animation {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	right: 1px;
+	bottom: 18px;
+	background: url('images/res/click_16.svg') no-repeat center/contain;
+}
+
+.preview-transition {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	right: 1px;
+	bottom: 1px;
+	background: url('images/res/effect_16.svg') no-repeat center/contain;
+}
+
 
 .preview-img {
 	/* In draw docs, the width of previews are small, but we want a min of 180px to align it with document's left edge */
@@ -44,6 +67,11 @@
 
 .preview-img-selected {
 	border-color: #d86344;
+}
+
+.preview-img-blur {
+	-webkit-filter: grayscale(100%) blur(1px);
+	filter: grayscale(100%) blur(1px);
 }
 
 .mCSB_container {
