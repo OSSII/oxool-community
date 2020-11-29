@@ -378,13 +378,26 @@ L.CalcTileLayer = L.TileLayer.extend({
 			}
 			this._hiddenParts = command.hiddenparts || [];
 			this._documentInfo = textMsg;
-			var partNames = textMsg.match(/[^\r\n]+/g);
-			// only get the last matches
-			this._partNames = partNames.slice(partNames.length - this._parts);
+			var partMatch = textMsg.match(/[^\r\n]+/g);
+			// 使用新格式
+			if (command.partdetail !== undefined) {
+				var partsInfo = partMatch.slice(partMatch.length - this._parts);
+				this._partsInfo = [];
+				this._partNames = [];
+				for (var i=0; i < partsInfo.length ; i++) {
+					var json = JSON.parse(partsInfo[i]);
+					this._partsInfo.push(json);
+					this._partNames.push(json.name);
+				}
+			} else {
+				// only get the last matches
+				this._partNames = partMatch.slice(partMatch.length - this._parts);
+			}
 			this._map.fire('updateparts', {
 				selectedPart: this._selectedPart,
 				parts: this._parts,
 				docType: this._docType,
+				partsInfo: this._partsInfo,
 				partNames: this._partNames,
 				hiddenParts: this._hiddenParts,
 				source: 'status'

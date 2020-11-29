@@ -76,6 +76,7 @@ L.ImpressTileLayer = L.TileLayer.extend({
 				selectedParts: this._selectedParts,
 				parts: this._parts,
 				docType: this._docType,
+				partsInfo: this._partsInfo,
 				partNames: this._partHashes
 			});
 		}
@@ -459,10 +460,10 @@ L.ImpressTileLayer = L.TileLayer.extend({
 	},
 
 	_onStatusMsg: function (textMsg) {
-		var command = this._map._socket.parseServerCmd(textMsg);
 		// Since we have two status commands, remove them so we store and compare payloads only.
 		textMsg = textMsg.replace('status: ', '');
 		textMsg = textMsg.replace('statusupdate: ', '');
+		var command = this._map._socket.parseServerCmd(textMsg);
 		if (command.width && command.height && this._documentInfo !== textMsg) {
 			this._docWidthTwips = command.width;
 			this._docHeightTwips = command.height;
@@ -479,13 +480,26 @@ L.ImpressTileLayer = L.TileLayer.extend({
 			this._resetPreFetching(true);
 			this._update();
 			var partMatch = textMsg.match(/[^\r\n]+/g);
-			// only get the last matches
-			this._partHashes = partMatch.slice(partMatch.length - this._parts);
+			// 各頁資訊放在 partsInfo
+			if (command.partdetail !== undefined) {
+				var partsInfo = partMatch.slice(partMatch.length - this._parts);
+				this._partsInfo = [];
+				this._partHashes = [];
+				for (var i=0; i < partsInfo.length ; i++) {
+					var json = JSON.parse(partsInfo[i]);
+					this._partsInfo.push(json);
+					this._partHashes.push(json.hashCode);
+				}
+			} else {
+				// only get the last matches
+				this._partHashes = partMatch.slice(partMatch.length - this._parts);
+			}
 			this._map.fire('updateparts', {
 				selectedPart: this._selectedPart,
 				selectedParts: this._selectedParts,
 				parts: this._parts,
 				docType: this._docType,
+				partsInfo: this._partsInfo,
 				partNames: this._partHashes
 			});
 		}
