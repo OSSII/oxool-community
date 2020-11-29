@@ -70,6 +70,7 @@
 
 .spreadsheet-tab-protected {
 	display: inline-block;
+	pointer-events: none;
 	vertical-align: text-bottom;
 	width: 16px;
 	height: 16px;
