@@ -448,6 +448,12 @@ L.Map.include({
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
+	// 令 OxOOL 重新取得文件狀態
+	getDocumentStatus: function() {
+		this._socket.sendMessage('status');
+	},
+
+	// Add by Firefly <firefly@ossii.com.tw>
 	// 通知關閉編輯畫面通知
 	sendUICloseMessage: function() {
 		var map = this;
