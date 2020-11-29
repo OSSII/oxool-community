@@ -12,6 +12,7 @@ L.Control.PartsPreview = L.Control.extend({
 	onAdd: function (map) {
 		this._previewInitialized = false;
 		this._previewTiles = [];
+		this._partsInfo = [];
 		this._partsPreviewCont = L.DomUtil.get('slide-sorter');
 		this._scrollY = 0;
 
@@ -23,14 +24,15 @@ L.Control.PartsPreview = L.Control.extend({
 	},
 
 	_updateDisabled: function (e) {
-		var parts = e.parts;
-		var selectedPart = e.selectedPart;
 		var docType = e.docType;
-		if (docType === 'text') {
-			return;
-		}
-
 		if (docType === 'presentation' || docType === 'drawing') {
+			var parts = e.parts;
+			var selectedPart = e.selectedPart;
+			// 是否有傳來 partsInfo
+			if (e.partsInfo !== undefined) {
+				this._partsInfo = e.partsInfo;
+			}
+
 			if (!this._previewInitialized)
 			{
 				// make room for the preview
@@ -66,8 +68,10 @@ L.Control.PartsPreview = L.Control.extend({
 
 	_createPreview: function (i, hashCode, bottomBound) {
 		var frame = L.DomUtil.create('div', 'preview-frame', this._partsPreviewCont);
-		var helper = L.DomUtil.create('div', 'preview-helper', frame);
-		$(helper).text(i + 1);
+		var infoWrapper = L.DomUtil.create('div', 'preview-info-wrapper', frame);
+		L.DomUtil.create('div', 'preview-helper', infoWrapper); //infoWrapper.childNodes[0]
+		L.DomUtil.create('div', '', infoWrapper); // infoWrapper.childNodes[1] (是否有動畫)
+		L.DomUtil.create('div', '', infoWrapper); // infoWrapper.childNodes[2] (是否有投影片轉場)
 
 		var imgClassName = 'preview-img';
 		var img = L.DomUtil.create('img', imgClassName, frame);
@@ -92,6 +96,7 @@ L.Control.PartsPreview = L.Control.extend({
 			previewFrameTop -= this._scrollY;
 			previewFrameBottom = previewFrameTop + this._previewFrameHeight;
 			L.DomUtil.setStyle(img, 'height', this._previewImgHeight + 'px');
+			L.DomUtil.setStyle(infoWrapper, 'height', this._previewImgHeight + 'px');
 		}
 
 		var imgSize;
@@ -100,6 +105,7 @@ L.Control.PartsPreview = L.Control.extend({
 			imgSize = this._map.getPreview(i, i, 180, 180, {autoUpdate: this.options.autoUpdate});
 			img.fetched = true;
 			L.DomUtil.setStyle(img, 'height', '');
+			L.DomUtil.setStyle(infoWrapper, 'height', imgSize.height + 'px');
 		}
 
 		if (i === 0) {
@@ -179,19 +185,51 @@ L.Control.PartsPreview = L.Control.extend({
 		else {
 			// update hash code when user click insert slide.
 			for (it = 0; it < parts; it++) {
-				if (this._previewTiles[it].hash !== e.partNames[it]) {
-					this._previewTiles[it].hash = e.partNames[it];
+				var img = this._previewTiles[it];
+				var hash = e.partNames[it];
+				var infoWrapper = img.parentNode.childNodes[0];
+				var helper = infoWrapper.childNodes[0];
+				var animation = infoWrapper.childNodes[1];
+				var transition = infoWrapper.childNodes[2];
+				helper.innerText = it + 1;
+				// 更新 hashCode
+				img.hash = hash;
+
+				if (this._partsInfo[it] !== undefined) {
+					img.info = this._partsInfo[it];
+					img.title = img.info.name;
+
+					// 是否隱藏
+					if (img.info.visible === '0') {
+						L.DomUtil.addClass(img, 'preview-img-blur');
+					} else {
+						L.DomUtil.removeClass(img, 'preview-img-blur');
+					}
+
+					// 是否有動畫
+					if (img.info.hasAnimationNode !== '0') {
+						L.DomUtil.addClass(animation, 'preview-animation');
+					} else {
+						L.DomUtil.removeClass(animation, 'preview-animation');
+					}
+
+					// 是否有轉場
+					if (img.info.transitionType !== '0') {
+						L.DomUtil.addClass(transition, 'preview-transition');
+					} else {
+						L.DomUtil.removeClass(transition, 'preview-transition');
+					}
 				}
 			}
 		}
-		// Add by Firefly <firefly@ossii.com.tw>
+		/* // Add by Firefly <firefly@ossii.com.tw>
 		// 更新這張投影片(含)之後的編號
 		var slides = $('#slide-sorter .mCSB_container .preview-frame');
 		for (it = e.selectedPart; it < slides.length ; it++)
 		{
-			$(slides[it].childNodes[0]).text(it+1);
+			$(slides[it].childNodes[0].childNodes[0]).text(it+1);
 		}
-		//---------------------------------------------------------
+		//--------------------------------------------------------- */
 	},
 
 	_updatePreview: function (e) {
