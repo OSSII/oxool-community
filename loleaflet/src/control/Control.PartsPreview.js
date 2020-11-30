@@ -12,7 +12,6 @@ L.Control.PartsPreview = L.Control.extend({
 	onAdd: function (map) {
 		this._previewInitialized = false;
 		this._previewTiles = [];
-		this._partsInfo = [];
 		this._partsPreviewCont = L.DomUtil.get('slide-sorter');
 		this._scrollY = 0;
 
@@ -28,10 +27,6 @@ L.Control.PartsPreview = L.Control.extend({
 		if (docType === 'presentation' || docType === 'drawing') {
 			var parts = e.parts;
 			var selectedPart = e.selectedPart;
-			// 是否有傳來 partsInfo
-			if (e.partsInfo !== undefined) {
-				this._partsInfo = e.partsInfo;
-			}
 
 			if (!this._previewInitialized)
 			{
@@ -195,26 +190,25 @@ L.Control.PartsPreview = L.Control.extend({
 				// 更新 hashCode
 				img.hash = hash;
 
-				if (this._partsInfo[it] !== undefined) {
-					img.info = this._partsInfo[it];
-					img.title = img.info.name;
-
+				var pInfo = this._map.getPartProperty(it);
+				if (pInfo !== undefined) {
+					img.title = pInfo.name;
 					// 是否隱藏
-					if (img.info.visible === '0') {
+					if (pInfo.visible === '0') {
 						L.DomUtil.addClass(img, 'preview-img-blur');
 					} else {
 						L.DomUtil.removeClass(img, 'preview-img-blur');
 					}
 
 					// 是否有動畫
-					if (img.info.hasAnimationNode !== '0') {
+					if (pInfo.hasAnimationNode !== '0') {
 						L.DomUtil.addClass(animation, 'preview-animation');
 					} else {
 						L.DomUtil.removeClass(animation, 'preview-animation');
 					}
 
 					// 是否有轉場
-					if (img.info.transitionType !== '0') {
+					if (pInfo.transitionType !== '0') {
 						L.DomUtil.addClass(transition, 'preview-transition');
 					} else {
 						L.DomUtil.removeClass(transition, 'preview-transition');
@@ -222,14 +216,6 @@ L.Control.PartsPreview = L.Control.extend({
 				}
 			}
 		}
-		/* // Add by Firefly <firefly@ossii.com.tw>
-		// 更新這張投影片(含)之後的編號
-		var slides = $('#slide-sorter .mCSB_container .preview-frame');
-		for (it = e.selectedPart; it < slides.length ; it++)
-		{
-			$(slides[it].childNodes[0].childNodes[0]).text(it+1);
-		}
-		//--------------------------------------------------------- */
 	},
 
 	_updatePreview: function (e) {
