@@ -395,6 +395,23 @@ L.Map.include({
 		return file;
 	},
 
+	/*
+	 * 取得某張工作表或某個投影片詳細資料
+	 */
+	getPartProperty: function(part) {
+		var partsInfo = this._docLayer._partsInfo;
+		var info = undefined;
+		// 未指定工作表或投影片編號，表示目前選取的工作表或投影片編號
+		if (part === undefined) {
+			part = this._docLayer._selectedPart;
+		}
+
+		if (typeof part === 'number' && partsInfo !== undefined) {
+			info = partsInfo[part];
+		}
+		return info;
+	},
+
 	//---------------------------------------
 
 	isHiddenPart: function (part) {
