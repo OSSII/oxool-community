@@ -397,7 +397,6 @@ L.CalcTileLayer = L.TileLayer.extend({
 				selectedPart: this._selectedPart,
 				parts: this._parts,
 				docType: this._docType,
-				partsInfo: this._partsInfo,
 				partNames: this._partNames,
 				hiddenParts: this._hiddenParts,
 				source: 'status'

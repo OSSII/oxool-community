@@ -76,7 +76,6 @@ L.ImpressTileLayer = L.TileLayer.extend({
 				selectedParts: this._selectedParts,
 				parts: this._parts,
 				docType: this._docType,
-				partsInfo: this._partsInfo,
 				partNames: this._partHashes
 			});
 		}
@@ -499,7 +498,6 @@ L.ImpressTileLayer = L.TileLayer.extend({
 				selectedParts: this._selectedParts,
 				parts: this._parts,
 				docType: this._docType,
-				partsInfo: this._partsInfo,
 				partNames: this._partHashes
 			});
 		}
