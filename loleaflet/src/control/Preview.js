@@ -11,11 +11,8 @@ L.Control.Preview = L.Control.extend({
 	_toolbar: null,
 
 	_items: [
-		{type: 'button',  id: 'closedocument',  img: 'closemobile', hint: _UNO('.uno:CloseDoc', 'text')},
-		{type: 'break'},
 		{type: 'html', id: 'filename'},
 		{type: 'break'},
-
 		{
 			type: 'html', id: 'changepagenumber',
 			html: '<div><select id="ChangePageNumber" style="border-radius: 2px; border: 1px solid silver;height:26px;max-width:200px;line-height:26px;font-size:16px;cursor:pointer;"></select></div>'
@@ -64,7 +61,7 @@ L.Control.Preview = L.Control.extend({
 		},
 		{type: 'button',  id: 'print', img: 'print', hint: _UNO('.uno:Print', 'text'), hidden: true},
 		{type: 'break', id:'outputbreak', hidden: true},
-		{type: 'button',  id: 'about', img: 'ossiilogo', hint: _('About')},
+		{type: 'button',  id: 'closedocument',  img: 'closebuttonimage', hint: _UNO('.uno:CloseDoc', 'text')},
 	],
 
 	onAdd: function(map) {
@@ -150,9 +147,11 @@ L.Control.Preview = L.Control.extend({
 		viewerbar.set('filename', {
 			html : '<div style="border-bottom:2px dashed #bbbbbb;overflow:hidden;max-width:400px;text-align:left;font-size:16px" title="' +
 				_('File name:') + filename + '">' +
-				'<div class="' + iconClass + '" style="display:inline-block;vertical-align:middle;">' +
+				'<div id="document-logo" class="' + iconClass + '" style="display:inline-block;vertical-align:middle;cursor:pointer">' +
 				'</div>&nbsp;' + filename + '</div>'
 		});
+
+		$('#document-logo').on('click', function(/*e*/) {map.showLOAboutDialog();});
 
 		// 顯示跳頁選項
 		if (!canChangePage) {
