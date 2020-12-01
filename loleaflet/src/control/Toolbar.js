@@ -456,6 +456,10 @@ L.Map.include({
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 通知關閉編輯畫面通知
 	sendUICloseMessage: function() {
+		// 未被包在 iframe 中，直接關閉視窗
+		if (window.self === window.top) {
+			window.close();
+		}
 		var map = this;
 		if (window.ThisIsAMobileApp) {
 			window.webkit.messageHandlers.lool.postMessage('BYE', '*');
