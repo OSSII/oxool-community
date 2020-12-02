@@ -1761,9 +1761,7 @@ private:
         {
             Object::Ptr authorObj = new Object();
             authorObj->set("type", "string");
-            std::string decodedUserName;
-            URI::decode(userName, decodedUserName);
-            authorObj->set("value", decodedUserName);
+            authorObj->set("value", userName);
             renderOptsObj->set(".uno:Author", authorObj);
         }
 
