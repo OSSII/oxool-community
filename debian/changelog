@@ -1,3 +1,9 @@
+oxool (3.2.13-1.community) bionic; urgency=medium
+
+  * Bump package version to 3.2.13-1
+
+ -- Firefly <firefly@ossii.com.tw>  Thu, 03 Dec 2020 17:33:21 +0800
+
 oxool (3.2.12-1.community) bionic; urgency=medium
 
   * Bump package version to 3.2.12-1
