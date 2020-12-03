@@ -13,16 +13,14 @@
 
 .preview-frame {
 	width: 250px;
-	white-space: nowrap;
-	text-align: center;
 	margin: 1em 0;
+	padding: 0;
 }
 
 .preview-info-wrapper {
 	display:inline-block;
 	position: relative;
-	width: 30px;
-	height: 100px;
+	width: 40px;
 	margin-right: 4px;
 	vertical-align: top;
 }
@@ -31,7 +29,6 @@
 	position: absolute;
 	width:100%;
 	top: 1px;
-	right: 1px;
 	font-size: 14px;
 	text-align: right;
 	color: #d86344;
@@ -39,18 +36,18 @@
 
 .preview-animation {
 	position: absolute;
-	width: 16px;
-	height: 16px;
-	right: 1px;
+	width: 14px;
+	height: 14px;
+	right: 0px;
 	bottom: 18px;
 	background: url('images/res/click_16.svg') no-repeat center/contain;
 }
 
 .preview-transition {
 	position: absolute;
-	width: 16px;
-	height: 16px;
-	right: 1px;
+	width: 14px;
+	height: 46px;
+	right: 0px;
 	bottom: 1px;
 	background: url('images/res/effect_16.svg') no-repeat center/contain;
 }
