@@ -226,9 +226,7 @@ L.Control.PartsPreview = L.Control.extend({
 			this._previewTiles[e.id].onload = function () {
 				$('#slide-sorter').mCustomScrollbar({
 					axis: 'y',
-					theme: 'dark-thick',
-					scrollInertia: 0,
-					alwaysShowScrollbar: 1,
+					theme: 'rounded-dots-dark',
 					callbacks:{
 						whileScrolling: function() {
 							control._onScroll(this);
