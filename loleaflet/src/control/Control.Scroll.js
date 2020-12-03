@@ -30,7 +30,7 @@ L.Control.Scroll = L.Control.extend({
 		$('.scroll-container').mCustomScrollbar({
 			axis: 'yx',
 			theme: 'minimal-dark',
-			//scrollInertia: 0,
+			scrollInertia: 0,
 			advanced:{
 				autoExpandHorizontalScroll: true, /* weird bug, it should be false */
 				jumpOnContentResize: false /* prevent from jumping on a mobile devices */
