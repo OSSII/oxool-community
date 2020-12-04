@@ -46,10 +46,10 @@
 .preview-transition {
 	position: absolute;
 	width: 14px;
-	height: 46px;
+	height: 14px;
 	right: 0px;
 	bottom: 1px;
-	background: url('images/res/effect_16.svg') no-repeat center/contain;
+	background: url('images/res/fade_effect_indicator.svg') no-repeat center/contain;
 }
 
 
