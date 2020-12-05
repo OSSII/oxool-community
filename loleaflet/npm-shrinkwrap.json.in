@@ -1825,9 +1825,8 @@
       "dev": true
     },
     "jquery-contextmenu": {
-      "version": "2.2.3",
-      "resolved": "file:node_shrinkwrap/jquery-contextmenu-2.2.3.tgz",
-      "integrity": "sha1-qYAPfXL5ZDcetDw+LwucHzD4mmw=",
+      "version": "2.9.2",
+      "resolved": "file:node_shrinkwrap/jquery-contextmenu-2.9.2.tgz",
       "dev": true
     },
     "jquery-mousewheel": {
