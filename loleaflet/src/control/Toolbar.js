@@ -273,6 +273,29 @@ L.Map.include({
 		'zoomminus': 'zoomout',
 		'zoomplus': 'zoomin',
 	},
+
+	// 帶參數的 uno 指令(.uno:AssignLayout?WhatLayer=xx)
+	_resorceIcon: {
+		'.uno:AssignLayout?WhatLayout:long=20': 'layout_empty', // 空白投影片
+		'.uno:AssignLayout?WhatLayout:long=19': 'layout_head03', // 只有題名
+		'.uno:AssignLayout?WhatLayout:long=0': 'layout_head02', // 題名投影片
+		'.uno:AssignLayout?WhatLayout:long=1': 'layout_head02a', // 題名、內容區塊
+		'.uno:AssignLayout?WhatLayout:long=32': 'layout_head01', // 文字置中
+
+		'.uno:AssignLayout?WhatLayout:long=3': 'layout_textonly', // 題名和2個內容區塊
+		'.uno:AssignLayout?WhatLayout:long=12': 'layout_head03b', // 題名、內容區塊和2個內容區塊
+		'.uno:AssignLayout?WhatLayout:long=15': 'layout_head03c', // 題名、2個內容區塊和內容區塊
+		'.uno:AssignLayout?WhatLayout:long=14': 'layout_head03a', // 題名、內容區塊在內容區塊之上
+		'.uno:AssignLayout?WhatLayout:long=16': 'layout_head02b', // 題名、2個內容區塊在內容區塊之上
+		'.uno:AssignLayout?WhatLayout:long=18': 'layout_head04', // 題名、4個內容區塊
+		'.uno:AssignLayout?WhatLayout:long=34': 'layout_head06', // 題名、6個內容區塊
+
+		'.uno:AssignLayout?WhatLayout:long=28': 'layout_vertical02', // 垂直題名、垂直文字
+		'.uno:AssignLayout?WhatLayout:long=27': 'layout_vertical01', // 垂直題名、文字、圖表
+		'.uno:AssignLayout?WhatLayout:long=29': 'layout_head02', // 題名、垂直文字
+		'.uno:AssignLayout?WhatLayout:long=30': 'layout_head02a', // 題名、垂直文字、美術圖形
+	},
+
 	//-----------------------------------------------------------------
 
 	applyFont: function (fontName) {
@@ -450,7 +473,11 @@ L.Map.include({
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 令 OxOOL 重新取得文件狀態
 	getDocumentStatus: function() {
-		this._socket.sendMessage('status');
+		var that = this;
+		// 指令稍微延遲再送出
+		setTimeout(function() {
+			that._socket.sendMessage('status');
+		}, 50);
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
@@ -519,6 +546,9 @@ L.Map.include({
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 把 uno 指令轉換成 icon 圖示 URL
 	getUnoCommandIcon: function(unoCommand) {
+		if (this._resorceIcon[unoCommand] !== undefined) {
+			return 'images/res/' + this._resorceIcon[unoCommand] + '.svg';
+		}
 		var command = (unoCommand.startsWith('.uno:') ? unoCommand.substr(5) : unoCommand).toLowerCase();
 		var icon = this._iconAlias[command] !== undefined ? this._iconAlias[command] : command;
 
