@@ -81,6 +81,18 @@ L.dialog.Action = {
 				map.fire('fullscreen', {startSlideNumber: map.getCurrentPartNumber()});
 			}
 			break;
+		case 'ShowSlide': // 顯示投影片
+			if (docType === 'presentation') {
+				map.sendUnoCommand('.uno:ShowSlide');
+				map.getDocumentStatus();
+			}
+			break;
+		case 'HideSlide': // 隱藏投影片
+			if (docType === 'presentation') {
+				map.sendUnoCommand('.uno:HideSlide');
+				map.getDocumentStatus();
+			}
+			break;
 		case 'insertpage': // 新增頁面
 			map.insertPage();
 			break;
