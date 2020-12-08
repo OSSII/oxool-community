@@ -920,7 +920,7 @@ msgstr "作業階段由文件擁有者終止"
 
 #: src/core/Socket.js:340
 msgid "Idle document - please click to reload and resume editing"
-msgstr "閒置文件 - 請點按以重新載入並繼續編輯"
+msgstr "文件閒置中 - 請點按按鍵繼續"
 
 #: src/core/Socket.js:347
 msgid "Server is shutting down for maintenance (auto-saving)"
