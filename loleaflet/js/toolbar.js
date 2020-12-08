@@ -749,6 +749,7 @@ function animationEffects() {
 			var action = $(e.target).data().action;
 			var macro = 'macro:///OxOOL.Impress.SetTransition(' + action.type + ',' + action.subtype + ')';
 			map.sendUnoCommand(macro);
+			map.getDocumentStatus();
 			closePopup();
 		}
 	});
