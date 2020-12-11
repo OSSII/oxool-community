@@ -553,6 +553,10 @@ L.Socket = L.Class.extend({
 
 				return;
 			}
+			// Add by Firefly <firefly@ossii.com.tw>
+			else if (errorMessages.storage[command.errorKind] !== undefined) {
+				storageError = errorMessages.storage[command.errorKind];
+			}
 
 			// Skip empty errors (and allow for suppressing errors by making them blank).
 			if (storageError != '') {

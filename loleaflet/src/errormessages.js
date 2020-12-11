@@ -29,7 +29,12 @@ errorMessages.storage = {
 	loadfailed: _('Failed to read document from storage. Please contact your storage server (%storageserver) administrator.'),
 	savediskfull: _('Save failed due to no disk space left on storage server. Document will now be read-only. Please contact the server (%storageserver) administrator to continue editing.'),
 	saveunauthorized: _('Document cannot be saved due to expired or invalid access token.'),
-	savefailed: _('Document cannot be saved. Check your permissions or contact the storage server administrator.')
+	savefailed: _('Document cannot be saved. Check your permissions or contact the storage server administrator.'),
+	code401: _('The document could not be saved. This certification has expired or is invalid. Please reopen this file.'),
+	code404: _('The file cannot be saved. It may not have write permission for this file. Please contact the file sharer.'),
+	code413: _('The file could not be saved. It may be that the file capacity has exceeded the upload limit.'),
+	code500: _('Server error or connection timeout, the document cannot be saved temporarily. Please try again later.'),
+	code501: _('This operation is not supported, please contact the administrator.'),
 };
 
 if (typeof window !== 'undefined') {
