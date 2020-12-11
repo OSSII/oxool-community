@@ -72,7 +72,11 @@ public:
             UNAUTHORIZED,
             DOC_CHANGED, /**< Document changed in storage */
             CONFLICT,
-            FAILED
+            FAILED,
+            NOT_FOUND,
+            REQUEST_ENTITY_TOO_LARGE,
+            INTERNAL_SERVER_ERROR,
+            NOT_IMPLEMENTED
         };
 
         SaveResult(Result result) : _result(result)

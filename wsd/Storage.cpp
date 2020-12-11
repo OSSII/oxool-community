@@ -936,13 +936,13 @@ StorageBase::SaveResult WopiStorage::saveLocalFileToStorage(const Authorization&
                 LOG_WRN("Invalid or missing JSON in " << wopiLog << " HTTP_OK response.");
             }
         }
-        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_REQUESTENTITYTOOLARGE)
-        {
-            saveResult.setResult(StorageBase::SaveResult::DISKFULL);
-        }
         else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED)
         {
             saveResult.setResult(StorageBase::SaveResult::UNAUTHORIZED);
+        }
+        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_NOT_FOUND)
+        {
+            saveResult.setResult(StorageBase::SaveResult::NOT_FOUND);
         }
         else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_CONFLICT)
         {
@@ -960,6 +960,18 @@ StorageBase::SaveResult WopiStorage::saveLocalFileToStorage(const Authorization&
             {
                 LOG_WRN("Invalid or missing JSON in " << wopiLog << " HTTP_CONFLICT response.");
             }
+        }
+        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_REQUEST_ENTITY_TOO_LARGE)
+        {
+            saveResult.setResult(StorageBase::SaveResult::REQUEST_ENTITY_TOO_LARGE);
+        }
+        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR)
+        {
+            saveResult.setResult(StorageBase::SaveResult::INTERNAL_SERVER_ERROR);
+        }
+        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_NOT_IMPLEMENTED)
+        {
+            saveResult.setResult(StorageBase::SaveResult::NOT_IMPLEMENTED);
         }
         else
         {
