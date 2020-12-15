@@ -37,9 +37,6 @@ L.Control.MobileInput = L.Control.extend({
 		if (!this._readOnly) {
 			this._textArea.focus();
 		}
-		if (docLayer && map.getDocType() === 'spreadsheet') {
-			return;
-		}
 		if (docLayer && docLayer._cursorMarker) {
 			this._cursorHandler.setLatLng(docLayer._visibleCursor.getSouthWest());
 			map.addLayer(docLayer._cursorMarker);
