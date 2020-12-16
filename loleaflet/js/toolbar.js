@@ -313,6 +313,9 @@ function onClick(e, id, item, subItem) {
 			$(symbolDialog).dialog('open');
 		}
 	}
+	else if (id === 'documentLogo') {
+		map.showLOAboutDialog();
+	}
 	else {
 		console.log('有 id 未處理 : ' + id)
 	}
@@ -343,6 +346,7 @@ function toggleMobileSearchBar() {
 	if (mobileSearchBar.css('display') === 'none') {
 		mobileSearchBar.css('display', '');
 		$('#search-input').focus();
+		$('#search-input').prop('disabled', false);
 	} else {
 		mobileSearchBar.css('display', 'none');
 	}
@@ -969,7 +973,7 @@ function initMobileToolbar(toolItems) {
 		name: 'actionbar',
 		tooltip: null,
 		items: [
-			{type: 'button',  id: 'closemobile',  img: 'closemobile'},
+			{type: 'button', id: 'documentLogo', img: 'document-logo'},
 			{type: 'spacer'},
 			{type: 'button', id: 'keyboardBtn', img: 'keyboard', hidden:true},
 			{type: 'button', id: 'keyboard_hideBtn', img: 'keyboard_hide', hidden:true},
@@ -992,6 +996,7 @@ function initMobileToolbar(toolItems) {
 				'<p id="currently-msg">' + _('Current') + ' - <b><span id="current-editor"></span></b></p>' +
 				'</div>'
 			},
+			{type: 'button',  id: 'closemobile',  img: 'closebuttonimage'},
 		],
 		onClick: function (e) {
 			onClick(e, e.target);
@@ -1011,6 +1016,17 @@ function initMobileToolbar(toolItems) {
 				map.on('addview', onAddView);
 				map.on('removeview', onRemoveView);
 			}
+			// 修改文件左上角的 logo
+			var docType = map.getDocType();
+			var documentLogo = '' ;
+			if (docType === 'text') {
+				documentLogo = 'writer-icon-img';
+			} else if (docType === 'spreadsheet') {
+				documentLogo = 'calc-icon-img';
+			} else if (docType === 'presentation' || docType === 'drawing') {
+				documentLogo = 'impress-icon-img';
+			}
+			$('.document-logo').addClass(documentLogo);
 		}
 	});
 	toolbar.bind('touchstart', function(e) {
