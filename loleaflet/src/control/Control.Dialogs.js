@@ -175,6 +175,7 @@ L.Control.Dialogs = L.Control.extend({
 	 * @param {string} [userPpropertys.icon] - error, information, question, success, warning
 	 * @param {string} [userPpropertys.title] - 對話框標題
 	 * @param {string} [userPpropertys.message] - 訊息內容，可以是 html 或 text
+	 * @param {boolean} [userPpropertys.password] - 是否密碼欄位
 	 * @param {any} [userPpropertys.default] - 預設值
 	 * @param {function} [userPpropertys.callback] - 回呼函式，會傳回輸入的資料， 若按取消則是 null
 	 */
@@ -182,9 +183,15 @@ L.Control.Dialogs = L.Control.extend({
 		var dialog = L.DomUtil.create('div', '', document.body);
 		var textInput = L.DomUtil.create('input', ''); // 建立文字輸入
 		var prop = this._defaultPropertys(userPropertys);
+
+		// 指定輸入類別
+		textInput.setAttribute('type', (prop.password === true ? 'password' : 'text'));
+		// 沒有指定 callback 函數
 		if (typeof prop.callback !== 'function') {
+			console.debug('The dialog does not specify a callback function.');
 			prop.callback = $.noop;
 		}
+
 		prop.buttons = [
 			{
 				text: _('OK'),
