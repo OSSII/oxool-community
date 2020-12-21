@@ -277,21 +277,21 @@ L.Map.include({
 	// 帶參數的 uno 指令(.uno:AssignLayout?WhatLayer=xx)
 	_resorceIcon: {
 		'.uno:AssignLayout?WhatLayout:long=20': 'layout_empty', // 空白投影片
-		'.uno:AssignLayout?WhatLayout:long=19': 'layout_head03', // 只有題名
-		'.uno:AssignLayout?WhatLayout:long=0': 'layout_head02', // 題名投影片
-		'.uno:AssignLayout?WhatLayout:long=1': 'layout_head02a', // 題名、內容區塊
-		'.uno:AssignLayout?WhatLayout:long=32': 'layout_head01', // 文字置中
+		'.uno:AssignLayout?WhatLayout:long=19': 'layout_head01', // 只有題名
+		'.uno:AssignLayout?WhatLayout:long=0': 'layout_head03', // 題名投影片
+		'.uno:AssignLayout?WhatLayout:long=1': 'layout_head02', // 題名、內容區塊
+		'.uno:AssignLayout?WhatLayout:long=32': 'layout_textonly', // 文字置中
 
-		'.uno:AssignLayout?WhatLayout:long=3': 'layout_textonly', // 題名和2個內容區塊
-		'.uno:AssignLayout?WhatLayout:long=12': 'layout_head03b', // 題名、內容區塊和2個內容區塊
-		'.uno:AssignLayout?WhatLayout:long=15': 'layout_head03c', // 題名、2個內容區塊和內容區塊
-		'.uno:AssignLayout?WhatLayout:long=14': 'layout_head03a', // 題名、內容區塊在內容區塊之上
-		'.uno:AssignLayout?WhatLayout:long=16': 'layout_head02b', // 題名、2個內容區塊在內容區塊之上
+		'.uno:AssignLayout?WhatLayout:long=3': 'layout_head02a', // 題名和2個內容區塊
+		'.uno:AssignLayout?WhatLayout:long=12': 'layout_head03c', // 題名、內容區塊和2個內容區塊
+		'.uno:AssignLayout?WhatLayout:long=15': 'layout_head03b', // 題名、2個內容區塊和內容區塊
+		'.uno:AssignLayout?WhatLayout:long=14': 'layout_head02b', // 題名、內容區塊在內容區塊之上
+		'.uno:AssignLayout?WhatLayout:long=16': 'layout_head03a', // 題名、2個內容區塊在內容區塊之上
 		'.uno:AssignLayout?WhatLayout:long=18': 'layout_head04', // 題名、4個內容區塊
 		'.uno:AssignLayout?WhatLayout:long=34': 'layout_head06', // 題名、6個內容區塊
 
-		'.uno:AssignLayout?WhatLayout:long=28': 'layout_vertical02', // 垂直題名、垂直文字
-		'.uno:AssignLayout?WhatLayout:long=27': 'layout_vertical01', // 垂直題名、文字、圖表
+		'.uno:AssignLayout?WhatLayout:long=28': 'layout_vertical01', // 垂直題名、垂直文字
+		'.uno:AssignLayout?WhatLayout:long=27': 'layout_vertical02', // 垂直題名、文字、圖表
 		'.uno:AssignLayout?WhatLayout:long=29': 'layout_head02', // 題名、垂直文字
 		'.uno:AssignLayout?WhatLayout:long=30': 'layout_head02a', // 題名、垂直文字、美術圖形
 	},
@@ -437,7 +437,8 @@ L.Map.include({
 		if (extendedData !== undefined) {
 			msg += ' extendedData=' + extendedData;
 		}
-
+		// 顯示檔案儲存中訊息
+		this.showBusy(_('Saving...'));
 		this._socket.sendMessage(msg);
 	},
 
@@ -447,10 +448,9 @@ L.Map.include({
 		var map = this;
 		// 文件在可編輯狀態
 		if (this._permission === 'edit') {
+			this._stopCloseDocument = false;
 			// 有強制寫入或文件已修改過
 			if (this.forceCellCommit() || this._everModified) {
-				// 顯示檔案儲存中訊息
-				this.showBusy(_('Saving...'));
 				// 通知等待 uno:Save 結果
 				this._waitSaveResult = true;
 				// 0.5 秒後呼叫存檔
@@ -470,19 +470,24 @@ L.Map.include({
 		}
 	},
 
-	// Add by Firefly <firefly@ossii.com.tw>
-	// 令 OxOOL 重新取得文件狀態
+	/**
+	 * 令 OxOOL 重新取得文件狀態
+	 * @author Firefly <firefly@ossii.com.tw>
+	 */
 	getDocumentStatus: function() {
-		var that = this;
 		// 指令稍微延遲再送出
 		setTimeout(function() {
-			that._socket.sendMessage('status');
-		}, 50);
+			this._socket.sendMessage('status');
+		}.bind(this), 100);
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 通知關閉編輯畫面通知
 	sendUICloseMessage: function() {
+		if (this._stopCloseDocument === true) {
+			this._stopCloseDocument = false;
+			return;
+		}
 		// 未被包在 iframe 中，直接關閉視窗
 		if (window.self === window.top) {
 			window.close();
@@ -528,6 +533,12 @@ L.Map.include({
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 依據 itemKey 設定右鍵選單 icon 圖示
 	contextMenuIcon: function($itemElement, itemKey, item) {
+		// 如果有 checktype
+		if (item.checktype !== undefined && item.checked) {
+			$itemElement.addClass('lo-menu-item-checked');
+		} else {
+			$itemElement.removeClass('lo-menu-item-checked');
+		}
 		var hasinit = $itemElement.hasClass('_init_');
 		if (hasinit) {return '';}
 		$itemElement.addClass('_init_')
@@ -536,10 +547,6 @@ L.Map.include({
 		var iconURL = 'url("' + this.getUnoCommandIcon(itemKey) + '")';
 		$(icon).css('background-image', iconURL);
 		$itemElement.append(icon);
-		// 如果有 checktype
-		if (item.checktype !== undefined && item.checked) {
-			$itemElement.addClass('lo-menu-item-checked');
-		}
 		return '';
 	},
 

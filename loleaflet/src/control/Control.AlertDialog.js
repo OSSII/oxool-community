@@ -12,6 +12,7 @@ L.Control.AlertDialog = L.Control.extend({
 	},
 
 	_onError: function(e) {
+		this._map._stopCloseDocument = true; // 如果是關閉檔案的話，就不要關閉了
 		if (vex.dialogID > 0 && !this._map._fatal) {
 			// TODO. queue message errors and pop-up dialogs
 			// Close other dialogs before presenting a new one.
