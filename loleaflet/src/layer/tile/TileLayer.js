@@ -2337,6 +2337,7 @@ L.TileLayer = L.GridLayer.extend({
 			this._graphicMarker.setVisible(false);
 			this._graphicMarker.dragHorizDir = undefined;
 			this._graphicMarker.dragVertDir = undefined;
+			this._removeCachedSVG();
 		}
 	},
 
@@ -2375,6 +2376,19 @@ L.TileLayer = L.GridLayer.extend({
 			this._map.sendUnoCommand('.uno:TransformDialog ', param);
 			this._graphicMarker.isDragged = false;
 			this._graphicMarker.setVisible(false);
+			this._removeCachedSVG();
+		}
+	},
+
+	/**
+	 * 移除緩衝的圖片
+	 * @author Firefly <firefly@ossii.com.tw>
+	 */
+	_removeCachedSVG: function() {
+		var extraInfo = this._graphicSelection.extraInfo;
+		if (extraInfo.id) {
+			console.debug('delete cache SVG : ' + extraInfo.id);
+			delete this._map._cacheSVG[extraInfo.id];
 		}
 	},
 
