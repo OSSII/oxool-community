@@ -51,8 +51,8 @@ L.Control.Menubar = L.Control.extend({
 			{name: '.uno:ViewMenu', id: 'view', type: 'menu', menu: [
 				{name: '.uno:FullScreen', id: 'fullscreen', type: 'action'},
 				{type: '--'},
-				{name: '.uno:ZoomPlus', id: 'zoomin', type: 'action'},
-				{name: '.uno:ZoomMinus', id: 'zoomout', type: 'action'},
+				{icon: '.uno:ZoomPlus', name: 'Zoom In', id: 'zoomin', type: 'action'},
+				{icon: '.uno:ZoomMinus', name: 'Zoom Out', id: 'zoomout', type: 'action'},
 				{name: '.uno:Zoom100Percent', id: 'zoomreset', type: 'action'},
 				{type: '--'},
 				{uno: '.uno:ControlCodes', hotkey: 'Ctrl+F10'}
