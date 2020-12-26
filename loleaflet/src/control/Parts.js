@@ -369,7 +369,7 @@ L.Map.include({
 		case 'spreadsheet':
 			if (this.getNumberOfVisibleParts() > 1) {
 				this.forceCellCommit();
-				this.sendUnocommand('uno .uno:Hide');
+				this.sendUnoCommand('.uno:Hide');
 			}
 			break;
 		case 'presentation':
