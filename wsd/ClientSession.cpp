@@ -558,7 +558,9 @@ bool ClientSession::loadDocument(const char* /*buffer*/, int /*length*/,
 
         if (getHaveDocPassword())
         {
-            oss << " password=" << getDocPassword();
+            std::string encodePassword;
+            Poco::URI::encode(getDocPassword(), "", encodePassword);
+            oss << " password=" << encodePassword;
         }
 
         if (!getLang().empty())

@@ -212,7 +212,7 @@ L.Socket = L.Class.extend({
 			msg += ' timestamp=' + this._map.options.timestamp;
 		}
 		if (this._map._docPassword) {
-			msg += ' password=' + this._map._docPassword;
+			msg += ' password=' + encodeURIComponent(this._map._docPassword);
 		}
 		if (String.locale) {
 			msg += ' lang=' + String.locale;
