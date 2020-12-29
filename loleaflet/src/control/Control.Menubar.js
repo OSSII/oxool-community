@@ -563,11 +563,17 @@ L.Control.Menubar = L.Control.extend({
 			while (this._menubarCont.hasChildNodes()) {
 				this._menubarCont.removeChild(this._menubarCont.firstChild);
 			}
+
+			this._createFileIcon();
 			// Add document specific menu
 			this._loadMenubar(this._map.getDocType());
-			this._createFileIcon();
 			this._bindMenuEvent();
 			this._initialized = true;
+			// 等 menubar 初始化完畢
+			// 再顯示最後修改時間
+			$('#menu-last-mod').show();
+			// 顯示檔案名稱
+			$('#document-name-input').show();
 		}
 		// 非編輯模式或手機模式時，不顯示選單
 		if (e.perm !== 'edit' || L.Browser.mobile) {

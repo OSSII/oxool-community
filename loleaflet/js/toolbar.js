@@ -1946,12 +1946,10 @@ function onDocLayerInit() {
 		$('.styles-select').prop('data-minimum-results-for-search', 'Infinity');
 		$('.fonts-select').prop('data-minimum-results-for-search', 'Infinity');
 		$('.fontsizes-select').prop('data-minimum-results-for-search', 'Infinity');
-		$('#document-name-input').hide();
 	} else {
 		nUsers = _('%n users');
 		oneUser = _('1 user');
 		noUser = _('0 users');
-		$('#document-name-input').show();
 	}
 
 	updateUserListCount();
