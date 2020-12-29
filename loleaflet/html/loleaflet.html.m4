@@ -82,7 +82,7 @@ ifelse(MOBILEAPP,[true],
       <!-- Mobile menu toggle button (hamburger/x icon) -->
       <input id="main-menu-state" type="checkbox" style="display: none"/>
       <ul id="main-menu" class="sm sm-simple lo-menu"></ul>
-      <div id="menu-last-mod"><a></a></div>
+      <div id="menu-last-mod" style="display: none"><a></a></div>
       <div id="document-titlebar">
          <div class="document-title">
            <input id="document-name-input" type="text" spellcheck="false" disabled="true" style="display: none"/>
