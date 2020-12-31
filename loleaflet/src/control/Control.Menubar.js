@@ -433,9 +433,10 @@ L.Control.Menubar = L.Control.extend({
 					{uno: '.uno:DataFilterHideAutoFilter'}]},
 				{type: '--'},
 				{name: '.uno:GroupOutlineMenu', type: 'menu', menu: [
-					{uno: '.uno:Group'},
+					{name: '.uno:Group', id: 'dialog:RowOrColGroup'},
 					{uno: '.uno:Ungroup'},
 					{type: '--'},
+					{uno: '.uno:AutoOutline'},
 					{uno: '.uno:ClearOutline'},
 					{type: '--'},
 					{uno: '.uno:HideDetail'},
