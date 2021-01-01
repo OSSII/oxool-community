@@ -152,7 +152,6 @@ L.Map.include({
 		'datapilotmenu': 'datadatapilotrun',
 		'defaultcellstyles': 'defaultcharstyle',
 		'deleteallnotes': 'deleteallannotation',
-		'deletecell': 'delete',
 		'deletenote': 'deleteannotation',
 		'deleteprintarea': 'delete',
 		'deleteslide': 'deletepage',
