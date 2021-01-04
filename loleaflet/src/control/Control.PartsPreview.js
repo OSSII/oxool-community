@@ -129,6 +129,16 @@ L.Control.PartsPreview = L.Control.extend({
 		if (e.docType === 'presentation' && e.part >= 0) {
 			this._map.getPreview(e.part, e.part, 180, 180, {autoUpdate: this.options.autoUpdate});
 		}
+
+		// 側邊攔 超出可視範圍的 SelectedFrame 置於第一格縮圖
+		var visualYmin = $('#mCSB_2').offset().top;
+		var visualYmax = $('#mCSB_2').height();
+		var selectedFrame = $('.preview-frame:has(.preview-img-selected)');
+		if (selectedFrame.offset().top < visualYmin || selectedFrame.offset().top > visualYmax) {
+			var setContainerTop = - (selectedFrame.position().top);
+			$('#mCSB_2_container').css('top', setContainerTop + 'px')
+		}
+
 	},
 
 	_syncPreviews: function (e) {
