@@ -300,6 +300,16 @@ L.Control.Tabs = L.Control.extend({
 					scrollDiv.scrollLeft = horizScrollPos;
 				}
 			}
+
+			// 超出可視範圍的 SelectedTab 置於可視範圍內
+			var SelectedPosition = $('#spreadsheet-tab' + selectedPart).position()
+			if (SelectedPosition) {
+				var visualWidth = $('.spreadsheet-tab-scroll').width(); // 可視範圍 0~width
+				var selectedLeft = SelectedPosition.left;
+				if (selectedLeft > visualWidth) scrollDiv.scrollLeft = visualWidth; // 水平捲動至最右
+				if (selectedLeft < 0) scrollDiv.scrollLeft = 0; // 水平捲動至最左
+			}
+
 		}
 	},
 
