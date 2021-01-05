@@ -76,7 +76,8 @@ public:
             NOT_FOUND,
             REQUEST_ENTITY_TOO_LARGE,
             INTERNAL_SERVER_ERROR,
-            NOT_IMPLEMENTED
+            NOT_IMPLEMENTED,
+            STATUS_CODE_499
         };
 
         SaveResult(Result result) : _result(result)
@@ -119,7 +120,7 @@ public:
 
         // 取得回應訊息
         const std::string& getResponseString() const
-        {   
+        {
             return _saveResponseString;
         }
 

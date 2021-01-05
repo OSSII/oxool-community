@@ -973,6 +973,11 @@ StorageBase::SaveResult WopiStorage::saveLocalFileToStorage(const Authorization&
         {
             saveResult.setResult(StorageBase::SaveResult::NOT_IMPLEMENTED);
         }
+        // 自訂錯誤碼 499
+        else if (response.getStatus() == 499)
+        {
+            saveResult.setResult(StorageBase::SaveResult::STATUS_CODE_499);
+        }
         else
         {
             LOG_ERR("Unexpected response to " << wopiLog << " : " << response.getStatus() <<

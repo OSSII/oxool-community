@@ -999,6 +999,16 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
         oss << "warning: " << storageSaveResult.getResponseString();
         it->second->sendTextFrame(oss.str());
     }
+    // Add by Firefly <firefly@ossii.com.tw>
+    // 收到 http code 499 (自訂訊息)
+    // 把錯誤訊息轉給 client
+    else if (storageSaveResult.getResult() == StorageBase::SaveResult::STATUS_CODE_499)
+    {
+        LOG_ERR("499: docKey [" << _docKey << "] to URI [" << uriAnonym << "]. (Message:\"" << storageSaveResult.getResponseString() << "\")");
+        std::ostringstream oss;
+        oss << "warning: " << storageSaveResult.getResponseString();
+        it->second->sendTextFrame(oss.str());
+    }
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::DOC_CHANGED
              || storageSaveResult.getResult() == StorageBase::SaveResult::CONFLICT)
     {
