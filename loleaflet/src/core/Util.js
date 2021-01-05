@@ -109,7 +109,7 @@ L.Util = {
 
 	// set options to an object, inheriting parent's options as well
 	setOptions: function (obj, options) {
-		if (!obj.hasOwnProperty('options')) {
+		if (!Object.prototype.hasOwnProperty.call(obj, 'options')) {
 			obj.options = obj.options ? L.Util.create(obj.options) : {};
 		}
 		for (var i in options) {
@@ -159,8 +159,11 @@ L.Util = {
 	// minimal image URI, set to an image when disposing to flush memory
 	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
 
-	getDpiScaleFactor: function() {
-		var dpiScale = window.devicePixelRatio ? Math.ceil(window.devicePixelRatio) : 1;
+	getDpiScaleFactor: function(useExactDPR) {
+		var dpiScale = window.devicePixelRatio ? window.devicePixelRatio : 1;
+		if (!useExactDPR)
+			dpiScale = Math.ceil(dpiScale);
+
 		if (dpiScale == 1 && L.Browser.retina) {
 			dpiScale = 2;
 		}
@@ -199,6 +202,31 @@ L.Util = {
 
 	mm100thToInch: function(mm) {
 		return mm / 2540;
+	},
+
+	getTextWidth: function(text, font) {
+		var canvas = L.Util.getTextWidth._canvas || (L.Util.getTextWidth._canvas = document.createElement('canvas'));
+		var context = canvas.getContext('2d');
+		context.font = font;
+		var metrics = context.measureText(text);
+		return Math.floor(metrics.width);
+	},
+
+	replaceCtrlInMac: function(msg) {
+		if (navigator.appVersion.indexOf('Mac') != -1 || navigator.userAgent.indexOf('Mac') != -1) {
+			var ctrl = /Ctrl/g;
+			if (String.locale.startsWith('de') || String.locale.startsWith('dsb') || String.locale.startsWith('hsb')) {
+				ctrl = /Strg/g;
+			}
+			if (String.locale.startsWith('lt')) {
+				ctrl = /Vald/g;
+			}
+			if (String.locale.startsWith('sl')) {
+				ctrl = /Krmilka/g;
+			}
+			return msg.replace(ctrl, '⌘');
+		}
+		return msg;
 	}
 };
 
@@ -244,6 +272,13 @@ L.Util = {
 	L.Util.MIN_SAFE_INTEGER = -L.Util.MAX_SAFE_INTEGER;
 })();
 
+if (!String.prototype.startsWith) {
+	String.prototype.startsWith = function(searchString, position) {
+		position = position || 0;
+		return this.substr(position, searchString.length) === searchString;
+	};
+}
+
 // shortcuts for most used utility functions
 L.extend = L.Util.extend;
 L.bind = L.Util.bind;
@@ -254,3 +289,4 @@ L.getDpiScaleFactor = L.Util.getDpiScaleFactor;
 L.toggleFullScreen = L.Util.toggleFullScreen;
 L.isEmpty = L.Util.isEmpty;
 L.mm100thToInch = L.Util.mm100thToInch;
+L.getTextWidth = L.Util.getTextWidth;
