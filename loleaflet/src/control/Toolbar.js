@@ -99,7 +99,7 @@ L.Map.include({
 		'.uno:SetAnchorToCellResize': true, // 至儲存格 (隨儲存格調整大小)
 		'.uno:SetDefault': true, // 清除所有格式設定
 		'.uno:EditCurrentRegion': true, // 編輯區段...
-		'.uno:EditShapeHyperlink': false, // 編輯超連結(會造成選不到圖片，暫時關閉)
+		'.uno:EditShapeHyperlink': true, // 編輯超連結
 		'.uno:DeleteShapeHyperlink': true, // 移除超連結
 	},
 
