@@ -4,6 +4,7 @@
  * LOK_CALLBACK_STATE_CHANGED callback
  */
 
+/* global w2ui */
 L.Map.mergeOptions({
 	stateChangeHandler: true
 });
@@ -43,6 +44,8 @@ L.Map.StateChangeHandler = L.Handler.extend({
 			props.value = state;
 		}
 		this._stateProperties[e.commandName] = props;
+
+		this._resetUIState(e.commandName, state);
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
@@ -71,6 +74,16 @@ L.Map.StateChangeHandler = L.Handler.extend({
 		}
 
 		return this._items[unoCmd];
+	},
+
+	_resetUIState: function(commandName, state) {
+		var toolbar = w2ui['editbar'];
+		if (commandName === '.uno:Context') {
+			if (state.startsWith('編輯文字')) {
+				toolbar.uncheck('horizontaltext');
+				toolbar.uncheck('verticaltext');
+			}
+		}
 	}
 });
 

@@ -118,6 +118,35 @@ function onClick(e, id, item, subItem) {
 	else {
 		throw new Error('unknown id: ' + id);
 	}
+	// Add by Tommy: Make the status of insert text
+	if (map.getDocType() === 'presentation' && (item.id === 'horizontaltext' || item.id === 'verticaltext')) {
+		if (item.checked === true) {
+			return;
+		} else {
+			var command = '';
+			var uno = '';
+			switch (item.id) {
+			case 'horizontaltext':
+				if (toolbar.get('verticaltext').checked) {
+					toolbar.uncheck('verticaltext');
+					command = 'key type=input char=0 key=1281';
+					map._socket.sendMessage(command);
+					uno = '.uno:VerticalText';
+					map.stateChangeHandler._stateProperties[uno] = false;
+				}
+				break;
+			case 'verticaltext':
+				if (toolbar.get('horizontaltext').checked) {
+					toolbar.uncheck('horizontaltext');
+					command = 'key type=input char=0 key=1281';
+					map._socket.sendMessage(command);
+					uno = '.uno:Text';
+					map.stateChangeHandler._stateProperties[uno] = false;
+				}
+				break;
+			}
+		}
+	}
 	var docLayer = map._docLayer;
 	if (id !== 'zoomin' && id !== 'zoomout') {
 		map.focus();
@@ -1542,6 +1571,13 @@ function unoCmdToToolbarId(commandname)
 			break;
 		}
 	}
+	if (map.getDocType() === 'presentation') {
+		switch (id) {
+		case 'text':
+			id = 'horizontaltext';
+			break;
+		}
+	}
 	return id;
 }
 
@@ -2208,6 +2244,10 @@ function onCommandStateChanged(e) {
 		} else {
 			toolbar.disable('insertsymbolmenu');
 		}
+	}
+	else if (commandName === '.uno:Text' || commandName === '.uno:VerticalText')
+	{
+		commandName = String(commandName);
 	}
 
 	var id = unoCmdToToolbarId(commandName);

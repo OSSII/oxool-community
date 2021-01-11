@@ -3,7 +3,7 @@
 * Control.Menubar
 */
 
-/* global $ _ _UNO vex revHistoryEnabled closebutton */
+/* global $ _ _UNO vex revHistoryEnabled closebutton w2ui*/
 L.Control.Menubar = L.Control.extend({
 	// TODO: Some mechanism to stop the need to copy duplicate menus (eg. Help)
 	options: {
@@ -790,6 +790,34 @@ L.Control.Menubar = L.Control.extend({
 				this._map.sendUnoCommand(unoCommand + args);
 			}
 			return;
+		}
+		if (unoCommand === '.uno:VerticalText' || unoCommand === '.uno:Text') {
+			if (this._map.stateChangeHandler._stateProperties[unoCommand].checked) {
+				return;
+			}
+			var toolbar = w2ui['editbar'];
+			var command = '';
+			var uno = '';
+			switch (unoCommand) {
+			case '.uno:Text':
+				if (toolbar.get('verticaltext').checked) {
+					toolbar.uncheck('verticaltext');
+					command = 'key type=input char=0 key=1281';
+					this._map._socket.sendMessage(command);
+					uno = '.uno:VerticalText';
+					this._map.stateChangeHandler._stateProperties[uno].checked = false;
+				}
+				break;
+			case '.uno:VerticalText':
+				if (toolbar.get('horizontaltext').checked) {
+					toolbar.uncheck('horizontaltext');
+					command = 'key type=input char=0 key=1281';
+					this._map._socket.sendMessage(command);
+					uno = '.uno:Text';
+					this._map.stateChangeHandler._stateProperties[uno].checked = false;
+				}
+				break;
+			}
 		}
 		this._map.executeAllowedCommand(unoCommand);
 	},
