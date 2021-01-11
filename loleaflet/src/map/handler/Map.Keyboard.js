@@ -354,6 +354,8 @@ L.Map.Keyboard = L.Handler.extend({
 
 		if (this._map._permission === 'edit') {
 			docLayer._resetPreFetching();
+
+			//初始化特定的 UI 元件
 			if (unoKeyCode === 1281) {
 				this._resetUIState();
 			}

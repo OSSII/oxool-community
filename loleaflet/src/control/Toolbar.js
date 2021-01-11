@@ -514,6 +514,10 @@ L.Map.include({
 				 command = encodeURI(command);
 			}
 			//----------------------------------------
+			//攔截雙次點擊過得快捷功能
+			if (this._preventDoubleTrigger(command)) {
+				return;
+			}
 			this._socket.sendMessage('uno ' + command + (json ? ' ' + JSON.stringify(json) : ''));
 		}
 	},
@@ -864,5 +868,21 @@ L.Map.include({
 				map.focus();
 			}
 		});
+	},
+
+	// 阻擋雙擊的指令輸出的最後一道防線
+	_preventDoubleTrigger: function(command) {
+		var map = this;
+		if (command === '.uno:Text') {
+			if (map.stateChangeHandler._stateProperties['.uno:Text'].checked) {
+				return true;
+			}
+		}
+		if (command === '.uno:Text') {
+			if (map.stateChangeHandler._stateProperties['.uno:VerticalText'].checked) {
+				return true;
+			}
+		}
+		return false;
 	}
 });

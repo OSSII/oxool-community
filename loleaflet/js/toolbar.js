@@ -132,7 +132,7 @@ function onClick(e, id, item, subItem) {
 					command = 'key type=input char=0 key=1281';
 					map._socket.sendMessage(command);
 					uno = '.uno:VerticalText';
-					map.stateChangeHandler._stateProperties[uno] = false;
+					map.stateChangeHandler._stateProperties[uno].checked = false;
 				}
 				break;
 			case 'verticaltext':
@@ -141,7 +141,7 @@ function onClick(e, id, item, subItem) {
 					command = 'key type=input char=0 key=1281';
 					map._socket.sendMessage(command);
 					uno = '.uno:Text';
-					map.stateChangeHandler._stateProperties[uno] = false;
+					map.stateChangeHandler._stateProperties[uno].checked = false;
 				}
 				break;
 			}
