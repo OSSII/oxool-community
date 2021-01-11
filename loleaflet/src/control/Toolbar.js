@@ -878,7 +878,7 @@ L.Map.include({
 				return true;
 			}
 		}
-		if (command === '.uno:Text') {
+		if (command === '.uno:VerticalText') {
 			if (map.stateChangeHandler._stateProperties['.uno:VerticalText'].checked) {
 				return true;
 			}

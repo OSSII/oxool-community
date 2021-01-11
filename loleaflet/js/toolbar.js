@@ -122,29 +122,6 @@ function onClick(e, id, item, subItem) {
 	if (map.getDocType() === 'presentation' && (item.id === 'horizontaltext' || item.id === 'verticaltext')) {
 		if (item.checked === true) {
 			return;
-		} else {
-			var command = '';
-			var uno = '';
-			switch (item.id) {
-			case 'horizontaltext':
-				if (toolbar.get('verticaltext').checked) {
-					toolbar.uncheck('verticaltext');
-					command = 'key type=input char=0 key=1281';
-					map._socket.sendMessage(command);
-					uno = '.uno:VerticalText';
-					map.stateChangeHandler._stateProperties[uno].checked = false;
-				}
-				break;
-			case 'verticaltext':
-				if (toolbar.get('horizontaltext').checked) {
-					toolbar.uncheck('horizontaltext');
-					command = 'key type=input char=0 key=1281';
-					map._socket.sendMessage(command);
-					uno = '.uno:Text';
-					map.stateChangeHandler._stateProperties[uno].checked = false;
-				}
-				break;
-			}
 		}
 	}
 	var docLayer = map._docLayer;
