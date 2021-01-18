@@ -257,6 +257,7 @@ private:
     std::string getTextSelectionInternal(const std::string& mimeType);
     bool paste(const char* buffer, int length, const std::vector<std::string>& tokens);
     bool insertFile(const char* buffer, int length, const std::vector<std::string>& tokens);
+    bool insertPicture(const char* buffer, int length, const std::vector<std::string>& tokens, bool isChange = false);
     bool keyEvent(const char* buffer, int length, const std::vector<std::string>& tokens, const LokEventTargetEnum target);
     bool extTextInputEvent(const char* /*buffer*/, int /*length*/, const std::vector<std::string>& tokens);
     bool dialogKeyEvent(const char* buffer, int length, const std::vector<std::string>& tokens);
@@ -277,6 +278,7 @@ private:
     bool signDocumentContent(const char* buffer, int length, const std::vector<std::string>& tokens);
     bool askSignatureStatus(const char* buffer, int length, const std::vector<std::string>& tokens);
     bool renderShapeSelection(const char* buffer, int length, const std::vector<std::string>& tokens);
+    bool getGraphicSelection(const char* buffer, int length, const std::vector<std::string>& tokens);
 
     void rememberEventsForInactiveUser(const int type, const std::string& payload);
 

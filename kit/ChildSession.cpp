@@ -17,6 +17,7 @@
 #define LOK_USE_UNSTABLE_API
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
 
+#include <Poco/DirectoryIterator.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/Net/WebSocket.h>
@@ -25,7 +26,9 @@
 #include <Poco/URI.h>
 #include <Poco/BinaryReader.h>
 #include <Poco/Base64Decoder.h>
+#include <Poco/Base64Encoder.h>
 #include <Poco/FileStream.h>
+#include <Poco/TemporaryFile.h>
 #ifndef MOBILEAPP
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/Net/HTTPSClientSession.h>
@@ -269,6 +272,8 @@ bool ChildSession::_handleInput(const char *buffer, int length)
                tokens[0] == "gettextselection" ||
                tokens[0] == "paste" ||
                tokens[0] == "insertfile" ||
+               tokens[0] == "insertpicture" ||
+               tokens[0] == "changepicture" ||
                tokens[0] == "key" ||
                tokens[0] == "textinput" ||
                tokens[0] == "windowkey" ||
@@ -286,7 +291,8 @@ bool ChildSession::_handleInput(const char *buffer, int length)
                tokens[0] == "windowcommand" ||
                tokens[0] == "asksignaturestatus" ||
                tokens[0] == "signdocument" ||
-               tokens[0] == "rendershapeselection");
+               tokens[0] == "rendershapeselection" ||
+               tokens[0] == "getgraphicgelection");
 
         if (tokens[0] == "clientzoom")
         {
@@ -319,6 +325,14 @@ bool ChildSession::_handleInput(const char *buffer, int length)
         else if (tokens[0] == "insertfile")
         {
             return insertFile(buffer, length, tokens);
+        }
+        else if (tokens[0] == "insertpicture")
+        {
+            return insertPicture(buffer, length, tokens);
+        }
+        else if (tokens[0] == "changepicture")
+        {
+            return insertPicture(buffer, length, tokens, true);
         }
         else if (tokens[0] == "key")
         {
@@ -391,6 +405,10 @@ bool ChildSession::_handleInput(const char *buffer, int length)
         else if (tokens[0] == "rendershapeselection")
         {
             return renderShapeSelection(buffer, length, tokens);
+        }
+        else if (tokens[0] == "getgraphicgelection")
+        {
+            return getGraphicSelection(buffer, length, tokens);
         }
         else
         {
@@ -917,6 +935,49 @@ bool ChildSession::insertFile(const char* /*buffer*/, int /*length*/, const std:
 
         getLOKitDocument()->postUnoCommand(command.c_str(), arguments.c_str(), false);
     }
+
+    return true;
+}
+
+bool ChildSession::insertPicture(const char* /*buffer*/, int /*length*/, const std::vector<std::string>& tokens, bool isChange)
+{
+    std::string data;
+
+    if (tokens.size() != 2 || !getTokenString(tokens[1], "data", data))
+    {
+        sendTextFrame("error: cmd=insertpicture kind=syntax");
+        return false;
+    }
+
+    auto binaryData = decodeBase64(data);
+
+    // 建立暫存目錄
+    Poco::TemporaryFile tempDir(Poco::Path::temp());
+    tempDir.createDirectories(); // 確實建立目錄
+    // 取得完整目錄名稱
+    const std::string dirName = tempDir.path();
+    // 檔名固定為 viewid
+    const std::string fileName(std::to_string(_viewId));
+    // 完整存取路徑
+    std::string tempFile = dirName + "/"  + fileName;
+    // 資料寫入檔案
+    std::ofstream fileStream(tempFile, std::ofstream::out|std::ofstream::binary);
+    fileStream.write(reinterpret_cast<char*>(binaryData.data()), binaryData.size());
+    fileStream.close();
+
+    std::string command = isChange ? ".uno:OxChangePicture" : ".uno:InsertGraphic";
+    std::string arguments = "{"
+        "\"FileName\":{"
+            "\"type\":\"string\","
+            "\"value\":\"file://" + tempFile + "\""
+        "}}";
+
+    std::unique_lock<std::mutex> lock(_docManager.getDocumentMutex());
+    getLOKitDocument()->setView(_viewId);
+    LOG_DBG((isChange ? "Change" : "Insert") << " picture '" << arguments << "'");
+    // 避免 uno 指令尚未執行完畢，暫存檔案就被清除，需確定執行完畢
+    getLOKitDocument()->postUnoCommand(command.c_str(), arguments.c_str(), true);
+    tempDir.remove(true); // 完整移除暫存目錄
 
     return true;
 }
@@ -1686,6 +1747,72 @@ bool ChildSession::renderShapeSelection(const char* /*buffer*/, int /*length*/, 
         LOG_ERR("Failed to renderShapeSelection for view #" << _viewId);
     }
 
+    return true;
+}
+
+bool ChildSession::getGraphicSelection(const char* /*buffer*/, int /*length*/, const std::vector<std::string>& tokens)
+{
+    std::string id;
+    // 必須帶 id
+    if (tokens.size() != 2 || !getTokenString(tokens[1], "id", id))
+    {
+        sendTextFrame("error: cmd=getgraphicgelection id=???? kind=syntax");
+        return false;
+    }
+
+    std::unique_lock<std::mutex> lock(_docManager.getDocumentMutex());
+    getLOKitDocument()->setView(_viewId);
+
+    // 建立暫存目錄
+    Poco::TemporaryFile tempDir(Poco::Path::temp());
+    tempDir.createDirectories(); // 確實建立目錄
+    // 取得完整目錄名稱
+    const std::string dirName = tempDir.path();
+    // 檔名固定為 viewid
+    const std::string fileName(std::to_string(_viewId));
+    std::string arguments = "{"
+            "\"FileName\":{"
+                "\"type\":\"string\","
+                "\"value\":\"file://" + dirName + "/" + fileName + "\""
+            "}}";
+    // 送出 uno command 並等待完成
+    getLOKitDocument()->postUnoCommand(".uno:OxSaveGraphic", arguments.c_str(), true);
+
+    Poco::JSON::Object jsonObj;
+    // 掃描暫存目錄
+    for (Poco::DirectoryIterator dirIt(dirName) ; dirIt != Poco::DirectoryIterator{} ; ++dirIt)
+    {
+        const Poco::Path &path = dirIt.path();
+        const Poco::File &file = *dirIt;
+        // 標準檔案且檔名(不含副檔名)與指定名稱相同
+        if (file.isFile() && path.getBaseName() == fileName)
+        {
+            LOG_DBG("Get exported graphic file: " + file.path());
+            Poco::FileInputStream istr(file.path(), std::ios::binary);
+            std::stringstream ss;
+            Poco::Base64Encoder b64enc(ss);
+            Poco::StreamCopier::copyStream(istr, b64enc);
+            istr.close();
+            b64enc.close();
+
+            jsonObj.set("id", id);
+            jsonObj.set("type", path.getExtension());
+            jsonObj.set("data", ss.str());
+            break;
+        }
+    }
+    tempDir.remove(true); // 完整移除暫存目錄
+
+    if (jsonObj.size())
+    {
+        std::ostringstream jsonStr;
+        jsonObj.stringify(jsonStr);
+        sendTextFrame("graphicselectioncontent: " + jsonStr.str());
+    }
+    else
+    {
+        LOG_ERR("Did not find the exported graphic file: " + dirName + "/" + fileName + "+(extension name)");
+    }
     return true;
 }
 
