@@ -346,8 +346,7 @@ L.Map.include({
 		// 如果是下載或列印 pdf，而且 server 也沒有指定浮水印的話
 		// 就詢問使用者是否加浮水印
 		if (format === 'pdf' && this.options.watermark === undefined) {
-			this.fire('executeDialog', {
-				dialog: 'PdfWatermarkText',
+			L.dialog.run('PdfWatermarkText', {
 				args: {
 					name: name,
 					id: id,
@@ -730,10 +729,10 @@ L.Map.include({
 							}
 						}
 					}
-					this.fire('executeDialog', {dialog: dialogName, args: args});
+					L.dialog.run(dialogName, {args: args});
 					dialog = true;
 				} else {
-					this.fire('executeDialog', {dialog: 'Action', id: command});
+					L.dialog.run('Action', {id: command});
 					dialog = true;
 				}
 				// 有指定 callback，也執行 callback
