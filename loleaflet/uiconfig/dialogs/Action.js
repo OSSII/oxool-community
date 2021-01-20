@@ -5,7 +5,7 @@
  *
  * Author: Firefly <firefly@ossii.com.tw>
  */
-/* global L _ vex revHistoryEnabled */
+/* global L _ _UNO revHistoryEnabled */
 L.dialog.Action = {
 	// init 只會在載入的第一次執行
 	init: function(map) {
@@ -48,7 +48,7 @@ L.dialog.Action = {
 			map.insertComment();
 			break;
 		case 'OXSaveAs': // online 自己的另存新檔 dialog
-			map.fire('executeDialog', {dialog: 'OXSaveAs'});
+			L.dialog.run('OXSaveAs');
 			break;
 		case 'signdocument': // 數位簽章
 			map.showSignDocument();
@@ -82,16 +82,10 @@ L.dialog.Action = {
 			}
 			break;
 		case 'ShowSlide': // 顯示投影片
-			if (docType === 'presentation') {
-				map.sendUnoCommand('.uno:ShowSlide');
-				map.getDocumentStatus();
-			}
+			map.showPage();
 			break;
 		case 'HideSlide': // 隱藏投影片
-			if (docType === 'presentation') {
-				map.sendUnoCommand('.uno:HideSlide');
-				map.getDocumentStatus();
-			}
+			map.hidePage();
 			break;
 		case 'insertpage': // 新增頁面
 			map.insertPage();
@@ -100,10 +94,13 @@ L.dialog.Action = {
 			map.duplicatePage();
 			break;
 		case 'deletepage': // 刪除頁面
-			vex.dialog.confirm({
-				message: _('Are you sure you want to delete this slide?'),
-				callback: function(e) {
-					if (e) {
+			L.dialog.confirm({
+				title: _UNO('.uno:DeleteSlide', 'presentation', true),
+				icon: 'warning',
+				message: _('Are you sure you want to delete this slide?')
+						+ '<br>(' + map.getPartProperty().name + ')',
+				callback: function(ans) {
+					if (ans) {
 						map.deletePage();
 					}
 				}
@@ -113,7 +110,7 @@ L.dialog.Action = {
 			map.showLOAboutDialog();
 			break;
 		case 'keyboard-shortcuts': // 顯示按鍵說明
-			map.fire('executeDialog', {dialog: 'ShowKeyboardHelp'});
+			L.dialog.run('ShowKeyboardHelp');
 			break;
 		case 'rev-history': // 檢視版本
 			if (revHistoryEnabled) {
@@ -125,6 +122,12 @@ L.dialog.Action = {
 			break;
 		case 'closedocument': // 關閉檔案
 			map.closeDocument();
+			break;
+		case 'externaledit': // 編輯選中的圖片
+			map._socket.sendMessage('getgraphicgelection id=edit');
+			break;
+		case 'savegraphic': // 儲存選中的圖片
+			map._socket.sendMessage('getgraphicgelection id=export');
 			break;
 		case 'repair': // 修復
 			map._socket.sendMessage('commandvalues command=.uno:DocumentRepair');
@@ -181,7 +184,7 @@ L.dialog.Action = {
 			map.sendUnoCommand('.uno:LanguageStatus?Language:string=Default_LANGUAGE_NONE');
 			break;
 		case 'gotopage':
-			map.fire('executeDialog', {dialog: 'GotoPage'});
+			L.dialog.run('GotoPage');
 			break;
 		case 'zoom30':
 			map.setZoom(4);
