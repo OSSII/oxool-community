@@ -645,6 +645,21 @@ void FileServerRequestHandler::preprocessFile(const HTTPRequest& request, Poco::
     unsigned long tokenTtl = 0;
     if (!accessToken.empty())
     {
+        // Add by Firefly<firefly@ossii.com.tw>
+        // access_token 不是 POST 方式傳遞，
+        if (request.getMethod() != HTTPRequest::HTTP_POST)
+        {
+            // Bad request.
+            std::ostringstream oss;
+            oss << "HTTP/1.1 400\r\n"
+                << "Date: " << Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT) << "\r\n"
+                << "User-Agent: LOOLWSD WOPI Agent\r\n"
+                << "Content-Length: 0\r\n"
+                << "\r\n";
+            socket->send(oss.str());
+            return;
+        }
+
         if (!accessTokenTtl.empty())
         {
             try
