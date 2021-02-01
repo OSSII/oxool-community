@@ -61,7 +61,8 @@ L.Map.StateChangeHandler = L.Handler.extend({
 			unoCmd = '.uno:' + unoCmd;
 		}
 
-		return this._stateProperties[unoCmd];
+		var prop = this._stateProperties[unoCmd];
+		return (prop !== undefined ? prop : {});
 	},
 
 	getItems: function() {
