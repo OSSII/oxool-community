@@ -16,6 +16,35 @@ L.Map.include({
 
 	_hotkeyCommands: {},
 
+	// 支援匯出的格式
+	_exportFormats: {
+		text: [
+			{format: 'pdf', label: _('PDF Document (.pdf)')},
+			{format: 'txt', label: _('TEXT Document (.txt)')},
+			{format: 'html', label: _('HTML Document (.html)')},
+			{format: 'odt', label: _('ODF text document (.odt)')},
+			{format: 'doc', label: _('Word 2003 Document (.doc)')},
+			{format: 'docx', label: _('Word Document (.docx)')},
+			{format: 'rtf', label: _('Rich Text (.rtf)')},
+			{format: 'epub', label: _('EPUB Document (.epub)')},
+		],
+		spreadsheet: [
+			{format: 'pdf', label: _('PDF Document (.pdf)')},
+			{format: 'html', label: _('HTML Document (.html)')},
+			{format: 'ods', label: _('ODF spreadsheet (.ods)')},
+			{format: 'xls', label: _('Excel 2003 Spreadsheet (.xls)')},
+			{format: 'xlsx', label: _('Excel Spreadsheet (.xlsx)')},
+			{format: 'csv', label: _('CSV (.csv)')},
+		],
+		presentation: [
+			{format: 'pdf', label: _('PDF Document (.pdf)')},
+			{format: 'html', label: _('HTML Document (.html)')},
+			{format: 'odp', label: _('ODF presentation (.odp)')},
+			{format: 'ppt', label: _('PowerPoint 2003 Presentation (.ppt)')},
+			{format: 'pptx', label: _('PowerPoint Presentation (.pptx)')},
+		]
+	},
+
 	// 右鍵選單會出現 _allowCommands 沒有的指令，暫時作法是列入未知名單中，且標記是否可用
 	_whiteCommandList: {
 		'.uno:Crop': false, // 裁剪
@@ -321,6 +350,16 @@ L.Map.include({
 		}
 
 		return undefined;
+	},
+
+	// 取得目前文件所支援的匯出格式
+	getExportFormats: function() {
+		var docType = this.getDocType();
+		if (docType === 'draw') {
+			docType = 'presentation';
+		}
+		var formats = this._exportFormats[docType];
+		return (formats !== undefined ? formats : []);
 	},
 
 	downloadAs: function (name, format, options, id) {
