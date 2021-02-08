@@ -2,7 +2,7 @@ FROM centos:7
 
 RUN yum update -y
 RUN yum install vim net-tools unzip wget -y
-RUN wget --no-check-certificate https://demo.oxoffice.com.tw/yum.repo/oxool-community.repo -P /etc/yum.repos.d/
+RUN wget --no-check-certificate http://www.oxoffice.com.tw/yum.repo/oxool-community.repo -P /etc/yum.repos.d/
 RUN yum update -y
 RUN yum groupinstall "OxOOL Community Group" -y
 RUN localedef -c -f UTF-8 -i zh_TW zh_TW.utf8
