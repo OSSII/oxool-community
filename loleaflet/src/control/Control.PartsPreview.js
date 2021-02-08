@@ -9,70 +9,193 @@ L.Control.PartsPreview = L.Control.extend({
 		autoUpdate: true
 	},
 
-	onAdd: function (map) {
+	_gridVisible: null, // 顯示網格，預設未知
+
+	onAdd: function(map) {
+		map.on('updatepermission', this._onUpdatePermission, this);
+		this._initialized = false;
+	},
+
+	_onUpdatePermission: function(e) {
+		var map = this._map;
+		var docType = map.getDocType();
+		if (docType !== 'presentation' && docType !== 'draw') {
+			return;
+		}
+
+		if (!this._initialized) {
+			this._initialize();
+		}
+
+		if (e.perm === 'edit') {
+			// 桌面模式啟用拖曳排序
+			/* if (window.mode.isDesktop()) {
+				$(this._scrollContainer).sortable('enable');
+			} */
+			map.on('insertpage', this._insertPreview, this);
+			map.on('deletepage', this._deletePreview, this);
+		} else {
+			//$(this._scrollContainer).sortable('disable'); // 關閉拖曳排序
+			map.off('insertpage', this._insertPreview, this);
+			map.off('deletepage', this._deletePreview, this);
+		}
+	},
+
+	_initialize: function() {
+		var that = this;
+		var map = this._map;
+
+		this._initialized = true;
 		this._previewInitialized = false;
 		this._previewTiles = [];
 		this._partsPreviewCont = L.DomUtil.get('slide-sorter');
 		this._scrollY = 0;
 
+		// make room for the preview
+		L.DomUtil.addClass(map.options.documentContainer, 'parts-preview-document');
+		setTimeout(L.bind(function () {
+			map.invalidateSize();
+			$('.scroll-container').mCustomScrollbar('update');
+		}, this), 500);
+
+		$(this._partsPreviewCont).mCustomScrollbar({
+			axis: 'y',
+			theme: '3d-thick-dark',
+			scrollButtons:{enable: true},
+			alwaysShowScrollbar: 1,
+			callbacks:{
+				whileScrolling: function() {
+					that._onScroll(this);
+				}
+			}
+		});
+		this._scrollContainer = $(this._partsPreviewCont).find('.mCSB_container').get(0);
+
+		// TODO: 未來實作
+		//this.createSortable(); // 加上拖曳排序功能
+		//this.createContextMenu(); // 加上右鍵選單
+
 		map.on('updateparts', this._updateDisabled, this);
 		map.on('updatepart', this._updatePart, this);
 		map.on('tilepreview', this._updatePreview, this);
-		map.on('insertpage', this._insertPreview, this);
-		map.on('deletepage', this._deletePreview, this);
+		map.on('commandstatechanged', this._onCommandStateChanged, this);
+		map.on('resize', this._onResize, this);
 	},
 
-	_updateDisabled: function (e) {
-		var docType = e.docType;
-		if (docType === 'presentation' || docType === 'drawing') {
-			var parts = e.parts;
-			var selectedPart = e.selectedPart;
-
-			if (!this._previewInitialized)
-			{
-				// make room for the preview
-				var docContainer = this._map.options.documentContainer;
-				L.DomUtil.addClass(docContainer, 'parts-preview-document');
-				setTimeout(L.bind(function () {
-					this._map.invalidateSize();
-					$('.scroll-container').mCustomScrollbar('update');
-				}, this), 500);
-				var previewContBB = this._partsPreviewCont.getBoundingClientRect();
-				this._previewContTop = previewContBB.top;
-				var bottomBound = previewContBB.bottom + previewContBB.height / 2;
-				for (var i = 0; i < parts; i++) {
-					this._previewTiles.push(this._createPreview(i, e.partNames[i], bottomBound));
-				}
-				L.DomUtil.addClass(this._previewTiles[selectedPart], 'preview-img-selected');
-				this._previewInitialized = true;
+	/**
+	 *
+	 * @param {object} e
+	 */
+	_updateDisabled: function(e) {
+		if (!this._previewInitialized) {
+			console.debug('haha _updateDisabled(begin init)', e);
+			var previewContBB = this._partsPreviewCont.getBoundingClientRect();
+			this._previewContTop = previewContBB.top;
+			var bottomBound = previewContBB.bottom + previewContBB.height / 2;
+			for (var i = 0; i < e.parts; i++) {
+				this._previewTiles.push(this._createPreview(i, e.partNames[i], bottomBound));
 			}
-			else
-			{
-				if (e.partNames !== undefined) {
-					this._syncPreviews(e);
-				}
+			this._onScroll();
+			this._previewInitialized = true;
+		} else {
+			console.debug('haha _updateDisabled', e);
+			var childNodes = this._scrollContainer.childNodes;
+			if (e.partNames !== undefined) {
+				this._syncPreviews(e);
+			}
 
-				// change the border style of the selected preview.
-				for (var j = 0; j < parts; j++) {
-					L.DomUtil.removeClass(this._previewTiles[j], 'preview-img-selected');
+			for (var j = 0; j < e.parts; j++) {
+				L.DomUtil.removeClass(childNodes[j], 'preview-frame-selected');
+			}
+			L.DomUtil.addClass(childNodes[this._map.getCurrentPartNumber()], 'preview-frame-selected');
+			this._previewTileScrollIntoView();
+		}
+	},
+
+	/**
+	 * UNO 指令狀態回報
+	 * @param {event} e
+	 */
+	_onCommandStateChanged: function(e) {
+		var cmdName = e.commandName;
+		var state = e.state;
+		if (this._previewInitialized &&
+			cmdName === '.uno:GridVisible' &&
+			(state === 'true' || state === 'false')) {
+			var prevState = this._gridVisible; //
+			var firstSet = (prevState === null);
+			this._gridVisible = (state === 'true' ? true : false);
+			if (!firstSet && this._gridVisible !== prevState) {
+				console.debug('haha update all preview tiles');
+				for (var i=0 ; i < this._previewTiles.length ; i++) {
+					this._previewTiles[i].fetched = false;
 				}
-				L.DomUtil.addClass(this._previewTiles[selectedPart], 'preview-img-selected');
+				this._onScroll();
 			}
 		}
 	},
 
+	/**
+	 * 視窗改變大小
+	 */
+	_onResize: function(/*e*/) {
+		if (this._previewInitialized) {
+			var presentationControlWrapperElem = L.DomUtil.get('presentation-controls-wrapper');
+			var visible = L.DomUtil.getStyle(presentationControlWrapperElem, 'display');
+			// 預覽區沒有隱藏的話，捲動至可視範圍
+			if (visible !== 'none') {
+				this._previewTileScrollIntoView();
+			}
+		}
+	},
+
+	/**
+	 * 檢查並捲動選取的預覽圖到可視區內
+	 */
+	_previewTileScrollIntoView: function() {
+		// 目前選取的預覽圖 DOM
+		var frame = this._scrollContainer.childNodes[this._map.getCurrentPartNumber()];
+		// 取得可視區範圍所在範圍
+		var previewRect = this._partsPreviewCont.getBoundingClientRect();
+		// 預覽圖所在範圍
+		var frameRect = frame.getBoundingClientRect();
+		var scrollOffsetY = 0; // 預設捲動位置
+		// 預覽圖上端被遮住
+		if (frameRect.top < previewRect.top) {
+			scrollOffsetY = frame.offsetTop
+		// 預覽圖下端被遮住
+		} else if (frameRect.bottom > previewRect.bottom) {
+			scrollOffsetY = frame.offsetTop - previewRect.height + frameRect.height;
+		}
+		// 捲動位置不為 0，需捲動到指定位置
+		if (scrollOffsetY !== 0) {
+			$(this._partsPreviewCont).mCustomScrollbar('scrollTo', scrollOffsetY);
+		}
+	},
+
 	_createPreview: function (i, hashCode, bottomBound) {
-		var frame = L.DomUtil.create('div', 'preview-frame', this._partsPreviewCont);
+		var frame = L.DomUtil.create('div', 'preview-frame', this._scrollContainer);
 		var infoWrapper = L.DomUtil.create('div', 'preview-info-wrapper', frame);
 		L.DomUtil.create('div', 'preview-helper', infoWrapper); //infoWrapper.childNodes[0]
 		L.DomUtil.create('div', '', infoWrapper); // infoWrapper.childNodes[1] (是否有動畫)
 		L.DomUtil.create('div', '', infoWrapper); // infoWrapper.childNodes[2] (是否有投影片轉場)
 
-		var imgClassName = 'preview-img';
-		var img = L.DomUtil.create('img', imgClassName, frame);
+		var img = L.DomUtil.create('img', 'preview-img', frame);
 		img.hash = hashCode;
 		img.src = L.Icon.Default.imagePath + '/preview_placeholder.png';
 		img.fetched = false;
+
+		// 桌面模式啟用 tooltip
+		if (window.mode.isDesktop()) {
+			$(img).tooltip({
+				position: {
+					my: 'left top',
+					at: 'right+4 top+4',
+					collision: 'flipfit'
+				}
+			});
+		}
+
 		L.DomEvent
 			.on(img, 'click', L.DomEvent.stopPropagation)
 			.on(img, 'click', L.DomEvent.stop)
@@ -118,30 +241,24 @@ L.Control.PartsPreview = L.Control.extend({
 		return img;
 	},
 
-	_setPart: function (e) {
-		var part = $('#slide-sorter .mCSB_container .preview-frame').index(e.target.parentNode);
-		if (part !== null) {
-			this._map.setPart(parseInt(part));
+	_setPart: function(e) {
+		console.debug('haha _setPart', e);
+		var frame = e.target.parentNode;
+		var part = $('#slide-sorter .mCSB_container .preview-frame').index(frame);
+		var currPart = this._map.getCurrentPartNumber();
+		if (part !== currPart) {
+			this._map.setPart(part);
 		}
 	},
 
-	_updatePart: function (e) {
-		if (e.docType === 'presentation' && e.part >= 0) {
+	_updatePart: function(e) {
+		console.debug('haha _updatePart', e);
+		if (e.part >= 0) {
 			this._map.getPreview(e.part, e.part, 180, 180, {autoUpdate: this.options.autoUpdate});
 		}
-
-		// 側邊攔 超出可視範圍的 SelectedFrame 置於第一格縮圖
-		var visualYmin = $('#mCSB_2').offset().top;
-		var visualYmax = $('#mCSB_2').height();
-		var selectedFrame = $('.preview-frame:has(.preview-img-selected)');
-		if (selectedFrame.offset().top < visualYmin || selectedFrame.offset().top > visualYmax) {
-			var setContainerTop = - (selectedFrame.position().top);
-			$('#mCSB_2_container').css('top', setContainerTop + 'px')
-		}
-
 	},
 
-	_syncPreviews: function (e) {
+	_syncPreviews: function(e) {
 		var it = 0;
 		var parts = e.parts;
 		if (parts !== this._previewTiles.length) {
@@ -190,96 +307,112 @@ L.Control.PartsPreview = L.Control.extend({
 		else {
 			// update hash code when user click insert slide.
 			for (it = 0; it < parts; it++) {
-				var img = this._previewTiles[it];
-				var hash = e.partNames[it];
-				var infoWrapper = img.parentNode.childNodes[0];
-				var helper = infoWrapper.childNodes[0];
-				var animation = infoWrapper.childNodes[1];
-				var transition = infoWrapper.childNodes[2];
-				helper.innerText = it + 1;
-				// 更新 hashCode
-				img.hash = hash;
-
-				var pInfo = this._map.getPartProperty(it);
-				if (pInfo !== undefined) {
-					img.title = pInfo.name;
-					// 是否隱藏
-					if (pInfo.visible === '0') {
-						L.DomUtil.addClass(img, 'preview-img-blur');
-					} else {
-						L.DomUtil.removeClass(img, 'preview-img-blur');
-					}
-
-					// 是否有動畫
-					if (pInfo.hasAnimationNode !== '0') {
-						L.DomUtil.addClass(animation, 'preview-animation');
-					} else {
-						L.DomUtil.removeClass(animation, 'preview-animation');
-					}
-
-					// 是否有轉場
-					if (pInfo.transitionType !== '0') {
-						L.DomUtil.addClass(transition, 'preview-transition');
-					} else {
-						L.DomUtil.removeClass(transition, 'preview-transition');
-					}
-				}
+				this._updatePreviewProperty(it);
 			}
 		}
 	},
 
-	_updatePreview: function (e) {
-		if (this._map.getDocType() === 'presentation' || this._map.getDocType() === 'drawing') {
-			// the scrollbar has to be re-initialized here else it doesn't work
-			// probably a bug from the scrollbar
-			var control = this;
-			this._previewTiles[e.id].onload = function () {
-				$('#slide-sorter').mCustomScrollbar({
-					axis: 'y',
-					theme: 'rounded-dots-dark',
-					callbacks:{
-						whileScrolling: function() {
-							control._onScroll(this);
-						}
-					}
-				});
-			};
-			this._previewTiles[e.id].src = e.tile;
+	/**
+	 * 更新某張投影片預覽資訊
+	 *
+	 * @param {number} index - 投影片編號
+	 */
+	_updatePreviewProperty: function(index) {
+		var frame = this._scrollContainer.childNodes[index];
+		var infoWrapper = frame.childNodes[0];
+		var img = frame.childNodes[1];
+
+		var helper = infoWrapper.childNodes[0];
+		var animation = infoWrapper.childNodes[1];
+		var transition = infoWrapper.childNodes[2];
+
+		frame.slidePartNo = index; // 投影片編號 0 開始
+		helper.innerText = index + 1; // 顯示的編號從 1 開始，所以實際編號 + 1
+
+		var partInfo = this._map.getPartProperty(index);
+		if (partInfo) {
+			img.title = partInfo.name;
+			img.hash = partInfo.hashCode;
+
+			if (partInfo.selected == '1') {
+				L.DomUtil.addClass(frame, 'preview-frame-selected');
+			} else {
+				L.DomUtil.removeClass(frame, 'preview-frame-selected');
+			}
+			// 是否隱藏
+			if (partInfo.visible === '0') {
+				L.DomUtil.addClass(img, 'preview-img-blur');
+			} else {
+				L.DomUtil.removeClass(img, 'preview-img-blur');
+			}
+
+			// 是否有動畫
+			if (partInfo.hasAnimationNode !== '0') {
+				L.DomUtil.addClass(animation, 'preview-animation');
+			} else {
+				L.DomUtil.removeClass(animation, 'preview-animation');
+			}
+
+			// 是否有轉場
+			if (partInfo.transitionType !== '0') {
+				L.DomUtil.addClass(transition, 'preview-transition');
+			} else {
+				L.DomUtil.removeClass(transition, 'preview-transition');
+			}
 		}
+	},
+
+	/**
+	 * 收到預覽圖
+	 * @param {object}} e
+	 */
+	_updatePreview: function(e) {
+		console.debug('haha _updatePreview', e);
+		this._previewTiles[e.id].src = e.tile;
 	},
 
 	_updatePreviewIds: function () {
-		$('#slide-sorter').mCustomScrollbar('update');
+		$(this._partsPreviewCont).mCustomScrollbar('update');
 	},
 
-	_insertPreview: function (e) {
-		if (this._map.getDocType() === 'presentation') {
-			var newIndex = e.selectedPart + 1;
-			var newPreview = this._createPreview(newIndex, (e.hashCode === undefined ? null : e.hashCode));
+	/**
+	 * 插入預覽圖
+	 * @param {*} e
+	 */
+	_insertPreview: function(e) {
+		console.debug('haha _insertPreview', e);
+		var newIndex = e.selectedPart + 1;
+		var newPreview = this._createPreview(newIndex, (e.hashCode === undefined ? null : e.hashCode));
 
-			// insert newPreview to newIndex position
-			this._previewTiles.splice(newIndex, 0, newPreview);
+		// insert newPreview to newIndex position
+		this._previewTiles.splice(newIndex, 0, newPreview);
 
-			var selectedFrame = this._previewTiles[e.selectedPart].parentNode;
-			var newFrame = newPreview.parentNode;
+		var selectedFrame = this._previewTiles[e.selectedPart].parentNode;
+		var newFrame = newPreview.parentNode;
 
-			// insert after selectedFrame
-			selectedFrame.parentNode.insertBefore(newFrame, selectedFrame.nextSibling);
-			this._updatePreviewIds();
-		}
+		// insert after selectedFrame
+		selectedFrame.parentNode.insertBefore(newFrame, selectedFrame.nextSibling);
+		this._updatePreviewIds();
 	},
 
-	_deletePreview: function (e) {
-		if (this._map.getDocType() === 'presentation') {
-			var selectedFrame = this._previewTiles[e.selectedPart].parentNode;
-			L.DomUtil.remove(selectedFrame);
-
-			this._previewTiles.splice(e.selectedPart, 1);
-			this._updatePreviewIds();
-		}
+	/**
+	 * 刪除預覽圖
+	 * @param {object} e
+	 */
+	_deletePreview: function(e) {
+		console.debug('haha _deletePreview', e);
+		var selectedFrame = this._previewTiles[e.selectedPart].parentNode;
+		L.DomUtil.remove(selectedFrame);
+		this._previewTiles.splice(e.selectedPart, 1);
+		this._updatePreviewIds();
 	},
 
-	_onScroll: function (e) {
+	/**
+	 * 預覽區捲動後，檢查位於預覽區內的預覽圖是否已經載入
+	 *
+	 * @param {object} e
+	 */
+	_onScroll: function(e) {
 		var scrollOffset = 0;
 		if (e) {
 			var prevScrollY = this._scrollY;
@@ -288,7 +421,7 @@ L.Control.PartsPreview = L.Control.extend({
 		}
 
 		var previewContBB = this._partsPreviewCont.getBoundingClientRect();
-		var extra =  previewContBB.height;
+		var extra = previewContBB.height;
 		var topBound = this._previewContTop - (scrollOffset < 0 ? extra : previewContBB.height / 2);
 		var bottomBound = this._previewContTop + previewContBB.height + (scrollOffset > 0 ? extra : previewContBB.height / 2);
 		for (var i = 0; i < this._previewTiles.length; ++i) {
@@ -305,6 +438,6 @@ L.Control.PartsPreview = L.Control.extend({
 	}
 });
 
-L.control.partsPreview = function (options) {
+L.control.partsPreview = function(options) {
 	return new L.Control.PartsPreview(options);
 };

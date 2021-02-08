@@ -12,17 +12,23 @@
 }
 
 .preview-frame {
-	width: 250px;
-	margin: 1em 0;
-	padding: 0;
+	float: left;
+	border: 2px solid rgba(0,0,0,0);
+	margin: 0.5em 0 0.5em 4px;
+	padding: 2px;
+	height: 140px;
+}
+
+.preview-frame-selected {
+	border-color: rgb(108, 135, 157);
+	background-color: rgb(148, 196, 233);
 }
 
 .preview-info-wrapper {
-	display:inline-block;
 	position: relative;
-	width: 40px;
-	margin-right: 4px;
-	vertical-align: top;
+	float: left;
+	width: 30px;
+	margin-right: 2px;
 }
 
 .preview-helper {
@@ -55,15 +61,10 @@
 
 .preview-img {
 	/* In draw docs, the width of previews are small, but we want a min of 180px to align it with document's left edge */
-        min-width: 180px;
-	vertical-align: middle;
-	max-width: 184px;
+	float: left;
+    width: 180px;
 	cursor: pointer;
 	border: 2px solid #f0f0f0;
-}
-
-.preview-img-selected {
-	border-color: #d86344;
 }
 
 .preview-img-blur {
