@@ -826,7 +826,7 @@ function createToolbar() {
 		{type: 'button',  id: 'undo',  img: 'undo', hint: _UNO('.uno:Undo'), uno: 'Undo', disabled: true, mobile: false},
 		{type: 'button',  id: 'redo',  img: 'redo', hint: _UNO('.uno:Redo'), uno: 'Redo', disabled: true, mobile: false},
 		{type: 'button',  id: 'formatpaintbrush',  img: 'copyformat', hint: _UNO('.uno:FormatPaintbrush'), uno: 'FormatPaintbrush', mobile: false},
-		{type: 'button',  id: 'reset',  img: 'deleteformat', hint: _UNO('.uno:ResetAttributes', 'text'), uno: 'ResetAttributes', mobile: false},
+		{type: 'button',  id: 'resetattributes',  img: 'deleteformat', hint: _UNO('.uno:ResetAttributes', 'text'), uno: 'ResetAttributes', mobile: false},
 		{type: 'break', mobile: false},
 		{type: 'html', id: 'styles',
 			html: '<select class="styles-select"' + (L.Browser.mobile ? ' data-minimum-results-for-search="Infinity"' : '')  + '><option>Default Style</option></select>',
@@ -1547,11 +1547,13 @@ function unoCmdToToolbarId(commandname)
 			id = 'rightpara';
 			break;
 		}
-	}
-	if (map.getDocType() === 'presentation') {
+	} else if (map.getDocType() === 'presentation') {
 		switch (id) {
 		case 'text':
 			id = 'horizontaltext';
+			break;
+		case 'setdefault':
+			id = 'resetattributes';
 			break;
 		}
 	}
