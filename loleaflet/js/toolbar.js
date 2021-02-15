@@ -826,7 +826,8 @@ function createToolbar() {
 		{type: 'button',  id: 'undo',  img: 'undo', hint: _UNO('.uno:Undo'), uno: 'Undo', disabled: true, mobile: false},
 		{type: 'button',  id: 'redo',  img: 'redo', hint: _UNO('.uno:Redo'), uno: 'Redo', disabled: true, mobile: false},
 		{type: 'button',  id: 'formatpaintbrush',  img: 'copyformat', hint: _UNO('.uno:FormatPaintbrush'), uno: 'FormatPaintbrush', mobile: false},
-		{type: 'button',  id: 'resetattributes',  img: 'deleteformat', hint: _UNO('.uno:ResetAttributes', 'text'), uno: 'ResetAttributes', mobile: false},
+		{type: 'button',  id: 'resetattributes',  img: 'deleteformat', hint: _UNO('.uno:ResetAttributes', 'text'), uno: 'ResetAttributes', mobile: false, hidden: true},
+		{type: 'button',  id: 'setdefault',  img: 'deleteformat', hint: _UNO('.uno:SetDefault', 'presentation'), uno: 'SetDefault', mobile: false, hidden: true},
 		{type: 'break', mobile: false},
 		{type: 'html', id: 'styles',
 			html: '<select class="styles-select"' + (L.Browser.mobile ? ' data-minimum-results-for-search="Infinity"' : '')  + '><option>Default Style</option></select>',
@@ -1552,9 +1553,6 @@ function unoCmdToToolbarId(commandname)
 		case 'text':
 			id = 'horizontaltext';
 			break;
-		case 'setdefault':
-			id = 'resetattributes';
-			break;
 		}
 	}
 	return id;
@@ -1806,7 +1804,7 @@ function onDocLayerInit() {
 
 	switch (docType) {
 	case 'spreadsheet':
-		toolbarUp.show('textalign', 'wraptext', 'breakspacing', 'insertannotation', 'conditionalformaticonset',
+		toolbarUp.show('resetattributes', 'textalign', 'wraptext', 'breakspacing', 'insertannotation', 'conditionalformaticonset',
 			'numberformatcurrency', 'numberformatpercent', 'numberformatdecimal', 'numberformatdate',
 			'numberformatincdecimals', 'numberformatdecdecimals', 'break-number', 'togglemergecells', 'breakmergecells',
 			'setborderstyle', 'sortascending', 'sortdescending', 'breaksorting');
@@ -1878,7 +1876,7 @@ function onDocLayerInit() {
 		$('#presentation-toolbar').hide();
 		break;
 	case 'text':
-		toolbarUp.show('leftpara', 'centerpara', 'rightpara', 'justifypara', 'breakpara', 'linespacing',
+		toolbarUp.show('resetattributes', 'leftpara', 'centerpara', 'rightpara', 'justifypara', 'breakpara', 'linespacing',
 			'breakspacing', 'defaultbullet', 'defaultnumbering', 'breakbullet',
 			'inserttable', 'insertannotation');
 
@@ -1919,7 +1917,7 @@ function onDocLayerInit() {
 		if (!map['wopi'].HideExportOption) {
 			presentationToolbar.show('presentation', 'presentationbreak');
 		}
-		toolbarUp.show('insertannotation', 'animationeffects');
+		toolbarUp.show('setdefault', 'insertannotation', 'animationeffects');
 
 		if (!_inMobileMode()) {
 			statusbar.insert('left', [
