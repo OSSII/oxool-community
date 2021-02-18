@@ -48,6 +48,7 @@ L.Control.PartsPreview = L.Control.extend({
 		this._initialized = true;
 		this._previewInitialized = false;
 		this._previewTiles = [];
+		this._presentationControlWrapper = L.DomUtil.get('presentation-controls-wrapper');
 		this._partsPreviewCont = L.DomUtil.get('slide-sorter');
 		this._scrollY = 0;
 
@@ -57,6 +58,13 @@ L.Control.PartsPreview = L.Control.extend({
 			map.invalidateSize();
 			$('.scroll-container').mCustomScrollbar('update');
 		}, this), 500);
+
+		// 設定寬度，避免捲動軸與預覽圖重疊
+		L.DomUtil.setStyle(
+			this._partsPreviewCont,
+			'width',
+			$(this._presentationControlWrapper).css('max-width')
+		);
 
 		$(this._partsPreviewCont).mCustomScrollbar({
 			axis: 'y',
@@ -140,8 +148,7 @@ L.Control.PartsPreview = L.Control.extend({
 	 */
 	_onResize: function(/*e*/) {
 		if (this._previewInitialized) {
-			var presentationControlWrapperElem = L.DomUtil.get('presentation-controls-wrapper');
-			var visible = L.DomUtil.getStyle(presentationControlWrapperElem, 'display');
+			var visible = L.DomUtil.getStyle(this._presentationControlWrapper, 'display');
 			// 預覽區沒有隱藏的話，捲動至可視範圍
 			if (visible !== 'none') {
 				this._previewTileScrollIntoView();
