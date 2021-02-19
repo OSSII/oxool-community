@@ -976,15 +976,16 @@ L.TileLayer = L.GridLayer.extend({
 							this._twipsToLatLng(bottomRightTwips, this._map.getZoom()));
 			this._cellCursorXY = new L.Point(parseInt(strTwips[4]), parseInt(strTwips[5]));
 
-			var offsetCur = new L.Point(parseInt(strTwips[0]), 0);
 			// Add by Firefly <firefly@ossii.com.tw>
 			// 把文字游標(blink cursor)移至儲存格開頭
+			var offsetCur = new L.Point(parseInt(strTwips[0]), 0);
 			var bottomRightTwipsCur = topLeftTwips.add(offsetCur);
-			this._visibleCursor = new L.LatLngBounds(
+			var vCursor = new L.LatLngBounds(
 						this._twipsToLatLng(topLeftTwips, this._map.getZoom()),
-						this._twipsToLatLng(bottomRightTwipsCur, this._map.getZoom()));
-			this._updateCursorPos();
-			this._map._clipboardContainer.hideCursor();
+				this._twipsToLatLng(bottomRightTwipsCur, this._map.getZoom())
+			);
+			var cursorPos = vCursor.getNorthWest();
+			this._map._clipboardContainer.setLatLng(cursorPos);
 			//--------------------------------------------------------
 		}
 
