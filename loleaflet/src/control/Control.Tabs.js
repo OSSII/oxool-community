@@ -50,6 +50,7 @@ L.Control.Tabs = L.Control.extend({
 			this);
 
 		map.on('updateparts', this._updateDisabled, this);
+		map.on('resize', this._selectedTabScrollIntoView, this);
 
 		L.installContextMenu({
 			selector: '.spreadsheet-tab',
@@ -311,12 +312,40 @@ L.Control.Tabs = L.Control.extend({
 			}
 
 		}
+		this._selectedTabScrollIntoView();
 	},
 
 	_setPart: function (e) {
 		var part =  e.target.id.match(/\d+/g)[0];
 		if (part !== null) {
 			this._map.setPart(parseInt(part), /*external:*/ false, /*calledFromSetPartHandler:*/ true);
+		}
+	},
+
+	// 捲動選取的標籤到可視區內
+	_selectedTabScrollIntoView: function() {
+		var container = this._tabsCont;
+		var scrollTab = this._tabsCont.firstChild; // div#spreadsheet-tab-scroll
+
+		// 目前選取的標籤 DOM
+		var tab = scrollTab.children[this._map.getCurrentPartNumber()];
+		if (!tab) return false;
+		// 取得可視區範圍所在範圍
+		var containerRect = container.getBoundingClientRect();
+		// 標籤所在範圍
+		var tabRect = tab.getBoundingClientRect();
+		var scrollOffsetX = 0; // 預設捲動位置
+		// 選取的標籤 左邊被遮住
+		if (tabRect.left < containerRect.left) {
+			scrollOffsetX = tab.offsetLeft
+		// 選取的標籤 右邊被遮住
+		} else if (tabRect.right > containerRect.right) {
+			scrollOffsetX = tab.offsetLeft - containerRect.width + tabRect.width;
+		}
+
+		// 捲動位置不為 0，需捲動到指定位置
+		if (scrollOffsetX !== 0) {
+			$(scrollTab).animate({scrollLeft: scrollOffsetX}, 100);
 		}
 	}
 });
