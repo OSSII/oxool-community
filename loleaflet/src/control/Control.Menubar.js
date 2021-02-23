@@ -285,9 +285,7 @@ L.Control.Menubar = L.Control.extend({
 				{type: '--'},
 				{uno: '.uno:HyperlinkDialog', hotkey: 'Ctrl+K'},
 				{type: '--'},
-				{uno: '.uno:InsertSymbol'},
-				{type: '--'},
-				{uno: '.uno:HeaderAndFooter'}]
+				{uno: '.uno:InsertSymbol'}]
 			},
 			{name: '.uno:FormatMenu', type: 'menu', menu: [
 				{uno: '.uno:FontDialog'},
