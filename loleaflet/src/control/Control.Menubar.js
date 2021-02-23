@@ -59,11 +59,35 @@ L.Control.Menubar = L.Control.extend({
 			]
 			},
 			{name: '.uno:InsertMenu', id: 'insert', type: 'menu', menu: [
+				{uno: '.uno:InsertPagebreak', hotkey: 'Ctrl+Enter'},
+				{uno: '.uno:InsertColumnBreak', hotkey: 'Ctrl+Shift+Enter'},
+				{type: '--'},
 				{name: _('Local Image...'), id: 'insertgraphic', type: 'action'},
 				{name: '.uno:InsertGraphic', id: 'insertgraphicremote', type: 'action'},
 				{name: '.uno:InsertAnnotation', id: 'insertcomment', type: 'action', hotkey: 'Ctrl+Alt+C'},
 				{uno: '.uno:DrawText'},
 				{uno: '.uno:InsertObjectChart'},
+				{type: '--'},
+				{uno: '.uno:HyperlinkDialog', hotkey: 'Ctrl+K'},
+				{uno: '.uno:InsertBookmark'},
+				{type: '--'},
+				{uno: '.uno:InsertSymbol'},
+				{name: _('Horizontal Line'), uno: '.uno:HorizontalLine'},
+				{name: '.uno:FormattingMarkMenu', type: 'menu', menu: [
+					{uno: '.uno:InsertNonBreakingSpace'},
+					{uno: '.uno:InsertHardHyphen'},
+					{uno: '.uno:InsertSoftHyphen'},
+					{uno: '.uno:InsertZWSP'},
+					{uno: '.uno:InsertZWNBSP'},
+					{uno: '.uno:InsertLRM'},
+					{uno: '.uno:InsertRLM'}]},
+				{type: '--'},
+				{uno: '.uno:InsertFootnote', hotkey: 'Ctrl+Alt+F'},
+				{uno: '.uno:InsertEndnote', hotkey: 'Ctrl+Alt+D'},
+				{name: '.uno:IndexesMenu', type: 'menu', menu: [
+					{uno: '.uno:InsertIndexesEntry'},
+					{uno: '.uno:InsertAuthoritiesEntry'},
+					{uno: '.uno:InsertMultiIndex'}]},
 				{type: '--'},
 				{name: '.uno:InsertField', type: 'menu', menu: [
 					{uno: '.uno:InsertPageNumberField'},
@@ -79,29 +103,7 @@ L.Control.Menubar = L.Control.extend({
 						{name: _('All'), disabled: true, id: 'insertheader', tag: '_ALL_', uno: '.uno:InsertPageHeader?'}]},
 					{name: '.uno:InsertPageFooter', type: 'menu', menu: [
 						{name: _('All'), disabled: true, id: 'insertfooter', tag: '_ALL_', uno: '.uno:InsertPageFooter?'}]}
-				]},
-				{uno: '.uno:InsertFootnote', hotkey: 'Ctrl+Alt+F'},
-				{uno: '.uno:InsertEndnote', hotkey: 'Ctrl+Alt+D'},
-				{type: '--'},
-				{uno: '.uno:InsertPagebreak', hotkey: 'Ctrl+Enter'},
-				{uno: '.uno:InsertColumnBreak', hotkey: 'Ctrl+Shift+Enter'},
-				{type: '--'},
-				{uno: '.uno:HyperlinkDialog', hotkey: 'Ctrl+K'},
-				{uno: '.uno:InsertBookmark'},
-				{uno: '.uno:InsertSymbol'},
-				{name: _('Horizontal Line'), uno: '.uno:HorizontalLine'},
-				{name: '.uno:FormattingMarkMenu', type: 'menu', menu: [
-					{uno: '.uno:InsertNonBreakingSpace'},
-					{uno: '.uno:InsertHardHyphen'},
-					{uno: '.uno:InsertSoftHyphen'},
-					{uno: '.uno:InsertZWSP'},
-					{uno: '.uno:InsertZWNBSP'},
-					{uno: '.uno:InsertLRM'},
-					{uno: '.uno:InsertRLM'}]},
-				{name: '.uno:IndexesMenu', type: 'menu', menu: [
-					{uno: '.uno:InsertIndexesEntry'},
-					{uno: '.uno:InsertAuthoritiesEntry'},
-					{uno: '.uno:InsertMultiIndex'}]},
+				]}
 			]},
 			{name: '.uno:FormatMenu', type: 'menu', menu: [
 				{name: '.uno:FormatTextMenu', type: 'menu', menu: [
