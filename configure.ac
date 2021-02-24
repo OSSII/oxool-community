@@ -67,6 +67,20 @@ if test "$use_fontconfig" = "no" ; then
     AC_MSG_ERROR([Need fontconfig, but not found or version too old.])
 fi
 
+# check for python modules
+for MODULE in lxml polib; do
+    AC_MSG_CHECKING([for ${MODULE} for python3])
+    if /usr/bin/env python3 -c "import ${MODULE}" 2> /dev/null ; then
+        AC_MSG_RESULT([yes])
+    else
+        AC_MSG_RESULT([no])
+        AS_IF([test `uname -s` = Linux -o `uname -s` = FreeBSD],
+              [AC_MSG_ERROR([${MODULE} for python3 is needed. It might be in a package called python3-${MODULE}.])],
+              [AC_MSG_WARN([${MODULE} for python3 is needed. It might be in a package called python3-${MODULE}. But
+               if you are building the JS bits on another (Linux) machine, that doesn't matter])])
+    fi
+done
+
 # Declare options
 AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug],
