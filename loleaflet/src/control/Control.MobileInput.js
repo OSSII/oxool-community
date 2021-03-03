@@ -84,6 +84,18 @@ L.Control.MobileInput = L.Control.extend({
 		this._textArea.value = val;
 	},
 
+	setLatLng: function(latlng) {
+		this._latlng = L.latLng(latlng);
+		this.update();
+	},
+
+	update: function() {
+		if (this._container && this._map && this._latlng) {
+			var position = this._map.latLngToLayerPoint(this._latlng).round();
+			this._setPos(position);
+		}
+	},
+
 	activeElement: function () {
 		return this._textArea;
 	},
@@ -96,6 +108,10 @@ L.Control.MobileInput = L.Control.extend({
 
 	hideCursor: function () {
 		this.onLostFocus();
+	},
+
+	_setPos: function(pos) {
+		L.DomUtil.setPosition(this._container, pos);
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
