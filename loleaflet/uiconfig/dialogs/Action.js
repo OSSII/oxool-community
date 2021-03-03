@@ -219,6 +219,21 @@ L.dialog.Action = {
 		case 'zoom200':
 			map.setZoom(14);
 			break;
+		case 'sethyperlink':
+			var useHyperlinkDialog = true;
+			if (docType === 'spreadsheet') {
+				if (map.hyperlinkUnderCursor &&
+					map.hyperlinkUnderCursor.link.startsWith('#') &&
+					map._docLayer._selections.getLayers().length) {
+						L.dialog.run('SetHyperLinkTable');
+						return;
+				}
+			}
+
+			if (useHyperlinkDialog) {
+				map.sendUnoCommand('.uno:HyperlinkDialog');
+			}
+			break;
 		default:
 			console.debug('Found unknow action ID : ' + id);
 			break;
