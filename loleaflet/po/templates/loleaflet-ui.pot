@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-27 15:57+0800\n"
+"POT-Creation-Date: 2021-03-03 17:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -206,7 +206,7 @@ msgid "Username"
 msgstr ""
 
 #: admin/src/AdminSocketGlobalFunction.js:31
-#: admin/src/AdminSocketGlobalFunction.js:54 src/control/Control.Tabs.js:137
+#: admin/src/AdminSocketGlobalFunction.js:54 src/control/Control.Tabs.js:138
 #: uiconfig/dialogs/ProtectTable.js:21 uiconfig/dialogs/ProtectTable.js:22
 msgid "Password"
 msgstr ""
@@ -216,20 +216,20 @@ msgid "Verification"
 msgstr ""
 
 #: admin/src/AdminSocketGlobalFunction.js:35
-#: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1097
-#: js/toolbar.js:1368 src/layer/marker/Annotation.js:181 src/map/Map.js:109
+#: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1101
+#: js/toolbar.js:1372 src/layer/marker/Annotation.js:181 src/map/Map.js:109
 #: uiconfig/dialogs/AboutDialog.js:39 uiconfig/dialogs/AddTableAtEnd.js:46
 #: uiconfig/dialogs/BindingLineDialog.js:134 uiconfig/dialogs/ColumnWidth.js:66
 #: uiconfig/dialogs/DeleteCell.js:86 uiconfig/dialogs/dlgSecurePrint.js:73
 #: uiconfig/dialogs/ExampleDialog.js:54 uiconfig/dialogs/GotoPage.js:76
-#: uiconfig/dialogs/InsertBreak.js:57 uiconfig/dialogs/InsertCell.js:54
-#: uiconfig/dialogs/InsertImage.js:102 uiconfig/dialogs/InsertTable.js:71
-#: uiconfig/dialogs/MoveTable.js:58 uiconfig/dialogs/OXSaveAs.js:48
-#: uiconfig/dialogs/PdfWatermarkText.js:54 uiconfig/dialogs/ProtectTable.js:59
-#: uiconfig/dialogs/RemoveCell.js:54 uiconfig/dialogs/RemoveTable.js:47
-#: uiconfig/dialogs/RenameTable.js:49 uiconfig/dialogs/RowHeight.js:66
-#: uiconfig/dialogs/RowOrColGroup.js:64
-#: uiconfig/dialogs/SetHyperLinkTable.js:111
+#: uiconfig/dialogs/HeaderAndFooter.js:150 uiconfig/dialogs/InsertBreak.js:57
+#: uiconfig/dialogs/InsertCell.js:54 uiconfig/dialogs/InsertImage.js:102
+#: uiconfig/dialogs/InsertTable.js:71 uiconfig/dialogs/MoveTable.js:58
+#: uiconfig/dialogs/OXSaveAs.js:66 uiconfig/dialogs/PdfWatermarkText.js:54
+#: uiconfig/dialogs/ProtectTable.js:59 uiconfig/dialogs/RemoveCell.js:54
+#: uiconfig/dialogs/RemoveTable.js:47 uiconfig/dialogs/RenameTable.js:49
+#: uiconfig/dialogs/RowHeight.js:66 uiconfig/dialogs/RowOrColGroup.js:64
+#: uiconfig/dialogs/SetHyperLinkTable.js:148
 #: uiconfig/dialogs/SetTabBgColor.js:57 uiconfig/dialogs/ShowTable.js:55
 #: uiconfig/dialogs/SplitCell.js:106 uiconfig/dialogs/TraceChangeMode.js:65
 msgid "Cancel"
@@ -248,13 +248,14 @@ msgstr ""
 #: uiconfig/dialogs/BindingLineDialog.js:113 uiconfig/dialogs/ColumnWidth.js:49
 #: uiconfig/dialogs/DeleteCell.js:66 uiconfig/dialogs/dlgSecurePrint.js:44
 #: uiconfig/dialogs/ExampleDialog.js:48 uiconfig/dialogs/GotoPage.js:63
-#: uiconfig/dialogs/InsertBreak.js:50 uiconfig/dialogs/InsertCell.js:41
-#: uiconfig/dialogs/InsertTable.js:64 uiconfig/dialogs/MoveTable.js:51
-#: uiconfig/dialogs/OXSaveAs.js:38 uiconfig/dialogs/PdfWatermarkText.js:40
-#: uiconfig/dialogs/ProtectTable.js:51 uiconfig/dialogs/RemoveCell.js:41
-#: uiconfig/dialogs/RemoveTable.js:40 uiconfig/dialogs/RenameTable.js:42
-#: uiconfig/dialogs/RowHeight.js:49 uiconfig/dialogs/RowOrColGroup.js:50
-#: uiconfig/dialogs/SetHyperLinkTable.js:68
+#: uiconfig/dialogs/HeaderAndFooter.js:114 uiconfig/dialogs/InsertBreak.js:50
+#: uiconfig/dialogs/InsertCell.js:41 uiconfig/dialogs/InsertTable.js:64
+#: uiconfig/dialogs/MoveTable.js:51 uiconfig/dialogs/OXSaveAs.js:48
+#: uiconfig/dialogs/PdfWatermarkText.js:40 uiconfig/dialogs/ProtectTable.js:51
+#: uiconfig/dialogs/RemoveCell.js:41 uiconfig/dialogs/RemoveTable.js:40
+#: uiconfig/dialogs/RenameTable.js:42 uiconfig/dialogs/RowHeight.js:49
+#: uiconfig/dialogs/RowOrColGroup.js:50
+#: uiconfig/dialogs/SetHyperLinkTable.js:105
 #: uiconfig/dialogs/SetTabBgColor.js:38 uiconfig/dialogs/ShowTable.js:46
 #: uiconfig/dialogs/SplitCell.js:75 uiconfig/dialogs/TraceChangeMode.js:58
 msgid "OK"
@@ -319,362 +320,362 @@ msgstr ""
 msgid " s"
 msgstr ""
 
-#: js/toolbar.js:711 js/toolbar.js:1937 uiconfig/dialogs/InsertBreak.js:19
+#: js/toolbar.js:714 js/toolbar.js:1940 uiconfig/dialogs/InsertBreak.js:19
 msgid "None"
 msgstr ""
 
-#: js/toolbar.js:712
+#: js/toolbar.js:715
 msgid "Wipe"
 msgstr ""
 
-#: js/toolbar.js:713
+#: js/toolbar.js:716
 msgid "Wheel"
 msgstr ""
 
-#: js/toolbar.js:714
+#: js/toolbar.js:717
 msgid "Uncover"
 msgstr ""
 
-#: js/toolbar.js:715
+#: js/toolbar.js:718
 msgid "Bars"
 msgstr ""
 
-#: js/toolbar.js:716
+#: js/toolbar.js:719
 msgid "Checkers"
 msgstr ""
 
-#: js/toolbar.js:717
+#: js/toolbar.js:720
 msgid "Shape"
 msgstr ""
 
-#: js/toolbar.js:718
+#: js/toolbar.js:721
 msgid "Box"
 msgstr ""
 
-#: js/toolbar.js:719
+#: js/toolbar.js:722
 msgid "Wedge"
 msgstr ""
 
-#: js/toolbar.js:720
+#: js/toolbar.js:723
 msgid "Venetian Blinds"
 msgstr ""
 
-#: js/toolbar.js:721
+#: js/toolbar.js:724
 msgid "Fade"
 msgstr ""
 
-#: js/toolbar.js:722
+#: js/toolbar.js:725
 msgid "Cut"
 msgstr ""
 
-#: js/toolbar.js:723
+#: js/toolbar.js:726
 msgid "Cover"
 msgstr ""
 
-#: js/toolbar.js:724
+#: js/toolbar.js:727
 msgid "Dissolve"
 msgstr ""
 
-#: js/toolbar.js:725
+#: js/toolbar.js:728
 msgid "Random"
 msgstr ""
 
-#: js/toolbar.js:726
+#: js/toolbar.js:729
 msgid "Comb"
 msgstr ""
 
-#: js/toolbar.js:727
+#: js/toolbar.js:730
 msgid "Push"
 msgstr ""
 
-#: js/toolbar.js:728
+#: js/toolbar.js:731
 msgid "Split"
 msgstr ""
 
-#: js/toolbar.js:729
+#: js/toolbar.js:732
 msgid "Diagonal"
 msgstr ""
 
-#: js/toolbar.js:730
+#: js/toolbar.js:733
 msgid "Tiles"
 msgstr ""
 
-#: js/toolbar.js:731
+#: js/toolbar.js:734
 msgid "Cube"
 msgstr ""
 
-#: js/toolbar.js:732
+#: js/toolbar.js:735
 msgid "Circles"
 msgstr ""
 
-#: js/toolbar.js:733
+#: js/toolbar.js:736
 msgid "Helix"
 msgstr ""
 
-#: js/toolbar.js:734
+#: js/toolbar.js:737
 msgid "Fall"
 msgstr ""
 
-#: js/toolbar.js:735
+#: js/toolbar.js:738
 msgid "Turn Around"
 msgstr ""
 
-#: js/toolbar.js:736
+#: js/toolbar.js:739
 msgid "Iris"
 msgstr ""
 
-#: js/toolbar.js:737
+#: js/toolbar.js:740
 msgid "Turn Down"
 msgstr ""
 
-#: js/toolbar.js:738
+#: js/toolbar.js:741
 msgid "Rochade"
 msgstr ""
 
-#: js/toolbar.js:739
+#: js/toolbar.js:742
 msgid "3D Denetian"
 msgstr ""
 
-#: js/toolbar.js:740
+#: js/toolbar.js:743
 msgid "Static"
 msgstr ""
 
-#: js/toolbar.js:741
+#: js/toolbar.js:744
 msgid "Fine Dissolve"
 msgstr ""
 
-#: js/toolbar.js:742
+#: js/toolbar.js:745
 msgid "Vortex"
 msgstr ""
 
-#: js/toolbar.js:743
+#: js/toolbar.js:746
 msgid "Ripple"
 msgstr ""
 
-#: js/toolbar.js:744
+#: js/toolbar.js:747
 msgid "Glitter"
 msgstr ""
 
-#: js/toolbar.js:745
+#: js/toolbar.js:748
 msgid "Honeycomb"
 msgstr ""
 
-#: js/toolbar.js:746
+#: js/toolbar.js:749
 msgid "Newsflash"
 msgstr ""
 
-#: js/toolbar.js:842
+#: js/toolbar.js:845
 msgid "More..."
 msgstr ""
 
-#: js/toolbar.js:903
+#: js/toolbar.js:907
 msgid "Borders"
 msgstr ""
 
-#: js/toolbar.js:964
+#: js/toolbar.js:968
 msgid "Insert table"
 msgstr ""
 
-#: js/toolbar.js:969
+#: js/toolbar.js:973
 msgid "Insert Local Image"
 msgstr ""
 
-#: js/toolbar.js:973
+#: js/toolbar.js:977
 msgid "Insert shapes"
 msgstr ""
 
-#: js/toolbar.js:981 uiconfig/dialogs/SetHyperLinkTable.js:54
+#: js/toolbar.js:985 uiconfig/dialogs/SetHyperLinkTable.js:91
 msgid "Worksheet link"
 msgstr ""
 
-#: js/toolbar.js:986 js/toolbar.js:2773
+#: js/toolbar.js:990 js/toolbar.js:2776
 msgid "Common symbols"
 msgstr ""
 
-#: js/toolbar.js:987
+#: js/toolbar.js:991
 msgid "More symbols"
 msgstr ""
 
-#: js/toolbar.js:1031 js/toolbar.js:1486
+#: js/toolbar.js:1035 js/toolbar.js:1490
 msgid "Always follow the editor"
 msgstr ""
 
-#: js/toolbar.js:1034 js/toolbar.js:1489
+#: js/toolbar.js:1038 js/toolbar.js:1493
 msgid "Current"
 msgstr ""
 
-#: js/toolbar.js:1088 js/toolbar.js:1359
+#: js/toolbar.js:1092 js/toolbar.js:1363
 msgid "Select function"
 msgstr ""
 
-#: js/toolbar.js:1090 js/toolbar.js:1361 js/toolbar.js:1935
+#: js/toolbar.js:1094 js/toolbar.js:1365 js/toolbar.js:1938
 msgid "Sum"
 msgstr ""
 
-#: js/toolbar.js:1091 js/toolbar.js:1362 js/toolbar.js:1930
+#: js/toolbar.js:1095 js/toolbar.js:1366 js/toolbar.js:1933
 msgid "Average"
 msgstr ""
 
-#: js/toolbar.js:1092 js/toolbar.js:1363 js/toolbar.js:1934
+#: js/toolbar.js:1096 js/toolbar.js:1367 js/toolbar.js:1937
 msgid "Minimum"
 msgstr ""
 
-#: js/toolbar.js:1093 js/toolbar.js:1364 js/toolbar.js:1933
+#: js/toolbar.js:1097 js/toolbar.js:1368 js/toolbar.js:1936
 msgid "Maximum"
 msgstr ""
 
-#: js/toolbar.js:1094 js/toolbar.js:1365 js/toolbar.js:1932
+#: js/toolbar.js:1098 js/toolbar.js:1369 js/toolbar.js:1935
 msgid "Count"
 msgstr ""
 
-#: js/toolbar.js:1098 js/toolbar.js:1369
+#: js/toolbar.js:1102 js/toolbar.js:1373
 msgid "Accept"
 msgstr ""
 
-#: js/toolbar.js:1131 js/toolbar.js:1416
+#: js/toolbar.js:1135 js/toolbar.js:1420
 msgid "First sheet"
 msgstr ""
 
-#: js/toolbar.js:1132 js/toolbar.js:1417
+#: js/toolbar.js:1136 js/toolbar.js:1421
 msgid "Previous sheet"
 msgstr ""
 
-#: js/toolbar.js:1133 js/toolbar.js:1418
+#: js/toolbar.js:1137 js/toolbar.js:1422
 msgid "Next sheet"
 msgstr ""
 
-#: js/toolbar.js:1134 js/toolbar.js:1419
+#: js/toolbar.js:1138 js/toolbar.js:1423
 msgid "Last sheet"
 msgstr ""
 
-#: js/toolbar.js:1135 js/toolbar.js:1420
+#: js/toolbar.js:1139 js/toolbar.js:1424
 msgid "Insert sheet"
 msgstr ""
 
-#: js/toolbar.js:1226 js/toolbar.js:1470 src/control/Preview.js:28
+#: js/toolbar.js:1230 js/toolbar.js:1474 src/control/Preview.js:28
 msgid "Search:"
 msgstr ""
 
-#: js/toolbar.js:1233 js/toolbar.js:1477 src/control/Preview.js:35
+#: js/toolbar.js:1237 js/toolbar.js:1481 src/control/Preview.js:35
 msgid "Cancel the search"
 msgstr ""
 
-#: js/toolbar.js:1265
+#: js/toolbar.js:1269
 msgid "Delete"
 msgstr ""
 
-#: js/toolbar.js:1438 src/control/Control.Menubar.js:34
+#: js/toolbar.js:1442 src/control/Control.Menubar.js:34
 #: src/control/Preview.js:37
 msgid "Fullscreen presentation"
 msgstr ""
 
-#: js/toolbar.js:1444 src/control/Control.Menubar.js:35
+#: js/toolbar.js:1448 src/control/Control.Menubar.js:35
 #: uiconfig/dialogs/MoveTable.js:28
 msgid "Move"
 msgstr ""
 
-#: js/toolbar.js:1497
+#: js/toolbar.js:1501
 msgid "Reset zoom"
 msgstr ""
 
-#: js/toolbar.js:1500 src/control/Preview.js:41
+#: js/toolbar.js:1504 src/control/Preview.js:41
 msgid "Zoom factor"
 msgstr ""
 
-#: js/toolbar.js:1570
+#: js/toolbar.js:1574
 msgid "%user has joined"
 msgstr ""
 
-#: js/toolbar.js:1571
+#: js/toolbar.js:1575
 msgid "%user has left"
 msgstr ""
 
-#: js/toolbar.js:1901
+#: js/toolbar.js:1904
 msgid "Number of Sheets"
 msgstr ""
 
-#: js/toolbar.js:1906
+#: js/toolbar.js:1909
 msgid "Selected range of cells"
 msgstr ""
 
-#: js/toolbar.js:1911 js/toolbar.js:1968
+#: js/toolbar.js:1914 js/toolbar.js:1971
 msgid "Entering text mode"
 msgstr ""
 
-#: js/toolbar.js:1916 js/toolbar.js:1978 js/toolbar.js:2004
+#: js/toolbar.js:1919 js/toolbar.js:1981 js/toolbar.js:2007
 msgid "Text Language"
 msgstr ""
 
-#: js/toolbar.js:1921 js/toolbar.js:1973
+#: js/toolbar.js:1924 js/toolbar.js:1976
 msgid "Selection Mode"
 msgstr ""
 
-#: js/toolbar.js:1926
+#: js/toolbar.js:1929
 msgid "Choice of functions"
 msgstr ""
 
-#: js/toolbar.js:1931
+#: js/toolbar.js:1934
 msgid "CountA"
 msgstr ""
 
-#: js/toolbar.js:1936
+#: js/toolbar.js:1939
 msgid "Selection count"
 msgstr ""
 
-#: js/toolbar.js:1958
+#: js/toolbar.js:1961
 msgid "Number of Pages"
 msgstr ""
 
-#: js/toolbar.js:1963
+#: js/toolbar.js:1966
 msgid "Word Counter"
 msgstr ""
 
-#: js/toolbar.js:1999
+#: js/toolbar.js:2002
 msgid "Number of Slides"
 msgstr ""
 
-#: js/toolbar.js:2035
+#: js/toolbar.js:2038
 msgid "%n users"
 msgstr ""
 
-#: js/toolbar.js:2036
+#: js/toolbar.js:2039
 msgid "1 user"
 msgstr ""
 
-#: js/toolbar.js:2037
+#: js/toolbar.js:2040
 msgid "0 users"
 msgstr ""
 
-#: js/toolbar.js:2232
+#: js/toolbar.js:2235
 msgid "Document saved"
 msgstr ""
 
-#: js/toolbar.js:2397 uiconfig/dialogs/InsertBreak.js:30
+#: js/toolbar.js:2400 uiconfig/dialogs/InsertBreak.js:30
 msgid "Style"
 msgstr ""
 
-#: js/toolbar.js:2420 uiconfig/dialogs/BindingLineDialog.js:36
+#: js/toolbar.js:2423 uiconfig/dialogs/BindingLineDialog.js:36
 msgid "Font"
 msgstr ""
 
-#: js/toolbar.js:2441
+#: js/toolbar.js:2444
 msgid "Previous slide"
 msgstr ""
 
-#: js/toolbar.js:2442
+#: js/toolbar.js:2445
 msgid "Next slide"
 msgstr ""
 
-#: js/toolbar.js:2528
+#: js/toolbar.js:2531
 msgid ""
 "Conflict Undo/Redo with multiple users. Please use document repair to resolve"
 msgstr ""
 
-#: js/toolbar.js:2940 src/control/Control.DocumentRepair.js:95
+#: js/toolbar.js:2943 src/control/Control.DocumentRepair.js:95
 msgid "You"
 msgstr ""
 
-#: js/toolbar.js:2946
+#: js/toolbar.js:2949
 msgid "Readonly"
 msgstr ""
 
@@ -740,63 +741,80 @@ msgstr ""
 
 #: src/control/Control.Menubar.js:16 src/control/Preview.js:201
 #: src/control/Preview.js:213 src/control/Preview.js:223
+#: src/control/Toolbar.js:22 src/control/Toolbar.js:32
+#: src/control/Toolbar.js:40
 msgid "PDF Document (.pdf)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:17 src/control/Preview.js:202
+#: src/control/Toolbar.js:23
 msgid "TEXT Document (.txt)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:18 src/control/Preview.js:203
 #: src/control/Preview.js:214 src/control/Preview.js:224
+#: src/control/Toolbar.js:24 src/control/Toolbar.js:33
+#: src/control/Toolbar.js:41
 msgid "HTML Document (.html)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:19 src/control/Preview.js:204
+#: src/control/Toolbar.js:25
 msgid "ODF text document (.odt)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:20 src/control/Preview.js:215
+#: src/control/Toolbar.js:34
 msgid "ODF spreadsheet (.ods)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:21 src/control/Preview.js:225
+#: src/control/Toolbar.js:42
 msgid "ODF presentation (.odp)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:22 src/control/Preview.js:205
+#: src/control/Toolbar.js:26
 msgid "Word 2003 Document (.doc)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:23 src/control/Preview.js:216
+#: src/control/Toolbar.js:35
 msgid "Excel 2003 Spreadsheet (.xls)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:24 src/control/Preview.js:226
+#: src/control/Toolbar.js:43
 msgid "PowerPoint 2003 Presentation (.ppt)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:25 src/control/Preview.js:206
+#: src/control/Toolbar.js:27
 msgid "Word Document (.docx)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:26 src/control/Preview.js:217
+#: src/control/Toolbar.js:36
 msgid "Excel Spreadsheet (.xlsx)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:27 src/control/Preview.js:227
+#: src/control/Toolbar.js:44
 msgid "PowerPoint Presentation (.pptx)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:28 src/control/Preview.js:207
+#: src/control/Toolbar.js:28
 msgid "Rich Text (.rtf)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:29 src/control/Preview.js:218
+#: src/control/Toolbar.js:37
 msgid "CSV (.csv)"
 msgstr ""
 
 #: src/control/Control.Menubar.js:30 src/control/Preview.js:208
+#: src/control/Toolbar.js:29
 msgid "EPUB Document (.epub)"
 msgstr ""
 
@@ -864,11 +882,11 @@ msgstr ""
 msgid "Reset to Default Language"
 msgstr ""
 
-#: src/control/Control.Menubar.js:390
+#: src/control/Control.Menubar.js:362
 msgid "All contents of the header will be deleted and can not be restored."
 msgstr ""
 
-#: src/control/Control.Menubar.js:392
+#: src/control/Control.Menubar.js:364
 msgid "All contents of the footer will be deleted and can not be restored."
 msgstr ""
 
@@ -880,15 +898,15 @@ msgstr ""
 msgid "Scroll down annotations"
 msgstr ""
 
-#: src/control/Control.Tabs.js:67
+#: src/control/Control.Tabs.js:68
 msgid "Insert sheet before this"
 msgstr ""
 
-#: src/control/Control.Tabs.js:73
+#: src/control/Control.Tabs.js:74
 msgid "Insert sheet after this"
 msgstr ""
 
-#: src/control/Control.Tabs.js:135
+#: src/control/Control.Tabs.js:136
 msgid "Unprotect sheet"
 msgstr ""
 
@@ -896,7 +914,7 @@ msgstr ""
 msgid "Edit in ODF format"
 msgstr ""
 
-#: src/control/Preview.js:149 uiconfig/dialogs/OXSaveAs.js:20
+#: src/control/Preview.js:149 uiconfig/dialogs/OXSaveAs.js:29
 msgid "File name:"
 msgstr ""
 
@@ -908,25 +926,25 @@ msgstr ""
 msgid "Right Margin"
 msgstr ""
 
-#: src/control/Toolbar.js:362 src/control/Toolbar.js:374
-#: src/control/Toolbar.js:383 uiconfig/dialogs/PdfWatermarkText.js:44
+#: src/control/Toolbar.js:398 src/control/Toolbar.js:410
+#: src/control/Toolbar.js:419 uiconfig/dialogs/PdfWatermarkText.js:44
 msgid "Downloading..."
 msgstr ""
 
-#: src/control/Toolbar.js:399 src/control/Toolbar.js:417
-#: src/control/Toolbar.js:470 src/map/Map.js:1281
+#: src/control/Toolbar.js:435 src/control/Toolbar.js:453
+#: src/control/Toolbar.js:506 src/map/Map.js:1281
 msgid "Saving..."
 msgstr ""
 
-#: src/control/Toolbar.js:423
+#: src/control/Toolbar.js:459
 msgid "The file has been saved, this encrypted file will be opened."
 msgstr ""
 
-#: src/control/Toolbar.js:429
+#: src/control/Toolbar.js:465
 msgid "Renaming..."
 msgstr ""
 
-#: src/control/Toolbar.js:859
+#: src/control/Toolbar.js:895
 msgid "This version of %productName is powered by"
 msgstr ""
 
@@ -1189,7 +1207,7 @@ msgstr ""
 msgid "unnamed"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:3081
+#: src/layer/tile/TileLayer.js:3098
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr ""
 
@@ -1316,10 +1334,10 @@ msgid "cm"
 msgstr ""
 
 #: uiconfig/dialogs/BindingLineDialog.js:99 uiconfig/dialogs/ColumnWidth.js:31
-#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/InsertCell.js:27
-#: uiconfig/dialogs/PdfWatermarkText.js:26 uiconfig/dialogs/RemoveCell.js:27
-#: uiconfig/dialogs/RowHeight.js:31 uiconfig/dialogs/SetTabBgColor.js:24
-#: uiconfig/dialogs/SplitCell.js:55
+#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/HeaderAndFooter.js:65
+#: uiconfig/dialogs/InsertCell.js:27 uiconfig/dialogs/PdfWatermarkText.js:26
+#: uiconfig/dialogs/RemoveCell.js:27 uiconfig/dialogs/RowHeight.js:31
+#: uiconfig/dialogs/SetTabBgColor.js:24 uiconfig/dialogs/SplitCell.js:55
 msgid "Close"
 msgstr ""
 
@@ -1382,6 +1400,82 @@ msgstr ""
 
 #: uiconfig/dialogs/dlgSecurePrint.js:28
 msgid "input ex:AAA;BBB"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:36
+msgid "Date and time"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:37
+msgid "Fixed"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:38
+msgid "input ex:2019/01/01(no comma,space symbols)"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:39
+msgid "Variable"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:40
+msgid "Format"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:42
+msgid "Language"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:43
+msgid "Chinese(zh-TW)"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:44
+msgid "English(en)"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:46
+msgid "Footer"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:47
+msgid "Footer text"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:47
+msgid "input any string(no comma,space symbols)"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:48
+msgid "Slide number"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:49
+msgid "Do not show on the first slide"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:64
+msgid "Header and Footer"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:78
+msgid "Apply to All"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:159
+msgid "Include on Slide"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:188
+msgid "year"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:188
+msgid "month"
+msgstr ""
+
+#: uiconfig/dialogs/HeaderAndFooter.js:188
+msgid "day"
 msgstr ""
 
 #: uiconfig/dialogs/InsertBreak.js:27
@@ -1452,7 +1546,11 @@ msgstr ""
 msgid "Insert before"
 msgstr ""
 
-#: uiconfig/dialogs/OXSaveAs.js:24
+#: uiconfig/dialogs/OXSaveAs.js:31
+msgid "File type"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:34 uiconfig/dialogs/OXSaveAs.js:60
 msgid "Please enter a new filename."
 msgstr ""
 
@@ -1540,15 +1638,19 @@ msgstr ""
 msgid "Column"
 msgstr ""
 
-#: uiconfig/dialogs/SetHyperLinkTable.js:39
+#: uiconfig/dialogs/SetHyperLinkTable.js:26
+msgid "Worksheet link not supported!"
+msgstr ""
+
+#: uiconfig/dialogs/SetHyperLinkTable.js:76
 msgid "Text to display"
 msgstr ""
 
-#: uiconfig/dialogs/SetHyperLinkTable.js:41
+#: uiconfig/dialogs/SetHyperLinkTable.js:78
 msgid "Cell"
 msgstr ""
 
-#: uiconfig/dialogs/SetHyperLinkTable.js:74
+#: uiconfig/dialogs/SetHyperLinkTable.js:111
 msgid "Please select the target worksheet."
 msgstr ""
 
