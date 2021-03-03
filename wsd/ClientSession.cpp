@@ -1139,7 +1139,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         }
         else if (tokens[0] == "invalidatecursor:")
         {
-            assert(firstLine.size() == static_cast<std::string::size_type>(length));
+            //assert(firstLine.size() == static_cast<std::string::size_type>(length));
 
             const size_t index = firstLine.find_first_of('{');
             const std::string stringJSON = firstLine.substr(index);
