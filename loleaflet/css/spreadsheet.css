@@ -5,11 +5,15 @@
         bottom: 74px;
 }
 
-#document-container.spreadsheet-document.tablet,
 #document-container.spreadsheet-document.readonly,
 #document-container.spreadsheet-document.readonly.tablet {
-        top: 61px;
-        bottom: 0px;
+        top: 103px;
+        bottom: 37px;
+}
+
+#document-container.spreadsheet-document.tablet {
+	top: 103px;
+    bottom: 74px;
 }
 
 .spreadsheet-tabs-container {
