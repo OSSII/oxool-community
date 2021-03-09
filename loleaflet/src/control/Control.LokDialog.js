@@ -578,7 +578,11 @@ L.Control.LokDialog = L.Control.extend({
 		if (notifyBackend)
 			this._sendCloseWindow(dialogId);
 		$('#' + this._toStrId(dialogId)).remove();
+
+		// focus the main document
+		this._map.fire('editorgotfocus');
 		this._map.focus();
+
 		delete this._dialogs[dialogId];
 		this._currentId = null;
 
