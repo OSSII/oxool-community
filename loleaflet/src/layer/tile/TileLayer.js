@@ -2876,13 +2876,13 @@ L.TileLayer = L.GridLayer.extend({
 	},
 
 	_removeSelection: function() {
-			this._textSelectionStart = null;
-			this._textSelectionEnd = null;
+		this._textSelectionStart = null;
+		this._textSelectionEnd = null;
 		this._selectedTextContent = '';
 		for (var key in this._selectionHandles) {
-				this._map.removeLayer(this._selectionHandles[key]);
-				this._selectionHandles[key].isDragged = false;
-			}
+			this._map.removeLayer(this._selectionHandles[key]);
+			this._selectionHandles[key].isDragged = false;
+		}
 		this._selections.clearLayers();
 	},
 
@@ -2990,15 +2990,15 @@ L.TileLayer = L.GridLayer.extend({
 
 		// 如果剪貼簿內容只有圖片的話，直接貼上圖片
 		if (types.length === 1 && types[0] === 'Files') {
-				var files = dataTransfer.files;
-				for (var f = 0; f < files.length; ++f) {
-					var file = files[f];
-					if (file.type.match(/image.*/)) {
-						var reader = new FileReader();
-						reader.onload = this._onFileLoadFunc(file);
-						reader.readAsArrayBuffer(file);
-					}
+			var files = dataTransfer.files;
+			for (var f = 0; f < files.length; ++f) {
+				var file = files[f];
+				if (file.type.match(/image.*/)) {
+					var reader = new FileReader();
+					reader.onload = this._onFileLoadFunc(file);
+					reader.readAsArrayBuffer(file);
 				}
+			}
 			return;
 		}
 
