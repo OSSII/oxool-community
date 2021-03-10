@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-03 17:32+0800\n"
+"POT-Creation-Date: 2021-03-10 17:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -691,6 +691,10 @@ msgstr ""
 msgid "The server encountered a %0 error while parsing the %1 command."
 msgstr ""
 
+#: src/control/Control.ContextMenu.js:162
+msgid "Edit worksheet hyperlink "
+msgstr ""
+
 #: src/control/Control.DocumentRepair.js:33
 msgid "Repair Document"
 msgstr ""
@@ -1207,7 +1211,7 @@ msgstr ""
 msgid "unnamed"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:3098
+#: src/layer/tile/TileLayer.js:3133
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr ""
 

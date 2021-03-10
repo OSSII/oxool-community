@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-03 17:32+0800\n"
+"POT-Creation-Date: 2021-03-10 17:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -693,6 +693,10 @@ msgstr "編輯"
 msgid "The server encountered a %0 error while parsing the %1 command."
 msgstr "伺服器在解析 %1 指令時遭遇 %0 錯誤。"
 
+#: src/control/Control.ContextMenu.js:162
+msgid "Edit worksheet hyperlink "
+msgstr "編輯工作表連結"
+
 #: src/control/Control.DocumentRepair.js:33
 msgid "Repair Document"
 msgstr "修復文件"
@@ -1214,7 +1218,7 @@ msgstr "尚未支援此種圖片格式的編輯"
 msgid "unnamed"
 msgstr "未命名"
 
-#: src/layer/tile/TileLayer.js:3098
+#: src/layer/tile/TileLayer.js:3133
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr "請問是否需要壓縮圖片？(此功能不支援 SVG 檔)"
 
