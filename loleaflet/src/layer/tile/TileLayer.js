@@ -998,6 +998,11 @@ L.TileLayer = L.GridLayer.extend({
 			horizontalDirection = sign(this._cellCursor.getWest() - this._prevCellCursor.getWest());
 			verticalDirection = sign(this._cellCursor.getNorth() - this._prevCellCursor.getNorth());
 		}
+		else if (!this._isEmptyRectangle(this._cellCursor)) {
+			// This is needed for jumping view to cursor position on tab switch
+			horizontalDirection = sign(this._cellCursor.getWest());
+			verticalDirection = sign(this._cellCursor.getNorth());
+		}
 
 		var onPgUpDn = false;
 		if (!this._isEmptyRectangle(this._cellCursor) && !this._prevCellCursor.equals(this._cellCursor)) {
@@ -1009,6 +1014,9 @@ L.TileLayer = L.GridLayer.extend({
 		}
 
 		this._onUpdateCellCursor(horizontalDirection, verticalDirection, onPgUpDn);
+
+		// 清除所有標記
+		this._removeSelection();
 	},
 
 	_onDocumentRepair: function (textMsg) {
@@ -1900,19 +1908,13 @@ L.TileLayer = L.GridLayer.extend({
 	_updateCursorPos: function () {
 		var pixBounds = L.bounds(this._map.latLngToLayerPoint(this._visibleCursor.getSouthWest()),
 			this._map.latLngToLayerPoint(this._visibleCursor.getNorthEast()));
+		var cursorSize = pixBounds.getSize().multiplyBy(this._map.getZoomScale(this._map.getZoom()));
 		var cursorPos = this._visibleCursor.getNorthWest();
 
 		if (!this._cursorMarker) {
-			this._cursorMarker = L.cursor(cursorPos, pixBounds.getSize().multiplyBy(this._map.getZoomScale(this._map.getZoom())), {blink: true});
-		}
-		else {
-			this._cursorMarker.setLatLng(cursorPos, pixBounds.getSize().multiplyBy(this._map.getZoomScale(this._map.getZoom())));
-		}
-
-		this._map._clipboardContainer.showCursor();
-		if (this._map._isFocused && !L.Browser.mobile) {
-			// On mobile, this is causing some key input to get lost.
-			this._map.focus();
+			this._cursorMarker = L.cursor(cursorPos, cursorSize, {blink: true});
+		} else {
+			this._cursorMarker.setLatLng(cursorPos, cursorSize);
 		}
 	},
 
@@ -1953,9 +1955,16 @@ L.TileLayer = L.GridLayer.extend({
 //		&& !this.isGraphicVisible()     // not when sizing / positioning graphics
 		&& !this._isEmptyRectangle(this._visibleCursor)) {
 			this._updateCursorPos();
+			this._map._clipboardContainer.showCursor();
+			/* if (L.Browser.mobile && this._map.getDocType() === 'spreadsheet') {
+				this._map._clipboardContainer.enableVirtualKeyboard();
+			} */
 		}
 		else {
 			this._map._clipboardContainer.hideCursor();
+			/* if (L.Browser.mobile) {
+				this._map._clipboardContainer.disableVirtualKeyboard();
+			} */
 		}
 	},
 
@@ -2862,13 +2871,19 @@ L.TileLayer = L.GridLayer.extend({
 			}
 		}
 		else {
+			this._removeSelection();
+		}
+	},
+
+	_removeSelection: function() {
 			this._textSelectionStart = null;
 			this._textSelectionEnd = null;
-			for (key in this._selectionHandles) {
+		this._selectedTextContent = '';
+		for (var key in this._selectionHandles) {
 				this._map.removeLayer(this._selectionHandles[key]);
 				this._selectionHandles[key].isDragged = false;
 			}
-		}
+		this._selections.clearLayers();
 	},
 
 	_onCopy: function (e) {
@@ -2959,8 +2974,22 @@ L.TileLayer = L.GridLayer.extend({
 		// first try to transfer images
 		// TODO if we have both Files and a normal mimetype, should we handle
 		// both, or prefer one or the other?
-		for (var t = 0; t < types.length; ++t) {
-			if (types[t] === 'Files') {
+		// for (var t = 0; t < types.length; ++t) {
+		// 	if (types[t] === 'Files') {
+		// 		var files = dataTransfer.files;
+		// 		for (var f = 0; f < files.length; ++f) {
+		// 			var file = files[f];
+		// 			if (file.type.match(/image.*/)) {
+		// 				var reader = new FileReader();
+		// 				reader.onload = this._onFileLoadFunc(file);
+		// 				reader.readAsArrayBuffer(file);
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// 如果剪貼簿內容只有圖片的話，直接貼上圖片
+		if (types.length === 1 && types[0] === 'Files') {
 				var files = dataTransfer.files;
 				for (var f = 0; f < files.length; ++f) {
 					var file = files[f];
@@ -2970,7 +2999,7 @@ L.TileLayer = L.GridLayer.extend({
 						reader.readAsArrayBuffer(file);
 					}
 				}
-			}
+			return;
 		}
 
 		// now try various mime types
@@ -2978,6 +3007,12 @@ L.TileLayer = L.GridLayer.extend({
 		if (this._docType === 'spreadsheet') {
 			// FIXME apparently we cannot paste the text/html or text/rtf as
 			// produced by LibreOffice in Calc from some reason
+			mimeTypes = [
+				['text/plain', 'text/plain;charset=utf-8'],
+				['Text', 'text/plain;charset=utf-8']
+			];
+		} else if (this._docType === 'presentation') {
+			// Impress is the same as Calc.
 			mimeTypes = [
 				['text/plain', 'text/plain;charset=utf-8'],
 				['Text', 'text/plain;charset=utf-8']
@@ -3002,7 +3037,7 @@ L.TileLayer = L.GridLayer.extend({
 		}
 
 		for (var i = 0; i < mimeTypes.length; ++i) {
-			for (t = 0; t < types.length; ++t) {
+			for (var t = 0; t < types.length; ++t) {
 				if (mimeTypes[i][0] === types[t]) {
 					// Modify by Firefly <firefly@ossii.com.tw>
 					var mimeType = mimeTypes[i][1];
