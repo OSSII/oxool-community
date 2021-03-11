@@ -1143,7 +1143,12 @@ protected:
             if ((events & POLLOUT) && !_outBuffer.empty())
             {
                 writeOutgoingData();
-                closed = closed || (errno == EPIPE);
+                if (errno == EPIPE)
+                {
+                    LOG_DBG('#' << getFD() << ": Disconnected while writing (EPIPE).");
+                    closed = true;
+                    break;
+                }
             }
         }
         while (oldSize != _outBuffer.size());
