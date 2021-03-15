@@ -1014,9 +1014,10 @@ L.TileLayer = L.GridLayer.extend({
 		}
 
 		this._onUpdateCellCursor(horizontalDirection, verticalDirection, onPgUpDn);
-
-		// 清除所有標記
-		this._removeSelection();
+		// Calc 如果沒有選取區塊的話，清除所有文字選取區，避免畫面殘留
+		if (this._cellSelectionArea === null) {
+			this._removeSelection();
+		}
 	},
 
 	_onDocumentRepair: function (textMsg) {
