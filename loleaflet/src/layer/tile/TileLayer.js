@@ -1015,7 +1015,7 @@ L.TileLayer = L.GridLayer.extend({
 
 		this._onUpdateCellCursor(horizontalDirection, verticalDirection, onPgUpDn);
 		// Calc 如果沒有選取區塊的話，清除所有文字選取區，避免畫面殘留
-		if (this._cellSelectionArea === null) {
+		if (!this._cellSelectionArea && this._selections.getLayers().length !== 0) {
 			this._removeSelection();
 		}
 	},
@@ -1030,18 +1030,6 @@ L.TileLayer = L.GridLayer.extend({
 			this._docRepair.fillActions(textMsg);
 			this._map.enable(false);
 			this._docRepair.show();
-		}
-	},
-
-	_onSpecialChar: function(fontList, selectedIndex) {
-		if (!this._specialChar) {
-			this._specialChar = L.control.characterMap();
-		}
-		if (!this._specialChar.isVisible()) {
-			this._specialChar.addTo(this._map);
-			this._specialChar.fillFontNames(fontList, selectedIndex);
-			this._map.enable(false);
-			this._specialChar.show();
 		}
 	},
 
