@@ -2637,14 +2637,22 @@ L.TileLayer = L.GridLayer.extend({
 					}
 				}
 				else if (horizontalDirection !== 0 || verticalDirection != 0) {
-					var spacingX = Math.abs(this._cellCursor.getEast() - this._cellCursor.getWest()) / 4.0;
+					var mapWidth = Math.abs(mapBounds.getEast() - mapBounds.getWest());
+					var cellWidth = Math.abs(this._cellCursor.getEast() - this._cellCursor.getWest());
+					var spacingX = 6;
 					var spacingY = Math.abs((this._cellCursor.getSouth() - this._cellCursor.getNorth())) / 4.0;
 
+					// 儲存格左邊在編輯區外
 					if (this._cellCursor.getWest() < mapBounds.getWest()) {
-						scrollX = this._cellCursor.getWest() - mapBounds.getWest() - spacingX;
-					} else if (this._cellCursor.getEast() > mapBounds.getEast()) {
+						// 儲存格左邊對齊編輯區左邊
+						scrollX = this._cellCursor.getWest() - mapBounds.getWest();
+					}
+					// 儲存格右側在編輯區外，而且儲存格寬度比編輯區小
+					if (this._cellCursor.getEast() > mapBounds.getEast() && cellWidth < mapWidth) {
+						// 儲存格右邊對齊編輯區右邊
 						scrollX = this._cellCursor.getEast() - mapBounds.getEast() + spacingX;
 					}
+
 					if (this._cellCursor.getNorth() > mapBounds.getNorth()) {
 						scrollY = this._cellCursor.getNorth() - mapBounds.getNorth() + spacingY;
 					} else if (this._cellCursor.getSouth() < mapBounds.getSouth()) {
