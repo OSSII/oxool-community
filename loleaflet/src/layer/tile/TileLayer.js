@@ -816,7 +816,7 @@ L.TileLayer = L.GridLayer.extend({
 		if (this._graphicMarker) {
 			var extraInfo = this._graphicSelection.extraInfo;
 			// 存入 cache
-			if (extraInfo.id) {
+			if (extraInfo.id !== undefined) {
 				console.debug('save SVG : ', extraInfo.id);
 				this._map._cacheSVG[extraInfo.id] = textMsg;
 			}
@@ -899,16 +899,16 @@ L.TileLayer = L.GridLayer.extend({
 			// to crash on iOS.
 			if (!window.ThisIsTheiOSApp && this._graphicSelection.extraInfo.isDraggable && !this._graphicSelection.extraInfo.svg) {
 				//  有 extraInfo.id 的話，就看看這個圖片是否有 cache
-				if (extraInfo.id) {
+				if (extraInfo.id !== undefined) {
 					// 沒有被 cache 就要求 OxOffice render SVG 圖片
 					if (this._map._cacheSVG[extraInfo.id] === undefined)
 					{
-						console.debug('request SVG');
-						this._map._socket.sendMessage('rendershapeselection mimetype=image/svg+xml');
+						console.debug('Sending request SVG');
+						// 暫時關閉傳回選取圖片 SVG 內容，避免多人共編效率低落的問題
+						//this._map._socket.sendMessage('rendershapeselection mimetype=image/svg+xml');
 					} else {
 						console.debug('SVG cached(id:' + extraInfo.id + ')');
 					}
-
 				} else {
 					console.debug('Don\'t render SVG image');
 				}
@@ -1063,7 +1063,15 @@ L.TileLayer = L.GridLayer.extend({
 			this._map._setFollowing(false, null);
 		}
 		this._map.lastActionByUser = false;
-		if (!this._map._isFocused && this._map._permission === 'edit') {
+
+		if (obj.hyperlink !== undefined && obj.hyperlink.text !== undefined && obj.hyperlink.text !== undefined) {
+			this._map.hyperlinkUnderCursor = obj.hyperlink;
+		} else {
+			this._map.hyperlinkUnderCursor = null;
+		}
+
+		if (!this._map._isFocused && this._map._isCursorVisible &&
+			(modifierViewId === this._viewId) && this._map._permission === 'edit') {
 			// Regain cursor if we had been out of focus and now have input.
 			this._map.fire('editorgotfocus');
 		}
@@ -2386,7 +2394,7 @@ L.TileLayer = L.GridLayer.extend({
 	 */
 	_removeCachedSVG: function() {
 		var extraInfo = this._graphicSelection.extraInfo;
-		if (extraInfo.id) {
+		if (extraInfo.id !== undefined) {
 			console.debug('delete cache SVG : ' + extraInfo.id);
 			delete this._map._cacheSVG[extraInfo.id];
 		}
@@ -2884,14 +2892,17 @@ L.TileLayer = L.GridLayer.extend({
 	},
 
 	_onCopy: function (e) {
+		console.debug('_onCopy', e);
 		e = e.originalEvent;
 		e.preventDefault();
 		if (this._map._clipboardContainer.getValue() !== '') {
 			L.Compatibility.clipboardSet(e, this._map._clipboardContainer.getValue());
 			this._map._clipboardContainer.setValue('');
 		} else if (this._selectionTextContent) {
-			L.Compatibility.clipboardSet(e, this._selectionTextContent);
-
+			// Modified by Firefly <firefly@ossii.com.tw>
+			// 防止從 Calc 複製的儲存格，貼上 excel 多出一列
+			var textContent = this._docType === 'spreadsheet' ? this._selectionTextContent.trim() : this._selectionTextContent;
+			L.Compatibility.clipboardSet(e, textContent);
 			// remember the copied text, for rich copy/paste inside a document
 			this._selectionTextHash = this._selectionTextContent;
 		}
@@ -2900,14 +2911,17 @@ L.TileLayer = L.GridLayer.extend({
 	},
 
 	_onCut: function (e) {
+		console.debug('_onCut', e);
 		e = e.originalEvent;
 		e.preventDefault();
 		if (this._map._clipboardContainer.getValue() !== '') {
 			L.Compatibility.clipboardSet(e, this._map._clipboardContainer.getValue());
 			this._map._clipboardContainer.setValue('');
 		} else if (this._selectionTextContent) {
-			L.Compatibility.clipboardSet(e, this._selectionTextContent);
-
+			// Modified by Firefly <firefly@ossii.com.tw>
+			// 防止從 Calc 剪下的儲存格，貼上 excel 多出一列
+			var textContent = this._docType === 'spreadsheet' ? this._selectionTextContent.trim() : this._selectionTextContent;
+			L.Compatibility.clipboardSet(e, textContent);
 			// remember the copied text, for rich copy/paste inside a document
 			this._selectionTextHash = this._selectionTextContent;
 		}
@@ -2916,6 +2930,7 @@ L.TileLayer = L.GridLayer.extend({
 	},
 
 	_onPaste: function (e) {
+		console.debug('_onPaste', e);
 		e = e.originalEvent;
 		e.preventDefault();
 
@@ -2966,7 +2981,7 @@ L.TileLayer = L.GridLayer.extend({
 			}
 		}
 
-		var types = dataTransfer.types  || [];
+		var types = dataTransfer.types || [];
 
 		// first try to transfer images
 		// TODO if we have both Files and a normal mimetype, should we handle
