@@ -940,6 +940,10 @@ StorageBase::SaveResult WopiStorage::saveLocalFileToStorage(const Authorization&
         {
             saveResult.setResult(StorageBase::SaveResult::UNAUTHORIZED);
         }
+        else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_FORBIDDEN)
+        {
+            saveResult.setResult(StorageBase::SaveResult::FORBIDDEN);
+        }
         else if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_NOT_FOUND)
         {
             saveResult.setResult(StorageBase::SaveResult::NOT_FOUND);

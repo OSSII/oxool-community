@@ -981,6 +981,12 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
                 "]. Invalid or expired access token. Notifying client.");
         it->second->sendTextFrame("error: cmd=storage kind=code401");
     }
+    else if (storageSaveResult.getResult() == StorageBase::SaveResult::FORBIDDEN)
+    {
+        LOG_ERR("Cannot save docKey [" << _docKey << "] to storage URI [" << uriAnonym <<
+                "]. The file contains personal or sensitive information.");
+        it->second->sendTextFrame("error: cmd=storage kind=code403");
+    }
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::FAILED)
     {
         //TODO: Should we notify all clients?

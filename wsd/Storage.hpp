@@ -70,6 +70,7 @@ public:
             OK,
             DISKFULL,
             UNAUTHORIZED,
+            FORBIDDEN, /* code 403 */
             DOC_CHANGED, /**< Document changed in storage */
             CONFLICT,
             FAILED,
