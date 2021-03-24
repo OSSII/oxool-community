@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-10 17:31+0800\n"
+"POT-Creation-Date: 2021-03-24 10:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1158,24 +1158,28 @@ msgid ""
 msgstr ""
 
 #: src/errormessages.js:35
+msgid "The file cannot be saved because the content of the file contains personal or sensitive information, please check the settings or contact the administrator."
+msgstr ""
+
+#: src/errormessages.js:36
 msgid ""
 "The file cannot be saved. It may not have write permission for this file. "
 "Please contact the file sharer."
 msgstr ""
 
-#: src/errormessages.js:36
+#: src/errormessages.js:37
 msgid ""
 "The file could not be saved. It may be that the file capacity has exceeded "
 "the upload limit."
 msgstr ""
 
-#: src/errormessages.js:37
+#: src/errormessages.js:38
 msgid ""
 "Server error or connection timeout, the document cannot be saved "
 "temporarily. Please try again later."
 msgstr ""
 
-#: src/errormessages.js:38
+#: src/errormessages.js:39
 msgid "This operation is not supported, please contact the administrator."
 msgstr ""
 
@@ -1203,15 +1207,15 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:858
+#: src/layer/tile/TileLayer.js:878
 msgid "This type of picture editing is not yet supported."
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:876
+#: src/layer/tile/TileLayer.js:896
 msgid "unnamed"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:3133
+#: src/layer/tile/TileLayer.js:3163
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr ""
 

@@ -31,6 +31,7 @@ errorMessages.storage = {
 	saveunauthorized: _('Document cannot be saved due to expired or invalid access token.'),
 	savefailed: _('Document cannot be saved. Check your permissions or contact the storage server administrator.'),
 	code401: _('The document could not be saved. This certification has expired or is invalid. Please reopen this file.'),
+	code403: _('The file cannot be saved because the content of the file contains personal or sensitive information, please check the settings or contact the administrator.'),
 	code404: _('The file cannot be saved. It may not have write permission for this file. Please contact the file sharer.'),
 	code413: _('The file could not be saved. It may be that the file capacity has exceeded the upload limit.'),
 	code500: _('Server error or connection timeout, the document cannot be saved temporarily. Please try again later.'),

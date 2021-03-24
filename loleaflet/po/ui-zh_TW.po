@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-10 17:31+0800\n"
+"POT-Creation-Date: 2021-03-24 10:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1165,24 +1165,28 @@ msgid ""
 msgstr "文件無法儲存，此認證已到期或失效，請重新開啟此檔案。"
 
 #: src/errormessages.js:35
+msgid  "The file cannot be saved because the content of the file contains personal or sensitive information, please check the settings or contact the administrator."
+msgstr "文件無法儲存，因檔案內容包含個資或敏感資料，請檢查設定或請聯絡管理員。"
+
+#: src/errormessages.js:36
 msgid ""
 "The file cannot be saved. It may not have write permission for this file. "
 "Please contact the file sharer."
 msgstr "文件無法儲存，可能此檔案無寫入權限，請洽檔案分享者。"
 
-#: src/errormessages.js:36
+#: src/errormessages.js:37
 msgid ""
 "The file could not be saved. It may be that the file capacity has exceeded "
 "the upload limit."
 msgstr "文件無法儲存，可能是檔案容量已超過上傳限制。"
 
-#: src/errormessages.js:37
+#: src/errormessages.js:38
 msgid ""
 "Server error or connection timeout, the document cannot be saved "
 "temporarily. Please try again later."
 msgstr "伺服器錯誤或連線逾時，文件暫時無法儲存，請稍後再試。"
 
-#: src/errormessages.js:38
+#: src/errormessages.js:39
 msgid "This operation is not supported, please contact the administrator."
 msgstr "不支援此操作，請洽詢管理員。"
 
@@ -1210,15 +1214,15 @@ msgstr "修改"
 msgid "Remove"
 msgstr "移除"
 
-#: src/layer/tile/TileLayer.js:858
+#: src/layer/tile/TileLayer.js:878
 msgid "This type of picture editing is not yet supported."
 msgstr "尚未支援此種圖片格式的編輯"
 
-#: src/layer/tile/TileLayer.js:876
+#: src/layer/tile/TileLayer.js:896
 msgid "unnamed"
 msgstr "未命名"
 
-#: src/layer/tile/TileLayer.js:3133
+#: src/layer/tile/TileLayer.js:3163
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr "請問是否需要壓縮圖片？(此功能不支援 SVG 檔)"
 
