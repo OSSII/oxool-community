@@ -122,6 +122,11 @@ L.Control.ContextMenu = L.Control.extend({
 		var isLastItemText = false;
 		for (var idx in obj.menu) {
 			var item = obj.menu[idx];
+
+			if (item.command === '.uno:Paste' && docType === 'spreadsheet') {
+				item.enabled = 'true';
+			}
+
 			if (item.enabled === 'false') {
 				continue;
 			}
