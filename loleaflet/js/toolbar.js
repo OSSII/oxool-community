@@ -295,12 +295,12 @@ function onClick(e, id, item, subItem) {
 		map.closeDocument();
 	}
 	else if (id === 'keyboardBtn') {
-		map._clipboardContainer.enableVirtualKeyboard();
+		map._clipboardContainer.lockVirtualKeyboard(false);
 		statusbar.hide('keyboardBtn');
 		statusbar.show('keyboard_hideBtn');
 	}
 	else if (id === 'keyboard_hideBtn') {
-		map._clipboardContainer.disableVirtualKeyboard();
+		map._clipboardContainer.lockVirtualKeyboard(true);
 		statusbar.hide('keyboard_hideBtn');
 		statusbar.show('keyboardBtn');
 	}
@@ -2451,7 +2451,10 @@ function onUpdatePermission(e) {
 		}
 		//
 		if (e.perm === 'edit') {
-			statusbar.show('keyboardBtn', 'break-keyboardBtn');
+			// 文字文件需要鍵盤鎖功能
+			if (map.getDocType() === 'text') {
+				statusbar.show('keyboardBtn', 'break-keyboardBtn');
+			}
 			statusbar.show('undo', 'redo');
 			mobileEditBar.css('top', toolbarUp.outerHeight() - 1).show();
 			var height = mobileEditBar.outerHeight();

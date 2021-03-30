@@ -92,7 +92,7 @@ L.TileLayer = L.GridLayer.extend({
 		this._docType = options.docType;
 		// Add by Firefly <firefly@ossii.com.tw>
 		// 目前文件中 focus 的物件型態
-		this._docContext = '';
+		this._docContext = this._docType === 'spreadsheet' ? 'Cell' : '';
 		this._documentInfo = '';
 		// Position and size of the visible cursor.
 		this._visibleCursor = new L.LatLngBounds(new L.LatLng(0, 0), new L.LatLng(0, 0));
@@ -320,6 +320,21 @@ L.TileLayer = L.GridLayer.extend({
 		map.on('updatepermission', function(e) {
 			if (e.perm !== 'edit') {
 				this._clearSelections();
+			}
+		}, this);
+
+		// Add by Firefly <firefly@ossii.com.tw>
+		// 處理滑鼠雙擊事件
+		map.on('dblclick', function(/*e*/) {
+			if (map._permission === 'edit') {
+				if (!this._isCursorVisible && // 游標未顯示
+					this._docContext === 'Cell' && // 位於儲存格
+					this._isCellFormulaEmpty // 儲存格無資料
+				) {
+					this._onCellCursorMsg('cellcursor: EMPTY'); // 不顯示儲存格選取框
+					this._isCursorVisible = true; // 游標可見
+					this._updateCursorAndOverlay(); // 更新游標
+				}
 			}
 		}, this);
 
@@ -692,6 +707,8 @@ L.TileLayer = L.GridLayer.extend({
 
 	_onCellFormulaMsg: function (textMsg) {
 		var formula = textMsg.substring(13);
+		// 儲存格是否有值
+		this._isCellFormulaEmpty = formula.length === 0 ? true : false;
 		if (!this._map['wopi'].DisableCopy) {
 			this._selectionTextContent = formula;
 		}
@@ -914,7 +931,7 @@ L.TileLayer = L.GridLayer.extend({
 				}
 			}
 		}
-
+		this._hideCursorIfVisible(); // 如果輸入游標有出現的話，關閉它
 		this._onUpdateGraphicSelection();
 	},
 
@@ -967,25 +984,31 @@ L.TileLayer = L.GridLayer.extend({
 		}
 		else {
 			var strTwips = textMsg.match(/\d+/g);
-			var topLeftTwips = new L.Point(parseInt(strTwips[0]), parseInt(strTwips[1]));
-			var offset = new L.Point(parseInt(strTwips[2]), parseInt(strTwips[3]));
+			var top = parseInt(strTwips[0]);
+			var left = parseInt(strTwips[1]);
+			var width = parseInt(strTwips[2]);
+			var height = parseInt(strTwips[3]);
+			var topLeftTwips = new L.Point(top, left);
+			var offset = new L.Point(width, height);
 			var bottomRightTwips = topLeftTwips.add(offset);
 			this._cellCursorTwips = new L.Bounds(topLeftTwips, bottomRightTwips);
 			this._cellCursor = new L.LatLngBounds(
-							this._twipsToLatLng(topLeftTwips, this._map.getZoom()),
-							this._twipsToLatLng(bottomRightTwips, this._map.getZoom()));
+				this._twipsToLatLng(topLeftTwips, this._map.getZoom()),
+				this._twipsToLatLng(bottomRightTwips, this._map.getZoom()));
 			this._cellCursorXY = new L.Point(parseInt(strTwips[4]), parseInt(strTwips[5]));
 
 			// Add by Firefly <firefly@ossii.com.tw>
 			// 把文字游標(blink cursor)移至儲存格開頭
-			var offsetCur = new L.Point(parseInt(strTwips[0]), 0);
+			var vCursorHeight = height < 285 ? height : 285; // 虛擬游標高度
+			var offsetCur = new L.Point(top, vCursorHeight);
 			var bottomRightTwipsCur = topLeftTwips.add(offsetCur);
-			var vCursor = new L.LatLngBounds(
-						this._twipsToLatLng(topLeftTwips, this._map.getZoom()),
+			this._visibleCursor = new L.LatLngBounds(
+				this._twipsToLatLng(topLeftTwips, this._map.getZoom()),
 				this._twipsToLatLng(bottomRightTwipsCur, this._map.getZoom())
 			);
-			var cursorPos = vCursor.getNorthWest();
-			this._map._clipboardContainer.setLatLng(cursorPos);
+			this._updateCursorPos(); // 定位游標
+			// 移動隱藏的輸入欄位到游標位置
+			this._map._clipboardContainer.setLatLng(this._visibleCursor.getNorthWest());
 			//--------------------------------------------------------
 		}
 
@@ -1014,6 +1037,9 @@ L.TileLayer = L.GridLayer.extend({
 		}
 
 		this._onUpdateCellCursor(horizontalDirection, verticalDirection, onPgUpDn);
+
+		// 如果輸入游標有出現的話，關閉它
+		this._hideCursorIfVisible();
 		// Calc 如果沒有選取區塊的話，清除所有文字選取區，避免畫面殘留
 		if (!this._cellSelectionArea && this._selections.getLayers().length !== 0) {
 			this._removeSelection();
@@ -1942,6 +1968,15 @@ L.TileLayer = L.GridLayer.extend({
 		}, this, true);
 	},
 
+	// Add by Firefly <firefly@ossii.com.tw>
+	// 試算表文件且游標顯示的話，就隱藏它
+	_hideCursorIfVisible: function() {
+		if (this._docType === 'spreadsheet' && this._isCursorVisible) {
+			this._isCursorVisible = false;
+			this._updateCursorAndOverlay();
+		}
+	},
+
 	// enable or disable blinking cursor and  the cursor overlay depending on
 	// the state of the document (if the falgs are set)
 	_updateCursorAndOverlay: function (/*update*/) {
@@ -1949,19 +1984,12 @@ L.TileLayer = L.GridLayer.extend({
 		&& this._isCursorVisible        // only when LOK has told us it is ok
 		&& this._isFocused              // not when document is not focused
 		&& !this._isZooming             // not when zooming
-//		&& !this.isGraphicVisible()     // not when sizing / positioning graphics
 		&& !this._isEmptyRectangle(this._visibleCursor)) {
 			this._updateCursorPos();
 			this._map._clipboardContainer.showCursor();
-			/* if (L.Browser.mobile && this._map.getDocType() === 'spreadsheet') {
-				this._map._clipboardContainer.enableVirtualKeyboard();
-			} */
 		}
 		else {
 			this._map._clipboardContainer.hideCursor();
-			/* if (L.Browser.mobile) {
-				this._map._clipboardContainer.disableVirtualKeyboard();
-			} */
 		}
 	},
 

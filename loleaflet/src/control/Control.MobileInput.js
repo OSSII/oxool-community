@@ -22,6 +22,12 @@ L.Control.MobileInput = L.Control.extend({
 
 	onAdd: function(map) {
 		this._initLayout();
+
+		map.on('doclayerinit', function() {
+			this.hideCursor(); // 隱藏鍵盤
+			this.lockVirtualKeyboard((map.getDocType() === 'text')); // 文字文件的話，要鎖住鍵盤
+		}, this);
+
 		// Dirty hacked by Firefly <firefly@ossii.com.tw>
 		// 觸控設備視窗 size 改變，是因為螢幕鍵盤升起或落下
 		// e.newSize.y < e.oldSize.y 表示高度縮小→鍵盤升起，否則就是落下
@@ -65,7 +71,8 @@ L.Control.MobileInput = L.Control.extend({
 	},
 
 	focus: function(/*focus*/) {
-		if (this._readOnly || this._map._permission !== 'edit') {
+		if (this._map._permission !== 'edit' || this._lockKeyboard ||
+			!this._map._docLayer._isCursorVisible || this._readOnly) {
 			this._textArea.blur();
 		} else {
 			this._textArea.focus();
@@ -104,10 +111,12 @@ L.Control.MobileInput = L.Control.extend({
 		if (this._textArea === document.activeElement) {
 			this.onGotFocus();
 		}
+		this._enableVirtualKeyboard();
 	},
 
 	hideCursor: function () {
 		this.onLostFocus();
+		this._disableVirtualKeyboard();
 	},
 
 	_setPos: function(pos) {
@@ -115,12 +124,17 @@ L.Control.MobileInput = L.Control.extend({
 	},
 
 	// Add by Firefly <firefly@ossii.com.tw>
-	disableVirtualKeyboard: function () {
+	lockVirtualKeyboard: function (onOff) {
+		this._lockKeyboard = (onOff === true);
+		this.focus();
+	},
+
+	_disableVirtualKeyboard: function () {
 		this._readOnly = true;
 		this.focus();
 	},
 
-	enableVirtualKeyboard: function () {
+	_enableVirtualKeyboard: function () {
 		this._readOnly = false;
 		this.focus();
 	},
@@ -136,11 +150,6 @@ L.Control.MobileInput = L.Control.extend({
 		this._textArea.setAttribute('autocapitalize', constOff);
 		this._textArea.setAttribute('autocomplete', constOff);
 		this._textArea.setAttribute('spellcheck', 'false');
-		if (window.mode.isTablet()) {
-			this.enableVirtualKeyboard();
-		} else {
-			this.disableVirtualKeyboard();
-		}
 		L.DomEvent.on(this._textArea, stopEvents, L.DomEvent.stopPropagation)
 			.on(this._textArea, 'keydown keypress keyup', this.onKeyEvents, this)
 			.on(this._textArea, 'compositionstart compositionupdate compositionend textInput', this.onCompEvents, this)
