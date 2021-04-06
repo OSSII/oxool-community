@@ -1165,8 +1165,8 @@ msgid ""
 msgstr "文件無法儲存，此認證已到期或失效，請重新開啟此檔案。"
 
 #: src/errormessages.js:35
-msgid  "The file cannot be saved because the content of the file contains personal or sensitive information, please check the settings or contact the administrator."
-msgstr "文件無法儲存，因檔案內容包含個資或敏感資料，請檢查設定或請聯絡管理員。"
+msgid  "The file cannot be saved. Because the content of the file contains personal information or suspected sensitive information, it is recommended to adjust the content before saving."
+msgstr "文件無法儲存，因檔案內容包含個資或疑似敏感資料，建議調整內容後再存檔。"
 
 #: src/errormessages.js:36
 msgid ""

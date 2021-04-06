@@ -1158,7 +1158,7 @@ msgid ""
 msgstr ""
 
 #: src/errormessages.js:35
-msgid "The file cannot be saved because the content of the file contains personal or sensitive information, please check the settings or contact the administrator."
+msgid "The file cannot be saved. Because the content of the file contains personal information or suspected sensitive information, it is recommended to adjust the content before saving."
 msgstr ""
 
 #: src/errormessages.js:36
