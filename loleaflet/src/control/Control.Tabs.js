@@ -38,7 +38,6 @@ L.Control.Tabs = L.Control.extend({
 		this._spreadsheetTabs = {};
 		this._tabForContextMenu = 0;
 		var map = this._map;
-		var that = this;
 		var docContainer = map.options.documentContainer;
 		this._tabsCont = L.DomUtil.create('div', 'spreadsheet-tabs-container', docContainer.parentElement);
 		L.DomEvent.on(this._tabsCont, 'touchstart',
@@ -80,56 +79,43 @@ L.Control.Tabs = L.Control.extend({
 				'DuplicatePage': {
 					name: _UNO('.uno:Move', 'spreadsheet', true),
 					callback: (function() {
-						that._movePart();
+						map.fire('executeDialog', {dialog: 'MoveTable'});
 					}).bind(this),
 					icon: (function(opt, $itemElement, itemKey, item) {
 						return this._map.contextMenuIcon($itemElement, itemKey, item);
 					}).bind(this)
 				},
-				'DeleteTable': {name: _UNO('.uno:Remove', 'spreadsheet', true),
-						callback: (function(key, options) {
-							var nPos = this._tabForContextMenu;
-							vex.dialog.confirm({
-								message: _('Are you sure you want to delete sheet, %sheet% ?').replace('%sheet%', options.$trigger.text()),
-								callback: function(data) {
-									if (data) {
-										map.deletePage(nPos);
-									}
-								}
-							});
-						}).bind(this),
-						icon: (function(opt, $itemElement, itemKey, item) {
-							return this._map.contextMenuIcon($itemElement, itemKey, item);
-						}).bind(this)
+				'DeleteTable': {
+					name: _UNO('.uno:Remove', 'spreadsheet', true),
+					callback: (function(/*key, options*/) {
+						map.fire('executeDialog', {dialog: 'RemoveTable'});
+					}).bind(this),
+					disabled: (function() {
+						// 只有一個工作表顯示
+						return (map.getNumberOfVisibleParts() === 1);
+					}).bind(this),
+					icon: (function(opt, $itemElement, itemKey, item) {
+						return this._map.contextMenuIcon($itemElement, itemKey, item);
+					}).bind(this)
 				 },
-				'DBTableRename': {name: _UNO('.uno:RenameTable', 'spreadsheet', true),
-							callback: (function(key, options) {
-								var nPos = this._tabForContextMenu;
-								vex.dialog.open({
-									message: _('Enter new sheet name'),
-									input: '<input name="sheetname" type="text" value="' + options.$trigger.text() + '" required />',
-									callback: function(data) {
-										if (!data)
-											return;
-
-										if (map.isSheetnameValid(data.sheetname, nPos)) {
-											map.renamePage(data.sheetname, nPos);
-										} else {
-											var msg = _('Invalid sheet name.\nThe sheet name must not be empty or a duplicate of \nan existing name and may not contain the characters [ ] * ? : / \\ \nor the character \' (apostrophe) as first or last character.');
-											vex.dialog.alert(msg.replace(/\n/g, '<br>'));
-										}
-									}
-								});
-							}).bind(this),
-							icon: (function(opt, $itemElement, itemKey, item) {
-								return this._map.contextMenuIcon($itemElement, itemKey, item);
-							}).bind(this)
+				'DBTableRename': {
+					name: _UNO('.uno:RenameTable', 'spreadsheet', true),
+					callback: (function(/*key, options*/) {
+						map.fire('executeDialog', {dialog: 'RenameTable'});
+					}).bind(this),
+					icon: (function(opt, $itemElement, itemKey, item) {
+						return this._map.contextMenuIcon($itemElement, itemKey, item);
+					}).bind(this)
 				} ,
 				'sep01': '----',
 				'Show': {
 					name: _UNO('.uno:Show', 'spreadsheet', true),
 					callback: (function() {
-						that._showPage();
+						map.fire('executeDialog', {dialog: 'ShowTable'});
+					}).bind(this),
+					disabled: (function() {
+						// 沒有隱藏的工作表才能執行
+						return !this._map.hasAnyHiddenPart();
 					}).bind(this),
 					icon: (function(opt, $itemElement, itemKey, item) {
 						return this._map.contextMenuIcon($itemElement, itemKey, item);
@@ -139,6 +125,10 @@ L.Control.Tabs = L.Control.extend({
 					name: _UNO('.uno:Hide', 'spreadsheet', true),
 					callback: (function() {
 						map.hidePage();
+					}).bind(this),
+					disabled: (function() {
+						// 只有一個工作表
+						return map.getNumberOfVisibleParts() === 1;
 					}).bind(this),
 					icon: (function(opt, $itemElement, itemKey, item) {
 						return this._map.contextMenuIcon($itemElement, itemKey, item);
