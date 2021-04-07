@@ -115,8 +115,7 @@ ifelse(MOBILEAPP,[true],
 
     <div id="spreadsheet-row-column-frame"></div>
 
-    ifelse(MOBILEAPP,[true],[<div id="document-container">],[<!--%DOCUMENT_CONTAINER%-->])
-
+    <div id="document-container">
       <div id="map"></div>
     </div>
     <div id="spreadsheet-toolbar"></div>
