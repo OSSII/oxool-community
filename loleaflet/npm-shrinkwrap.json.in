@@ -1819,9 +1819,9 @@
       }
     },
     "jquery": {
-      "version": "2.2.4",
-      "resolved": "file:node_shrinkwrap/jquery-2.2.4.tgz",
-      "integrity": "sha1-LInWiJterFIqfuoywUUhVZxsvwI=",
+      "version": "3.5.1",
+      "resolved": "file:archived-packages/jquery-3.5.1-5f02013ea.tar",
+      "integrity": "sha512-LXqrcuY/5t4rcVj9M8PQAfTjB5Lb/su/Nu+f/hlI8Te6JwEKW13tlz2ly7IPojcMkyxsmBoIRRLHUgGMS11Zqg== sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==",
       "dev": true
     },
     "jquery-contextmenu": {
