@@ -695,33 +695,33 @@ var transition = [
 	{img: 'transition-shape', label: _('Shape'), action: {type:3, subtype: 12}}, // 形狀
 	{img: 'transition-box', label: _('Box'), action: {type:12, subtype: 25}}, // 方塊
 	{img: 'transition-wedge', label: _('Wedge'), action: {type:25, subtype: 48}}, // 楔入
-	{img: 'transition-venetian-blinds', label: _('Venetian Blinds'), action: {type:41, subtype: 13}}, // 百葉窗
+	//{img: 'transition-venetian-blinds', label: _('Venetian Blinds'), action: {type:41, subtype: 13}}, // 百葉窗
 	{img: 'transition-fade', label: _('Fade'), action: {type:37, subtype: 104}}, // 淡化
-	{img: 'transition-cut', label: _('Cut'), action: {type:1, subtype: 104}}, // 剪下
+	//{img: 'transition-cut', label: _('Cut'), action: {type:1, subtype: 104}}, // 剪下
 	{img: 'transition-cover', label: _('Cover'), action: {type:36, subtype: 98}}, // 覆蓋
 	{img: 'transition-dissolve', label: _('Dissolve'), action: {type:40, subtype: 0}}, // 溶解
-	{img: 'transition-random', label: _('Random'), action: {type:42, subtype: 0}}, // 隨機
-	{img: 'transition-comb', label: _('Comb'), action: {type:35, subtype: 110}}, // 梳紋
+	//{img: 'transition-random', label: _('Random'), action: {type:42, subtype: 0}}, // 隨機
+	//{img: 'transition-comb', label: _('Comb'), action: {type:35, subtype: 110}}, // 梳紋
 	{img: 'transition-push', label: _('Push'), action: {type:35, subtype: 98}}, // 推展
 	{img: 'transition-split', label: _('Split'), action: {type:4, subtype: 14}}, // 分割
 	{img: 'transition-diagonal-squares', label: _('Diagonal'), action: {type:34, subtype: 96}}, // 對角
-	{img: 'transition-tile-flip', label: _('Tiles'), action: {type:21, subtype: 108}}, // 拼貼
-	{img: 'transition-cube-turning', label: _('Cube'), action: {type:21, subtype:12}}, // 立方體
-	{img: 'transition-revolving-circles', label: _('Circles'), action: {type:21, subtype: 27}}, // 圓形
-	{img: 'transition-turning-helix', label: _('Helix'), action: {type:21, subtype: 55}}, // 螺旋
-	{img: 'transition-fall', label: _('Fall'), action: {type:21, subtype: 1}}, // 向下落
-	{img: 'transition-turn-around', label: _('Turn Around'), action: {type:21, subtype: 2}}, // 左右翻轉
-	{img: 'transition-iris', label: _('Iris'), action: {type:21, subtype: 3}}, // 光圈
-	{img: 'transition-turn-down', label: _('Turn Down'), action: {type:21, subtype: 4}}, // 向下轉
-	{img: 'transition-rochade', label: _('Rochade'), action: {type:21, subtype: 5}}, // 左右置換
-	{img: 'transition-venetian-blinds-3d', label: _('3D Denetian'), action: {type:21, subtype: 6}}, // 3D 百葉窗
-	{img: 'transition-static', label: _('Static'), action: {type:21, subtype: 8}}, // 靜態
-	{img: 'transition-finedissolve', label: _('Fine Dissolve'), action: {type:21, subtype: 9}}, // 細緻溶解
-	{img: 'transition-vortex', label: _('Vortex'), action: {type:21, subtype: 13}}, // 漩渦
-	{img: 'transition-ripple', label: _('Ripple'), action: {type:21, subtype: 14}}, // 漣漪
-	{img: 'transition-glitter', label: _('Glitter'), action: {type:21, subtype: 26}}, // 閃耀
-	{img: 'transition-honeycomb', label: _('Honeycomb'), action: {type:21, subtype: 31}}, // 蜂巢
-	{img: 'transition-newsflash', label: _('Newsflash'), action: {type:43, subtype: 114}} // 新聞快報
+	//{img: 'transition-tile-flip', label: _('Tiles'), action: {type:21, subtype: 108}}, // 拼貼
+	// {img: 'transition-cube-turning', label: _('Cube'), action: {type:21, subtype:12}}, // 立方體
+	// {img: 'transition-revolving-circles', label: _('Circles'), action: {type:21, subtype: 27}}, // 圓形
+	// {img: 'transition-turning-helix', label: _('Helix'), action: {type:21, subtype: 55}}, // 螺旋
+	// {img: 'transition-fall', label: _('Fall'), action: {type:21, subtype: 1}}, // 向下落
+	// {img: 'transition-turn-around', label: _('Turn Around'), action: {type:21, subtype: 2}}, // 左右翻轉
+	// {img: 'transition-iris', label: _('Iris'), action: {type:21, subtype: 3}}, // 光圈
+	// {img: 'transition-turn-down', label: _('Turn Down'), action: {type:21, subtype: 4}}, // 向下轉
+	// {img: 'transition-rochade', label: _('Rochade'), action: {type:21, subtype: 5}}, // 左右置換
+	// {img: 'transition-venetian-blinds-3d', label: _('3D Denetian'), action: {type:21, subtype: 6}}, // 3D 百葉窗
+	// {img: 'transition-static', label: _('Static'), action: {type:21, subtype: 8}}, // 靜態
+	// {img: 'transition-finedissolve', label: _('Fine Dissolve'), action: {type:21, subtype: 9}}, // 細緻溶解
+	// {img: 'transition-vortex', label: _('Vortex'), action: {type:21, subtype: 13}}, // 漩渦
+	// {img: 'transition-ripple', label: _('Ripple'), action: {type:21, subtype: 14}}, // 漣漪
+	// {img: 'transition-glitter', label: _('Glitter'), action: {type:21, subtype: 26}}, // 閃耀
+	// {img: 'transition-honeycomb', label: _('Honeycomb'), action: {type:21, subtype: 31}}, // 蜂巢
+	// {img: 'transition-newsflash', label: _('Newsflash'), action: {type:43, subtype: 114}} // 新聞快報
 ];
 
 // 投影片轉場
@@ -729,7 +729,7 @@ function animationEffects() {
 	var width = 5;
 	var $grid = $('.animationeffects-grid');
 
-	if ($grid.children().size() > 0)
+	if ($grid.children().length > 0)
 		return;
 
 	var rows = Math.ceil(transition.length / width);
