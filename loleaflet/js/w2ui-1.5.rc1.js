@@ -2332,7 +2332,7 @@ w2utils.event = {
                 // if content of specific height
                 if (options.tmp.contentHeight) {
                     h = parseInt(options.tmp.contentHeight);
-                    div2.height(h);
+                    div2.height(h + 1);
                     setTimeout(function () {
                         var $div = div2.find('div.menu');
                         if (h > $div.height()) {
@@ -2346,7 +2346,7 @@ w2utils.event = {
                 }
                 if (options.tmp.contentWidth && options.align != 'both') {
                     w = parseInt(options.tmp.contentWidth);
-                    div2.width(w);
+                    div2.width(w + 1);
                     setTimeout(function () {
                         if (w > div2.find('div.menu > table').width()) {
                             div2.find('div.menu > table').css('overflow-x', 'hidden');
