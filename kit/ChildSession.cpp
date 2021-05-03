@@ -998,7 +998,6 @@ bool ChildSession::extTextInputEvent(const char* /*buffer*/, int /*length*/,
         sendTextFrame("error: cmd=" + std::string(tokens[0]) + " kind=syntax");
         return false;
     }
-
     std::string decodedText;
     URI::decode(text, decodedText);
 
@@ -2122,6 +2121,9 @@ void ChildSession::loKitCallback(const int type, const std::string& payload)
 //#if !ENABLE_DEBUG
     // we want a compilation-time failure in the debug builds; but ERR in the
     // log in the release ones
+    case LOK_CALLBACK_MSGBOX:
+        sendTextFrame("msgbox: " + payload);
+        break;
     default:
         LOG_ERR("Unknown callback event (" << LOKitHelper::kitCallbackTypeToString(type) << "): " << payload);
 //#endif

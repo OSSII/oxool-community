@@ -673,6 +673,15 @@ typedef enum
      * cell.
      */
     LOK_CALLBACK_TABLE_SELECTED = 44,
+
+    /**
+    * When OxOffice encounter different type for callback
+    * {
+    *  type: warning/error/info/question/success(not necessary)
+    *  text: English only
+    * }
+    */
+    LOK_CALLBACK_MSGBOX = 1000,
 }
 LibreOfficeKitCallbackType;
 

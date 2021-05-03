@@ -139,6 +139,8 @@ namespace LOKitHelper
             return "CELL_AUTO_FILL_AREA";
         case LOK_CALLBACK_TABLE_SELECTED:
             return "TABLE_SELECTED";
+        case LOK_CALLBACK_MSGBOX:
+            return "LOK_CALLBACK_MSGBOX";
        }
 
         return std::to_string(type);

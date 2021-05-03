@@ -88,6 +88,7 @@ extern "C"
             CASE(CELL_SELECTION_AREA);
             CASE(CELL_AUTO_FILL_AREA);
             CASE(TABLE_SELECTED);
+            CASE(MSGBOX);
 #undef CASE
         }
         std::cout << " payload: " << payload << std::endl;
