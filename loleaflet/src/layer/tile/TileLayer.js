@@ -494,39 +494,12 @@ L.TileLayer = L.GridLayer.extend({
 		else if (textMsg.startsWith('msgbox:')) {
 			var msgdata = textMsg.substring('msgbox:'.length + 1);
 			msgdata = JSON.parse(msgdata);
-			switch (msgdata['type']) {
-			case 'info':
-				L.dialog.alert({
-					message: msgdata['text'],
-					icon: 'information'
-				});
-				break;
-			case 'warning':
-				L.dialog.alert({
-					message: msgdata['text'],
-					icon: 'warning'
-				});
-				break;
-			case 'error':
-				L.dialog.alert({
-					message: msgdata['text'],
-					icon: 'error'
-				});
-				break;
-			case 'question':
-				L.dialog.alert({
-					message: msgdata['text'],
-					icon: 'question'
-				});
-				break;
-			case 'success':
-				L.dialog.alert({
-					message: msgdata['text'],
-					icon: 'success'
-				});
-				break;
-			default:
-			}
+			var icon = msgdata.type !== 'info' ? msgdata.type : 'information';
+			L.dialog.alert({
+				message: _(msgdata.text),
+				icon: icon
+			});
+
 		}
 		else if (textMsg.startsWith('invalidatetiles:')) {
 			var payload = textMsg.substring('invalidatetiles:'.length + 1);
