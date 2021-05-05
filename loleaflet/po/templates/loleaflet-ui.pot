@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: uiconfig/dialogs/AboutDialog.js:19 uiconfig/dialogs/ExampleDialog.js:34
+#: uiconfig/dialogs/ExampleDialog.js:34
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-24 10:15+0800\n"
+"POT-Creation-Date: 2021-05-05 12:03+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,14 +218,14 @@ msgstr ""
 #: admin/src/AdminSocketGlobalFunction.js:35
 #: admin/src/AdminSocketGlobalFunction.js:59 js/toolbar.js:1101
 #: js/toolbar.js:1372 src/layer/marker/Annotation.js:181 src/map/Map.js:109
-#: uiconfig/dialogs/AboutDialog.js:39 uiconfig/dialogs/AddTableAtEnd.js:46
+#: uiconfig/dialogs/AddTableAtEnd.js:46
 #: uiconfig/dialogs/BindingLineDialog.js:134 uiconfig/dialogs/ColumnWidth.js:66
 #: uiconfig/dialogs/DeleteCell.js:86 uiconfig/dialogs/dlgSecurePrint.js:73
 #: uiconfig/dialogs/ExampleDialog.js:54 uiconfig/dialogs/GotoPage.js:76
 #: uiconfig/dialogs/HeaderAndFooter.js:150 uiconfig/dialogs/InsertBreak.js:57
 #: uiconfig/dialogs/InsertCell.js:54 uiconfig/dialogs/InsertImage.js:102
 #: uiconfig/dialogs/InsertTable.js:71 uiconfig/dialogs/MoveTable.js:58
-#: uiconfig/dialogs/OXSaveAs.js:66 uiconfig/dialogs/PdfWatermarkText.js:54
+#: uiconfig/dialogs/OXSaveAs.js:54 uiconfig/dialogs/PdfWatermarkText.js:54
 #: uiconfig/dialogs/ProtectTable.js:59 uiconfig/dialogs/RemoveCell.js:54
 #: uiconfig/dialogs/RemoveTable.js:47 uiconfig/dialogs/RenameTable.js:49
 #: uiconfig/dialogs/RowHeight.js:66 uiconfig/dialogs/RowOrColGroup.js:64
@@ -244,13 +244,13 @@ msgid "Confirm password"
 msgstr ""
 
 #: admin/src/AdminSocketGlobalFunction.js:58 src/map/Map.js:108
-#: uiconfig/dialogs/AboutDialog.js:33 uiconfig/dialogs/AddTableAtEnd.js:39
+#: uiconfig/dialogs/AddTableAtEnd.js:39
 #: uiconfig/dialogs/BindingLineDialog.js:113 uiconfig/dialogs/ColumnWidth.js:49
 #: uiconfig/dialogs/DeleteCell.js:66 uiconfig/dialogs/dlgSecurePrint.js:44
 #: uiconfig/dialogs/ExampleDialog.js:48 uiconfig/dialogs/GotoPage.js:63
 #: uiconfig/dialogs/HeaderAndFooter.js:114 uiconfig/dialogs/InsertBreak.js:50
 #: uiconfig/dialogs/InsertCell.js:41 uiconfig/dialogs/InsertTable.js:64
-#: uiconfig/dialogs/MoveTable.js:51 uiconfig/dialogs/OXSaveAs.js:48
+#: uiconfig/dialogs/MoveTable.js:51 uiconfig/dialogs/OXSaveAs.js:39
 #: uiconfig/dialogs/PdfWatermarkText.js:40 uiconfig/dialogs/ProtectTable.js:51
 #: uiconfig/dialogs/RemoveCell.js:41 uiconfig/dialogs/RemoveTable.js:40
 #: uiconfig/dialogs/RenameTable.js:42 uiconfig/dialogs/RowHeight.js:49
@@ -356,16 +356,8 @@ msgstr ""
 msgid "Wedge"
 msgstr ""
 
-#: js/toolbar.js:723
-msgid "Venetian Blinds"
-msgstr ""
-
 #: js/toolbar.js:724
 msgid "Fade"
-msgstr ""
-
-#: js/toolbar.js:725
-msgid "Cut"
 msgstr ""
 
 #: js/toolbar.js:726
@@ -374,14 +366,6 @@ msgstr ""
 
 #: js/toolbar.js:727
 msgid "Dissolve"
-msgstr ""
-
-#: js/toolbar.js:728
-msgid "Random"
-msgstr ""
-
-#: js/toolbar.js:729
-msgid "Comb"
 msgstr ""
 
 #: js/toolbar.js:730
@@ -394,74 +378,6 @@ msgstr ""
 
 #: js/toolbar.js:732
 msgid "Diagonal"
-msgstr ""
-
-#: js/toolbar.js:733
-msgid "Tiles"
-msgstr ""
-
-#: js/toolbar.js:734
-msgid "Cube"
-msgstr ""
-
-#: js/toolbar.js:735
-msgid "Circles"
-msgstr ""
-
-#: js/toolbar.js:736
-msgid "Helix"
-msgstr ""
-
-#: js/toolbar.js:737
-msgid "Fall"
-msgstr ""
-
-#: js/toolbar.js:738
-msgid "Turn Around"
-msgstr ""
-
-#: js/toolbar.js:739
-msgid "Iris"
-msgstr ""
-
-#: js/toolbar.js:740
-msgid "Turn Down"
-msgstr ""
-
-#: js/toolbar.js:741
-msgid "Rochade"
-msgstr ""
-
-#: js/toolbar.js:742
-msgid "3D Denetian"
-msgstr ""
-
-#: js/toolbar.js:743
-msgid "Static"
-msgstr ""
-
-#: js/toolbar.js:744
-msgid "Fine Dissolve"
-msgstr ""
-
-#: js/toolbar.js:745
-msgid "Vortex"
-msgstr ""
-
-#: js/toolbar.js:746
-msgid "Ripple"
-msgstr ""
-
-#: js/toolbar.js:747
-msgid "Glitter"
-msgstr ""
-
-#: js/toolbar.js:748
-msgid "Honeycomb"
-msgstr ""
-
-#: js/toolbar.js:749
-msgid "Newsflash"
 msgstr ""
 
 #: js/toolbar.js:845
@@ -488,7 +404,7 @@ msgstr ""
 msgid "Worksheet link"
 msgstr ""
 
-#: js/toolbar.js:990 js/toolbar.js:2776
+#: js/toolbar.js:990 js/toolbar.js:2779
 msgid "Common symbols"
 msgstr ""
 
@@ -564,13 +480,11 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: js/toolbar.js:1442 src/control/Control.Menubar.js:34
-#: src/control/Preview.js:37
+#: js/toolbar.js:1442 src/control/Preview.js:37 src/othermessages.js:34
 msgid "Fullscreen presentation"
 msgstr ""
 
-#: js/toolbar.js:1448 src/control/Control.Menubar.js:35
-#: uiconfig/dialogs/MoveTable.js:28
+#: js/toolbar.js:1448 src/othermessages.js:35 uiconfig/dialogs/MoveTable.js:28
 msgid "Move"
 msgstr ""
 
@@ -671,11 +585,11 @@ msgid ""
 "Conflict Undo/Redo with multiple users. Please use document repair to resolve"
 msgstr ""
 
-#: js/toolbar.js:2943 src/control/Control.DocumentRepair.js:95
+#: js/toolbar.js:2946 src/control/Control.DocumentRepair.js:95
 msgid "You"
 msgstr ""
 
-#: js/toolbar.js:2949
+#: js/toolbar.js:2952
 msgid "Readonly"
 msgstr ""
 
@@ -691,7 +605,7 @@ msgstr ""
 msgid "The server encountered a %0 error while parsing the %1 command."
 msgstr ""
 
-#: src/control/Control.ContextMenu.js:162
+#: src/control/Control.ContextMenu.js:178
 msgid "Edit worksheet hyperlink "
 msgstr ""
 
@@ -723,174 +637,15 @@ msgstr ""
 msgid "Jump to state"
 msgstr ""
 
-#: src/control/Control.Menubar.js:11
-msgid "Share..."
-msgstr ""
-
-#: src/control/Control.Menubar.js:12
-msgid "See revision history"
-msgstr ""
-
-#: src/control/Control.Menubar.js:13
-msgid "Download as"
-msgstr ""
-
-#: src/control/Control.Menubar.js:14
-msgid "SecurePrint..."
-msgstr ""
-
-#: src/control/Control.Menubar.js:15
-msgid "Save As Password"
-msgstr ""
-
-#: src/control/Control.Menubar.js:16 src/control/Preview.js:201
-#: src/control/Preview.js:213 src/control/Preview.js:223
-#: src/control/Toolbar.js:22 src/control/Toolbar.js:32
-#: src/control/Toolbar.js:40
-msgid "PDF Document (.pdf)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:17 src/control/Preview.js:202
-#: src/control/Toolbar.js:23
-msgid "TEXT Document (.txt)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:18 src/control/Preview.js:203
-#: src/control/Preview.js:214 src/control/Preview.js:224
-#: src/control/Toolbar.js:24 src/control/Toolbar.js:33
-#: src/control/Toolbar.js:41
-msgid "HTML Document (.html)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:19 src/control/Preview.js:204
-#: src/control/Toolbar.js:25
-msgid "ODF text document (.odt)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:20 src/control/Preview.js:215
-#: src/control/Toolbar.js:34
-msgid "ODF spreadsheet (.ods)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:21 src/control/Preview.js:225
-#: src/control/Toolbar.js:42
-msgid "ODF presentation (.odp)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:22 src/control/Preview.js:205
-#: src/control/Toolbar.js:26
-msgid "Word 2003 Document (.doc)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:23 src/control/Preview.js:216
-#: src/control/Toolbar.js:35
-msgid "Excel 2003 Spreadsheet (.xls)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:24 src/control/Preview.js:226
-#: src/control/Toolbar.js:43
-msgid "PowerPoint 2003 Presentation (.ppt)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:25 src/control/Preview.js:206
-#: src/control/Toolbar.js:27
-msgid "Word Document (.docx)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:26 src/control/Preview.js:217
-#: src/control/Toolbar.js:36
-msgid "Excel Spreadsheet (.xlsx)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:27 src/control/Preview.js:227
-#: src/control/Toolbar.js:44
-msgid "PowerPoint Presentation (.pptx)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:28 src/control/Preview.js:207
-#: src/control/Toolbar.js:28
-msgid "Rich Text (.rtf)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:29 src/control/Preview.js:218
-#: src/control/Toolbar.js:37
-msgid "CSV (.csv)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:30 src/control/Preview.js:208
-#: src/control/Toolbar.js:29
-msgid "EPUB Document (.epub)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:31
-msgid "Sign document"
-msgstr ""
-
-#: src/control/Control.Menubar.js:32
-msgid "Repair"
-msgstr ""
-
-#: src/control/Control.Menubar.js:33
-msgid "Local Image..."
-msgstr ""
-
-#: src/control/Control.Menubar.js:36
-msgid "All"
-msgstr ""
-
-#: src/control/Control.Menubar.js:37
-msgid "Horizontal Line"
-msgstr ""
-
-#: src/control/Control.Menubar.js:38
-msgid "None (Do not check spelling)"
-msgstr ""
-
-#: src/control/Control.Menubar.js:39 uiconfig/dialogs/ShowKeyboardHelp.js:59
-msgid "Keyboard shortcuts"
-msgstr ""
-
-#: src/control/Control.Menubar.js:40
-msgid "About"
-msgstr ""
-
-#: src/control/Control.Menubar.js:41 uiconfig/dialogs/BindingLineDialog.js:98
-msgid "Binding line"
-msgstr ""
-
-#: src/control/Control.Menubar.js:42
-msgid "Insert on the left side of page"
-msgstr ""
-
-#: src/control/Control.Menubar.js:43
-msgid "Insert on the right side of page"
-msgstr ""
-
-#: src/control/Control.Menubar.js:44
-msgid "Insert on the top side of page"
-msgstr ""
-
-#: src/control/Control.Menubar.js:45
-msgid "Insert on the bottom side of page"
-msgstr ""
-
-#: src/control/Control.Menubar.js:46
-msgid "Customize"
-msgstr ""
-
-#: src/control/Control.Menubar.js:47
-msgid "Hand-drawn diagram"
-msgstr ""
-
-#: src/control/Control.Menubar.js:128
+#: src/control/Control.Menubar.js:88
 msgid "Reset to Default Language"
 msgstr ""
 
-#: src/control/Control.Menubar.js:362
+#: src/control/Control.Menubar.js:322
 msgid "All contents of the header will be deleted and can not be restored."
 msgstr ""
 
-#: src/control/Control.Menubar.js:364
+#: src/control/Control.Menubar.js:324
 msgid "All contents of the footer will be deleted and can not be restored."
 msgstr ""
 
@@ -918,8 +673,72 @@ msgstr ""
 msgid "Edit in ODF format"
 msgstr ""
 
-#: src/control/Preview.js:149 uiconfig/dialogs/OXSaveAs.js:29
+#: src/control/Preview.js:149 uiconfig/dialogs/OXSaveAs.js:21
 msgid "File name:"
+msgstr ""
+
+#: src/control/Preview.js:201 src/control/Preview.js:213
+#: src/control/Preview.js:223 src/control/Toolbar.js:22
+#: src/control/Toolbar.js:32 src/control/Toolbar.js:40 src/othermessages.js:16
+msgid "PDF Document (.pdf)"
+msgstr ""
+
+#: src/control/Preview.js:202 src/control/Toolbar.js:23 src/othermessages.js:17
+msgid "TEXT Document (.txt)"
+msgstr ""
+
+#: src/control/Preview.js:203 src/control/Preview.js:214
+#: src/control/Preview.js:224 src/control/Toolbar.js:24
+#: src/control/Toolbar.js:33 src/control/Toolbar.js:41 src/othermessages.js:18
+msgid "HTML Document (.html)"
+msgstr ""
+
+#: src/control/Preview.js:204 src/control/Toolbar.js:25 src/othermessages.js:19
+msgid "ODF text document (.odt)"
+msgstr ""
+
+#: src/control/Preview.js:205 src/control/Toolbar.js:26 src/othermessages.js:22
+msgid "Word 2003 Document (.doc)"
+msgstr ""
+
+#: src/control/Preview.js:206 src/control/Toolbar.js:27 src/othermessages.js:25
+msgid "Word Document (.docx)"
+msgstr ""
+
+#: src/control/Preview.js:207 src/control/Toolbar.js:28 src/othermessages.js:28
+msgid "Rich Text (.rtf)"
+msgstr ""
+
+#: src/control/Preview.js:208 src/control/Toolbar.js:29 src/othermessages.js:30
+msgid "EPUB Document (.epub)"
+msgstr ""
+
+#: src/control/Preview.js:215 src/control/Toolbar.js:34 src/othermessages.js:20
+msgid "ODF spreadsheet (.ods)"
+msgstr ""
+
+#: src/control/Preview.js:216 src/control/Toolbar.js:35 src/othermessages.js:23
+msgid "Excel 2003 Spreadsheet (.xls)"
+msgstr ""
+
+#: src/control/Preview.js:217 src/control/Toolbar.js:36 src/othermessages.js:26
+msgid "Excel Spreadsheet (.xlsx)"
+msgstr ""
+
+#: src/control/Preview.js:218 src/control/Toolbar.js:37 src/othermessages.js:29
+msgid "CSV (.csv)"
+msgstr ""
+
+#: src/control/Preview.js:225 src/control/Toolbar.js:42 src/othermessages.js:21
+msgid "ODF presentation (.odp)"
+msgstr ""
+
+#: src/control/Preview.js:226 src/control/Toolbar.js:43 src/othermessages.js:24
+msgid "PowerPoint 2003 Presentation (.ppt)"
+msgstr ""
+
+#: src/control/Preview.js:227 src/control/Toolbar.js:44 src/othermessages.js:27
+msgid "PowerPoint Presentation (.pptx)"
 msgstr ""
 
 #: src/control/Ruler.js:108
@@ -1044,6 +863,90 @@ msgid ""
 "again."
 msgstr ""
 
+#: src/othermessages.js:6
+msgid "Autofilter do not support in multiuser mode"
+msgstr ""
+
+#: src/othermessages.js:11
+msgid "Share..."
+msgstr ""
+
+#: src/othermessages.js:12
+msgid "See revision history"
+msgstr ""
+
+#: src/othermessages.js:13
+msgid "Download as"
+msgstr ""
+
+#: src/othermessages.js:14
+msgid "SecurePrint..."
+msgstr ""
+
+#: src/othermessages.js:15
+msgid "Save As Password"
+msgstr ""
+
+#: src/othermessages.js:31
+msgid "Sign document"
+msgstr ""
+
+#: src/othermessages.js:32
+msgid "Repair"
+msgstr ""
+
+#: src/othermessages.js:33
+msgid "Local Image..."
+msgstr ""
+
+#: src/othermessages.js:36
+msgid "All"
+msgstr ""
+
+#: src/othermessages.js:37
+msgid "Horizontal Line"
+msgstr ""
+
+#: src/othermessages.js:38
+msgid "None (Do not check spelling)"
+msgstr ""
+
+#: src/othermessages.js:39 uiconfig/dialogs/ShowKeyboardHelp.js:59
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: src/othermessages.js:40
+msgid "About"
+msgstr ""
+
+#: src/othermessages.js:41 uiconfig/dialogs/BindingLineDialog.js:98
+msgid "Binding line"
+msgstr ""
+
+#: src/othermessages.js:42
+msgid "Insert on the left side of page"
+msgstr ""
+
+#: src/othermessages.js:43
+msgid "Insert on the right side of page"
+msgstr ""
+
+#: src/othermessages.js:44
+msgid "Insert on the top side of page"
+msgstr ""
+
+#: src/othermessages.js:45
+msgid "Insert on the bottom side of page"
+msgstr ""
+
+#: src/othermessages.js:46
+msgid "Customize"
+msgstr ""
+
+#: src/othermessages.js:47
+msgid "Hand-drawn diagram"
+msgstr ""
+
 #: src/errormessages.js:13
 msgid ""
 "No disk space left on server, please contact the server administrator to "
@@ -1158,7 +1061,10 @@ msgid ""
 msgstr ""
 
 #: src/errormessages.js:35
-msgid "The file cannot be saved. Because the content of the file contains personal information or suspected sensitive information, it is recommended to adjust the content before saving."
+msgid ""
+"The file cannot be saved. Because the content of the file contains personal "
+"information or suspected sensitive information, it is recommended to adjust "
+"the content before saving."
 msgstr ""
 
 #: src/errormessages.js:36
@@ -1207,15 +1113,15 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:878
+#: src/layer/tile/TileLayer.js:885
 msgid "This type of picture editing is not yet supported."
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:896
+#: src/layer/tile/TileLayer.js:903
 msgid "unnamed"
 msgstr ""
 
-#: src/layer/tile/TileLayer.js:3163
+#: src/layer/tile/TileLayer.js:3168
 msgid "Do you want to compress the image? (Except SVG File)"
 msgstr ""
 
@@ -1554,11 +1460,7 @@ msgstr ""
 msgid "Insert before"
 msgstr ""
 
-#: uiconfig/dialogs/OXSaveAs.js:31
-msgid "File type"
-msgstr ""
-
-#: uiconfig/dialogs/OXSaveAs.js:34 uiconfig/dialogs/OXSaveAs.js:60
+#: uiconfig/dialogs/OXSaveAs.js:25 uiconfig/dialogs/OXSaveAs.js:48
 msgid "Please enter a new filename."
 msgstr ""
 
