@@ -2,6 +2,7 @@
 var deps = {
 	Core: {
 		src: ['Leaflet.js',
+		      'othermessages.js',
 		      'errormessages.js',
 		      'unocommands.js',
 		      'viamapi-client.js',

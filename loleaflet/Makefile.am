@@ -335,6 +335,7 @@ pot:
 		src/control/Ruler.js \
 		src/control/Toolbar.js \
 		src/core/Socket.js \
+		src/othermessages.js \
 		src/errormessages.js \
 		src/layer/marker/Annotation.js \
 		src/layer/tile/TileLayer.js \
