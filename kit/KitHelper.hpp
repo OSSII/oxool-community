@@ -140,7 +140,7 @@ namespace LOKitHelper
         case LOK_CALLBACK_TABLE_SELECTED:
             return "TABLE_SELECTED";
         case LOK_CALLBACK_MSGBOX:
-            return "LOK_CALLBACK_MSGBOX";
+            return "MSGBOX";
        }
 
         return std::to_string(type);
