@@ -19,7 +19,7 @@ L.Control.PartsPreview = L.Control.extend({
 	_onUpdatePermission: function(e) {
 		var map = this._map;
 		var docType = map.getDocType();
-		if (docType !== 'presentation' && docType !== 'draw') {
+		if (docType !== 'presentation' && docType !== 'drawing') {
 			return;
 		}
 
@@ -96,7 +96,6 @@ L.Control.PartsPreview = L.Control.extend({
 	 */
 	_updateDisabled: function(e) {
 		if (!this._previewInitialized) {
-			console.debug('haha _updateDisabled(begin init)', e);
 			var previewContBB = this._partsPreviewCont.getBoundingClientRect();
 			this._previewContTop = previewContBB.top;
 			var bottomBound = previewContBB.bottom + previewContBB.height / 2;
@@ -106,7 +105,6 @@ L.Control.PartsPreview = L.Control.extend({
 			this._onScroll();
 			this._previewInitialized = true;
 		} else {
-			console.debug('haha _updateDisabled', e);
 			var childNodes = this._scrollContainer.childNodes;
 			if (e.partNames !== undefined) {
 				this._syncPreviews(e);
@@ -134,7 +132,6 @@ L.Control.PartsPreview = L.Control.extend({
 			var firstSet = (prevState === null);
 			this._gridVisible = (state === 'true' ? true : false);
 			if (!firstSet && this._gridVisible !== prevState) {
-				console.debug('haha update all preview tiles');
 				for (var i=0 ; i < this._previewTiles.length ; i++) {
 					this._previewTiles[i].fetched = false;
 				}
@@ -220,7 +217,7 @@ L.Control.PartsPreview = L.Control.extend({
 			previewFrameTop = this._previewContTop + this._previewFrameMargin + i * (this._previewFrameHeight + this._previewFrameMargin);
 			previewFrameTop -= this._scrollY;
 			previewFrameBottom = previewFrameTop + this._previewFrameHeight;
-			L.DomUtil.setStyle(img, 'height', this._previewImgHeight + 'px');
+			//L.DomUtil.setStyle(img, 'height', this._previewImgHeight + 'px');
 			L.DomUtil.setStyle(infoWrapper, 'height', this._previewImgHeight + 'px');
 		}
 
@@ -229,7 +226,7 @@ L.Control.PartsPreview = L.Control.extend({
 			|| (previewFrameBottom >= topBound && previewFrameBottom <= bottomBound)) {
 			imgSize = this._map.getPreview(i, i, 180, 180, {autoUpdate: this.options.autoUpdate});
 			img.fetched = true;
-			L.DomUtil.setStyle(img, 'height', '');
+			//L.DomUtil.setStyle(img, 'height', '');
 			L.DomUtil.setStyle(infoWrapper, 'height', imgSize.height + 'px');
 		}
 
@@ -249,7 +246,6 @@ L.Control.PartsPreview = L.Control.extend({
 	},
 
 	_setPart: function(e) {
-		console.debug('haha _setPart', e);
 		var frame = e.target.parentNode;
 		var part = $('#slide-sorter .mCSB_container .preview-frame').index(frame);
 		var currPart = this._map.getCurrentPartNumber();
@@ -259,7 +255,6 @@ L.Control.PartsPreview = L.Control.extend({
 	},
 
 	_updatePart: function(e) {
-		console.debug('haha _updatePart', e);
 		if (e.part >= 0) {
 			this._map.getPreview(e.part, e.part, 180, 180, {autoUpdate: this.options.autoUpdate});
 		}
@@ -374,7 +369,6 @@ L.Control.PartsPreview = L.Control.extend({
 	 * @param {object}} e
 	 */
 	_updatePreview: function(e) {
-		console.debug('haha _updatePreview', e);
 		this._previewTiles[e.id].src = e.tile;
 	},
 
@@ -387,7 +381,6 @@ L.Control.PartsPreview = L.Control.extend({
 	 * @param {*} e
 	 */
 	_insertPreview: function(e) {
-		console.debug('haha _insertPreview', e);
 		var newIndex = e.selectedPart + 1;
 		var newPreview = this._createPreview(newIndex, (e.hashCode === undefined ? null : e.hashCode));
 
@@ -407,7 +400,6 @@ L.Control.PartsPreview = L.Control.extend({
 	 * @param {object} e
 	 */
 	_deletePreview: function(e) {
-		console.debug('haha _deletePreview', e);
 		var selectedFrame = this._previewTiles[e.selectedPart].parentNode;
 		L.DomUtil.remove(selectedFrame);
 		this._previewTiles.splice(e.selectedPart, 1);
