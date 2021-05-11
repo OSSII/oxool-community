@@ -1019,6 +1019,8 @@ L.TileLayer = L.GridLayer.extend({
 			this._updateCursorPos(); // 定位游標
 			// 移動隱藏的輸入欄位到游標位置
 			this._map._clipboardContainer.setLatLng(this._visibleCursor.getNorthWest());
+			// 如果輸入游標有出現的話，關閉它
+			this._hideCursorIfVisible();
 			//--------------------------------------------------------
 		}
 
@@ -1048,8 +1050,6 @@ L.TileLayer = L.GridLayer.extend({
 
 		this._onUpdateCellCursor(horizontalDirection, verticalDirection, onPgUpDn);
 
-		// 如果輸入游標有出現的話，關閉它
-		this._hideCursorIfVisible();
 		// Calc 如果沒有選取區塊的話，清除所有文字選取區，避免畫面殘留
 		if (!this._cellSelectionArea && this._selections.getLayers().length !== 0) {
 			this._removeSelection();
