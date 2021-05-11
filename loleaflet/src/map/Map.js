@@ -189,7 +189,7 @@ L.Map = L.Evented.extend({
 		}, this);
 		this.on('doclayerinit', function() {
 			var docType = this._docLayer._docType;
-			if (docType === 'draw')
+			if (docType === 'drawing')
 				docType = 'presentation';
 
 			// 試算表文件縮放最小為 60%

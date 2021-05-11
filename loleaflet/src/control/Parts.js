@@ -320,7 +320,7 @@ L.Map.include({
 			this.setPart(this._docLayer);
 			break;
 		case 'presentation':
-		case 'draw':
+		case 'drawing':
 			command = {
 				'Name': {
 					'type': 'string',
@@ -353,7 +353,7 @@ L.Map.include({
 			}
 			break;
 		case 'presentation':
-		case 'draw':
+		case 'drawing':
 			this._socket.sendMessage('showpage');
 			break;
 		}
@@ -373,7 +373,7 @@ L.Map.include({
 			}
 			break;
 		case 'presentation':
-		case 'draw':
+		case 'drawing':
 			this._socket.sendMessage('hidepage');
 			break;
 		}

@@ -355,7 +355,7 @@ L.Map.include({
 	// 取得目前文件所支援的匯出格式
 	getExportFormats: function() {
 		var docType = this.getDocType();
-		if (docType === 'draw') {
+		if (docType === 'drawing') {
 			docType = 'presentation';
 		}
 		var formats = this._exportFormats[docType];
