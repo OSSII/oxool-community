@@ -2739,8 +2739,8 @@
       }
     },
     "spectrum-colorpicker2": {
-      "version": "2.0.0",
-      "resolved": "file:node_shrinkwrap/spectrum-colorpicker2-2.0.0.tgz",
+      "version": "2.0.8",
+      "resolved": "file:node_shrinkwrap/spectrum-colorpicker2-2.0.8.tgz",
       "dev": true,
       "requires": {
         "jquery": "2.2.4"
