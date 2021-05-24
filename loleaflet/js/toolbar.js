@@ -2080,6 +2080,13 @@ function onCommandStateChanged(e) {
 		$('.styles-select').val(state).trigger('change');
 	}
 	else if (commandName === '.uno:CharFontName') {
+		// 字型名稱可能會傳來 disabled 而不是名稱
+		if (state === 'disabled') {
+			$('.fonts-select').prop('disabled', true);
+			return;
+		}
+
+		$('.fonts-select').prop('disabled', false);
 		$('.fonts-select option').each(function () {
 			value = this.value;
 			if (value.toLowerCase() === state.toLowerCase()) {
@@ -2097,6 +2104,13 @@ function onCommandStateChanged(e) {
 		$('.fonts-select').val(state).trigger('change');
 	}
 	else if (commandName === '.uno:FontHeight') {
+		// 字型大小可能會傳來 disabled 而不是數值
+		if (state === 'disabled') {
+			$('.fontsizes-select').prop('disabled', true);
+			return;
+		}
+
+		$('.fontsizes-select').prop('disabled', false);
 		if (state === '0') {
 			state = '';
 		}
@@ -2116,34 +2130,41 @@ function onCommandStateChanged(e) {
 	}
 	else if (commandName === '.uno:FontColor' || commandName === '.uno:Color') {
 		// confusingly, the .uno: command is named differently in Writer, Calc and Impress
-		color = parseInt(e.state);
-		if (color === -1) {
-			color = 'transparent';
+		if (!isNaN(color = parseInt(state))) {
+			toolbar.enable('fontcolor');
+			if (color === -1) {
+				color = 'transparent';
+			} else {
+				color = color.toString(16);
+				color = '#' + Array(7 - color.length).join('0') + color;
+			}
+			div = L.DomUtil.get('fontcolorindicator');
+			if (div) {
+				L.DomUtil.setStyle(div, 'background', color);
+			}
+		} else if (state === 'disabled') {
+			toolbar.disable('fontcolor');
 		}
-		else {
-
-			color = color.toString(16);
-			color = '#' + Array(7 - color.length).join('0') + color;
-		}
-		div = L.DomUtil.get('fontcolorindicator');
-		if (div) {
-			L.DomUtil.setStyle(div, 'background', color);
-		}
+		return;
 	}
 	else if (commandName === '.uno:BackColor' || commandName === '.uno:BackgroundColor' || commandName === '.uno:CharBackColor') {
 		// confusingly, the .uno: command is named differently in Writer, Calc and Impress
-		color = parseInt(e.state);
-		if (color === -1) {
-			color = 'transparent';
+		if (!isNaN(color = parseInt(state))) {
+			if (color === -1) {
+				color = 'transparent';
+			}
+			else {
+				color = color.toString(16);
+				color = '#' + Array(7 - color.length).join('0') + color;
+			}
+			div = L.DomUtil.get('backcolorindicator');
+			if (div) {
+				L.DomUtil.setStyle(div, 'background', color);
+			}
+		} else if (state === 'disabled') {
+			toolbar.disable('backcolor');
 		}
-		else {
-			color = color.toString(16);
-			color = '#' + Array(7 - color.length).join('0') + color;
-		}
-		div = L.DomUtil.get('backcolorindicator');
-		if (div) {
-			L.DomUtil.setStyle(div, 'background', color);
-		}
+		return;
 	}
 	else if (commandName === '.uno:LanguageStatus') {
 		updateToolbarItem(statusbar, 'LanguageStatus', $('#LanguageStatus').html(_(state)).parent().html());
@@ -2242,16 +2263,17 @@ function onCommandStateChanged(e) {
 	}
 	// Change the toolbar button states if we are in editmode
 	// If in non-edit mode, will be taken care of when permission is changed to 'edit'
-	else if (map._permission === 'edit' && (state === 'enabled' || state === 'disabled')) {
+	else if (map._permission === 'edit') {
 		var toolbarUp = toolbar;
 		if (_inMobileMode()) {
 			toolbarUp = statusbar;
 		}
-		if (state === 'enabled') {
-			toolbarUp.enable(id);
-		} else {
+		// 只有明確地指示 disabled 才要真正禁用，否則一律啟用
+		if (state === 'disabled') {
 			toolbarUp.uncheck(id);
 			toolbarUp.disable(id);
+		} else {
+			toolbarUp.enable(id);
 		}
 	}
 }
