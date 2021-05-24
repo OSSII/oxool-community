@@ -35,11 +35,14 @@ L.Map.StateChangeHandler = L.Handler.extend({
 		// 詳細紀錄 uno 指令的狀態，因為 uno 指令可能有兩種以上狀態
 		// 例如：.uno:Bold(粗體)，可能是 checked，但又被 disabled
 		// 原來的紀錄方式，無法紀錄
-		var props = {};
-		if (state === 'enabled' || state === 'disabled') {
-			props.enabled = (state === 'enabled' ? true : false);
+		var props = {enabled: true}; // 預設啟用
+		// 該 uno 指令是否禁用
+		if (state === 'disabled') {
+			props.enabled = false;
+		// 該 uno 指令是否選取(checked)
 		} else if (state === 'true' || state === 'false') {
-			props.checked = (state === 'true' ? true : false);
+			props.checked = (state === 'true');
+		// 其他值
 		} else {
 			props.value = state;
 		}
