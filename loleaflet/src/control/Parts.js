@@ -512,4 +512,17 @@ L.Map.include({
 
 		return this._docLayer._docType;
 	},
+
+	/**
+	 * 取得目前文件中，被 focus 的物件名稱
+	 *
+	 * @author	Firefly <firefly@ossii.com.tw>
+	 * @returns {string} 物件名稱
+	 */
+	getContextType: function () {
+		if (!this._docLayer)
+			return null;
+
+		return this._docLayer._docContext;
+	},
 });
