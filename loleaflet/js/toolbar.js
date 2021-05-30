@@ -2083,10 +2083,14 @@ function onCommandStateChanged(e) {
 		// 字型名稱可能會傳來 disabled 而不是名稱
 		if (state === 'disabled') {
 			$('.fonts-select').prop('disabled', true);
+			toolbar.disable('fontcolor');
+			toolbar.disable('backcolor');
 			return;
 		}
 
 		$('.fonts-select').prop('disabled', false);
+		toolbar.enable('fontcolor');
+		toolbar.enable('backcolor');
 		$('.fonts-select option').each(function () {
 			value = this.value;
 			if (value.toLowerCase() === state.toLowerCase()) {
@@ -2095,7 +2099,7 @@ function onCommandStateChanged(e) {
 			}
 		});
 		if (!found) {
-			// we need to add the size
+			// we need to add the name
 			$('.fonts-select')
 				.append($('<option></option>')
 				.text(state));
@@ -2131,7 +2135,6 @@ function onCommandStateChanged(e) {
 	else if (commandName === '.uno:FontColor' || commandName === '.uno:Color') {
 		// confusingly, the .uno: command is named differently in Writer, Calc and Impress
 		if (!isNaN(color = parseInt(state))) {
-			toolbar.enable('fontcolor');
 			if (color === -1) {
 				color = 'transparent';
 			} else {
@@ -2142,8 +2145,6 @@ function onCommandStateChanged(e) {
 			if (div) {
 				L.DomUtil.setStyle(div, 'background', color);
 			}
-		} else if (state === 'disabled') {
-			toolbar.disable('fontcolor');
 		}
 		return;
 	}
@@ -2161,12 +2162,13 @@ function onCommandStateChanged(e) {
 			if (div) {
 				L.DomUtil.setStyle(div, 'background', color);
 			}
-		} else if (state === 'disabled') {
-			toolbar.disable('backcolor');
 		}
 		return;
 	}
 	else if (commandName === '.uno:LanguageStatus') {
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'LanguageStatus', $('#LanguageStatus').html(_(state)).parent().html());
 	}
 	else if (commandName === '.uno:ModifiedStatus') {
@@ -2184,22 +2186,34 @@ function onCommandStateChanged(e) {
 		updateToolbarItem(statusbar, 'modifiedstatuslabel', html);
 	}
 	else if (commandName === '.uno:StatusDocPos') {
-		state = toLocalePattern('Sheet %1 of %2', 'Sheet (\\d+) of (\\d+)', state, '%1', '%2');
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'StatusDocPos', $('#StatusDocPos').html(state ? state : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp').parent().html());
 	}
 	else if (commandName === '.uno:RowColSelCount') {
-		state = toLocalePattern('$1 rows, $2 columns selected', '(\\d+) rows, (\\d+) columns selected', state, '$1', '$2');
-		state = toLocalePattern('$1 of $2 records found', '(\\d+) of (\\d+) records found', state, '$1', '$2');
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'RowColSelCount', $('#RowColSelCount').html(state ? state : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp').parent().html());
 	}
 	else if (commandName === '.uno:InsertMode') {
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'InsertMode', $('#InsertMode').html(state ? L.Styles.insertMode[state].toLocaleString() : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp').parent().html());
 	}
 	else if (commandName === '.uno:StatusSelectionMode' ||
 		 commandName === '.uno:SelectionMode') {
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'StatusSelectionMode', $('#StatusSelectionMode').html(state ? L.Styles.selectionMode[state].toLocaleString() : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp').parent().html());
 	}
 	else if (commandName == '.uno:StateTableCell') {
+		if (state === 'enabled' || state === 'disabled') {
+			state = '';
+		}
 		updateToolbarItem(statusbar, 'StateTableCell', $('#StateTableCell').html(state ? localizeStateTableCell(state) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp').parent().html());
 	}
 	else if (commandName === '.uno:StatusBarFunc') {
