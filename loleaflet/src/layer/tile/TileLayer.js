@@ -3039,7 +3039,8 @@ L.TileLayer = L.GridLayer.extend({
 		// }
 
 		// 如果剪貼簿內容只有圖片的話，直接貼上圖片
-		if (types.length === 1 && types[0] === 'Files') {
+		if ((types.length === 1 && types[0] === 'Files') ||
+			(types.length === 2 && types[0] === 'text/html' && types[1] === 'Files')) {
 			var files = dataTransfer.files;
 			for (var f = 0; f < files.length; ++f) {
 				var file = files[f];
