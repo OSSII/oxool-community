@@ -118,5 +118,59 @@ L.Map.include(!zoomAnimated ? {} : {
 		L.DomUtil.removeClass(this._mapPane, 'leaflet-zoom-anim');
 
 		this._resetView(this._animateToCenter, this._animateToZoom, true, true);
+
+		if (this.getDocType() === 'spreadsheet') {
+			setTimeout(function() {
+				this._fixMapPanePosition(); // 修正位置
+			}.bind(this), 300);
+		}
+	},
+
+	/**
+	 * 修正觸控設備縮放時，文件左上角超過編輯區左上角出現的灰白區域問題
+	 */
+	_fixMapPanePosition: function() {
+		var mapPane = this._mapPane;
+
+		var tiles = this._docLayer._tiles; // 所有拼貼物件
+		var firstTileKey = Object.keys(tiles)[0];
+		var firstTile = tiles[firstTileKey].el; // 第一個拼貼 dom
+		var firstTilePos = L.DomUtil.getPosition(firstTile); // 取得拼貼所在位置
+		if (firstTilePos === undefined) {
+			firstTilePos = new L.Point(parseInt(firstTile.style.left), parseInt(firstTile.style.top));
+		}
+		console.debug('_fixPosition firstTilePos=', firstTilePos);
+
+		var tileContainer = mapPane.getElementsByClassName('leaflet-tile-container');
+		tileContainer = tileContainer[tileContainer.length - 1];
+
+		var first, last, xyzStr;
+
+		first = tileContainer.style.transform.indexOf('(');
+		last = tileContainer.style.transform.indexOf(')');
+		xyzStr = tileContainer.style.transform.substring(first + 1, last).split(',');
+		var tileContainerPos = new L.Point(parseInt(xyzStr[0]), parseInt(xyzStr[1]));
+		console.debug('fixPosition tileContainerPos=', tileContainerPos);
+
+		var mapPanePos = L.DomUtil.getPosition(mapPane);
+		console.debug('fixPosition mapPanePos=', mapPanePos);
+
+		var x = firstTilePos.x + tileContainerPos.x + mapPanePos.x;
+		var y = firstTilePos.y + tileContainerPos.y + mapPanePos.y;
+		var mustFix = false;
+		// 修正 x
+		if (x > 0) {
+			mapPanePos.x = (firstTilePos.x + tileContainerPos.x) * (-1);
+			mustFix = true;
+		}
+		// 修正 y
+		if (y > 0) {
+			mapPanePos.y = (firstTilePos.y + tileContainerPos.y) * (-1);
+			mustFix = true;
+		}
+		if (mustFix) {
+			console.debug('Must fix to new position:', mapPanePos);
+			L.DomUtil.setPosition(mapPane, mapPanePos);
+		}
 	}
 });
