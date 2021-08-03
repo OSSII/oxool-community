@@ -859,19 +859,6 @@ L.Map = L.Evented.extend({
 		this.fire('hyperlinkclicked', {url: helpURL});*/
 	},
 
-	// Add by Firefly <firefly@ossii.com.tw>
-	// 輸入 uno command 並執行
-	executeUnoCommand: function() {
-		var cmd = prompt(_('Please enter a command starting with ".uno:" or "macro:///"'));
-		if (cmd !== null) {
-			if (!cmd.startsWith('.uno:') && !cmd.startsWith('macro:///')) {
-				alert(_('Invalid Command.'))
-			} else {
-				this.sendUnoCommand(cmd);
-			}
-		}
-	},
-
 	_fireInitComplete: function (condition) {
 		if (this.initComplete) {
 			return;
