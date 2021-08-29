@@ -224,8 +224,11 @@ L.Socket = L.Class.extend({
 			msg += ' options=' + JSON.stringify(options);
 		}
 		// Add by Firefly <firefly@ossii.com.tw>
-		if (this._map.options.timeZone !== undefined) {
-			msg += ' timezone=' + this._map.options.timeZone;
+		if (this._map.options.timezone !== undefined) {
+			msg += ' timezone=' + this._map.options.timezone;
+		}
+		if (this._map.options.timezoneOffset !== undefined) {
+			msg += ' timezoneOffset=' + this._map.options.timezoneOffset;
 		}
 		//---------------------------------------------------
 		this._doSend(msg);

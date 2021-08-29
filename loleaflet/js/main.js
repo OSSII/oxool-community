@@ -67,7 +67,8 @@ var map = L.map('map', {
 	alwaysActive: alwaysActive,
 	idleTimeoutSecs: idleTimeoutSecs,  // Dim when user is idle.
 	outOfFocusTimeoutSecs: outOfFocusTimeoutSecs, // Dim after switching tabs.
-	timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // client timezone IE don't work ^^|||
+	timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+	timezoneOffset: new Date().getTimezoneOffset()
 });
 
 ////// Controls /////
