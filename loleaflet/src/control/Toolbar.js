@@ -384,15 +384,18 @@ L.Map.include({
 
 		// 如果是下載或列印 pdf，而且 server 也沒有指定浮水印的話
 		// 就詢問使用者是否加浮水印
-		if (format === 'pdf' && this.options.watermark === undefined) {
-			L.dialog.run('PdfWatermarkText', {
-				args: {
-					name: name,
-					id: id,
-					options: options
-				}
-			});
-			return;
+		if (format === 'pdf') {
+			if (this.options.watermark === undefined ||
+				this.options.watermark.printing !== true) {
+				L.dialog.run('PdfWatermarkText', {
+					args: {
+						name: name,
+						id: id,
+						options: options
+					}
+				});
+				return;
+			}
 		}
 
 		this.showBusy(_('Downloading...'), false);
