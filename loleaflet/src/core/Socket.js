@@ -37,6 +37,9 @@ L.Socket = L.Class.extend({
 	ReconnectCount: 0,
 	WasShownLimitDialog: false,
 
+	// Will be set from lokitversion message
+	TunnelledDialogImageCacheSize: 0,
+
 	getParameterValue: function (s) {
 		var i = s.indexOf('=');
 		if (i === -1)
@@ -289,6 +292,7 @@ L.Socket = L.Class.extend({
 				$('#lokit-version').text(lokitVersionObj.ProductName + '(' +
 				lokitVersionObj.ProductVersion + lokitVersionObj.ProductExtension + ')');
 			}
+			this.TunnelledDialogImageCacheSize = lokitVersionObj.tunnelled_dialog_image_cache_size;
 		}
 		else if (textMsg.startsWith('watermark:')) {
 			this._map.options.watermark = JSON.parse(textMsg.substring(textMsg.indexOf('{')));
@@ -1027,6 +1031,9 @@ L.Socket = L.Class.extend({
 			}
 			else if (tokens[i].substring(0, 11) === 'partdetail=') {
 				command.partdetail = tokens[i].substring(11);
+			}
+			else if (tokens[i].startsWith('hash=')) {
+				command.hash = tokens[i].substring('hash='.length);
 			}
 		}
 		if (command.tileWidth && command.tileHeight && this._map._docLayer) {

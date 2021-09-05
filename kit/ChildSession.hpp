@@ -315,6 +315,9 @@ private:
     /// If we are copying to clipboard.
     bool _copyToClipboard;
 
+    /// window tile hash cache
+    std::vector<uint64_t> _pixmapCache;
+
     /// Synchronize _loKitDocument access.
     /// This should be owned by Document.
     static std::recursive_mutex Mutex;
