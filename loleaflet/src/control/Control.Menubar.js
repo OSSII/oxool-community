@@ -1002,7 +1002,7 @@ L.Control.Menubar = L.Control.extend({
 			}
 
 			// 使用 uno 對應圖示
-			if (unoIcon !== '') {
+			if (unoIcon !== '' && this._level > 1) {
 				var iconURL = 'url("' + this._map.getUnoCommandIcon(unoIcon) + '")';
 				L.DomUtil.addClass(iconItem, 'img-icon');
 				$(iconItem).css('background-image', iconURL);
