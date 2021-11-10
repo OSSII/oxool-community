@@ -38,7 +38,7 @@ L.Map.include({
 			command = 'macro:///' + command;
 		}
 		else {
-			macroCmd = command.substring('macro:///'.langth);
+			macroCmd = command.substring('macro:///'.length);
 		}
 		var idx = macroCmd.indexOf('(');
 		if (idx > 0) {
