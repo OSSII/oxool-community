@@ -110,9 +110,7 @@ L.Control.Dialogs = L.Control.extend({
 	 */
 	_confirmDialog: function(userPpropertys) {
 		var prop = this._defaultPropertys(userPpropertys);
-		if (typeof prop.callback !== 'function') {
-			prop.callback = $.noop;
-		}
+
 		prop.buttons = [
 			{
 				text: _('OK'),
@@ -129,7 +127,6 @@ L.Control.Dialogs = L.Control.extend({
 				}
 			}
 		];
-
 		var dialog = L.DomUtil.create('div', '', document.body);
 		dialog.style.display = 'none';
 		dialog.innerHTML = prop.message;
@@ -143,7 +140,7 @@ L.Control.Dialogs = L.Control.extend({
 	 *
 	 * @author Firefly <firefly@ossii.com.tw>
 	 *
-	 * @param {object} userPpropertys - confirm dialog's propertys
+	 * @param {object} userPpropertys - alert dialog's propertys
 	 * @param {string} [userPpropertys.icon] - error, information, question, success, warning
 	 * @param {string} [userPpropertys.title] - 對話框標題
 	 * @param {string} [userPpropertys.message] - 訊息內容，可以是 html 或 text
@@ -181,23 +178,29 @@ L.Control.Dialogs = L.Control.extend({
 	 */
 	_promptDialog: function(userPropertys) {
 		var dialog = L.DomUtil.create('div', '', document.body);
-		var textInput = L.DomUtil.create('input', ''); // 建立文字輸入
+		var form = L.DomUtil.create('form', ''); // 建立 form
+		var textInput = L.DomUtil.create('input', '', form); // 建立文字輸入
+		var submit = L.DomUtil.create('submit', '', form); // 建立 submit 按 enter 就能完成輸入
 		var prop = this._defaultPropertys(userPropertys);
 
 		// 指定輸入類別
 		textInput.setAttribute('type', (prop.password === true ? 'password' : 'text'));
-		// 沒有指定 callback 函數
-		if (typeof prop.callback !== 'function') {
-			console.debug('The dialog does not specify a callback function.');
-			prop.callback = $.noop;
-		}
+
+		submit.tabIndex = -1; // 禁止鍵盤用 tab 聚焦
+		submit.style.display = 'none'; // 不顯示
+		// 送出表單就關閉 dialog
+		form.onsubmit = function(e) {
+			e.preventDefault();
+			$(dialog).dialog('close');
+			prop.callback(textInput.value);
+		};
 
 		prop.buttons = [
 			{
 				text: _('OK'),
 				click: function() {
 					$(this).dialog('close');
-					prop.callback($(textInput).val());
+					prop.callback(textInput.value);
 				}
 			},
 			{
@@ -211,8 +214,8 @@ L.Control.Dialogs = L.Control.extend({
 
 		dialog.style.display = 'none';
 		dialog.innerHTML = prop.message + '<br>';
-		dialog.appendChild(textInput);
-		$(textInput).val(prop.default); // 指定預設值
+		dialog.appendChild(form);
+		textInput.value = prop.default; // 指定預設值
 
 		$(dialog).dialog(prop);
 	},
@@ -275,14 +278,25 @@ L.Control.Dialogs = L.Control.extend({
 				}
 			};
 		}
+		// 沒有指定 callback 函數
+		if (typeof newPropertys.callback !== 'function') {
+			newPropertys.callback = $.noop;
+		}
 		// Dialog 關閉後執行這裡
 		if (newPropertys.close === undefined) {
-			newPropertys.close = function(/*e, ui*/) {
+			newPropertys.close = function(e/*, ui*/) {
 				// 對話框關閉就徹底移除，下次要重新建立
 				$(this).dialog('destroy').remove();
+				// 關閉 dialog 是因為按下 Esc 引起的
+				if (e.keyCode === 27) {
+					newPropertys.callback(null);
+				}
 			};
 		}
 
+		// 設定寬度與高度
+		newPropertys.height = 'auto';
+		newPropertys.minHeight = 'none';
 		return newPropertys;
 	},
 
