@@ -646,18 +646,21 @@ L.Socket = L.Class.extend({
 
 			if (passwordNeeded) {
 				// Ask the user for password
-				vex.dialog.open({
+				L.dialog.prompt({
+					icon: 'question',
 					message: msg,
-					input: '<input name="password" type="password" required />',
+					password: true,
 					callback: L.bind(function(data) {
-						if (data) {
-							this._map._docPassword = data.password;
+						if (typeof data === 'string') {
+							this._map._docPassword = data;
 							this._map.loadDocument();
 						} else if (passwordType === 'to-modify') {
 							this._map._docPassword = '';
 							this._map.loadDocument();
 						} else {
-							this._map.hideBusy();
+							window.parent.postMessage(JSON.stringify({MessageId: 'close', SendTime: Date.now(), Values: {EverModified: false, Deprecated: true}}), this._map.wopi.PostMessageOrigin);
+							window.parent.postMessage(JSON.stringify({MessageId: 'UI_Close', SendTime: Date.now(), Values: {EverModified: false}}), this._map.wopi.PostMessageOrigin);
+							this._map.remove();
 						}
 					}, this)
 				});
