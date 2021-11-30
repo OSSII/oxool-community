@@ -7,8 +7,8 @@
 
 #document-container.spreadsheet-document.readonly,
 #document-container.spreadsheet-document.readonly.tablet {
-        top: 103px;
-        bottom: 37px;
+        top: 60px;
+        bottom: 0px;
 }
 
 #document-container.spreadsheet-document.tablet {
@@ -90,14 +90,14 @@
 	bottom: 73px;
 }
 
-#spreadsheet-row-column-frame.readonly {
-    top: 41px;
+#spreadsheet-row-column-frame.readonly,
+#spreadsheet-row-column-frame.readonly.tablet {
+	top: 41px;
 	bottom: 0px;
 }
 
-#spreadsheet-row-column-frame.tablet,
-#spreadsheet-row-column-frame.readonly.tablet {
-        top: 82px;
+#spreadsheet-row-column-frame.tablet {
+	top: 82px;
 }
 
 #spreadsheet-header-corner-container {

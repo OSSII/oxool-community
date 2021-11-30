@@ -158,7 +158,7 @@ L.Map = L.Evented.extend({
 
 			if (e.perm !== 'edit') {
 				L.DomUtil.addClass(this._container.parentElement, 'readonly');
-				if (!L.Browser.mobile) {
+				if (!window.mode.isMobile()) {
 					if (this._previewControl === null) {
 						this._previewControl = L.control.preview({position:'topleft'});
 						this._previewControl.addTo(this);
@@ -173,7 +173,7 @@ L.Map = L.Evented.extend({
 			}
 			else {
 				L.DomUtil.removeClass(this._container.parentElement, 'readonly');
-				if (!L.Browser.mobile) {
+				if (!window.mode.isMobile()) {
 					if (this._previewControl !== null) {
 						this.removeControl(this._previewControl);
 						this._previewControl = null;
