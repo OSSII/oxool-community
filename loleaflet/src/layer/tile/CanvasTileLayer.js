@@ -6367,6 +6367,7 @@ L.CanvasTileLayer = L.Layer.extend({
 		}
 
 		var twips;
+		var added = {};
 		for (var r = 0; r < rectangles.length; ++r) {
 			rectQueue = rectangles[r];
 			var tilePositionsX = '';
@@ -6375,6 +6376,11 @@ L.CanvasTileLayer = L.Layer.extend({
 			for (i = 0; i < rectQueue.length; i++) {
 				coords = rectQueue[i];
 				key = this._tileCoordsToKey(coords);
+
+				// request each tile just once in these tilecombines
+				if (added[key])
+					continue;
+				added[key] = true;
 
 				twips = this._coordsToTwips(coords);
 
