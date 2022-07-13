@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<!-- tdf#106488 - reverse hostname lookup can go badly wrong -->
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="UseLocking" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Dialogs have limited real estate, limit drop-down height -->
+<item oor:path="/org.openoffice.Office.Common/Accessibility"><prop oor:name="ListBoxMaximumLineCount" oor:op="fuse"><value>11</value></prop></item>
+
+<!-- Disable two capitals at start autocorrect -->
+<item oor:path="/org.openoffice.Office.Common/AutoCorrect"><prop oor:name="TwoCapitalsAtStart" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Disable single quote replace substitution -->
+<item oor:path="/org.openoffice.Office.Common/AutoCorrect"><prop oor:name="ReplaceSingleQuote" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Disable double quote replace substitution -->
+<item oor:path="/org.openoffice.Office.Common/AutoCorrect"><prop oor:name="ReplaceDoubleQuote" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- The Help root URL, or empty for no help (hides the help buttons) -->
+<item oor:path="/org.openoffice.Office.Common/Help"><prop oor:name="HelpRootURL" oor:op="fuse"><value></value></prop></item>
+
+<!-- Disable spell-checking by default -->
+<item oor:path="/org.openoffice.Office.Linguistic/SpellChecking"><prop oor:name="IsSpellAuto" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Save memory by avoiding collecting autocompletion words  -->
+<item oor:path="/org.openoffice.Office.Writer/AutoFunction/Completion"><prop oor:name="Enable" oor:op="fuse"><value>false</value></prop></item>
+
+<!-- Set a work path which is valid in chroot -->
+<item oor:path="/org.openoffice.Office.Paths/Variables"><prop oor:name="Work" oor:op="fuse"><value>file:///tmp</value></prop></item>
+
+<!-- Enable thumbnail generation by default (disabling saves CPU time) -->
+<item oor:path="/org.openoffice.Office.Common/Save/Document"><prop oor:name="GenerateThumbnail" oor:op="fuse"><value>true</value></prop></item>
+
+<!-- Use the colibre_svg theme for the sidebar -->
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="SymbolStyle" oor:op="fuse"><value>colibre_svg</value></prop></item>
+
+<!-- Disable GIO UCP we don't want -->
+<item oor:path="/org.openoffice.ucb.Configuration/ContentProviders/Local/SecondaryKeys/Office/ProviderData/Provider999"><prop oor:name="URLTemplate" oor:op="fuse"><value>NeverMatchAnyUrlSuffix</value></prop></item>
+
+<!-- Default font for new documents. Most of the languages use 'en' settings. For those that do not, it's better not to touch their settings, because it's unlikely that Calibri (or Carlito) is better than current default. -->
+<item oor:path="/org.openoffice.VCL/DefaultFonts/org.openoffice.VCL:LocalizedDefaultFonts['en']"><prop oor:name="LATIN_HEADING" oor:op="fuse" oor:type="xs:string"><value>Calibri;Carlito;Liberation Sans;Albany AMT;Albany;Arial;Noto Sans;Arimo;Nimbus Sans L;DejaVu Sans;Helvetica;Lucida;Geneva;Helmet;Arial;Noto Sans Unicode MS;Lucida Sans Unicode;Tahoma;SansSerif</value></prop></item>
+<item oor:path="/org.openoffice.VCL/DefaultFonts/org.openoffice.VCL:LocalizedDefaultFonts['en']"><prop oor:name="LATIN_PRESENTATION" oor:op="fuse" oor:type="xs:string"><value>Calibri;Carlito;Liberation Sans;Albany AMT;Albany;Arial;Noto Sans;Arimo;Nimbus Sans L;DejaVu Sans;Helvetica;Lucida;Geneva;Helmet;Arial;Noto Sans Unicode MS;Lucida Sans Unicode;Tahoma;SansSerif</value></prop></item>
+<item oor:path="/org.openoffice.VCL/DefaultFonts/org.openoffice.VCL:LocalizedDefaultFonts['en']"><prop oor:name="LATIN_SPREADSHEET" oor:op="fuse" oor:type="xs:string"><value>Calibri;Carlito;Liberation Sans;Albany AMT;Albany;Arial;Noto Sans;Arimo;Nimbus Sans L;DejaVu Sans;Helvetica;Lucida;Geneva;Helmet;Arial;Noto Sans Unicode MS;Lucida Sans Unicode;Tahoma;SansSerif</value></prop></item>
+<item oor:path="/org.openoffice.VCL/DefaultFonts/org.openoffice.VCL:LocalizedDefaultFonts['en']"><prop oor:name="LATIN_TEXT" oor:op="fuse" oor:type="xs:string"><value>Calibri;Carlito;Liberation Sans;Albany AMT;Albany;Arial;Noto Sans;Arimo;Nimbus Sans L;DejaVu Sans;Helvetica;Lucida;Geneva;Helmet;Arial;Noto Sans Unicode MS;Lucida Sans Unicode;Tahoma;SansSerif</value></prop></item>
+
+</oor:items>

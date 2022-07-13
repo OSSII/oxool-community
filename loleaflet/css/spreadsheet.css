@@ -1,0 +1,213 @@
+.spreadsheet-tabs-container {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	height: 39px;
+	overflow: hidden;
+	width: 100%;
+	white-space: nowrap;
+	text-align: start;
+	background-color: transparent;
+	vertical-align: middle;
+}
+
+.spreadsheet-tab-scroll {
+	width: 100%;
+	height: 100%;
+	overflow-y: hidden;
+	overflow-x: auto;
+	margin-left: 6px;
+}
+
+.spreadsheet-tab {
+	margin: 5px 4px 0px 0px !important;
+	padding: 6px 9px 4px !important;
+	text-decoration: none;
+
+	font: 13px var(--oxool-font);
+	display: inline-block;
+	border: 1px solid var(--color-border-dark);
+	border-radius: var(--border-radius);
+	background: var(--color-main-background);
+	color: var(--color-main-text);
+}
+
+.spreadsheet-tab.spreadsheet-tab-selected {
+	background: var(--color-background-dark) !important;
+	color: var(--color-text-dark) !important;
+	border: 1px solid var(--color-border-dark);
+	border-bottom: 4px solid #444444;
+}
+
+.spreadsheet-tab-protected {
+	display: inline-block;
+	pointer-events: none;
+	vertical-align: text-bottom;
+	width: 16px;
+	height: 16px;
+	background: url('images/cmd/protect.svg') no-repeat center/contain;
+}
+
+#first-tab-drop-site {
+	height: 20px;
+	width: 3px;
+	opacity: 0;
+	margin-top: 4px;
+	padding-top: 8px;
+	vertical-align: bottom;
+	display: inline-block;
+	background-color: var(--color-main-background);
+	padding-bottom: 5px;
+}
+
+.tab-dropsite {
+	border-right: 5px solid var(--color-border);
+}
+
+#first-tab-drop-site.tab-dropsite {
+	width: 0 !important;
+	opacity: 100% !important;
+}
+
+#spreadsheet-header-corner-container {
+	border: 1px solid var(--color-border-dark);
+	background-color: var(--colo-background-dark);
+	cursor: pointer;
+
+	position: absolute;
+	padding: 0px;
+	margin: 0px;
+	left: 0px;
+	top: 0;
+	width: 48px;
+	height: 19px;
+}
+
+#spreadsheet-header-corner {
+	display: inline-block;
+	white-space: nowrap;
+	width: 100%;
+	height: 100%;
+	border-spacing: 0px !important;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+}
+
+.spreadsheet-header-corner-styles {
+	border: 1px solid var(--color-border-dark);
+	background-color: var(--colo-background-dark);
+	font: var(--default-font-size)/1.5 var(--oxool-font);
+	color: var(--color-text-dark);
+	cursor: pointer;
+}
+
+#spreadsheet-header-columns-container {
+	border: 1px solid var(--color-border-dark);
+	background-color: var(--colo-background-dark);
+
+	position: absolute;
+	display: inline-block;
+	white-space: nowrap;
+	left: 49px;
+	top: 0;
+	right: 0;
+	height: 19px;
+	overflow: hidden;
+}
+
+#spreadsheet-header-rows-container {
+	border: 1px solid var(--color-border-dark);
+	background-color: var(--colo-background-dark);
+
+	position: absolute;
+	left: 0;
+	top: 20px;
+	width: 48px;
+	bottom: 0;
+	overflow: hidden;
+}
+
+.spreadsheet-header-rows,
+.spreadsheet-header-columns {
+	display: inline-block;
+	white-space: nowrap;
+	width: 100%;
+	height: 100%;
+	border-spacing: 0px !important;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+}
+
+.spreadsheet-header-row,
+.spreadsheet-header-column {
+	border: 1px solid var(--color-border-dark);
+	background-color: var(--colo-background-dark);
+	font: var(--default-font-size)/1.5 var(--oxool-font);
+	color: var(--color-text-dark);
+	cursor: pointer;
+}
+
+.spreadsheet-header-row-hover,
+.spreadsheet-header-column-hover {
+	background-color: var(--background-color-darker);
+}
+
+.spreadsheet-header-row-selected,
+.spreadsheet-header-column-selected {
+	color: var(--color-primary-text);
+	background: linear-gradient(var(--color-primary), var(--color-primary), var(--color-primary));
+}
+
+.spreadsheet-header-column-resize {
+	cursor: col-resize;
+}
+
+.spreadsheet-header-row-resize {
+	cursor: row-resize;
+}
+
+.spreadsheet-cell-resize-marker {
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 16px;
+	height: 16px;
+	background-image: url('images/cell-resize-marker.svg');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+.spreadsheet-cell-autofill-marker {
+	margin-left: 0px;
+	margin-top: 0px;
+	background-image: url('images/cell-autofill-marker.svg');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	cursor: crosshair;
+}
+
+.spreadsheet-drop-down-marker {
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 18px;
+	height: 17px;
+	background: url('images/drop-down-button.svg') center top/16px var(--color-background-lighter) no-repeat;
+	border: 1px solid var(--color-border-lighter);
+	box-sizing: border-box;
+	box-shadow: 0 0 1px 1px #00000015
+}
+
+.spreadsheet-drop-down-marker:hover {
+	cursor: pointer;
+	background-position-y: -16px;
+	box-shadow: 0 0 0 0 transparent, inset 0 0 1px 0 #00000015;
+}
+
+#toolbar-wrapper.spreadsheet.tablet {
+	z-index: auto;
+}
+
+#toolbar-wrapper.spreadsheet.tablet.readonly {
+	z-index: -1;
+}

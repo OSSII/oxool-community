@@ -1,0 +1,52 @@
+#slide-sorter {
+	white-space: nowrap;
+	overflow-x: hidden;
+	overflow-y: visible;
+	background: var(--color-background-lighter);
+	max-height: 100%;
+	scrollbar-color: var(--color-background-darker) var(--color-background-lighter);
+	scrollbar-width: thin;
+}
+
+#sidebar-panel {
+	height: 100%
+}
+
+.preview-frame {
+	max-width: 190px;
+	white-space: nowrap;
+	text-align: center;
+	margin: 1em 0;
+}
+
+.preview-helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+
+.preview-img {
+	/* In draw docs, the width of previews are small, but we want a min of 160px to align it with document's left edge */
+	min-width: 160px;
+	vertical-align: middle;
+	max-width: 164px;
+	cursor: pointer;
+	border: 1px solid var(--color-border);
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+/* The current part the user is on. */
+.preview-img-currentpart {
+	border: 1px solid var(--color-border-dark);
+}
+
+/* One of (potentially many) selected parts, but not the current. */
+.preview-img-selectedpart {
+	border: 1px solid var(--color-border-dark) !important;
+}
+
+/* Highlight where a slide can be dropped when reordering by drag-and-drop. */
+.preview-img-dropsite {
+	border-bottom: 20px solid var(--color-primary);
+}

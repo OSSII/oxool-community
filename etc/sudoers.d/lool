@@ -1,0 +1,1 @@
+lool	ALL = NOPASSWD: /usr/bin/rpm, /usr/bin/dpkg, /usr/bin/yum, /usr/bin/apt-get

@@ -1,0 +1,32 @@
+<script>Admin.Analytics(host);</script>
+<nav>
+    <div class="nav nav-tabs" role="tablist">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#memview" type="button" role="tab" aria-selected="true" _="Memory Graph"></button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cpuview" type="button" role="tab" aria-selected="false" _="CPU Graph"></button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#networkview" type="button" role="tab" aria-selected="false" _="Network Graph"></button>
+    </div>
+</nav>
+
+<div class="tab-content graph-content">
+    <div id="memview" class="active tab-pane">
+        <div class="graph-container">
+            <div>
+                <svg id="MemVisualisation" width="100%" height="512"></svg>
+            </div>
+        </div>
+    </div>
+    <div id="cpuview" class="tab-pane">
+        <div class="graph-container">
+            <div>
+                <svg id="CpuVisualisation" width="100%" height="512"></svg>
+            </div>
+        </div>
+    </div>
+    <div id="networkview" class="tab-pane">
+        <div class="graph-container">
+            <div>
+                <svg id="NetVisualisation" width="100%" height="512"></svg>
+            </div>
+        </div>
+    </div>
+</div>

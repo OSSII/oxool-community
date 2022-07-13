@@ -1,0 +1,30 @@
+.leaflet-selection-marker-start {
+	position: absolute;
+	margin-left: -30px;
+	margin-top: -2px;
+	width: 30px;
+	height: 44px;
+	background-image: url('images/handle_start.svg');
+}
+
+.leaflet-selection-marker-end {
+	position: absolute;
+	margin-left: 0;
+	margin-top: -2px;
+	width: 30px;
+	height: 44px;
+	background-image: url('images/handle_end.svg');
+}
+
+.leaflet-cursor-handler {
+	margin-left: -14px;
+	width: 30px;
+	height: 44px;
+	background-image: url('images/cursor-handler.svg');
+}
+.inputbar_selection_handles * {
+	z-index: 1;
+}
+#tb_formulabar_item_formula .inputbar_selection_handles{
+	/*display: none;*/
+}

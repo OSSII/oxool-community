@@ -1,0 +1,91 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
+/*
+ * This file is part of the LibreOffice project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#pragma once
+
+#include <string>
+#include "RequestDetails.hpp"
+#include "LOOLWSD.hpp"
+
+/** This class helps us to build a URL that will reliably point back
+ * at our service. It does very simple splitting of proxy URL
+ * and handles the proxy prefix feature.
+ */
+class ServerURL
+{
+    bool        _ssl;
+    bool        _websocket;
+    std::string _schemeAuthority;
+    std::string _pathPlus;
+public:
+    ServerURL(const RequestDetails &requestDetails)
+    {
+        init(requestDetails.getHostUntrusted(),
+             requestDetails.getProxyPrefix());
+    }
+
+    explicit ServerURL()
+    {
+        init("nohostname", "");
+    }
+
+    void init(const std::string &host, const std::string &proxyPrefix)
+    {
+        // The user can override the ServerRoot with a new prefix.
+        _pathPlus = LOOLWSD::ServiceRoot;
+
+        _ssl = (LOOLWSD::isSSLEnabled() || LOOLWSD::isSSLTermination());
+        _websocket = true;
+        std::string serverName = LOOLWSD::ServerName.empty() ? host : LOOLWSD::ServerName;
+        _schemeAuthority = serverName;
+
+        // A well formed ProxyPrefix will override it.
+        const std::string& url = proxyPrefix;
+        if (url.size() <= 0)
+            return;
+
+        size_t pos = url.find("://");
+        if (pos != std::string::npos) {
+            pos += 3;
+            auto hostEndPos = url.find('/', pos);
+            if (hostEndPos != std::string::npos)
+            {
+                _websocket = false;
+                std::string schemeProtocol = url.substr(0, pos);
+                _ssl = (schemeProtocol != "http://");
+                _schemeAuthority = url.substr(pos, hostEndPos - pos);
+                _pathPlus = url.substr(hostEndPos);
+                return;
+            }
+            else
+                LOG_ERR("Unusual proxy prefix '" << url << '\'');
+        } else
+            LOG_ERR("No http[s]:// in unusual proxy prefix '" << url << '\'');
+    }
+
+    std::string getResponseRoot() const
+    {
+        return _pathPlus;
+    }
+
+    std::string getWebSocketUrl() const
+    {
+        std::string schemeProtocol = (_websocket ? "ws" : "http");
+        if (_ssl)
+            schemeProtocol += 's';
+        return schemeProtocol + "://" + _schemeAuthority;
+    }
+
+    std::string getSubURLForEndpoint(const std::string &path) const
+    {
+        return std::string("http") + (_ssl ? "s" : "") + "://" + _schemeAuthority + _pathPlus + path;
+    }
+};
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -1,0 +1,905 @@
+/* CSS specific for mobile phones. */
+
+/* RTL on mobile */
+html[dir='rtl'] .w2ui-icon.closemobile,
+html[dir='rtl'] #toolbar-hamburger.menuwizard-opened,
+html[dir='rtl'] .mobile-wizard-back {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+}
+html[dir='rtl'] .sub-menu-arrow {
+	transform: rotate(0deg);
+	background-position: right;
+}
+/* Related to editor.css */
+#editor-btn{
+	max-width: 160px;
+}
+#editor-btn td:last-of-type{
+	max-width: 96px;
+	padding-left: 8px;
+	text-align: left;
+}
+#currently-msg{
+	padding: 12px 5px;
+}
+input#follow-checkbox {
+	width: 24px;
+	height: 24px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	-o-appearance: none;
+	appearance: none;
+	border-radius: var(--border-radius);
+	border: 2px solid #aaa;
+	outline: none;
+	box-shadow: #00000015 0px 0px 2px 1px;
+	margin: 0px !important;
+}
+#follow-container {
+	display: block;
+	position: relative;
+	font-size: 22px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 25px;
+	width: 25px;
+}
+.checkmark:after {
+	content: '';
+	position: absolute;
+	display: none;
+	left: 9px;
+	top: 5px;
+	width: 5px;
+	height: 10px;
+	border: solid white;
+	border-width: 0 3px 3px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+input#follow-checkbox:checked ~ .checkmark:after {
+	display: block;
+}
+input#follow-checkbox:checked ~ .checkmark {
+	background-color: var(--color-primary);
+}
+#userlist_table + hr { display: none;}
+div#w2ui-overlay-actionbar.w2ui-overlay{
+	margin-left: -7px;
+}
+
+/* Related to oxool.css */
+#toolbar-hamburger {
+	width: 36px;
+	height: 36px;
+	position: relative;
+	z-index: 1002;
+}
+#toolbar-hamburger.menuwizard-opened {
+	width: 36px;
+	height: 36px;
+}
+
+.logo {
+	background-size: 100px;
+	max-width: 24px;
+	max-height: 31px;
+	top: 0;
+}
+#toolbar-logo {
+	width: 0px !important;
+}
+#document-header{
+	display: none !important;
+}
+
+/* Related to back button */
+#toolbar-mobile-back {
+	width: 36px;
+	height: 36px;
+	position: relative;
+	z-index: 1003;
+}
+.editmode-off {
+	background: url('images/lc_closedocmobile.svg') no-repeat center !important;
+}
+.editmode-on {
+	background: url('images/lc_listitem-selected.svg') no-repeat center / 28px !important;
+}
+
+
+/* No ruler on mobile phones. */
+.oxool-ruler {
+	height: 0px;
+	display: none;
+}
+
+/* Related to menubar.css */
+.document-logo {
+	width: 35px;
+	height: 38px;
+}
+
+#document-titlebar {
+	display: none;
+}
+
+.document-title {
+	display: none;
+}
+
+/* hide the menu in mobile view */
+#main-menu-state:not(:checked) ~ #main-menu {
+	display: none;
+}
+
+.main-menu-btn {
+	display: inline-block;
+}
+
+.main-nav {
+	height: 0;
+	width: 100%;
+	margin: 0;
+	-webkit-overflow-scrolling: touch;
+	overflow: scroll;
+	z-index: 1010;
+	bottom: 34px !important;
+	background-color: #00000050;
+	display: none;
+}
+
+#main-menu {
+	position: relative;
+	top: 0;
+	width: 70%;
+	float: right;
+	background-color: var(--color-background-lighter);
+	height: 100%;
+}
+
+.writer-icon-img {
+	background-size: 35px 35px;
+}
+
+.calc-icon-img {
+	background-size: 35px 35px;
+}
+
+.impress-icon-img {
+	background-size: 35px 35px;
+}
+
+#document-name-input {
+	display: none;
+}
+
+#tb_formulabar_item_address, #tb_formulabar_item_item_2, #tb_formulabar_item_functiondialog {
+	vertical-align: middle;
+}
+/* Related to selectionMarkers.css */
+.inputbar_multiline #tb_formulabar_item_formula > div,
+.inputbar_multiline #tb_formulabar_item_address > div {
+	margin-top: 0px;
+}
+.inputbar_multiline #tb_formulabar_item_address{
+	border-right: solid 1px #0000004d !important;
+}
+.inputbar_multiline #addressInput{
+	border: none;
+}
+
+.spreadsheet-tab-selected{
+	color: #0b87e7 !important;
+	border-color: #0b87e7;
+}
+
+#tb_spreadsheet-toolbar_item_insertsheet {
+	padding: 0 7px 0 12px;
+}
+
+.spreadsheet-tab-scroll {
+	overflow-x: scroll;
+	scrollbar-width: none; /*css draft (firefox only)*/
+	-ms-scrollbar: none; /*ie*/
+	-webkit-overflow-scrolling: touch;
+	margin: 0;
+}
+
+.spreadsheet-tabs-container, #spreadsheet-toolbar{
+	background-color: var(--color-main-background);
+}
+#spreadsheet-toolbar{
+	background-color: var(--color-main-background);
+	border-top: 1px solid var(--color-border);
+	height: 40px;
+	padding: 0;
+}
+#spreadsheet-toolbar .w2ui-tb-image{
+	padding-top: 0px !important;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+#toolbar-down table.w2ui-button.over {
+	border: 1px solid transparent;
+	background-color: var(--color-background-darker);
+	border-radius: 0;
+}
+#toolbar-down table.w2ui-button.checked {
+	border: 1px solid transparent;
+	background-color: var(--color-background-dark);
+	border-radius: 0;
+}
+/* Related to vex.css */
+.vex-open .oxool-user-idle {
+	background: rgba(0, 0, 0, 0) !important;
+	font-size: xx-large !important;
+	color: #fff !important;
+	text-align: center !important;
+}
+.vex.vex-theme-plain .vex-dialog-form .vex-dialog-input select, .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input textarea, .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='date'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='datetime'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='datetime-local'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='email'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='month'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='number'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='password'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='search'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='tel'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='text'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='time'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='url'], .vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='week']{
+	padding: 0 !important
+}
+.vex-content .oxool-annotation-img {
+	box-sizing: content-box !important;
+}
+.vex-dialog-input > textarea.oxool-annotation-textarea {
+	height: 150px;
+	border: 1px solid var(--color-border);
+	box-shadow: 0 0 1px 1px var(--color-box-shadow);
+	border-radius: var(--border-radius);
+}
+.vex-dialog-input > textarea.oxool-annotation-textarea:focus {
+	height: 150px;
+	border: 1px solid var(--color-border);
+	box-shadow: 0 0 1px 1px var(--color-primary);
+}
+#mobile-wizard-popup .oxool-annotation-content,
+#mobile-wizard .oxool-annotation-content {
+	margin: 3px 3px 3px 38px;
+	padding: 0px 10px;
+}
+.vex-dialog-message {
+	text-align: center;
+	font-family: var(--vex-font) !important;
+	font-size: 1em !important;
+	font-weight: 600 !important;
+}
+.vex-dialog-message > div {
+	text-align: left;
+	font-family: var(--vex-font) !important;
+	font-size: 1em !important;
+	font-weight: 600 !important;
+}
+.vex-dialog-message label {
+	width: 84%;
+	padding-left: 4%;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: text-bottom;
+}
+.vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='text'] {
+	border-radius: var(--border-radius) !important;
+	background-color: #fff !important;
+	width: 100%;
+	width: -moz-available !important;
+	width: -webkit-fill-available !important;
+	width: fill-available !important;
+	border: 4px solid #fff !important;
+	box-shadow: 0 0 1px 1px #dfdfdf;
+}
+.vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='text']:focus {
+	border: 4px solid #fff !important;
+	box-shadow: 0 0 1px 1px #0b87e7 !important;
+	color: #0b87e7 !important;
+}
+.vex.vex-theme-plain .vex-dialog-form .vex-dialog-input input[type='text']:focus input{
+	color: #000 !important;
+}
+.vex-dialog-input {
+	font-family: var(--vex-font) !important;
+	font-size: 0.8em;
+}
+.vex.vex-theme-plain .vex-content {
+	height: 100% !important;
+	max-width: 100% !important;
+	width: auto !important;
+	border: none;
+	box-shadow: none;
+	border-radius: none;
+	display: flex;
+	flex-direction: column;
+}
+.vex.vex-theme-plain .vex-content:not(.vex-has-inputs) .vex-dialog-form {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	flex: 1;
+}
+
+.vex.vex-theme-plain {
+	padding: 0px !important;
+}
+.vex-open .vex-overlay {
+	z-index: 2000;
+	min-height: 100%;
+	position: absolute;
+	width: 100%;
+	width: -moz-available !important;
+	width: -webkit-fill-available !important;
+	width: fill-available !important;
+	top: 0;
+	background-color: var(--color-main-background);
+}
+.vex.vex-theme-plain input {
+	font-size: 1.1em !important;
+}
+textarea.oxool-annotation-textarea {
+	min-width: -moz-available !important;
+	min-width: -webkit-fill-available !important;
+	min-width: fill-available !important;
+}
+button.vex-dialog-button-primary.vex-dialog-button.vex-first {
+	border: 1px solid var(--color-primary) !important;
+	border-radius: var(--border-radius) !important;
+	background-color: var(--color-primary-lighter) !important;
+	color: var(--color-primary-text) !important;
+}
+button.vex-dialog-button-secondary.vex-dialog-button.vex-last {
+	border-radius: var(--border-radius);
+	background-color: var(--color-background-lighter) !important;
+	border: 1px solid var(--color-border-lighter) !important;
+}
+.vex.vex-theme-plain .vex-dialog-button{
+	line-height: 1em !important;
+	height: auto !important;
+}
+.vex-overlay.oxool-user-idle-overlay {
+	background-color: #05396180;
+}
+.vex-content.oxool-user-idle{
+	padding-top: 160px !important;
+	padding-bottom: 160px !important;
+}
+/* Vex: Welcome dialog */
+.vex-welcome-mobile .vex-dialog-form .vex-content {
+	padding: 0;
+}
+
+.vex-welcome-mobile .vex-dialog-button-primary {
+	width: 100%;
+}
+/* Vex: Document document conflict */
+.vex.vex-theme-plain .vex-dialog-button-spacer {
+	min-height: 24px !important;
+}
+
+.vex-dialog-buttons {
+	flex-direction: column !important;
+}
+
+.vex-close:not(.vex-close-m) {
+	display: none;
+}
+
+/* Related to toolbar.css */
+.insertshape-grid {
+	box-sizing: content-box;
+	position: static;
+	padding: 2px 0px;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
+}
+#toolbar-up.w2ui-toolbar{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	background: transparent;
+}
+nav:not(.spreadsheet-color-indicator) ~ #toolbar-wrapper #toolbar-up.w2ui-toolbar {
+	border-color: transparent;
+}
+#formulabar {
+	padding: 0px !important;
+	border-top: 1px solid #bbbbbb !important;
+}
+#toolbar-search {
+	height: 39px !important;
+}
+#tb_actionbar_item_fullscreen{display: none;}
+#toolbar-down {
+	border-top: 1px solid var(--color-border) !important;
+}
+#toolbar-down > .w2ui-scroll-wrapper {
+	overflow-x: scroll !important;
+	scrollbar-width: none; /*css draft (firefox only)*/
+	-ms-scrollbar: none; /*ie*/
+}
+#toolbar-down > .w2ui-scroll-wrapper::-webkit-scrollbar { /*webkit only*/
+	display: none;
+}
+#toolbar-down .w2ui-scroll-left, #toolbar-down .w2ui-scroll-right{
+	background: none;
+	height: 100%;
+	width: 0px;
+	top: 0%;
+	box-shadow: 8px 0 13px 2px #0b87e7, -6px 0px 6px 6px #007cdc;
+	border-radius: 0px;
+}
+#toolbar-down .w2ui-scroll-right{
+	display: block !important;
+	right: 0;
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+#addressInput{
+	width: 50px;
+	height: 23px;
+	text-align: center;
+	border-color: 1px solid #808080 !important;
+}
+.w2ui-icon.equal, .w2ui-icon.autosum{width: 38px !important;}
+#formulaInput{
+	border: 1px solid #bbbbbb;
+	border-bottom: none;
+	border-top: none;
+	border-right: none;
+	height: 35px !important;
+}
+
+#calc-inputbar-wrapper {
+	display: block;
+	border: none;
+}
+
+#calc-inputbar {
+	display: block;
+	width: 100%;
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+}
+
+#toolbar-wrapper.mobile td[id^='tb_actionbar_item'] .w2ui-tb-image {
+	width: 36px !important;
+}
+
+#tb_actionbar_item_userlist table{
+	margin: -1px 0px auto 3px !important;
+}
+#toolbar-up .checked{
+	border-color: transparent !important;
+	background: none !important;
+	box-shadow: none;
+}
+#toolbar-up .checked .w2ui-tb-image, #toolbar-up .w2ui-tb-image:hover, #toolbar-up .w2ui-tb-image:focus, #toolbar-up .w2ui-tb-image:active, #toolbar-hamburger.menuwizard-closed:active{
+	-webkit-filter: drop-shadow(0px 0px 4px var(--color-primary-darker));
+	filter: drop-shadow(0px 0px 4px var(--color-primary-darker));
+}
+#toolbar-up .over{
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+#toolbar-up .over:hover .w2ui-tb-image, #toolbar-up .over:active .w2ui-tb-image{
+	-webkit-filter: drop-shadow(0px 0px 4px var(--color-primary-darker));
+	filter: drop-shadow(0px 0px 4px var(--color-primary-darker));
+	border-color: transparent;
+}
+#toolbar-down table.w2ui-button .w2ui-tb-image {
+	margin: 5px 9px !important;
+}
+.w2ui-toolbar .w2ui-break{
+	background-image: none;
+	background-color: #dae6f3;
+}
+#formulabar .w2ui-break {
+	visibility: hidden;
+}
+#setgamma input.spinfield, #linewidth input.spinfield, #nolines input.spinfield{
+	width: 140px !important;
+}
+td[id^='tb_spreadsheet-toolbar_item'] table.w2ui-button.over {
+	background: none;
+	border-color: #fff;
+}
+td[id^='tb_spreadsheet-toolbar_item'] table.w2ui-button{
+	border: none !important;
+}
+td[id^='tb_spreadsheet-toolbar_item']:focus table.w2ui-button, td[id^='tb_spreadsheet-toolbar_item']:active table.w2ui-button{
+	background-color: #eaf5ff;
+	outline: none;
+	border: none;
+}
+td[id^='tb_spreadsheet-toolbar_item']:focus table.w2ui-button div.w2ui-icon, td[id^='tb_spreadsheet-toolbar_item']:active table.w2ui-button div.w2ui-icon{
+	-webkit-filter: grayscale(100%) brightness(80%) sepia(100%) hue-rotate(-190deg) saturate(900%) contrast(0.8);
+	filter: grayscale(100%) brightness(80%) sepia(100%) hue-rotate(-190deg) saturate(900%) contrast(0.8);
+}
+#toolbar-down table.w2ui-button:not(.checked) td.w2ui-tb-down > div {
+	border-top: none !important;
+	margin-top: 0 !important;
+	border-bottom: 5px solid #8D99A7 !important;
+}
+#toolbar-down table.w2ui-button.checked td.w2ui-tb-down > div {
+	border-bottom: none;
+	border-top: 5px solid #8D99A7;
+	margin-bottom: 5px !important;
+}
+#w2ui-overlay-editbar .menu{
+	border-radius: var(--border-radius);
+}
+#w2ui-overlay-editbar:before{
+	border: none !important;
+}
+#w2ui-overlay-editbar:after{
+	border: none;
+	border-top: 8px solid #000000;
+	border-top-color: inherit;
+	border-right: 8px solid transparent;
+	border-left: 8px solid transparent;
+	top: 100%;
+	margin-top: -3px;
+}
+#toolbar-search #tb_searchbar_item_search *{
+	width: 100% !important;
+}
+#toolbar-search input#search-input{
+	font-size: 16px;
+}
+#toolbar-search #tb_searchbar_item_left, #tb_searchbar_right {
+	display: none;
+}
+#toolbar-search #tb_searchbar_item_hidesearchbar{
+	padding: 1px 8px !important;
+}
+#toolbar-search #tb_searchbar_item_search{
+	width: 80%;
+}
+#toolbar-search #search-input-group > label{
+	display: none;
+}
+.context-menu-link{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+/* Related to slidesorter */
+/* Show slidesorter beyond 768px only */
+#presentation-controls-wrapper {
+	max-width: initial;
+}
+
+/* Show sidebar beyond 768px only */
+#sidebar-dock-wrapper {
+	display: none !important;
+}
+
+#document-container.sidebar-document {
+	left: 0px !important;
+}
+
+#closebuttonwrapper {
+	display: none;
+}
+
+/* Slidesorter in portrait mode */
+#presentation-controls-wrapper.portrait {
+	width: 100%;
+}
+
+#document-container.portrait.parts-preview-document.keyboard {
+	bottom: 33px;
+}
+#document-container.portrait.parts-preview-document #map {
+	box-shadow: none;
+}
+#slide-sorter.portrait {
+	max-height: 60px;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	line-height: 60px;
+}
+
+#slide-sorter.portrait .preview-img {
+	min-width: 37px;
+	max-width: 60px;
+	max-height: 45px;
+	margin: 0;
+}
+
+#slide-sorter.portrait .preview-frame {
+	max-height: 60px;
+	max-width: 100%;
+	display: inline-block;
+	padding-right: 1em;
+	margin: 0;
+}
+
+#slide-sorter.portrait .preview-frame.preview-img-dropsite {
+	padding-right: 0px;
+	border-right: 20px solid var(--color-border);
+	border-bottom: none;
+}
+
+#document-container.landscape.parts-preview-document.keyboard {
+	left: 0px !important;
+}
+
+#slide-sorter.landscape {
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+#slide-sorter.landscape .preview-img {
+	min-width: 20px;
+	max-width: 60px;
+	margin: 0;
+}
+
+#slide-sorter.landscape .preview-frame {
+	max-height: initial;
+	max-width: 66px;
+	display: block;
+	margin: 1em 3px;
+}
+
+/* Highlight where a slide can be dropped when reordering by drag-and-drop. */
+#slide-sorter.landscape .preview-frame.preview-img-dropsite {
+	border-bottom: 10px solid var(--color-border-darker);
+}
+
+#mobile-wizard.menuwizard {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+#mobile-wizard.shapeswizard {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+/* Related to mobilewizard.cxx */
+#mobile-wizard-header.landscape {
+	display: none;
+}
+#mobile-wizard-header.portrait {
+	display: block;
+}
+
+/* Related to mobile-wizard based menubar */
+#mobile-wizard.menuwizard.landscape #mobile-wizard-content.landscape {
+	overflow-y: auto !important;
+}
+
+/* Disable tooltips when on touch devices */
+.w2ui-tag .w2ui-tag-top {
+	display: none !important;
+}
+
+.impress-comment-highlight {
+	filter: grayscale(1);
+}
+
+/* Related to jquery.contextMenu.css */
+.context-menu-list .context-menu-item {
+	height: 38px;
+	width: 100%;
+	display: table;
+	box-sizing: border-box;
+	padding-left: 16px;
+}
+.context-menu-list .context-menu-item span {
+	display: table-cell;
+	vertical-align: middle;
+	font-weight: bold;
+	color: var(--color-main-text);
+	padding-left: 38px;
+}
+.context-menu-list .context-menu-item:nth-child(1) span {
+	background: url('images/cmd/editannotation.svg') no-repeat left center /24px;
+}
+.context-menu-list .context-menu-item:nth-child(2) span {
+	background: url('images/cmd/replycomment.svg') no-repeat left center /24px;
+}
+.context-menu-list .context-menu-item:nth-child(3) span {
+	background: url('images/cmd/deleteannotation.svg') no-repeat left center /24px;
+}
+.context-menu-list .context-menu-item:nth-child(4) span {
+	background: url('images/cmd/ok.svg') no-repeat left center /24px;
+}
+
+/* Related to jsdialogs.css */
+/*   - macros */
+#mobile-wizard-content #MacroWarnMedium p {
+	color: var(--color-text-lighter);
+}
+#mobile-wizard-content #MacroWarnMedium p:first-child {
+	color: #333;
+}
+#mobile-wizard-content #MacroWarnMedium p:first-child::after {
+	content: ' ';
+	background: url('images/cmd/runmacro.svg') no-repeat left -2px / 24px;
+	width: 24px;
+	height: 24px;
+	float: left;
+	padding-left: 8px;
+}
+#mobile-wizard-content #MacroSelectorDialog #helpmacro {
+	margin: 4%;
+	padding: 5px;
+	width: auto;
+	box-sizing: border-box;
+	border-radius: var(--border-radius);
+	border: 1px solid var(--color-border-lighter);
+	font-family: var(--mobile-font);
+	font-size: 16px;
+	font-weight: normal;
+	/*hide for now*/
+	display: none;
+}
+#mobile-wizard-content #MacroSelectorDialog #categories,
+#mobile-wizard-content #MacroSelectorDialog #commands {
+	border-radius: var(--border-radius);
+	height: auto;
+	border-color: var(--color-border);
+}
+#mobile-wizard-content #MacroSelectorDialog #categories > .ui-treeview-body > .mobile-wizard li {
+	border-bottom: 1px solid var(--color-border);
+}
+#mobile-wizard-content #MacroSelectorDialog #commands {
+	margin-bottom: 6px;
+}
+#mobile-wizard-content #MacroSelectorDialog #commands.selected {
+	border-color: var(--color-primary-dark);
+}
+#mobile-wizard-content #MacroSelectorDialog #commands > .mobile-wizard.ui-treeview-body {
+	min-height: auto;
+}
+#mobile-wizard-content #MacroSelectorDialog #commands.empty > .mobile-wizard.ui-treeview-body::after {
+	content: '…';
+	width: 22px;
+	height: 22px;
+	line-height: 11px;
+	display: block;
+	padding-left: 8px;
+	color: var(--color-text-lighter);
+	font-size: 22px;
+}
+
+/* busy popup */
+
+#mobile-wizard.popup {
+	border-radius: 16px 16px 0 0;
+}
+#mobile-wizard.popup #mobile-wizard-content {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+#mobile-wizard.popup.potrait #mobile-wizard-content {
+	flex-direction: column;
+}
+#mobile-wizard.popup.landscape {
+	height: 75% !important;
+}
+#mobile-wizard.popup.landscape #mobile-wizard-content {
+	flex-direction: row;
+}
+#mobile-wizard.popup #busylabel {
+	border-bottom: none !important;
+	font-size: 100% !important;
+	margin: 20px !important;
+	width: 100%;
+}
+
+/* snackbar */
+#mobile-wizard.popup.snackbar {
+	height: 48px !important;
+	margin: 16px 5% !important;
+	width: 90%;
+	position: absolute;
+}
+/*   - Import text */
+#mobile-wizard-content #separatoroptions {
+	margin-top: 54px;
+}
+
+#mobile-wizard-content #toseparatedby.checkbutton {
+	margin-top: -74px;
+	margin-bottom: 24px;
+}
+
+/* Feeback dialog */
+.iframe-dialog-wrap {
+	left: 0;
+	top: 0;
+	bottom: 0;
+	height: 100%;
+	background-color: rgba(0,0,0,0.2);
+	width: 100%;
+}
+.iframe-dialog-modal {
+	position: absolute;
+	width: 100%;
+	height: 564px; /* incrase height to account for stacked buttons*/
+	bottom: 0;
+}
+@media  only screen
+	and (max-height: 500px) {
+	.iframe-dialog-content {
+		height: 100%;
+	}
+	.iframe-dialog-modal{
+		position: static;
+		height: 100%;
+	}
+}
+
+#toolbar-down .locking-disabled .w2ui-tb-image {
+	overflow: visible;
+}
+#toolbar-down .locking-disabled .w2ui-icon:before {
+	display: block;
+	content: '';
+	width: 18px;
+	height: 18px;
+	background: url('images/lc_freeemiumlock.svg') no-repeat center -15px /16px white;
+	box-shadow: 0 0 1px 0 #0b87e7,0 0 3px 0 #00000075;
+	border-radius: 18px;
+	position: relative;
+	margin-left: 16px;
+	margin-top: -5px;
+}
+
+#oxoolwsd-version, #lokit-version {
+	flex-direction: column;
+}
+
+/* hide not usefull style options on mobile */
+div#fontstyletoolbox + div#style.mobile-wizard {
+	display: none !important;
+}
+
+.slides {
+	padding-bottom: 0;
+}
+
+.slides > div > * {
+	margin-right: 8px;
+	margin-left: 8px;
+}
+
+#user-welcome--buttons {
+	display: none;
+}
+
+/* About Dialog */
+#about-dialog-logos * {
+	background-size: 68%;
+}
+
+#product-name {
+	margin: 2px;
+	font-size: 29px;
+}

@@ -1,0 +1,42 @@
+<?xml-stylesheet type="text/css" href="icons.css" ?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <g id="background"
+     class="icn icn--area-color"
+     fill="#fafafa"
+     stroke="#3a3a38"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(-1,0)"
+     >
+      <path d="m 4.5,21.5 h 15 V 7 L 15,2.5 H 4.5 Z" />
+      <path d="m 14.5,7.5 h 5 V 7 L 15,2.5 h -0.5 z" />
+  </g>
+  <g id="symbol-background"
+	 class="icn icn--background"
+     fill="#fff"
+     stroke="#fff" 
+     stroke-width="3px"
+	 stroke-linecap="round" 
+     stroke-linejoin="round" >
+      <path d="m 9.5,22.5 v -3 h 3" />
+      <path d="m 20.5,19.5 h 3 v 3" />
+      <path d="m 13.5,15.5 h 6" />
+      <path d="m 18.5,10.5 a 2,2 0 0 1 -2,2 2,2 0 0 1 -2,-2 2,2 0 0 1 2,-2 2,2 0 0 1 2,2 z" />
+      <path d="m 16.5,12.5 v 11" />
+      <path d="m 9.5,19.5 c 0,0 2.5,4 7,4 4.5,0 7,-4 7,-4" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--highlight-color-line"  
+     fill="none" 
+     stroke="#1e8bcd" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+      >
+      <path d="m 9.5,22.5 v -3 h 3" />
+      <path d="m 20.5,19.5 h 3 v 3" />
+      <path d="m 13.5,15.5 h 6" />
+      <path d="m 18.5,10.5 a 2,2 0 0 1 -2,2 2,2 0 0 1 -2,-2 2,2 0 0 1 2,-2 2,2 0 0 1 2,2 z" />
+      <path d="m 16.5,12.5 v 11" />
+      <path d="m 9.5,19.5 c 0,0 2.5,4 7,4 4.5,0 7,-4 7,-4" />
+  </g>
+</svg>

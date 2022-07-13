@@ -1,0 +1,92 @@
+:root {
+	--blue1-txt-primary-color: 3, 105, 163;
+	--green0-txt-primary-color: 16, 104, 2; /*green1 lacks contrast against white*/
+	--orange1-txt-primary-color: 163, 62, 3;
+	--yellow0-txt-primary-color: 135, 105, 0; /*yellow1 lacks contrast against white*/
+
+	--color-main-text: #333333;
+	--color-text-dark: #333333;  /* select */
+	--color-text-darker: #000;  /* hover */
+	--color-text-lighter: #696969; /* secondard text, disabled */
+	--color-text-disabled: #BBBBBB;
+
+	--color-main-background: #F8F9FA;
+	--color-background-dark: #e8e8e8;  /* select */
+	--color-background-darker: #c0bfbc;  /* todo: apply to pressed (active), li:hover(top menu on classic mode)*/
+	--color-background-lighter: #fff; /* hover, toolbar, dialog, disabled */
+	--color-background-selected: #CCE8FF;
+	--color-overlay: #1c5fa814;
+
+	--color-primary: #0b87e7; /* border-color */
+	--color-primary-text: #fff; /* text color when primary-lighter is background */
+	--color-primary-dark: #0063b1;
+	--color-primary-darker: #004b86;
+	--color-primary-lighter: #83beec; /* background-color */
+
+	--color-border: #b6b6b6;
+	--color-border-dark: #cecece; /* select */
+	--color-border-darker: #c0bfbc;  /* hover */
+	--color-border-lighter: #f1f1f1; /* disabled */
+
+	--color-btn-border: #b6b6b6;
+	--color-btn-border-dis: #c0bfbc;
+
+	--color-error: #e9322d;
+	--color-warning: #eca700;
+	--color-success: #46ba61;
+
+	--color-box-shadow: rgba(77, 77, 77, 0.5);
+	--border-radius: 4px; /* buttons, widgets */
+	--border-radius-large: 10px; /* dialog */
+
+	--default-font-size: 14px;
+	--header-font-size: 16px;
+
+	--default-height: 20px;
+	--header-height: 32px;
+
+	/* Annotations */
+	--annotation-input-size: 240px;
+
+	/*
+		LibreOffice Colors:
+		https://wiki.documentfoundation.org/Marketing/Branding#Colors
+	*/
+	--lo-green0-secondary-color: #106802;
+	--lo-green1-primary-color: #18A303;
+	--lo-green2-secondary-color: #43C330;
+	--lo-green3-secondary-color: #92E285;
+	--lo-green4-secondary-color: #CCF4C6;
+
+	--lo-blue0-secondary-color: #023F62;
+	--lo-blue1-primary-color: #0369A3;
+	--lo-blue2-secondary-color: #1C99E0;
+	--lo-blue3-secondary-color: #63BBEE;
+	--lo-blue4-secondary-color: #AADCF7;
+
+	--lo-orange0-secondary-color: #622502;
+	--lo-orange1-primary-color: #A33E03;
+	--lo-orange2-secondary-color: #D36118;
+	--lo-orange3-secondary-color: #F09E6F;
+	--lo-orange4-secondary-color: #F9CFB5;
+
+	--lo-purple0-secondary-color: #530260;
+	--lo-purple1-primary-color: #8E03A3;
+	--lo-purple2-secondary-color: #C254D2;
+	--lo-purple3-secondary-color: #DC85E9;
+	--lo-purple4-secondary-color: #F2CBF8;
+
+	--lo-yellow0-secondary-color: #876900;
+	--lo-yellow1-primary-color: #C99C00;
+	--lo-yellow2-secondary-color: #E9B913;
+	--lo-yellow3-secondary-color: #F5CE53;
+	--lo-yellow4-secondary-color: #FDE9A9;
+
+	--lo-green-accent-color: #2CEE0E;
+	--lo-blue-accent-color: #00A0FC;
+	--lo-orange-accent-color: #FC5C00;
+	--lo-purple-accent-color: #E327FF;
+	--lo-yellow-accent-color: #FFD74C;
+
+	--doc-identify-color: transparent;
+}

@@ -1,0 +1,3549 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-07 17:06+0800\n"
+"PO-Revision-Date: 2022-01-16 22:54+0000\n"
+"Last-Translator: Petri Heinämäki <heinamakipetri@gmail.com>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/collabora-"
+"online/ui/fi/>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.10.1\n"
+
+#: admin/admin.strings.js:56
+msgid "Admin console"
+msgstr "Ylläpitokonsoli"
+
+#: admin/admin.strings.js:57
+msgid "Overview"
+msgstr "Yleiskatsaus"
+
+#: admin/admin.strings.js:58
+msgid "Analytics"
+msgstr "Analytiikka"
+
+#: admin/admin.strings.js:59
+msgid "Log"
+msgstr "Loki"
+
+#: admin/admin.strings.js:60
+msgid "SSL certificate manager"
+msgstr ""
+
+#: admin/admin.strings.js:61
+msgid "System configuration"
+msgstr ""
+
+#: admin/admin.strings.js:62
+msgid "Software upgrade"
+msgstr ""
+
+#: admin/admin.strings.js:63
+msgid "Font manager"
+msgstr ""
+
+#: admin/admin.strings.js:64
+msgid "Table conversion"
+msgstr ""
+
+#: admin/admin.strings.js:65
+msgid "Template Repo"
+msgstr ""
+
+#: admin/admin.strings.js:66
+msgid "ODF report template"
+msgstr ""
+
+#: admin/admin.strings.js:67
+msgid "Module list"
+msgstr ""
+
+#: admin/src/AdminSocketAnalytics.js:14
+msgid "Memory Graph"
+msgstr "Muistigraafi"
+
+#: admin/src/AdminSocketAnalytics.js:15
+msgid "CPU Graph"
+msgstr "Suoritingraafi"
+
+#: admin/src/AdminSocketAnalytics.js:16
+msgid "Network Graph"
+msgstr "Verkkograafi"
+
+#: admin/src/AdminSocketAnalytics.js:211
+msgid "Received"
+msgstr "Vastaanotettu"
+
+#: admin/src/AdminSocketAnalytics.js:215
+msgid "Sent"
+msgstr "Lähetetty"
+
+#: admin/src/AdminSocketBase.js:61
+msgid "Server has been shut down; Waiting to be back online."
+msgstr ""
+
+#: admin/src/AdminSocketBase.js:76
+msgid "Connection error"
+msgstr "Yhteysvirhe"
+
+#: admin/src/AdminSocketBase.js:84
+msgid "Try to reconnect..."
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:12
+msgid "millisecond"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:13
+msgid "seconds"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:14
+msgid "bytes"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:15
+msgid "K Bytes"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:16
+msgid "M Bytes"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:17
+msgid "General settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:18
+msgid "Server name"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:19
+msgid "Port"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:20
+msgid "Custom UI file name"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:23
+msgid "Document editing settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:24
+msgid "Available threads per document"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:25
+msgid "Enable file conversion"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:26
+msgid "File conversion priority (1-19)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:27
+msgid "Document signing URL"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:28
+msgid "Tracked changes show comments"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:29
+msgid "Unload document when idle"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:30
+msgid "How long is it idle to auto save (if modified)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:31
+msgid "Auto save time (if modified)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:32
+msgid ""
+"When leaving the editor, it is forced to save even if it has not been "
+"modified"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:33
+msgid "Virtual memory available for each document"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:34
+msgid "Maximum stack size available for each document procress"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:35
+msgid "File size that can be written by each document procress"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:36
+msgid "The number of files that can be opened by each document procress"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:37
+msgid "Load file time limit"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:38
+msgid "File conversion time limit"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:39
+msgid ""
+"Cleanup mechanism(after enabling, the following settings will be effective)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:40
+msgid "Interval time"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:41
+msgid "Survival time before bad files are cleaned up"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:42
+msgid "Idle time before becoming a bad document"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:43
+msgid "Memory usage before becoming a bad document"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:44
+msgid "CPU usage before becoming a bad document"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:46
+msgid "Document view settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:47
+msgid "Browser dimming time"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:48
+msgid "Stop editing the dimming time"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:50
+msgid "Log settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:51
+#: admin/src/AdminSocketConfigSettings.js:120
+#: src/control/Control.JSDialogBuilder.js:1298
+#: uiconfig/dialogs/BindingLineDialog.js:33
+msgid "Color"
+msgstr "Väri"
+
+#: admin/src/AdminSocketConfigSettings.js:52
+msgid "Enable client console output"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:53
+msgid "Output messages from LOKit"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:54
+msgid "Usage notes"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:55
+#, fuzzy
+msgid "Log level"
+msgstr "Lokitaso"
+
+#: admin/src/AdminSocketConfigSettings.js:56 admin/src/AdminSocketLog.js:10
+#: src/control/Control.JSDialogBuilder.js:404
+#: src/control/Control.StatusBar.js:358 src/control/Control.TopToolbar.js:953
+msgid "None"
+msgstr "Ei mitään"
+
+#: admin/src/AdminSocketConfigSettings.js:57
+msgid "Fatal"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:58
+msgid "Critical"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:59
+msgid "Error"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:60
+msgid "Warning"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:61
+msgid "Notice"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:62
+#, fuzzy
+msgid "Information"
+msgstr "Hyväksyntä"
+
+#: admin/src/AdminSocketConfigSettings.js:63
+msgid "Debug"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:64
+msgid "Trace"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:65
+msgid ""
+"Write to file (after enabling, the following settings will be effective)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:66
+msgid "Full path and file name"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:67
+msgid "Backup cycle"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:68
+msgid "Every day"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:69
+msgid "Weekly"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:70
+msgid "10 Days"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:71
+msgid "Monthly"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:72
+msgid "The identifying name of the backup log"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:73
+msgid "Log file name + date and time"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:74
+msgid "Log file name + serial number"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:75
+msgid "Compress backup log files"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:76
+msgid "Log file retention period"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:77
+msgid "1 Week"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:78
+msgid "1 Month"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:79
+msgid "Number of log files retained"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:80
+msgid "Organize log files when the server starts"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:81
+msgid "Write files directly without buffering"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:83
+msgid "Network settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:84
+msgid "Protocol"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:85
+msgid "IPv4"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:86
+msgid "IPv6"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:87
+msgid "IPv4 and IPv6"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:88
+msgid "Listen address"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:89
+msgid "Any addresses"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:90
+msgid "Only this host(loopback)"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:91
+msgid "Connection timeout seconds"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:92
+msgid "Prefix path"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:93
+msgid "Proxy prefix"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:94
+msgid "Allow embedded in iframe hosts"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:95
+msgid "Allow HTTP POST hosts"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:97
+msgid "SSL settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:98
+#: admin/src/AdminSocketSSLCertManager.js:12
+msgid "Enable SSL"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:99
+#: admin/src/AdminSocketSSLCertManager.js:13
+msgid "Connection via proxy"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:100
+#: admin/src/AdminSocketSSLCertManager.js:14
+msgid "Certificate file path"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:101
+#: admin/src/AdminSocketSSLCertManager.js:16
+msgid "Private key file path"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:102
+#: admin/src/AdminSocketSSLCertManager.js:18
+msgid "CA file path"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:103
+#: admin/src/AdminSocketSSLCertManager.js:21
+msgid "Cipher list"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:105
+msgid "Backend storage settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:106
+msgid "Host file system"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:107
+msgid "Allow WOPI storage"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:108
+msgid "Max file size"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:109
+msgid "Pass cookie"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:110
+msgid "Allow WebDAV storage"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:112
+msgid "Watermark settings"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:113
+msgid "Convert to WOPI data"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:114
+msgid "Enable when editing"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:115
+msgid "Enable when printing"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:116
+msgid "Opacity"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:117
+msgid "Angle"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:118
+#: src/control/Control.NotebookbarCalc.js:493 src/control/Toolbar.js:579
+#: uiconfig/dialogs/BindingLineDialog.js:32 uiconfig/dialogs/DeleteCell.js:24
+msgid "Text"
+msgstr "Teksti"
+
+#: admin/src/AdminSocketConfigSettings.js:119 src/control/Toolbar.js:45
+#: uiconfig/dialogs/BindingLineDialog.js:36
+msgid "Font"
+msgstr "Fontti"
+
+#: admin/src/AdminSocketConfigSettings.js:121
+msgid "Bold"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:122
+msgid "Italic"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:123
+msgid "Outline"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:124
+msgid "Shadow"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:126
+msgid "Available tags"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:127
+msgid "User ID"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:128
+#: admin/src/AdminSocketGlobalFunction.js:28
+#: admin/src/AdminSocketGlobalFunction.js:51
+#: src/control/Control.DocumentRepair.js:50
+msgid "User name"
+msgstr "Käyttäjänimi"
+
+#: admin/src/AdminSocketConfigSettings.js:129
+msgid "User IP"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:130
+msgid "Time zone"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:131
+msgid "Date format"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:132
+msgid "Time format"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:134
+msgid "Update system configuration"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:136
+#: admin/src/AdminSocketConfigSettings.js:187
+msgid "Source"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:137
+#: admin/src/AdminSocketConfigSettings.js:188
+msgid "Description"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:138
+msgid "Must specify allow or deny"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:139
+msgid "Source must be entered"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:208
+msgid "The watermark data is placed in UserExtraInfo of WOPI."
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:317
+msgid "Settings updated successfully"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:318
+#: admin/src/AdminSocketSSLCertManager.js:251
+msgid "These settings will take effect after restarting the service."
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:324
+msgid "Setting update failed"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:325
+#: admin/src/AdminSocketSSLCertManager.js:257
+msgid "Please check if there is any problem with the set data."
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:389
+#: admin/src/AdminSocketConfigSettings.js:595
+msgid "Add source"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:452
+#: admin/src/AdminSocketConfigSettings.js:545
+msgid "Allow connect"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:456
+#: admin/src/AdminSocketConfigSettings.js:549
+msgid "Deny connect"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:481
+#: src/control/Control.StatusBar.js:546
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: admin/src/AdminSocketConfigSettings.js:490
+#: admin/src/AdminSocketFontManager.js:302
+#: src/control/Control.ContextMenu.js:204
+msgid "Delete"
+msgstr "Poista"
+
+#: admin/src/AdminSocketConfigSettings.js:560
+msgid "Edit source"
+msgstr ""
+
+#: admin/src/AdminSocketConfigSettings.js:573
+msgid "Delete source"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:12
+msgid "Select all"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:13
+#, fuzzy
+msgid "File name"
+msgstr "tiedostonimi"
+
+#: admin/src/AdminSocketFontManager.js:14
+msgid "Font name (preview)"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:15
+#: src/control/Control.JSDialogBuilder.js:1536
+#: src/control/Control.TopToolbar.js:902
+msgid "Style"
+msgstr "Tyyli"
+
+#: admin/src/AdminSocketFontManager.js:16
+msgid "Color font"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:17
+msgid "Symbol font"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:18
+msgid "Delete selected files?"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:43
+msgid "Upload font files."
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:115
+#: admin/src/AdminSocketSoftwareUpgrade.js:122
+msgid "Transmission"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:152
+msgid "Sending file"
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:279
+#: admin/src/AdminSocketFontManager.js:302
+msgid "file(s)."
+msgstr ""
+
+#: admin/src/AdminSocketFontManager.js:280
+msgid "font(s)."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:10
+msgid "Are you sure you want to restart the online service?"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:12
+#: admin/src/AdminSocketGlobalFunction.js:56
+#: admin/src/AdminSocketOverview.js:256 src/control/Control.Menubar.js:915
+#: src/control/Control.PresentationBar.js:109
+#: src/control/Control.Dialogs.js:115 src/control/Control.Dialogs.js:151
+#: src/control/Control.Dialogs.js:199 src/control/Toolbar.js:584
+#: src/core/Socket.js:1029 uiconfig/dialogs/AddTableAtEnd.js:39
+#: uiconfig/dialogs/BindingLineDialog.js:113 uiconfig/dialogs/DeleteCell.js:66
+#: uiconfig/dialogs/ExampleDialog.js:48 uiconfig/dialogs/GotoPage.js:63
+#: uiconfig/dialogs/InsertTable.js:64 uiconfig/dialogs/MoveTable.js:51
+#: uiconfig/dialogs/OXSaveAs.js:39 uiconfig/dialogs/PdfWatermarkText.js:76
+#: uiconfig/dialogs/SetTabBgColor.js:38 uiconfig/dialogs/ShowTable.js:46
+msgid "OK"
+msgstr "OK"
+
+#: admin/src/AdminSocketGlobalFunction.js:13
+#: admin/src/AdminSocketGlobalFunction.js:33
+#: admin/src/AdminSocketGlobalFunction.js:57
+#: admin/src/AdminSocketOverview.js:257 src/control/Control.Command.js:92
+#: src/control/Control.LanguageDialog.js:86 src/control/Control.Menubar.js:916
+#: src/control/Control.MobileTopBar.js:48
+#: src/control/Control.PresentationBar.js:110
+#: src/control/Control.Dialogs.js:122 src/control/Control.Dialogs.js:206
+#: src/control/Toolbar.js:583 src/core/Socket.js:889 src/core/Socket.js:899
+#: src/core/Socket.js:1030 src/layer/tile/CommentListSection.ts:399
+#: src/layer/tile/CommentSection.ts:125 src/layer/tile/CommentSection.ts:128
+#: uiconfig/dialogs/AddTableAtEnd.js:46
+#: uiconfig/dialogs/BindingLineDialog.js:134 uiconfig/dialogs/DeleteCell.js:86
+#: uiconfig/dialogs/ExampleDialog.js:54 uiconfig/dialogs/GotoPage.js:76
+#: uiconfig/dialogs/InsertTable.js:71 uiconfig/dialogs/MoveTable.js:58
+#: uiconfig/dialogs/OXSaveAs.js:54 uiconfig/dialogs/PdfWatermarkText.js:101
+#: uiconfig/dialogs/SetTabBgColor.js:57 uiconfig/dialogs/ShowTable.js:55
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: admin/src/AdminSocketGlobalFunction.js:26
+msgid ""
+"For security reasons, please enter your original management account and "
+"password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:29
+#: admin/src/AdminSocketGlobalFunction.js:52
+msgid "Password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:32
+msgid "Verification"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:49
+msgid "Please enter a new account and password."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:53
+msgid "Confirm password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:69
+msgid "The password does not match the confirmation password!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:84
+msgid "Restart service"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:85
+msgid "Change account password"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:107
+msgid "System"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:128
+msgid "The account or password is inconsistent with the system!"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:138
+msgid ""
+"The account and password have been updated and will take effect after the "
+"next service restart."
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:142
+msgid "Version"
+msgstr ""
+
+#: admin/src/AdminSocketGlobalFunction.js:147
+#: admin/src/AdminSocketGlobalFunction.js:152
+msgid "Core"
+msgstr ""
+
+#: admin/src/AdminSocketLog.js:11
+msgid "Channel Filter:"
+msgstr "Kanavasuodatin:"
+
+#: admin/src/AdminSocketLog.js:12
+msgid "Refresh Log"
+msgstr "Päivitä loki"
+
+#: admin/src/AdminSocketLog.js:13
+msgid "Set Log Levels"
+msgstr "Aseta lokitaso"
+
+#: admin/src/AdminSocketLog.js:14
+msgid "Log Levels"
+msgstr "Lokitaso"
+
+#: admin/src/AdminSocketLog.js:15
+msgid "Update Log Levels"
+msgstr "Päivitä lokitaso"
+
+#: admin/src/AdminSocketMenuEditor.js:13
+#: admin/src/AdminSocketMenuEditor.js:645
+msgid "Enabled item"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:14
+#: admin/src/AdminSocketMenuEditor.js:645
+msgid "Disabled item"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:15
+msgid "Menu editor"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:16
+msgid "Writer menu"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:17
+msgid "Calc menu"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:18
+msgid "Impress menu"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:19
+msgid "Instructions"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:20
+msgid "The option is marked with a red line to indicate that it is disabled."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:21
+msgid "Click the option to enable or disable the function."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:22
+msgid "Disable the sub-menu, all options under it will also be disabled."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:23
+msgid ""
+"There are three menus available for editing: Writer menu, Calc menu, and "
+"Impress Menu."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:24
+msgid "Show enabled JSON content."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:25
+msgid "Show disabled JSON content."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:26
+msgid "Update menu permissions."
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:27
+msgid "Reset menu"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:28
+#: src/control/Control.NotebookbarCalc.js:148
+#: src/control/Control.NotebookbarImpress.js:204
+#: src/control/Control.NotebookbarWriter.js:155
+msgid "Download"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:483
+msgid "Writer"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:491
+msgid "Calc"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:499
+msgid "Impress"
+msgstr ""
+
+#: admin/src/AdminSocketMenuEditor.js:738
+msgid "Menu permission updated successfully"
+msgstr ""
+
+#: admin/src/AdminSocketOverview.js:12
+msgid "Users online"
+msgstr "Käyttäjiä nyt"
+
+#: admin/src/AdminSocketOverview.js:13
+#, fuzzy
+msgid "Documents opened"
+msgstr "Avatut asiakirjat"
+
+#: admin/src/AdminSocketOverview.js:14
+msgid "Memory consumed"
+msgstr "Käytetty muistin määrä"
+
+#: admin/src/AdminSocketOverview.js:15
+msgid "Bytes sent"
+msgstr "Tavuja lähetetty"
+
+#: admin/src/AdminSocketOverview.js:16
+msgid "Bytes received"
+msgstr "Tavuja vastaanotettu"
+
+#: admin/src/AdminSocketOverview.js:17
+msgid "Server uptime"
+msgstr "Palvelimen käynnistyksestä kulunut aika"
+
+#: admin/src/AdminSocketOverview.js:18
+msgid "Views"
+msgstr "Katselukerrat"
+
+#: admin/src/AdminSocketOverview.js:19
+msgid "PID"
+msgstr "PID"
+
+#: admin/src/AdminSocketOverview.js:20
+msgid "Document"
+msgstr "Asiakirja"
+
+#: admin/src/AdminSocketOverview.js:21
+msgid "Elapsed time"
+msgstr "Kulunut aika"
+
+#: admin/src/AdminSocketOverview.js:22
+msgid "Idle time"
+msgstr "Joutenoloaika"
+
+#: admin/src/AdminSocketOverview.js:23
+msgid "Modified"
+msgstr "Muokattu"
+
+#: admin/src/AdminSocketOverview.js:24
+msgid "Number of Documents"
+msgstr "Asiakirjojen lukumäärä"
+
+#: admin/src/AdminSocketOverview.js:194
+msgid "Failed to set jwt authentication cookie over insecure connection"
+msgstr ""
+"Jwt-autentikaation evästeen asettaminen epäonnistui salaamattoman yhteyden "
+"vuoksi"
+
+#: admin/src/AdminSocketOverview.js:198
+msgid "Failed to authenticate this session over protocol %0"
+msgstr "Istunnon valtuuttaminen protokollan %0 yli epäonnistui"
+
+#: admin/src/AdminSocketOverview.js:248
+msgid "Kill session."
+msgstr "Pysäytä istunto."
+
+#: admin/src/AdminSocketOverview.js:254
+msgid "Are you sure you want to terminate this session?"
+msgstr "Haluatko varmasti lopettaa tämän istunnon?"
+
+#: admin/src/AdminSocketOverview.js:307
+#, fuzzy
+msgid "user(s)."
+msgstr " käyttäjää."
+
+#: admin/src/AdminSocketOverview.js:354
+#, fuzzy
+msgid "document(s) open."
+msgstr " avattua asiakirjaa."
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:12
+msgid "The following file types are accepted : *.zip/*.tar.gz/*.rpm/.deb"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:13
+msgid "Unsupported package installation system!"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:14
+msgid "Unable to enter the temporary directory!"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:15
+msgid "Unknown file type!"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:16
+msgid "File uncompressing..."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:17
+msgid "Test whether it can be upgraded."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:18
+msgid "Start the upgrade."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:19
+msgid "Start the real upgrade."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:91
+msgid "The upload file command is wrong, the syntax is as follows:"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:94
+msgid "Start the software upgrade..."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:98
+msgid "File decompression failed!"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:101
+msgid "Test upgrade failed!"
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:104
+msgid "Software upgrade is successful."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:107
+msgid "You may need to restart the service."
+msgstr ""
+
+#: admin/src/AdminSocketSoftwareUpgrade.js:110
+msgid "Software upgrade failed!"
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:15
+#: admin/src/AdminSocketSSLCertManager.js:135
+msgid "Upload cert file."
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:17
+#: admin/src/AdminSocketSSLCertManager.js:144
+msgid "Upload private file."
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:19
+#: admin/src/AdminSocketSSLCertManager.js:153
+msgid "Upload CA file."
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:20
+msgid "new"
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:22
+msgid "The private key is password protected, please enter the password"
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:23
+msgid "Update SSL configuration"
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:118
+msgid "File size is too large."
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:293
+msgid "Invalid SSL file uploaded."
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:297
+msgid "Private key password"
+msgstr ""
+
+#: admin/src/AdminSocketSSLCertManager.js:301
+msgid "The password is incorrect"
+msgstr ""
+
+#: admin/src/Util.js:14
+msgid "kB"
+msgstr "kt"
+
+#: admin/src/Util.js:14
+msgid "MB"
+msgstr "Mt"
+
+#: admin/src/Util.js:14
+msgid "GB"
+msgstr "Gt"
+
+#: admin/src/Util.js:14
+msgid "TB"
+msgstr "Tt"
+
+#: admin/src/Util.js:14
+msgid "PB"
+msgstr "Pt"
+
+#: admin/src/Util.js:14
+msgid "EB"
+msgstr "Et"
+
+#: admin/src/Util.js:14
+msgid "ZB"
+msgstr "ZB"
+
+#: admin/src/Util.js:14
+msgid "YB"
+msgstr "YB"
+
+#: admin/src/Util.js:14
+msgid "BB"
+msgstr "BB"
+
+#: admin/src/Util.js:43 admin/src/Util.js:45
+msgid " hrs"
+msgstr " h"
+
+#: admin/src/Util.js:49 admin/src/Util.js:51
+msgid " mins"
+msgstr " min"
+
+#: admin/src/Util.js:54
+msgid " s"
+msgstr " s"
+
+#: js/w2ui-1.5.rc1.js:2919
+msgid "Recent"
+msgstr "Viimeaikainen"
+
+#: src/control/ColorPicker.js:122
+msgid "No color"
+msgstr "Ei väriä"
+
+#: src/control/ColorPicker.js:123
+msgid "Automatic color"
+msgstr "Automaattinen väritys"
+
+#: src/control/Control.AlertDialog.js:25 src/control/Control.Dialogs.js:245
+#: src/control/Signing.js:611 uiconfig/dialogs/BindingLineDialog.js:99
+#: uiconfig/dialogs/DeleteCell.js:51 uiconfig/dialogs/PdfWatermarkText.js:54
+#: uiconfig/dialogs/SetTabBgColor.js:24
+#: welcome/welcome.html+html.body.div.div.div.div.div:51
+msgid "Close"
+msgstr "Sulje"
+
+#: src/control/Control.AlertDialog.js:66
+msgid "Open link"
+msgstr "Avaa linkki"
+
+#: src/control/Control.AlertDialog.js:94
+msgid "The server encountered a %0 error while parsing the %1 command."
+msgstr "Palvelin kohtasi virheen %0 jäsennellessään komentoa %1."
+
+#: src/control/Control.Command.js:91
+msgid "Unlock"
+msgstr "Avaa lukitus"
+
+#: src/control/Control.ContextMenu.js:137
+msgid "Command"
+msgstr ""
+
+#: src/control/Control.DocumentNameInput.js:77
+msgid "Path"
+msgstr "Tiedostosijainti"
+
+#: src/control/Control.DocumentRepair.js:33
+msgid "Repair Document"
+msgstr "Korjaa asiakirja"
+
+#: src/control/Control.DocumentRepair.js:44
+msgid "Type"
+msgstr "Laji"
+
+#: src/control/Control.DocumentRepair.js:46
+msgid "Index"
+msgstr "Hakemisto"
+
+#: src/control/Control.DocumentRepair.js:48
+#: src/control/Control.JSDialogBuilder.js:2222
+#: src/layer/tile/CanvasTileLayer.js:5039
+#: src/layer/tile/CanvasTileLayer.js:5049
+#: src/layer/tile/CommentListSection.ts:856
+msgid "Comment"
+msgstr "Huomautus"
+
+#: src/control/Control.DocumentRepair.js:52
+msgid "Timestamp"
+msgstr "Aikaleima"
+
+#: src/control/Control.DocumentRepair.js:56
+msgid "Jump to state"
+msgstr "Siirry tilaan"
+
+#: src/control/Control.DocumentRepair.js:95
+#: src/control/Control.UserList.js:288
+msgid "You"
+msgstr "Sinä"
+
+#: src/control/Control.DownloadProgress.js:47
+msgid "Start download"
+msgstr "Aloita lataus"
+
+#: src/control/Control.DownloadProgress.js:62
+msgid "Confirm copy to clipboard"
+msgstr "Vahvista kopiointi leikepöydälle"
+
+#: src/control/Control.FormulaBar.js:34
+msgid "Function Wizard"
+msgstr "Funktioapuri"
+
+#: src/control/Control.FormulaBar.js:46
+msgid "cell address"
+msgstr "solun osoite"
+
+#: src/control/Control.JSDialogBuilder.js:407
+msgid "Solid"
+msgstr "Kiinteä"
+
+#: src/control/Control.JSDialogBuilder.js:410
+msgid "Linear"
+msgstr "Lineaarinen"
+
+#: src/control/Control.JSDialogBuilder.js:413
+msgid "Axial"
+msgstr "Aksiaalinen"
+
+#: src/control/Control.JSDialogBuilder.js:416
+msgid "Radial"
+msgstr "Radiaalinen"
+
+#: src/control/Control.JSDialogBuilder.js:419
+msgid "Ellipsoid"
+msgstr "Ellipsoidi"
+
+#: src/control/Control.JSDialogBuilder.js:423
+msgid "Quadratic"
+msgstr "Neliömäinen"
+
+#: src/control/Control.JSDialogBuilder.js:426
+msgid "Square"
+msgstr "Neliö"
+
+#: src/control/Control.JSDialogBuilder.js:429
+msgid "Fixed size"
+msgstr "Kiinteämittainen"
+
+#: src/control/Control.JSDialogBuilder.js:1292
+msgid "From"
+msgstr "Aloitus"
+
+#: src/control/Control.JSDialogBuilder.js:1295
+msgid "To"
+msgstr "Loppu"
+
+#: src/control/Control.JSDialogBuilder.js:1486
+msgid "Select range"
+msgstr "Valitse väli"
+
+#: src/control/Control.JSDialogBuilder.js:1532
+#: src/control/Control.NotebookbarBuilder.js:239
+msgid "Font Name"
+msgstr "Kirjasinlaji"
+
+#: src/control/Control.JSDialogBuilder.js:1534 src/control/Toolbar.js:133
+msgid "Font Size"
+msgstr "Kirjasinkoko"
+
+#: src/control/Control.JSDialogBuilder.js:2208
+msgid "reply"
+msgstr "vastaa"
+
+#: src/control/Control.JSDialogBuilder.js:2211
+msgid "replies"
+msgstr "vastaukset"
+
+#: src/control/Control.JSDialogBuilder.js:2284
+msgid "Insert Comment"
+msgstr "Lisää Kommentti"
+
+#: src/control/Control.JSDialogBuilder.js:2757
+msgid "Cell borders"
+msgstr "Solun reunat"
+
+#: src/control/Control.JSDialogBuilder.js:2948
+msgid "Rows"
+msgstr "Rivejä"
+
+#: src/control/Control.JSDialogBuilder.js:2949
+msgid "Columns"
+msgstr "Sarakkeita"
+
+#: src/control/Control.JSDialogBuilder.js:2969
+msgid "Insert Table"
+msgstr "Lisää taulukko"
+
+#: src/control/Control.LanguageDialog.js:69 src/control/Control.Menubar.js:780
+#: src/control/Control.NotebookbarBuilder.js:936
+#: src/control/Control.NotebookbarBuilder.js:938
+#: src/control/Control.NotebookbarBuilder.js:940
+#: src/control/Control.NotebookbarBuilder.js:948
+#: src/control/Control.StatusBar.js:561 src/othermessages.js:29
+msgid "None (Do not check spelling)"
+msgstr "Ei mitään (Älä tarkista oikeinkirjoitusta)"
+
+#: src/control/Control.Menubar.js:11 src/control/Control.Menubar.js:65
+#: src/control/Control.Menubar.js:121 src/control/Control.Menubar.js:167
+#: src/control/Control.StatusBar.js:140
+msgid "Search"
+msgstr "Etsi"
+
+#: src/control/Control.Menubar.js:15 src/control/Control.Menubar.js:69
+#: src/control/Control.Menubar.js:125 src/control/Control.Menubar.js:171
+#: src/othermessages.js:6
+msgid "Share..."
+msgstr "Jaa..."
+
+#: src/control/Control.Menubar.js:16 src/control/Control.Menubar.js:70
+#: src/control/Control.Menubar.js:127 src/control/Control.Menubar.js:172
+#: src/othermessages.js:7
+msgid "See revision history"
+msgstr "Näytä versiohistoria"
+
+#: src/control/Control.Menubar.js:17
+#: src/control/Control.NotebookbarWriter.js:244 src/control/Signing.js:604
+msgid "Sign document"
+msgstr "Allekirjoita asiakirja"
+
+#: src/control/Control.Menubar.js:21 src/control/Control.Menubar.js:74
+#: src/control/Control.Menubar.js:129 src/control/Control.Menubar.js:176
+#: src/othermessages.js:8
+msgid "Download as"
+msgstr "Lataa nimellä"
+
+#: src/control/Control.Menubar.js:21 src/control/Control.Menubar.js:74
+#: src/control/Control.Menubar.js:129 src/control/Control.Menubar.js:176
+msgid "Export as"
+msgstr "Vie muodossa"
+
+#: src/control/Control.Menubar.js:22 src/control/Control.Menubar.js:75
+#: src/control/Control.Menubar.js:130 src/control/Control.Menubar.js:177
+#: src/control/Control.NotebookbarBuilder.js:481
+#: src/control/Control.NotebookbarBuilder.js:504
+#: src/control/Control.NotebookbarBuilder.js:527
+#: src/control/Control.NotebookbarCalc.js:213
+#: src/control/Control.NotebookbarDraw.js:205
+#: src/control/Control.NotebookbarImpress.js:269
+#: src/control/Control.NotebookbarWriter.js:204
+#: src/control/Toolbar.Extensions.js:127 src/control/Toolbar.Extensions.js:137
+#: src/control/Toolbar.Extensions.js:145 src/control/Toolbar.Extensions.js:152
+#: src/othermessages.js:9
+msgid "PDF Document (.pdf)"
+msgstr "PDF-asiakirja (.pdf)"
+
+#: src/control/Control.Menubar.js:23
+#: src/control/Control.NotebookbarBuilder.js:461
+#: src/control/Toolbar.Extensions.js:130 src/othermessages.js:12
+msgid "ODF text document (.odt)"
+msgstr "ODF-tekstiasiakirja (.odt)"
+
+#: src/control/Control.Menubar.js:24
+#: src/control/Control.NotebookbarBuilder.js:473
+#: src/control/Control.NotebookbarWriter.js:186
+#: src/control/Toolbar.Extensions.js:131 src/othermessages.js:15
+msgid "Word 2003 Document (.doc)"
+msgstr "Word 2003 -asiakirja (.doc)"
+
+#: src/control/Control.Menubar.js:25
+#: src/control/Control.NotebookbarBuilder.js:469
+#: src/control/Control.NotebookbarWriter.js:192
+#: src/control/Toolbar.Extensions.js:132 src/othermessages.js:18
+msgid "Word Document (.docx)"
+msgstr "Word-asiakirja (.docx)"
+
+#: src/control/Control.Menubar.js:26
+#: src/control/Control.NotebookbarBuilder.js:465
+#: src/control/Control.NotebookbarWriter.js:174
+#: src/control/Toolbar.Extensions.js:133 src/othermessages.js:21
+msgid "Rich Text (.rtf)"
+msgstr "Rikasteksti (.rtf)"
+
+#: src/control/Control.Menubar.js:27
+#: src/control/Control.NotebookbarBuilder.js:477
+msgid "EPUB (.epub)"
+msgstr "EPUB (.epub)"
+
+#: src/control/Control.Menubar.js:32 src/control/Control.Menubar.js:84
+#: src/control/Control.Menubar.js:136 src/control/Control.Menubar.js:185
+#: src/control/Control.NotebookbarCalc.js:160
+#: src/control/Control.NotebookbarCalc.js:161
+#: src/control/Control.NotebookbarCalc.js:219
+#: src/control/Control.NotebookbarCalc.js:220
+#: src/control/Control.NotebookbarDraw.js:211
+#: src/control/Control.NotebookbarDraw.js:212
+#: src/control/Control.NotebookbarImpress.js:216
+#: src/control/Control.NotebookbarImpress.js:217
+#: src/control/Control.NotebookbarImpress.js:275
+#: src/control/Control.NotebookbarImpress.js:276
+#: src/control/Control.NotebookbarWriter.js:226
+#: src/control/Control.NotebookbarWriter.js:227
+#: src/control/Control.NotebookbarWriter.js:238
+#: src/control/Control.NotebookbarWriter.js:239 src/othermessages.js:24
+msgid "Repair"
+msgstr "Korjaa"
+
+#: src/control/Control.Menubar.js:56
+msgid "Page Setup"
+msgstr "Sivuasetukset"
+
+#: src/control/Control.Menubar.js:59 src/control/Control.Menubar.js:115
+#: src/control/Control.Menubar.js:161 src/control/Control.Menubar.js:231
+#: src/control/Control.NotebookbarWriter.js:315
+msgid "Latest Updates"
+msgstr "Viimeisimmät päivitykset"
+
+#: src/control/Control.Menubar.js:60 src/control/Control.Menubar.js:116
+#: src/control/Control.Menubar.js:162 src/control/Control.Menubar.js:232
+#: src/control/Control.NotebookbarWriter.js:327
+msgid "Send Feedback"
+msgstr "Lähetä palautetta"
+
+#: src/control/Control.Menubar.js:61 src/control/Control.Menubar.js:117
+#: src/control/Control.Menubar.js:163 src/control/Control.Menubar.js:233
+#: src/control/Control.NotebookbarWriter.js:339 src/othermessages.js:31
+msgid "About"
+msgstr "Tietoja"
+
+#: src/control/Control.Menubar.js:76
+#: src/control/Control.NotebookbarBuilder.js:511
+#: src/control/Toolbar.Extensions.js:147 src/othermessages.js:14
+msgid "ODF presentation (.odp)"
+msgstr "ODF-esitys (.odp)"
+
+#: src/control/Control.Menubar.js:77
+#: src/control/Control.NotebookbarBuilder.js:523
+#: src/control/Control.NotebookbarImpress.js:250
+#: src/control/Toolbar.Extensions.js:148 src/othermessages.js:17
+msgid "PowerPoint 2003 Presentation (.ppt)"
+msgstr "PowerPoint 2003 -esitys (.ppt)"
+
+#: src/control/Control.Menubar.js:78
+#: src/control/Control.NotebookbarBuilder.js:519
+#: src/control/Control.NotebookbarImpress.js:256
+#: src/control/Toolbar.Extensions.js:149 src/othermessages.js:20
+msgid "PowerPoint Presentation (.pptx)"
+msgstr "PowerPoint-esitys (.pptx)"
+
+#: src/control/Control.Menubar.js:79 src/control/Control.Menubar.js:131
+#: src/control/Control.NotebookbarBuilder.js:515
+#: src/control/Control.NotebookbarDraw.js:186
+#: src/control/Control.NotebookbarImpress.js:237
+#: src/control/Toolbar.Extensions.js:153
+msgid "ODF Drawing (.odg)"
+msgstr "ODF-piirros (.odg)"
+
+#: src/control/Control.Menubar.js:113
+#: src/control/Control.PresentationBar.js:57 src/othermessages.js:26
+msgid "Fullscreen presentation"
+msgstr "Esitys kokonäyttötilassa"
+
+#: src/control/Control.Menubar.js:178
+#: src/control/Control.NotebookbarBuilder.js:488
+#: src/control/Toolbar.Extensions.js:139 src/othermessages.js:13
+msgid "ODF spreadsheet (.ods)"
+msgstr "ODF-laskentataulukko (.ods)"
+
+#: src/control/Control.Menubar.js:179
+#: src/control/Control.NotebookbarBuilder.js:496
+#: src/control/Control.NotebookbarCalc.js:194
+#: src/control/Toolbar.Extensions.js:140 src/othermessages.js:16
+msgid "Excel 2003 Spreadsheet (.xls)"
+msgstr "Excel 2003 -laskentataulukko (.xls)"
+
+#: src/control/Control.Menubar.js:180
+#: src/control/Control.NotebookbarBuilder.js:492
+#: src/control/Control.NotebookbarCalc.js:200
+#: src/control/Toolbar.Extensions.js:141 src/othermessages.js:19
+msgid "Excel Spreadsheet (.xlsx)"
+msgstr "Excel-laskentataulukko (.xlsx)"
+
+#: src/control/Control.Menubar.js:239 src/control/Control.Menubar.js:281
+#: src/control/Control.Menubar.js:295 src/control/Control.Menubar.js:318
+msgid "Local Image..."
+msgstr "Paikallinen kuva..."
+
+#: src/control/Control.Menubar.js:256 src/control/Control.Menubar.js:258
+#: src/othermessages.js:28
+msgid "All"
+msgstr "Kaikki"
+
+#: src/control/Control.Menubar.js:786 src/control/Control.StatusBar.js:560
+msgid "Reset to Default Language"
+msgstr "Palauta oletuskielelle"
+
+#: src/control/Control.Menubar.js:823
+msgid "Insert Shape"
+msgstr "Lisää muoto"
+
+#: src/control/Control.Menubar.js:913
+#: src/control/Control.PresentationBar.js:101 uiconfig/dialogs/Action.js:95
+msgid "Are you sure you want to delete this slide?"
+msgstr "Haluatko varmasti poistaa tämän dian?"
+
+#: src/control/Control.Menubar.js:1000
+msgid "file type icon"
+msgstr "tiedostotyypin kuvake"
+
+#: src/control/Control.MobileBottomBar.js:34
+msgid "Show the search bar"
+msgstr "Näytä hakupalkki"
+
+#: src/control/Control.MobileTopBar.js:45
+msgid "Accept"
+msgstr "Hyväksy"
+
+#: src/control/Control.MobileWizardBuilder.js:503
+msgid "Background Color"
+msgstr "Taustaväri"
+
+#: src/control/Control.MobileWizardBuilder.js:505
+msgid "Gradient Start"
+msgstr "Liukuvärin alku"
+
+#: src/control/Control.MobileWizardBuilder.js:507
+msgid "Gradient End"
+msgstr "Liukuvärin loppu"
+
+#: src/control/Control.Notebookbar.js:253
+#: src/control/Control.NotebookbarCalc.js:96
+#: src/control/Control.NotebookbarDraw.js:18
+#: src/control/Control.NotebookbarDraw.js:139
+#: src/control/Control.NotebookbarImpress.js:18
+#: src/control/Control.NotebookbarImpress.js:152
+#: src/control/Control.NotebookbarWriter.js:104
+#: src/layer/tile/CommentListSection.ts:398
+#: src/layer/tile/CommentSection.ts:126
+msgid "Save"
+msgstr "Tallenna"
+
+#: src/control/Control.NotebookbarBuilder.js:500
+#: src/control/Control.NotebookbarCalc.js:181
+msgid "CSV File (.csv)"
+msgstr "CSV-tiedosto (.csv)"
+
+#: src/control/Control.NotebookbarBuilder.js:725
+msgid "Insert Local Image"
+msgstr "Lisää paikallinen kuva"
+
+#: src/control/Control.NotebookbarBuilder.js:807
+msgid "Very Tight"
+msgstr "Hyvin tiivis"
+
+#: src/control/Control.NotebookbarBuilder.js:808
+msgid "Tight"
+msgstr "Tiivis"
+
+#: src/control/Control.NotebookbarBuilder.js:809
+msgid "Normal"
+msgstr "Normaali"
+
+#: src/control/Control.NotebookbarBuilder.js:810
+msgid "Loose"
+msgstr "Väljä"
+
+#: src/control/Control.NotebookbarBuilder.js:811
+msgid "Very Loose"
+msgstr "Hyvin väljä"
+
+#: src/control/Control.NotebookbarCalc.js:12
+#: src/control/Control.NotebookbarDraw.js:55
+#: src/control/Control.NotebookbarImpress.js:67
+#: src/control/Control.NotebookbarWriter.js:12
+msgid "~File"
+msgstr "~Tiedosto"
+
+#: src/control/Control.NotebookbarCalc.js:17
+#: src/control/Control.NotebookbarDraw.js:60
+#: src/control/Control.NotebookbarImpress.js:72
+#: src/control/Control.NotebookbarWriter.js:17
+msgid "~Home"
+msgstr "~Aloitus"
+
+#: src/control/Control.NotebookbarCalc.js:23
+#: src/control/Control.NotebookbarDraw.js:66
+#: src/control/Control.NotebookbarImpress.js:78
+#: src/control/Control.NotebookbarWriter.js:23
+msgid "~Insert"
+msgstr "~Lisää"
+
+#: src/control/Control.NotebookbarCalc.js:28
+#: src/control/Control.NotebookbarDraw.js:71
+#: src/control/Control.NotebookbarImpress.js:83
+#: src/control/Control.NotebookbarWriter.js:28
+msgid "~Layout"
+msgstr "~Asettelu"
+
+#: src/control/Control.NotebookbarCalc.js:33
+msgid "~Data"
+msgstr "~Tiedot"
+
+#: src/control/Control.NotebookbarCalc.js:38
+#: src/control/Control.NotebookbarDraw.js:76
+#: src/control/Control.NotebookbarImpress.js:88
+#: src/control/Control.NotebookbarWriter.js:38
+msgid "~Review"
+msgstr "~Yleiskatsaus"
+
+#: src/control/Control.NotebookbarCalc.js:43
+#: src/control/Control.NotebookbarDraw.js:81
+#: src/control/Control.NotebookbarImpress.js:93
+#: src/control/Control.NotebookbarWriter.js:43
+msgid "Format"
+msgstr "Muotoilu"
+
+#: src/control/Control.NotebookbarCalc.js:48
+#: src/control/Control.NotebookbarDraw.js:92
+#: src/control/Control.NotebookbarWriter.js:54
+msgid "~Draw"
+msgstr "~Piirto"
+
+#: src/control/Control.NotebookbarCalc.js:54
+#: src/control/Control.NotebookbarDraw.js:98
+#: src/control/Control.NotebookbarImpress.js:110
+#: src/control/Control.NotebookbarWriter.js:60
+msgid "~View"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:59
+#: src/control/Control.NotebookbarDraw.js:103
+#: src/control/Control.NotebookbarImpress.js:115
+#: src/control/Control.NotebookbarWriter.js:65
+msgid "~Help"
+msgstr "~Apua"
+
+#: src/control/Control.NotebookbarCalc.js:116
+#: src/control/Control.NotebookbarDraw.js:159
+#: src/control/Control.NotebookbarImpress.js:172
+#: src/control/Control.NotebookbarWriter.js:123
+msgid "Share"
+msgstr "Jaa"
+
+#: src/control/Control.NotebookbarCalc.js:123
+#: src/control/Control.NotebookbarDraw.js:166
+#: src/control/Control.NotebookbarImpress.js:179
+#: src/control/Control.NotebookbarWriter.js:130
+msgid "See history"
+msgstr "Näytä historia"
+
+#: src/control/Control.NotebookbarCalc.js:175
+msgid "ODF Spreadsheet (.ods)"
+msgstr "ODF-laskentataulukko (.ods)"
+
+#: src/control/Control.NotebookbarCalc.js:484
+msgid "General"
+msgstr "Tavallinen"
+
+#: src/control/Control.NotebookbarCalc.js:485
+msgid "Number"
+msgstr "Numero"
+
+#: src/control/Control.NotebookbarCalc.js:486
+msgid "Percent"
+msgstr "Prosentti"
+
+#: src/control/Control.NotebookbarCalc.js:487
+msgid "Currency"
+msgstr "Valuutta"
+
+#: src/control/Control.NotebookbarCalc.js:488
+msgid "Date"
+msgstr "Päivämäärä"
+
+#: src/control/Control.NotebookbarCalc.js:489
+msgid "Time"
+msgstr "Aika"
+
+#: src/control/Control.NotebookbarCalc.js:490
+msgid "Scientific"
+msgstr "Tieteellinen"
+
+#: src/control/Control.NotebookbarCalc.js:491
+msgid "Fraction"
+msgstr "Murtoluku"
+
+#: src/control/Control.NotebookbarCalc.js:492
+msgid "Boolean Value"
+msgstr "Totuusarvo"
+
+#: src/control/Control.NotebookbarCalc.js:626
+#: uiconfig/dialogs/SetTabBgColor.js:63
+msgid "Default"
+msgstr "Oletus"
+
+#: src/control/Control.NotebookbarCalc.js:631
+msgid "Heading 1"
+msgstr "Otsikko 1"
+
+#: src/control/Control.NotebookbarCalc.js:636
+msgid "Heading 2"
+msgstr "Otsikko 2"
+
+#: src/control/Control.NotebookbarCalc.js:647
+msgid "Good"
+msgstr "Hyvä"
+
+#: src/control/Control.NotebookbarCalc.js:652
+msgid "Neutral"
+msgstr "Neutraali"
+
+#: src/control/Control.NotebookbarCalc.js:657
+msgid "Bad"
+msgstr "Huono"
+
+#: src/control/Control.NotebookbarCalc.js:720
+msgid "Row Width"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:726
+msgid "Column Width"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:737
+msgid "Insert Rows Above"
+msgstr "Lisää rivejä yläpuolelle"
+
+#: src/control/Control.NotebookbarCalc.js:742
+msgid "Insert Columns Before"
+msgstr "Lisää sarakkeita edelle"
+
+#: src/control/Control.NotebookbarCalc.js:747
+msgid "Delete Rows"
+msgstr "Poista rivit"
+
+#: src/control/Control.NotebookbarCalc.js:757
+msgid "Insert Rows Below"
+msgstr "Lisää rivejä alapuolelle"
+
+#: src/control/Control.NotebookbarCalc.js:762
+msgid "Insert Columns After"
+msgstr "Lisää sarakkeita jälkeen"
+
+#: src/control/Control.NotebookbarCalc.js:767
+msgid "Delete Columns"
+msgstr "Poista sarakkeet"
+
+#: src/control/Control.NotebookbarCalc.js:915
+#: src/control/Control.NotebookbarCalc.js:916
+#: src/control/Control.NotebookbarDraw.js:233
+#: src/control/Control.NotebookbarDraw.js:234
+#: src/control/Control.NotebookbarImpress.js:303
+#: src/control/Control.NotebookbarImpress.js:304
+#: src/control/Control.NotebookbarWriter.js:965
+#: src/control/Control.NotebookbarWriter.js:966
+#: src/control/Control.StatusBar.js:155
+msgid "Reset zoom"
+msgstr "Nollaa zoomaus"
+
+#: src/control/Control.NotebookbarCalc.js:954
+#: src/control/Control.NotebookbarDraw.js:272
+#: src/control/Control.NotebookbarImpress.js:342
+#: src/control/Control.NotebookbarWriter.js:1004
+msgid "Compact view"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:955
+#: src/control/Control.NotebookbarDraw.js:273
+#: src/control/Control.NotebookbarImpress.js:343
+#: src/control/Control.NotebookbarWriter.js:1005
+msgid "Toggle UI Mode"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:960
+#: src/control/Control.NotebookbarDraw.js:278
+#: src/control/Control.NotebookbarImpress.js:348
+#: src/control/Control.NotebookbarWriter.js:1027
+msgid "Status Bar"
+msgstr ""
+
+#: src/control/Control.NotebookbarCalc.js:961
+#: src/control/Control.NotebookbarDraw.js:279
+#: src/control/Control.NotebookbarImpress.js:349
+#: src/control/Control.NotebookbarWriter.js:1028
+msgid "Show Status Bar"
+msgstr "Näytä tilapalkki"
+
+#: src/control/Control.NotebookbarDraw.js:39
+#: src/control/Control.NotebookbarDraw.js:740
+msgid "Page layout"
+msgstr "Sivuasetttelu"
+
+#: src/control/Control.NotebookbarDraw.js:86
+#: src/control/Control.NotebookbarImpress.js:98
+#: src/control/Control.NotebookbarWriter.js:48
+msgid "~Table"
+msgstr "~Taulukko"
+
+#: src/control/Control.NotebookbarDraw.js:192
+msgid "Image (.png)"
+msgstr "Kuva (.png)"
+
+#: src/control/Control.NotebookbarImpress.js:231
+msgid "ODF Presentation (.odp)"
+msgstr "ODF-esitys (.odp)"
+
+#: src/control/Control.NotebookbarImpress.js:291
+#: src/control/Control.NotebookbarImpress.js:756
+msgid "Presentation"
+msgstr "Esitys"
+
+#: src/control/Control.NotebookbarWriter.js:33
+msgid "Reference~s"
+msgstr "Viittaukset"
+
+#: src/control/Control.NotebookbarWriter.js:168
+msgid "ODF Text Document (.odt)"
+msgstr "ODF-tekstiasiakirja (.odt)"
+
+#: src/control/Control.NotebookbarWriter.js:210
+#: src/control/Toolbar.Extensions.js:134 src/othermessages.js:23
+msgid "EPUB Document (.epub)"
+msgstr "EPUB-tiedosto (.epub)"
+
+#: src/control/Control.NotebookbarWriter.js:270
+msgid "Forum"
+msgstr "Foorumi"
+
+#: src/control/Control.NotebookbarWriter.js:281
+#: uiconfig/dialogs/ShowHelp.js:41
+msgid "Online Help"
+msgstr "Online-avustus"
+
+#: src/control/Control.NotebookbarWriter.js:292 src/othermessages.js:30
+#: uiconfig/dialogs/ShowHelp.js:41
+msgid "Keyboard shortcuts"
+msgstr "Pikanäppäimet"
+
+#: src/control/Control.NotebookbarWriter.js:303
+msgid "Report an issue"
+msgstr "Ilmoita virhe"
+
+#: src/control/Control.NotebookbarWriter.js:1016
+msgid "Ruler"
+msgstr ""
+
+#: src/control/Control.NotebookbarWriter.js:1017
+msgid "Show Ruler"
+msgstr "Näytä viivotin"
+
+#: src/control/Control.PartsPreview.js:210
+msgid "preview of page "
+msgstr "Esikatselu sivusta "
+
+#: src/control/Control.PresentationBar.js:104
+msgid "Are you sure you want to delete this page?"
+msgstr "Haluatko varmasti poistaa tämän sivun?"
+
+#: src/control/Control.Scroll.Annotation.js:10
+msgid "Scroll up annotations"
+msgstr "Vieritä huomautuksia ylöspäin"
+
+#: src/control/Control.Scroll.Annotation.js:12
+msgid "Scroll down annotations"
+msgstr "Vieritä huomautuksia alaspäin"
+
+#: src/control/Control.SearchBar.js:20
+msgid "Hide the search bar"
+msgstr "Piilota hakupalkki"
+
+#: src/control/Control.SearchBar.js:31
+msgid "Clear the search field"
+msgstr "Tyhjennä hakukenttä"
+
+#: src/control/Control.SheetsBar.js:27
+msgid "Scroll to the first sheet"
+msgstr "Vieritä ensimmäiseen taulukkoon"
+
+#: src/control/Control.SheetsBar.js:28
+msgid "Scroll left"
+msgstr "Vieritä vasemmalle"
+
+#: src/control/Control.SheetsBar.js:29
+msgid "Scroll right"
+msgstr "Vieritä oikealle"
+
+#: src/control/Control.SheetsBar.js:30
+msgid "Scroll to the last sheet"
+msgstr "Vieritä viimeiseen taulukkoon"
+
+#: src/control/Control.SheetsBar.js:31
+msgid "Insert sheet"
+msgstr "Lisää taulukko"
+
+#: src/control/Control.StatusBar.js:146
+msgid "Cancel the search"
+msgstr "Peruuta etsintä"
+
+#: src/control/Control.StatusBar.js:263
+#: uiconfig/dialogs/BindingLineDialog.js:39
+#, fuzzy
+msgid "Insert"
+msgstr "~Lisää"
+
+#: src/control/Control.StatusBar.js:263 src/core/Socket.js:867
+msgid "Overwrite"
+msgstr "Korvaa"
+
+#: src/control/Control.StatusBar.js:264
+msgid "Entering text mode"
+msgstr "Siirrytään tekstitilaan"
+
+#: src/control/Control.StatusBar.js:282
+msgid "Number of Sheets"
+msgstr "Taulukoiden määrä"
+
+#: src/control/Control.StatusBar.js:282
+msgid "Click to go to the specified worksheet"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:299
+msgid "Selected range of cells"
+msgstr "Valittu solualue"
+
+#: src/control/Control.StatusBar.js:318 src/control/Control.StatusBar.js:321
+msgid "Standard selection"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:322
+msgid "Extending selection"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:323
+msgid "Adding selection"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:344
+msgid "Choice of functions"
+msgstr "Funktioiden valinta"
+
+#: src/control/Control.StatusBar.js:351
+msgid "Average"
+msgstr "Keskiarvo"
+
+#: src/control/Control.StatusBar.js:352
+msgid "CountA"
+msgstr "LaskeA"
+
+#: src/control/Control.StatusBar.js:353
+msgid "Count"
+msgstr "Laske"
+
+#: src/control/Control.StatusBar.js:354
+msgid "Maximum"
+msgstr "Maksimi"
+
+#: src/control/Control.StatusBar.js:355
+msgid "Minimum"
+msgstr "Minimi"
+
+#: src/control/Control.StatusBar.js:356
+msgid "Sum"
+msgstr "Summa"
+
+#: src/control/Control.StatusBar.js:357
+msgid "Selection count"
+msgstr "Valittujen lkm"
+
+#: src/control/Control.StatusBar.js:389 src/control/Control.StatusBar.js:477
+msgid "Number of Pages"
+msgstr "Sivujen lukumäärä"
+
+#: src/control/Control.StatusBar.js:389
+msgid "Click to go to the specified page"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:401
+msgid "Word Counter"
+msgstr "Sanalaskuri"
+
+#: src/control/Control.StatusBar.js:401
+msgid "Click to open the Detailed Word Count dialog"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:414
+msgid "Page Style"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:414
+msgid "Click to open the styles dialog"
+msgstr ""
+
+#: src/control/Control.StatusBar.js:454
+msgid "Number of Slides"
+msgstr "Diojen lukumäärä"
+
+#: src/control/Control.StatusBar.js:545 src/control/Control.StatusBar.js:546
+msgid "Permission Mode"
+msgstr "Käyttöoikeustila"
+
+#: src/control/Control.StatusBar.js:545
+msgid "Read-only"
+msgstr "Kirjoitussuojattu"
+
+#: src/control/Control.Tabs.js:56 src/control/Control.Tabs.js:99
+msgid "Insert sheet before this"
+msgstr "Lisää laskentataulukko ennen tätä"
+
+#: src/control/Control.Tabs.js:59 src/control/Control.Tabs.js:105
+msgid "Insert sheet after this"
+msgstr "Lisää laskentataulukko tämän jälkeen"
+
+#: src/control/Control.Tabs.js:78
+msgid "Move Sheet Left"
+msgstr "Siirrä taulukkoa vasemmalle"
+
+#: src/control/Control.Tabs.js:82
+msgid "Move Sheet Right"
+msgstr "Siirrä taulukkoa oikealle"
+
+#: src/control/Control.Toolbar.js:228 src/control/Control.Toolbar.js:256
+msgid "More..."
+msgstr "Lisää..."
+
+#: src/control/Control.Toolbar.js:959
+msgid ""
+"Conflict Undo/Redo with multiple users. Please use document repair to "
+"resolve"
+msgstr ""
+"Peru- tai tee uudelleen -toiminnon ristiriitaisuus usean käyttäjän kesken. "
+"Käytä asiakirjan korjausta tilanteen selvittämiseksi"
+
+#: src/control/Control.Toolbar.js:1090
+msgid "Close document"
+msgstr "Sulje asiakirja"
+
+#: src/control/Control.TopToolbar.js:135
+msgid "Clone Formatting (double click and Ctrl or Cmd to alter behavior)"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:181
+msgid "Default Style"
+msgstr "Oletustyyli"
+
+#: src/control/Control.TopToolbar.js:487
+msgid "Borders"
+msgstr "Reunat"
+
+#: src/control/Control.TopToolbar.js:625 src/othermessages.js:25
+msgid "Remote image"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:634
+msgid "Insert shapes"
+msgstr "Lisää muotoja"
+
+#: src/control/Control.TopToolbar.js:642
+msgid "Insert connectors"
+msgstr "Lisää liittimet"
+
+#: src/control/Control.TopToolbar.js:954
+msgid "Wipe"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:955
+msgid "Wheel"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:956
+msgid "Uncover"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:957
+msgid "Bars"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:958
+msgid "Checkers"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:959
+#, fuzzy
+msgid "Shape"
+msgstr "Jaa"
+
+#: src/control/Control.TopToolbar.js:960
+msgid "Box"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:961
+msgid "Wedge"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:963
+msgid "Fade"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:965
+msgid "Cover"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:966
+msgid "Dissolve"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:969
+msgid "Push"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:970
+msgid "Split"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:971
+msgid "Diagonal"
+msgstr ""
+
+#: src/control/Control.TopToolbar.js:1107
+msgid "Reset slide layout"
+msgstr ""
+
+#: src/control/Control.UserList.js:10
+msgid "%user has joined"
+msgstr "%user on liittynyt"
+
+#: src/control/Control.UserList.js:11
+msgid "%user has left"
+msgstr "%user on poistunut"
+
+#: src/control/Control.UserList.js:34
+msgid "%n users"
+msgstr "%n käyttäjää"
+
+#: src/control/Control.UserList.js:35
+msgid "1 user"
+msgstr "1 käyttäjä"
+
+#: src/control/Control.UserList.js:36
+msgid "0 users"
+msgstr "0 käyttäjää"
+
+#: src/control/Control.UserList.js:180 src/control/Control.UserList.js:346
+msgid "Always follow the editor"
+msgstr "Seuraa aina toimittajaa"
+
+#: src/control/Control.UserList.js:294
+msgid "Readonly"
+msgstr "Kirjoituslukittu"
+
+#: src/control/Control.UserList.js:349
+msgid "Current"
+msgstr "Nykyinen"
+
+#: src/control/Control.AlternativeCommand.js:160
+msgid "Stop tracking changes, will lose information about the changes."
+msgstr ""
+
+#: src/control/Control.AlternativeCommand.js:188
+#, fuzzy
+msgid "Are you sure you want to delete sheet, %sheet% ?"
+msgstr "Haluatko varmasti poistaa taulukon %sheet%?"
+
+#: src/control/Control.AlternativeCommand.js:210
+#: uiconfig/dialogs/AddTableAtEnd.js:20
+msgid "Enter new sheet name"
+msgstr "Anna taulukon uusi nimi"
+
+#: src/control/Control.AlternativeCommand.js:220
+#: uiconfig/dialogs/AddTableAtEnd.js:60 uiconfig/dialogs/InsertTable.js:92
+msgid ""
+"Invalid sheet name.\n"
+"The sheet name must not be empty or a duplicate of \n"
+"an existing name and may not contain the characters [ ] * ? : / \\ \n"
+"or the character ' (apostrophe) as first or last character."
+msgstr ""
+
+#: src/control/Permission.js:66
+msgid "The document could not be locked, and is opened in read-only mode."
+msgstr ""
+"Asiakirjaa ei voitu lukita, ja asiakirja avataan kirjoitussuojatussa tilassa."
+
+#: src/control/Permission.js:68 src/control/Permission.js:85
+msgid "Server returned this reason:"
+msgstr "Palvelin palautti tämän syyn:"
+
+#: src/control/Permission.js:83
+msgid "The document could not be locked."
+msgstr "Asiakirjaa ei voitu lukita."
+
+#: src/control/Permission.js:135
+msgid "Enter a file name"
+msgstr "Anna tiedostonimi"
+
+#: src/control/Permission.js:136
+msgid "filename"
+msgstr "tiedostonimi"
+
+#: src/control/Permission.js:158
+msgid "Save as ODF format"
+msgstr "Tallenna ODF-tiedostona"
+
+#: src/control/Permission.js:160
+msgid "Continue editing"
+msgstr "Jatka muokkaamista"
+
+#: src/control/Permission.js:160
+msgid "Continue read only"
+msgstr "Jatka kirjoitussuojatussa tilassa"
+
+#: src/control/Permission.js:163
+msgid ""
+"This document may contain formatting or content that cannot be saved in the "
+"current file format."
+msgstr ""
+"Tämä asiakirja saattaa sisältää muotoilua tai sisältöä jota ei voi tallentaa "
+"nykyisessä tiedostomuodossa."
+
+#: src/control/Ruler.js:394
+msgid "Left Margin"
+msgstr "Vasen marginaali"
+
+#: src/control/Ruler.js:395
+msgid "Right Margin"
+msgstr "Oikea marginaali"
+
+#: src/control/Ruler.js:656
+msgid "Insert tabstop"
+msgstr "Lisää sarkainkohta"
+
+#: src/control/Ruler.js:663
+msgid "Delete tabstop"
+msgstr "Poista sarkainkohta"
+
+#: src/control/Signing.js:196
+msgid "Please enter the PIN Code"
+msgstr "Anna PIN-koodi"
+
+#: src/control/Signing.js:215
+msgid "Error at login."
+msgstr "Virhe kirjautuessa."
+
+#: src/control/Signing.js:228
+msgid "Please scan the code"
+msgstr "Skannaa koodi"
+
+#: src/control/Signing.js:243
+msgid "Couldn't get the QR code image."
+msgstr "QR-koodikuvaa ei saatu."
+
+#: src/control/Signing.js:270
+msgid "Error when trying to restore access to identity."
+msgstr "Virhe henkilöllisyyden käyttöoikeuksien palautusyrityksessä."
+
+#: src/control/Signing.js:276
+msgid "PIN Code"
+msgstr "PIN-koodi"
+
+#: src/control/Signing.js:277
+msgid "Please enter the PIN code from the EMail or SMS"
+msgstr "Syötä viestissä saamasi PIN-koodi"
+
+#: src/control/Signing.js:298
+msgid "Login from email or mobile number"
+msgstr "Kirjaudu sisään sähköpostiosoitteellasi tai puhelinnumerollasi"
+
+#: src/control/Signing.js:332
+msgid "Select document type to upload"
+msgstr "Valitse lähetettävän asiakirjan laji"
+
+#: src/control/Signing.js:333
+msgid "Type:"
+msgstr "Laji:"
+
+#: src/control/Signing.js:364 src/control/Signing.js:673
+msgid "Document uploaded."
+msgstr "Asiakirja lähetetty."
+
+#: src/control/Signing.js:491
+msgid "Select identity:"
+msgstr "Valitse identiteetti:"
+
+#: src/control/Signing.js:492
+msgid "Login from mobile"
+msgstr "Kirjautuminen mobiililaitteelta"
+
+#: src/control/Signing.js:493
+msgid "Recover from email"
+msgstr "Palauta sähköpostista"
+
+#: src/control/Signing.js:601
+msgid "Select passport"
+msgstr "Valitse passi"
+
+#: src/control/Signing.js:602
+msgid "Passport: N/A"
+msgstr "Ei passia"
+
+#: src/control/Signing.js:604
+msgid "Sign"
+msgstr "Allekirjoita"
+
+#: src/control/Signing.js:606
+msgid "Status:"
+msgstr "Tila:"
+
+#: src/control/Signing.js:607
+msgid "N/A"
+msgstr "Ei saatavissa"
+
+#: src/control/Signing.js:610
+msgid "Login"
+msgstr "Kirjaudu"
+
+#: src/control/Signing.js:620
+msgid "Not Signed"
+msgstr "Allekirjoitus puuttuu"
+
+#: src/control/Signing.js:623
+msgid "This document is digitally signed and the signature is valid."
+msgstr ""
+"Tämä asiakirja on digitaalisesti allekirjoitettu ja allekirjoitus on "
+"kelvollinen."
+
+#: src/control/Signing.js:625
+msgid "Signed and validated"
+msgstr "Digitaalisesti allekirjoitettu ja allekirjoitus on kelvollinen"
+
+#: src/control/Signing.js:628
+msgid "This document has an invalid signature."
+msgstr "Asiakirjalla on epäkelpo digitaalinen allekirjoitus."
+
+#: src/control/Signing.js:630
+msgid "Signature broken"
+msgstr "Digitaalinen allekirjoitus on rikki"
+
+#: src/control/Signing.js:633
+msgid "The signature was valid, but the document has been modified."
+msgstr ""
+"Digitaalinen allekirjoitus oli kelvollinen, mutta asiakirjaa on muokattu."
+
+#: src/control/Signing.js:635
+msgid "Signed but document modified"
+msgstr "Digitaalisesti allekirjoitettu mutta asiakirjaa on muokattu"
+
+#: src/control/Signing.js:638
+msgid "The signature is OK, but the certificate could not be validated."
+msgstr ""
+"Digitaalinen allekirjoitus on kunnossa , mutta varmennetta ei voitu todentaa."
+
+#: src/control/Signing.js:640
+msgid "Signed but not validated"
+msgstr "Digitaalisesti allekirjoitettu muttei varmennettu"
+
+#: src/control/Signing.js:643
+msgid "The signature is OK, but the document is only partially signed."
+msgstr ""
+"Digitaalinen allekirjoitus on kunnossa, mutta asiakirja on vain osittain "
+"allekirjoitettu."
+
+#: src/control/Signing.js:645
+msgid "Signed but not all files are signed"
+msgstr "Digitaalisesti allekirjoitettu mutta vain jotkut tiedostot"
+
+#: src/control/Signing.js:648
+msgid ""
+"The signature is OK, but the certificate could not be validated and the "
+"document is only partially signed."
+msgstr ""
+"Allekirjoitus on kunnossa, mutta varmennetta ei voitu todentaa ja asiakirja "
+"on vain osittain allekirjoitettu."
+
+#: src/control/Signing.js:650
+msgid "Signed but not validated and not all files are signed"
+msgstr ""
+"Allekirjoitettu, mutta ei varmennettu, ja kaikkia tiedostoja ei ole "
+"allekirjoitettu"
+
+#: src/control/Toolbar.js:264 src/control/Toolbar.js:276
+#: uiconfig/dialogs/PdfWatermarkText.js:66
+#: uiconfig/dialogs/PdfWatermarkText.js:91
+msgid "Downloading..."
+msgstr "Ladataan..."
+
+#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:660
+msgid "Saving..."
+msgstr "Tallennetaan..."
+
+#: src/control/Toolbar.js:303
+msgid "Renaming..."
+msgstr "Nimetään uudelleen..."
+
+#: src/control/Toolbar.js:443
+msgid "This version of %productName is powered by"
+msgstr "Tämä versio %productName-tuotteesta perustuu tuotteeseen"
+
+#: src/control/Toolbar.js:453
+msgid "\"Slow Proxy\""
+msgstr "\"Hidas välityspalvelin\""
+
+#: src/control/Toolbar.js:576
+msgid "Insert hyperlink"
+msgstr "Lisää hyperlinkki"
+
+#: src/control/Toolbar.js:580
+msgid "Link"
+msgstr "Linkki"
+
+#: src/control/Toolbar.Extensions.js:128 src/othermessages.js:10
+msgid "TEXT Document (.txt)"
+msgstr ""
+
+#: src/control/Toolbar.Extensions.js:129 src/control/Toolbar.Extensions.js:138
+#: src/control/Toolbar.Extensions.js:146 src/othermessages.js:11
+msgid "HTML Document (.html)"
+msgstr ""
+
+#: src/control/Toolbar.Extensions.js:142 src/othermessages.js:22
+msgid "CSV (.csv)"
+msgstr ""
+
+#: src/core/Socket.js:56
+msgid "Oops, there is a problem connecting to %productName: "
+msgstr "Virhe yhdistettäessä kohteeseen %productName: "
+
+#: src/core/Socket.js:521
+msgid "Server is now reachable. We have to refresh the page now."
+msgstr "Palvelin on nyt saavutettavissa. Sivu päivitetään nyt."
+
+#: src/core/Socket.js:523
+msgid "Server is now reachable..."
+msgstr "Palvelin on nyt saavutettavissa..."
+
+#: src/core/Socket.js:527
+msgid "RELOAD"
+msgstr "PÄIVITÄ"
+
+#: src/core/Socket.js:534
+#, fuzzy
+msgid "OXOOLWSD version:"
+msgstr "COOLWSD-versio:"
+
+#: src/core/Socket.js:545
+msgid "Served by:"
+msgstr "Palvelin:"
+
+#: src/core/Socket.js:551
+msgid "Unsupported server version."
+msgstr "Palvelimen versiota ei tueta."
+
+#: src/core/Socket.js:555
+msgid "LOKit version:"
+msgstr "LOKit-versio:"
+
+#: src/core/Socket.js:674
+msgid "Session terminated by document owner"
+msgstr "Asiakirjan omistaja katkaisi istunnon"
+
+#: src/core/Socket.js:679
+msgid "Idle document - please click to reload and resume editing"
+msgstr "Asiakirja jouten - klikkaa jatkaaksesi editointia"
+
+#: src/core/Socket.js:681
+msgid "Idle document - please tap to reload and resume editing"
+msgstr "Asiakirja jouten - klikkaa jatkaaksesi editointia"
+
+#: src/core/Socket.js:690
+msgid "Server is shutting down for maintenance (auto-saving)"
+msgstr ""
+"Palvelinta ajetaan alas huoltoa varten (asiakirja tallentuu automaattisesti)"
+
+#: src/core/Socket.js:694
+msgid "Oops, there is a problem connecting the document"
+msgstr "Virhe asiakirjaan yhdistäessä"
+
+#: src/core/Socket.js:698
+msgid "Server is down, restarting automatically. Please wait."
+msgstr ""
+"Palvelin on sammuksissa, käynnistetään automaattisesti uudelleen. Ole hyvä "
+"ja odota."
+
+#: src/core/Socket.js:726
+msgid ""
+"Document has changed in storage. Loading the new document. Your version is "
+"available as revision."
+msgstr ""
+"Asiakirjan sisältöä on muutettu tallennustilassa. Luetaan uusi sisältö. "
+"Sinun versioisi on saatavana versiohistoriassa."
+
+#: src/core/Socket.js:732
+msgid ""
+"Restoring older revision. Any unsaved changes will be available in version "
+"history"
+msgstr ""
+"Palautetaan vanha versio. Tähänastiset muutokset tallentuvat versiohistoriaan"
+
+#: src/core/Socket.js:738
+msgid "Reloading the document after rename"
+msgstr "Päivitetään asiakirjaa uudelleennimeämisen jälkeen"
+
+#: src/core/Socket.js:860
+msgid "Discard"
+msgstr "Hylkää ne"
+
+#: src/core/Socket.js:882
+msgid "Save to new file"
+msgstr "Tallenna uuteen tiedostoon"
+
+#: src/core/Socket.js:909
+msgid "Document has been changed"
+msgstr "Asiakirjaa on muutettu"
+
+#: src/core/Socket.js:909
+msgid ""
+"Document has been changed in storage. What would you like to do with your "
+"unsaved changes?"
+msgstr ""
+"Asiakirjaa on muokattu tallennustilassa. Mitä haluat tehdä omille "
+"tallentamattomille muutoksillesi?"
+
+#: src/core/Socket.js:980
+msgid "Document requires password to view."
+msgstr "Asiakirjan katselu edellyttää salasanaa."
+
+#: src/core/Socket.js:983
+msgid "Document requires password to modify."
+msgstr "Asiakirjan muokkaaminen edellyttää salasanaa."
+
+#: src/core/Socket.js:985
+msgid "Hit Cancel to open in view-only mode."
+msgstr "Napsauta Peruuta avataksesi katselutilassa."
+
+#: src/core/Socket.js:989
+msgid "Wrong password provided. Please try again."
+msgstr "Väärä salasana, yritä uudelleen."
+
+#: src/core/Socket.js:1099
+msgid "Someone"
+msgstr "Joku"
+
+#: src/core/Socket.js:1101
+msgid " saved this document as "
+msgstr " tallensi tämän asiakirjan "
+
+#: src/core/Socket.js:1101
+msgid ". Do you want to join?"
+msgstr ". Haluatko liittyä?"
+
+#: src/core/Socket.js:1110
+msgid "Loading..."
+msgstr "Ladataan..."
+
+#: src/core/Socket.js:1110
+msgid "Connecting..."
+msgstr "Yhdistetään..."
+
+#: src/core/Socket.js:1128
+msgid "The document is being renamed and will reload shortly"
+msgstr "Asiakirjaa nimetään uudelleen ja se päivittyy piakkoin"
+
+#: src/core/Socket.js:1516
+msgid ""
+"Well, this is embarrassing, we cannot connect to your document. Please try "
+"again."
+msgstr ""
+"Harmillista kyllä, asiakirjaasi ei saada yhteyttä. Ole hyvä ja yritä "
+"uudelleen."
+
+#: src/core/Socket.js:1533
+msgid "Reconnecting..."
+msgstr "Yhdistetään..."
+
+#: src/core/Socket.js:1539
+msgid "The server has been disconnected."
+msgstr "Palvelimen yhteys on katkennut."
+
+#: src/errormessages.js:13
+msgid ""
+"No disk space left on server, please contact the server administrator to "
+"continue."
+msgstr ""
+"Palvelimen levytila on loppu. Ota yhteyttä ylläpitäjään jotta voisit jatkaa."
+
+#: src/errormessages.js:14
+#, fuzzy
+msgid ""
+"The host URL is empty. The oxoolwsd server is probably misconfigured, "
+"please contact the administrator."
+msgstr ""
+"Palvelimen URL on tyhjä. coolwsd-palvelin on luultavasti konfiguroitu "
+"väärin, ota yhteyttä ylläpitäjään."
+
+#: src/errormessages.js:15
+msgid ""
+"This is an unsupported version of {productname}. To avoid the impression "
+"that it is suitable for deployment in enterprises, this message appears "
+"when more than {docs} documents or {connections} connections are in use "
+"concurrently"
+msgstr ""
+"Tukea ei ole saatavana tälle versiolle {productname}-tuotteesta. Jotta ei "
+"syntyisi mielikuvaa että se soveltuu yrityskäyttöön, tätä ilmoitusta "
+"näytetään kun samanaikaisesti käsiteltävien asiakirjojen lukumäärä ylittää "
+"{docs} tai kun samanaikaisten käyttäjien lukumäärä ylittää {connections}"
+
+#: src/errormessages.js:16
+msgid "More information and support"
+msgstr "Lisätietoja ja tukea"
+
+#: src/errormessages.js:17
+msgid ""
+"This service is limited to %0 documents, and %1 connections total by the "
+"admin. This limit has been reached. Please try again later."
+msgstr ""
+"Ylläpitäjä on rajannut tämän palvelun %0 asiakirjaan ja %1 yhteyteen. Raja "
+"on saavutettu. Yritä myöhemmin uudelleen."
+
+#: src/errormessages.js:18
+msgid ""
+"Service is unavailable. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr ""
+"Palvelu ei ole käytettävissä. Yritä myöhemmin uudelleen ja ota yhteyttä "
+"ylläpitäjääsi, mikäli ongelma toistuu."
+
+#: src/errormessages.js:19
+msgid ""
+"Unauthorized WOPI host. Please try again later and report to your "
+"administrator if the issue persists."
+msgstr ""
+"WOPI-oikeuksissa puutteita. Yritä myöhemmin uudelleen ja ota yhteyttä "
+"ylläpitoon, mikäli ongelma toistuu."
+
+#: src/errormessages.js:20
+msgid "Wrong or missing WOPISrc parameter, please contact support."
+msgstr "WOPISrc-parametri puuttuu tai on virheellien, ota yhteys tukeen."
+
+#: src/errormessages.js:21
+msgid ""
+"Your session will expire in %time. Please save your work and refresh the "
+"session (or webpage) to continue."
+msgstr ""
+"Istuntosi vanhenee ajassa %time. Tallenna työsi ja virkistä istunto (tai "
+"lataa webbisivu uudelleen) jatkaaksesi."
+
+#: src/errormessages.js:22
+msgid ""
+"Your session has been expired. Further changes to document might not be "
+"saved. Please refresh the session (or webpage) to continue."
+msgstr ""
+"Istuntosi on vanhentunut. Mahdolliset lisämuutokset asiakirjaan saattavat "
+"mennä hukkaan. Virkistä istunto (tai lataa webbisivu uudelleen) jatkaaksesi."
+
+#: src/errormessages.js:23
+msgid ""
+"Failed to load the document. Please ensure the file type is supported and "
+"not corrupted, and try again."
+msgstr ""
+"Asiakirjaa ei voitu ladata. Varmista että asiakirjan tiedostolaji on tuettu "
+"eikä tiedosto ole virheellien, ja yritä uudelleen."
+
+#: src/errormessages.js:24
+msgid "Invalid link: '%url'"
+msgstr "Virheellinen linkki: '%url'"
+
+#: src/errormessages.js:25
+msgid ""
+"You are leaving the editor, are you sure you want to visit the following "
+"URL?"
+msgstr ""
+"Olet poistumassa editorista, oletko varma että haluat siirtyä seuraan "
+"osoitteeseen?"
+
+#: src/errormessages.js:26
+msgid ""
+"Failed to load the document. This document is either malformed or is taking "
+"more resources than allowed. Please contact the administrator."
+msgstr "Asiakirjaa ei voitu ladata. Ota yhteys yläpitoon."
+
+#: src/errormessages.js:27
+msgid "Cleaning up the document from the last session."
+msgstr "Siivotaan asiakirjaa viime kerralta."
+
+#: src/errormessages.js:28
+msgid ""
+"We are in the process of cleaning up this document from the last session, "
+"please try again later."
+msgstr ""
+"Olemme siivoamassa tätä asiakirjaa viime istunnolta, ole hyvä ja yritä "
+"myöhemmin uudelleen."
+
+#: src/errormessages.js:32
+msgid "Failed to load document."
+msgstr "Asiakirjaa ei voitu ladata."
+
+#: src/errormessages.js:33
+msgid "Save failed due to no disk space left. Document will now be read-only."
+msgstr ""
+"Tallennus epäonnistui koska tila loppui. Asiakirjaa ei voi enää muokata."
+
+#: src/errormessages.js:34 src/errormessages.js:42
+msgid "Document cannot be saved due to expired or invalid access token."
+msgstr ""
+"Asiakirjaa ei voi tallentaa epäkelvon tai vanhentuneen käyttöoikeuden takia."
+
+#: src/errormessages.js:35
+msgid "Document cannot be saved."
+msgstr "Asiakirjaa ei voi tallentaa."
+
+#: src/errormessages.js:36
+msgid "Document cannot be renamed."
+msgstr "Asiakirjaa ei voi nimetä uudelleen."
+
+#: src/errormessages.js:40
+#, javascript-format
+msgid ""
+"Failed to read document from storage. Please contact your storage server "
+"(%storageserver) administrator."
+msgstr ""
+"Asiakirjaa ei voitu lukea. Ota yhteys tallennuspalvelimen (%storageserver) "
+"ylläpitoon."
+
+#: src/errormessages.js:41
+#, javascript-format
+msgid ""
+"Save failed due to no disk space left on storage server. Document will now "
+"be read-only. Please contact the server (%storageserver) administrator to "
+"continue editing."
+msgstr ""
+"Tallennus epäonnistui koska tila loppui. Asiakirjaa ei voi enää muokata. Ota "
+"yhteys tallennuspalvelimen (%storageserver) ylläpitoon jatkaaksesi "
+"muokkaamista."
+
+#: src/errormessages.js:43
+msgid ""
+"Document cannot be saved. Check your permissions or contact the storage "
+"server administrator."
+msgstr ""
+"Asiakirjaa ei voida tallentaa. Tarkista saantioikeutesi tai ota yhteyttä "
+"tallennuspalvelimen ylläpitoon."
+
+#: src/errormessages.js:44
+msgid ""
+"Document cannot be renamed. Check your permissions or contact the storage "
+"server administrator."
+msgstr ""
+"Asiakirjaa ei voida nimetä uudelleen. Tarista saantioikeutesi tai ota "
+"yhteyttä tallennuspalvelimen ylläpitoon."
+
+#: src/errormessages.js:45
+msgid ""
+"Document cannot be exported. Please contact the storage server "
+"administrator."
+msgstr "Asiakirjaa ei voi viedä. Ole hyvä ja ota yhteyttä palvelimen valvojaan."
+
+#: src/errormessages.js:46
+msgid ""
+"The document could not be saved. This certification has expired or is "
+"invalid. Please reopen this file."
+msgstr ""
+
+#: src/errormessages.js:47
+msgid ""
+"The file cannot be saved. Because the content of the file contains personal "
+"information or suspected sensitive information, it is recommended to adjust "
+"the content before saving."
+msgstr ""
+
+#: src/errormessages.js:48
+msgid ""
+"The file cannot be saved. It may not have write permission for this file. "
+"Please contact the file sharer."
+msgstr ""
+
+#: src/errormessages.js:49
+msgid ""
+"The file could not be saved. It may be that the file capacity has exceeded "
+"the upload limit."
+msgstr ""
+
+#: src/errormessages.js:50
+msgid ""
+"Server error or connection timeout, the document cannot be saved "
+"temporarily. Please try again later."
+msgstr ""
+
+#: src/errormessages.js:51
+msgid "This operation is not supported, please contact the administrator."
+msgstr ""
+
+#: src/errormessages.js:56
+msgid "Uploading file to server failed, file not found."
+msgstr "Asiakirjan lähetys palvelimelle epäonnistui, tiedostoa ei löytynyt."
+
+#: src/errormessages.js:57
+msgid "Uploading file to server failed, the file is too large."
+msgstr "Asiakirjan lähetys palvelimelle epäonnistui, tiedosto on liian iso."
+
+#: src/othermessages.js:27 uiconfig/dialogs/MoveTable.js:28
+msgid "Move"
+msgstr ""
+
+#: src/othermessages.js:32 uiconfig/dialogs/BindingLineDialog.js:98
+msgid "Binding line"
+msgstr ""
+
+#: src/othermessages.js:33
+msgid "Insert on the left side of page"
+msgstr ""
+
+#: src/othermessages.js:34
+msgid "Insert on the right side of page"
+msgstr ""
+
+#: src/othermessages.js:35
+msgid "Insert on the top side of page"
+msgstr ""
+
+#: src/othermessages.js:36
+msgid "Insert on the bottom side of page"
+msgstr ""
+
+#: src/othermessages.js:37
+msgid "Customize"
+msgstr ""
+
+#: src/othermessages.js:38
+msgid "Hand-drawn diagram"
+msgstr ""
+
+#: src/layer/tile/CanvasTileLayer.js:1838
+msgid "Functions"
+msgstr "Funktiot"
+
+#: src/layer/tile/CanvasTileLayer.js:2064
+msgid "This type of picture editing is not yet supported."
+msgstr ""
+
+#: src/layer/tile/CanvasTileLayer.js:2082
+msgid "unnamed"
+msgstr ""
+
+#: src/layer/tile/CanvasTileLayer.js:5066
+msgid "No Comments"
+msgstr "Ei kommentteja"
+
+#: src/layer/tile/CommentListSection.ts:803
+msgid "Modify"
+msgstr "Muokkaa"
+
+#: src/layer/tile/CommentListSection.ts:809
+#: src/layer/tile/CommentSection.ts:129
+msgid "Reply"
+msgstr "Vastaa"
+
+#: src/layer/tile/CommentListSection.ts:815
+msgid "Remove"
+msgstr "Poista"
+
+#: src/layer/tile/CommentListSection.ts:821
+msgid "Remove Thread"
+msgstr "Poista lanka"
+
+#: src/layer/tile/CommentListSection.ts:827
+msgid "Resolve"
+msgstr "Ratkaise"
+
+#: src/layer/tile/CommentListSection.ts:827
+msgid "Unresolve"
+msgstr "Jatka"
+
+#: src/layer/tile/CommentListSection.ts:833
+msgid "Unresolve Thread"
+msgstr "Jatka lankaa"
+
+#: src/layer/tile/CommentListSection.ts:833
+msgid "Resolve Thread"
+msgstr "Päätä lanka"
+
+#: src/layer/tile/CommentSection.ts:260
+msgid "Open menu"
+msgstr "Avaa valikko"
+
+#: src/layer/tile/CommentSection.ts:277 src/layer/tile/CommentSection.ts:278
+msgid "Accept change"
+msgstr "Hyväksy muutos"
+
+#: src/layer/tile/CommentSection.ts:284 src/layer/tile/CommentSection.ts:285
+msgid "Reject change"
+msgstr "Hylkää muutos"
+
+#: src/layer/tile/CommentSection.ts:306
+#, fuzzy
+msgid "Resolved"
+msgstr "Ratkaise"
+
+#: src/main.js:94
+msgid "Warning! The browser you are using is not supported."
+msgstr "Varoitus! Käyttämääsi selainta ei tueta."
+
+#: src/map/Clipboard.js:120
+msgid ""
+"To paste outside %productName, please first click the 'download' button"
+msgstr ""
+"Voidaksesi liittää %productName-tuotteen ulkopuolella, käytä ensin "
+"'lataa'-nappia"
+
+#: src/map/Clipboard.js:130
+msgid "Copying from the document disabled"
+msgstr "Asiakirjasta kopiointi poistettu käytöstä"
+
+#: src/map/Clipboard.js:292
+msgid "Failed to download clipboard, please re-copy"
+msgstr "Leikepöydän lataus epäonnistui, tee kopiointi uudelleen"
+
+#: src/map/Clipboard.js:850
+msgid "<p>Please use the copy/paste buttons on your on-screen keyboard.</p>"
+msgstr "<p>Käytä näyttökoskettimiston kopoi- ja liitä-nappeja</p>"
+
+#: src/map/Clipboard.js:852
+msgid ""
+"<p>Your browser has very limited access to the clipboard, so use these "
+"keyboard shortcuts:</p><table class=\"warn-copy-paste\"><tr><td><kbd>Ctrl</"
+"kbd><span class=\"kbd--plus\">+</span><kbd>C</kbd></td><td><kbd>Ctrl</"
+"kbd><span class=\"kbd--plus\">+</span><kbd>X</kbd></td><td><kbd>Ctrl</"
+"kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd></td></tr><tr><td>Copy</"
+"td><td>Cut</td><td>Paste</td></tr></table>"
+msgstr ""
+"<p>Selaimellasi on hyvin rajoitettu käyttöoikeus leikepöytään, joten käytä "
+"näitä näppäinyhdistelmiä:</p><table class=\"warn-copy-paste\""
+"><tr><td><kbd>Ctrl</kbd><span class=\"kbd--plus\""
+">+</span><kbd>C</kbd></td><td><kbd>Ctrl</kbd><span class=\"kbd--plus\""
+">+</span><kbd>X</kbd></td><td><kbd>Ctrl</kbd><span class=\"kbd--plus\">+</spa"
+"n><kbd>V</kbd></td></tr><tr><td>Kopioi</td><td>Leikkaa</td><td>Liitä</td></tr"
+"></table>"
+
+#: src/map/Clipboard.js:873
+msgid ""
+"<p>If you would like to share larger elements of your document with other "
+"applications it is necessary to first download them onto your device. To do "
+"that press the \"Start download\" button below, and when complete click "
+"\"Confirm copy to clipboard\".</p><p>If you are copy and pasting between "
+"documents inside %productName, there is no need to download.</p>"
+msgstr ""
+"<p>Jos haluat jakaa suurempia osia asiakirjasta muiden sovellusten kanssa "
+"sinun pitää ensin ladata ne laitteellesi. Paina \"Aloita lataus\" -nappia "
+"alla, ja kun tämä on suoritettu, paina \"Vahvista kopiointi leikepöydälle\""
+".</p><p>Jos leikkaat ja liität asiakirjojen välissä %productName-tuotteen "
+"sisällä, latausta ei tarvita.</p>"
+
+#: src/map/Clipboard.js:889
+msgid ""
+"<p>A download due to a large copy/paste operation has already started. "
+"Please, wait for the current download or cancel it before starting a new "
+"one</p>"
+msgstr ""
+"<p>Suuren kopiointi- tai liittämisoperaation aiheuttama lataus on jo "
+"käynnissä. Odota että se päättyy, tai peru se, ennen kuin aloitat uuden.</p>"
+
+#: src/map/Clipboard.js:899
+msgid ""
+"<p>Your browser has very limited access to the clipboard</p><p>Please press "
+"now: <kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> to see "
+"more options</p><p class=\"vex-footnote\">Close popup to ignore paste "
+"special</p>"
+msgstr ""
+"<p>Selaimessasi on hyvin rajattu pääsy leikepöytään</p><p>Ole hyvä ja paina "
+"<kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> nähdäksesi "
+"lisää vaihtoehtoja. </p><p class=\"vex-footnote\">Sulje ilmoitus hylätäksesi "
+"erikoisliittämisen</p>"
+
+#: src/map/Map.js:241
+msgid "Initializing..."
+msgstr "Alustetaan..."
+
+#: src/map/Map.js:431 src/map/Map.js:434 src/map/Map.js:437 src/map/Map.js:440
+msgid "Last saved:"
+msgstr "Tallennettu viimeksi:"
+
+#: src/map/Map.js:1479
+msgid "Inactive document"
+msgstr "Epäaktiivinen asiakirja"
+
+#: src/map/Map.js:1480
+msgid "Please click to resume editing"
+msgstr "Ole hyvä ja klikkaa jatkaaksesi muokkaamista"
+
+#: src/map/handler/Map.FileInserter.js:104
+#, javascript-format
+msgid ""
+"The file of type: %0 cannot be uploaded to server since the file has no name"
+msgstr ""
+"Tiedostoa jonka laji on %0 ei voida lähettää palvelimelle koska ei ole nimeä "
+"tiedostolle"
+
+#: src/map/handler/Map.FileInserter.js:106
+#, javascript-format
+msgid ""
+"The file of type: %0 cannot be uploaded to server since the file is empty"
+msgstr ""
+"Tiedostoa jonka laji on %0 ei voida lähettää palvelimelle koska tiedosto on "
+"tyhjä"
+
+#: src/map/handler/Map.FileInserter.js:137
+msgid "Uploading..."
+msgstr "Lähetetään..."
+
+#: src/map/handler/Map.FileInserter.js:151
+msgid "Uploading file to server failed with status: %0"
+msgstr "Tiedoston lähetys palvelumelle epäonnistui, tila: %0"
+
+#: src/map/handler/Map.WOPI.js:133
+msgid "Creating new file from template..."
+msgstr "Luodaan uusi tiedosto mallista..."
+
+#: src/map/handler/Map.WOPI.js:424
+msgid "Creating copy..."
+msgstr "Luodaan kopiota..."
+
+#: uiconfig/dialogs/AddTableAtEnd.js:21 uiconfig/dialogs/InsertTable.js:29
+msgid "Automatic naming"
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:13 uiconfig/dialogs/AutoFilter.js:160
+msgid "Top 10"
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:14 uiconfig/dialogs/AutoFilter.js:170
+msgid "Non-Empty"
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:15 uiconfig/dialogs/AutoFilter.js:253
+msgid "Search items"
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:16
+msgid "Show only the current item."
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:17
+msgid "Hide only the current item."
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:18 uiconfig/dialogs/AutoFilter.js:629
+msgid "Ctrl + left mouse button for multiple selections."
+msgstr ""
+
+#: uiconfig/dialogs/AutoFilter.js:165 uiconfig/dialogs/AutoFilter.js:412
+msgid "Empty"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:37
+msgid "Size"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:40
+msgid "First page"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:41
+msgid "Current page"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:42
+msgid "All pages"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:44 uiconfig/dialogs/InsertTable.js:21
+msgid "Position"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:45
+msgid "Left"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:46
+#, fuzzy
+msgid "Right"
+msgstr "Tiivis"
+
+#: uiconfig/dialogs/BindingLineDialog.js:47
+msgid "Top"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:48
+msgid "Bottom"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:50
+msgid "Distance boundary"
+msgstr ""
+
+#: uiconfig/dialogs/BindingLineDialog.js:50
+msgid "cm"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:20
+msgid "Selection"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:21
+msgid "Delete all"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:25
+#, fuzzy
+msgid "Numbers"
+msgstr "Numero"
+
+#: uiconfig/dialogs/DeleteCell.js:28
+msgid "Date & time"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:29
+msgid "Formulas"
+msgstr ""
+
+#: uiconfig/dialogs/DeleteCell.js:32
+#, fuzzy
+msgid "Comments"
+msgstr "Huomautus"
+
+#: uiconfig/dialogs/DeleteCell.js:33
+#, fuzzy
+msgid "Formats"
+msgstr "Muotoilu"
+
+#: uiconfig/dialogs/DeleteCell.js:36
+msgid "Objects"
+msgstr ""
+
+#: uiconfig/dialogs/DiagramEditor.js:63
+msgid "Diagram editor module not installed!"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:22
+msgid "Before current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:23
+msgid "After current sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:27
+msgid "Sheet"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:28
+msgid "No. of sheets"
+msgstr ""
+
+#: uiconfig/dialogs/InsertTable.js:29 uiconfig/dialogs/RenameSlide.js:22
+msgid "Name"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:26
+msgid "- move to end position -"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:29
+msgid "Copy"
+msgstr ""
+
+#: uiconfig/dialogs/MoveTable.js:30
+msgid "Insert before"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:21
+msgid "File name:"
+msgstr ""
+
+#: uiconfig/dialogs/OXSaveAs.js:25 uiconfig/dialogs/OXSaveAs.js:48
+msgid "Please enter a new filename."
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:15
+msgid "Watermark text"
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:16
+msgid "Use screen watermark"
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:17
+msgid "If no needed, please leave it blank."
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:18
+msgid "Direction"
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:53
+msgid "Add watermark"
+msgstr ""
+
+#: uiconfig/dialogs/PdfWatermarkText.js:64
+msgid "Without watermark"
+msgstr ""
+
+#: uiconfig/dialogs/RenameSlide.js:45
+msgid "The slide name must not be empty or a duplicate of an existing name."
+msgstr ""
+
+#: uiconfig/dialogs/ShowTable.js:29
+msgid "Hidden Sheets"
+msgstr ""
+
+#: welcome/welcome.html+html.head.title:9
+msgid "Collabora Online Welcome"
+msgstr ""
+
+#: welcome/welcome.html+html.body.div.div.div.div.h1:26
+#, fuzzy
+msgid "Explore The New %oxoolVersion"
+msgstr "Tutki uutta %coolVersion"
+
+#: welcome/welcome.html+html.body.div.div.div.div.h2:27
+#: welcome/welcome.html+html.body.div.div.div.div.h2:38
+msgid "Collabora Online Development Edition"
+msgstr "Collabora Onlinen kehitysversio"
+
+#: welcome/welcome.html+html.body.div.div.div.div.p:28
+msgid ""
+"Enjoy the latest developments in online productivity, free for you to use, "
+"to explore and to use with others in the browser. Various <a target=\"_blank"
+"\" href=\"https://www.collaboraoffice.com/solutions/collabora-office-"
+"android-ios/\">apps</a> are also available for mobile."
+msgstr ""
+
+#: welcome/welcome.html+html.body.div.div.div.div.h1:37
+#, fuzzy
+msgid "Discover All The Changes"
+msgstr "Katso kaikki muutokset"
+
+#: welcome/welcome.html+html.body.div.div.div.div.p:39
+msgid ""
+"Check the <a target=\"_blank\" href=\"https://www.collaboraoffice.com/"
+"code-21-11-release-notes/\">release notes</a> and learn all about: The "
+"latest Collabora Online Development Edition, aimed at home users and small "
+"teams."
+msgstr ""
+
+#: welcome/welcome.html+html.body.div.div.div.div.h1:48
+msgid "Get Involved"
+msgstr ""
+
+#: welcome/welcome.html+html.body.div.div.div.div.h2:49
+msgid "https://collaboraonline.github.io/"
+msgstr ""
+
+#: welcome/welcome.html+html.body.div.div.div.div.p:50
+msgid ""
+"Are you interested in contributing but don’t know where to start? Head over "
+"to the <a target=\"_blank\" href=\"https://collaboraonline.github.io/post/"
+"build-code/\">step-by-step instructions</a> and build CODE from scratch. "
+"You can also help out with <a target=\"_blank\" href=\"https://"
+"collaboraonline.github.io/post/translate/\">translations</a> or by <a "
+"target=\"_blank\" href=\"https://collaboraonline.github.io/post/filebugs/"
+"\">filing a bug report</a> with all the essential steps on how to reproduce "
+"it."
+msgstr ""
+
+#~ msgid "Settings"
+#~ msgstr "Asetukset"
+
+#~ msgid "(current)"
+#~ msgstr "(nykyinen)"
+
+#~ msgid "History"
+#~ msgstr "Historia"
+
+#~ msgid "Dashboard"
+#~ msgstr "Kojelauta"
+
+#~ msgid "User Name"
+#~ msgstr "Käyttäjänimi"
+
+#~ msgid "WOPI host"
+#~ msgstr "WOPI-host"
+
+#~ msgid "Kill"
+#~ msgstr "Lopeta"
+
+#~ msgid "Graphs"
+#~ msgstr "Graafit"
+
+#~ msgid "Cache size of memory statistics"
+#~ msgstr "Välimuistin koko muistitilastoissa"
+
+#~ msgid "Time interval of memory statistics (in ms)"
+#~ msgstr "Aikaväli muistitilastoissa (millisekuntia)"
+
+#~ msgid "Cache size of CPU statistics"
+#~ msgstr "Välimuistin koko CPU-tilastoissa"
+
+#~ msgid "Time interval of CPU statistics (in ms)"
+#~ msgstr "Aikaväli CPU-tilastoissa (millisekuntia)"
+
+#~ msgid "Maximum Document process virtual memory (in MB) - reduce only"
+#~ msgstr "Asiakirjaprosessin suurin virtuaalimuisti (megatavuja)"
+
+#~ msgid "Maximum Document process stack memory (in KB) - reduce only"
+#~ msgstr "Asiakirjaprosessin suurin pinomuisti (kilotavuja)"
+
+#~ msgid "Maximum file size allowed to write to disk (in MB) - reduce only"
+#~ msgstr "Suurin kirjoitettava tiedostokoko (megatavuja)"
+
+#~ msgid "Documents:"
+#~ msgstr "Asiakirjat:"
+
+#~ msgid "Expired:"
+#~ msgstr "Vanhentuneet:"
+
+#~ msgid "Refresh"
+#~ msgstr "Päivitä"
+
+#~ msgid "Shutdown Server"
+#~ msgstr "Sammuta palvelin"
+
+#~ msgid "Version Information"
+#~ msgstr "Versiotiedot"
+
+#~ msgid "Server has been shut down; please reload the page."
+#~ msgstr "Palvelin on sammutettu, ole hyvä ja lataa sivu uudelleen."
+
+#~ msgid "Are you sure you want to shut down the server?"
+#~ msgstr "Haluatko varmasti sammuttaa palvelimen?"
+
+#~ msgid "Paste Special"
+#~ msgstr "Liitä määräten"
+
+#~ msgid "Text orientation"
+#~ msgstr "Tekstin suunta"
+
+#~ msgid "Last modification"
+#~ msgstr "Viimeisin muokkaus"
+
+#~ msgid "Save Comments"
+#~ msgstr "Tallenna huomautukset"
+
+#~ msgid "Present current slide"
+#~ msgstr "Esitä nykyinen dia"
+
+#~ msgid "CSV file (.csv)"
+#~ msgstr "CSV-tiedosto (.csv)"
+
+#~ msgid "Selection Mode"
+#~ msgstr "Valintatila"
+
+#~ msgid "Select multiple cells"
+#~ msgstr "Valitse useampia soluja"
+
+#~ msgid "Insert mode: inactive"
+#~ msgstr "Lisäämistila: pois käytöstä"
+
+#~ msgid "Selection mode: inactive"
+#~ msgstr "Valitsemistila: pois käytöstä"
+
+#~ msgid "Copy Sheet..."
+#~ msgstr "Kopioi taulukko..."
+
+#~ msgid "Previous slide"
+#~ msgstr "Edellinen dia"
+
+#~ msgid "Next slide"
+#~ msgstr "Seuraava dia"
+
+#~ msgid "Insert table"
+#~ msgstr "Lisää taulukko"
+
+#~ msgid "Show Selected Sheets"
+#~ msgstr "Näytä valitut taulukot"
+
+#~ msgid "Text Body"
+#~ msgstr "Leipäteksti"
+
+#~ msgid "Title"
+#~ msgstr "Otsikko"
+
+#~ msgid "Next"
+#~ msgstr "Seuraava"
+
+#~ msgid "Menu"
+#~ msgstr "Valikko"
+
+#~ msgid "Undo"
+#~ msgstr "Kumoa"
+
+#~ msgid "Redo"
+#~ msgstr "Tee uudelleen"
+
+#~ msgid "Start Presentation"
+#~ msgstr "Aloita esitys"
+
+#~ msgid "Reset Zoom"
+#~ msgstr "Nollaa zoomaus"
+
+#~ msgid "I understand the risks"
+#~ msgstr "Ymmärrän riskin"
+
+#~ msgid "Dismiss"
+#~ msgstr "Hylkää"
+
+#, javascript-format
+#~ msgid ""
+#~ "Enjoy the latest developments in online productivity, free for you to use, "
+#~ "to explore and to use with others in the browser. <a href=\"%coolAppsURL\" "
+#~ "target=\"_blank\">Apps</a> are also available for Android and iOS. "
+#~ "%coolVersion introduces important improvements, in the areas of usability, "
+#~ "visual presentation and performance."
+#~ msgstr ""
+#~ "Nauti viimeisimmistä kehityksistä sähköisessä tuottavuudessa, vapaasti sinun "
+#~ "ja muiden käytettävissä selaimen kautta. Saatavilla on myös <a href=\"%"
+#~ "coolAppsURL\" target=\"_blank\">sovellukset</a> android- ja iOS-käyttöön. "
+#~ "Versio %coolVersion tarjoaa tärkeitä parannuksia käytettävyydessä, "
+#~ "visuaalisuudessa ja tehokkuudessa."
+
+#, javascript-format
+#~ msgid ""
+#~ "Check the <a href=\"%coolReleaseNotesURL\" target=\"_blank\">release notes</"
+#~ "a> and learn all about the latest milestone in performance particularly for "
+#~ "larger groups working on documents, new native sidebar, new re-worked avatar "
+#~ "list, asynchronous saving, faster spell checking and more."
+#~ msgstr ""
+#~ "Katso <a href=\"%coolReleaseNotesURL\" target=\"_blank\">julkaisutiedot</a> "
+#~ "ja lue viimeisimmästä edistysaskeleesta tehokkuudessa etenkin suuremmille "
+#~ "tiedostoa muokkaaville ryhmille, uudesta natiivista sivupalkista, "
+#~ "uudistetusta avatarlistasta, taustalla tapahtuvasta tallentamisesta, "
+#~ "nopeammasta kielentarkistuksesta ja muista parannuksista."
+
+#~ msgid "Integrate Collabora Online into your webapp"
+#~ msgstr "Integroi Collabora Online web-sovellukseesi"
+
+#~ msgid "Or get involved in the development"
+#~ msgstr "Tai osallistu kehittämiseen"
+
+#, javascript-format
+#~ msgid ""
+#~ "Learn more about integrating into your web application in the <a href="
+#~ "\"%coolSdkURL\" target=\"_blank\">Collabora Online SDK</a>. Or head over to "
+#~ "the <a href=\"%coolStepByStepURL\" target=\"_blank\">step-by-step "
+#~ "instructions</a> and build CODE from scratch. You can also help out with <a "
+#~ "href=\"%coolTranslationsURL\" target=\"_blank\">translations</a> or by <a "
+#~ "href=\"%coolBugreportURL\" target=\"_blank\">filing a bug report</a> with "
+#~ "all the essential steps on how to reproduce it."
+#~ msgstr ""
+#~ "Lue lisää web-applikaatioosi integroimisesta <a href=\"%coolSdkURL\" target="
+#~ "\"_blank\">Collabora Online SDK:sta</a>. Tai suuntaa kohti <a href=\"%"
+#~ "coolStepByStepURL\" target=\"_blank\">vaiheittaisia ohjeita</a> ja buildaa "
+#~ "CODE ihan itse. Voit myös auttaa <a href=\"%coolTranslationsURL\" target=\""
+#~ "_blank\">tekemällä käännöksiä</a> tai <a href=\"%coolBugreportURL\" target=\""
+#~ "_blank\">tekemällä ilmoituksen bugista</a> sisällyttäen myös ohjeet bugin "
+#~ "toistamiseen."
+
+#~ msgid "Learn more about the enterprise-ready versions"
+#~ msgstr "Lue lisää yrityskäyttöön valmiista versioista"
+
+#~ msgid ""
+#~ "We are sorry, the information about the latest updates is not available."
+#~ msgstr "Pahoittelumme, tietoja viimeisimmistä julkaisuista ei ole saatavilla."
+
+#~ msgid "Inactive document - please click to resume editing"
+#~ msgstr "Asiakirja ei ole aktiivinen - klikkaa jatkaaksesi muokkausta"
+
+#, javascript-format
+#~ msgid "%d seconds ago"
+#~ msgstr "%d sekuntia sitten"
+
+#, javascript-format
+#~ msgid "%d minutes ago"
+#~ msgstr "%d minuuttia sitten"
+
+#~ msgid ""
+#~ "IE11 has reached its maximum number of connections. Please see this document "
+#~ "to increase this limit if needed: https://docs.microsoft.com/en-us/previous-"
+#~ "versions/windows/internet-explorer/ie-developer/general-info/"
+#~ "ee330736(v=vs.85)#websocket-maximum-server-connections"
+#~ msgstr ""
+#~ "IE11:n yhteyksien raja on saavutettu. Katso tästä miten rajaa voi "
+#~ "tarvittaessa nostaa: https://docs.microsoft.com/en-us/previous-versions/"
+#~ "windows/internet-explorer/ie-developer/general-info/ee330736(v=vs.85"
+#~ ")#websocket-maximum-server-connections"
+
+#~ msgid "Start upload"
+#~ msgstr "Aloita lataus"
+
+#~ msgid "Start cross copy/paste"
+#~ msgstr "Aloita leikkaa/liitä ristiin"
+
+#~ msgid "Line style:"
+#~ msgstr "Viivatyylit:"
+
+#~ msgid ""
+#~ "<p>Your browser has very limited access to the clipboard, so use these "
+#~ "keyboard shortcuts:<ul><li><b>Ctrl+C</b>: For copying.</li><li><b>Ctrl+X</"
+#~ "b>: For cutting.</li><li><b>Ctrl+V</b>: For pasting.</li></ul></p>"
+#~ msgstr ""
+#~ "<p>Selaimellasi on rajoitettu pääsy leikepöydälle, joten käytä näitä "
+#~ "näppäinkomentoja:<ul><li><b>Ctrl+C</b>: Kopioi</li><li><b>Ctrl+X</b>: "
+#~ "Leikkaa</li><li><b>Ctrl+V</b>: Liitä</li></ul></p>"
+
+#~ msgid "Server is recycling and will be available shortly"
+#~ msgstr "Palvelin käynnistetään uudelleen ja on käytettävissä hetken kuluttua"
+
+#~ msgid "Oops, there is a problem connecting to Collabora Online : "
+#~ msgstr "Yhteydessä Collabora Onlineen tapahtui virhe: "
+
+#~ msgid "Number of views"
+#~ msgstr "Katselujen määrä"
+
+#~ msgid "Documents"
+#~ msgstr "Asiakirjat"
+
+#~ msgid "First sheet"
+#~ msgstr "Ensimmäinen laskentataulukko"
+
+#~ msgid "Previous sheet"
+#~ msgstr "Edellinen laskentataulukko"
+
+#~ msgid "Next sheet"
+#~ msgstr "Seuraava laskentataulukko"
+
+#~ msgid "Last sheet"
+#~ msgstr "Viimeinen laskentataulukko"
+
+#~ msgid "Gradient"
+#~ msgstr "Gradientti"
+
+#~ msgid "Hatching"
+#~ msgstr "Viivoitus"
+
+#~ msgid "Pattern"
+#~ msgstr "Kuviointi"
+
+#~ msgid "Portrait"
+#~ msgstr "Pystytila"
+
+#~ msgid "Landscape"
+#~ msgstr "Vaakatila"
+
+#, fuzzy
+#~| msgid "Text orientation"
+#~ msgid "Toggle Page Orientation"
+#~ msgstr "Tekstin suunta"

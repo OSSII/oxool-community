@@ -1,0 +1,1422 @@
+[
+	{
+		"id": ".uno:PickList",
+		"menu": [
+			{
+				"id": ".uno:Save",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+S"
+			},
+			{
+				"id": ".uno:SaveAs",
+				"comment": "替代指令"
+			},
+			{
+				"icon": ".uno:ShareDocument",
+				"name": "Share...",
+				"id": "ShareAs"
+			},
+			{
+				"id": ".uno:Print",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+P"
+			},
+			{
+				"icon": "res:rev-history",
+				"name": "See history",
+				"comment": "替代指令",
+				"id": "rev-history"
+			},
+			{
+				"icon": ".uno:ExportTo",
+				"name": "Download as",
+				"id": "downloadas",
+				"menu": [
+					{
+						"icon": "res:downloadas-pdf",
+						"name": "PDF Document (.pdf)",
+						"id": "downloadas-pdf"
+					},
+					{
+						"icon": ".uno:NewHtmlDoc",
+						"name": "HTML Document (.html)",
+						"id": "downloadas-html"
+					},
+					{
+						"icon": "res:downloadas-ods",
+						"name": "ODF spreadsheet (.ods)",
+						"id": "downloadas-ods"
+					},
+					{
+						"icon": "res:downloadas-xls",
+						"name": "Excel 2003 Spreadsheet (.xls)",
+						"id": "downloadas-xls"
+					},
+					{
+						"icon": "res:downloadas-xlsx",
+						"name": "Excel Spreadsheet (.xlsx)",
+						"id": "downloadas-xlsx"
+					},
+					{
+						"icon": "res:downloadas-csv",
+						"name": "CSV (.csv)",
+						"id": "downloadas-csv"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:CloseDoc",
+				"comment": "替代指令"
+			}
+		]
+	},
+	{
+		"id": ".uno:EditMenu",
+		"menu": [
+			{
+				"id": ".uno:Undo",
+				"hotkey": "Ctrl+Z"
+			},
+			{
+				"id": ".uno:Redo",
+				"hotkey": "Ctrl+Y"
+			},
+			{
+				"id": ".uno:Repeat",
+				"hotkey": "Ctrl+Shift+Y"
+			},
+			{
+				"icon": "res:repair",
+				"name": "Repair",
+				"comment": "替代指令",
+				"id": "Repair"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Cut",
+				"hotkey": "Ctrl+X"
+			},
+			{
+				"id": ".uno:Copy",
+				"hotkey": "Ctrl+C"
+			},
+			{
+				"id": ".uno:Paste",
+				"hotkey": "Ctrl+V"
+			},
+			{
+				"id": ".uno:PasteSpecialMenu",
+				"menu": [
+					{
+						"id": ".uno:PasteUnformatted",
+						"hotkey": "Ctrl+Alt+Shift+V"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:PasteOnlyText"
+					},
+					{
+						"id": ".uno:PasteOnlyValue"
+					},
+					{
+						"id": ".uno:PasteOnlyFormula"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:PasteSpecial",
+						"hotkey": "Ctrl+Shift-V"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SelectAll",
+				"hotkey": "Ctrl+A"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SearchDialog",
+				"hotkey": "Ctrl+H"
+			}
+		]
+	},
+	{
+		"id": ".uno:ViewMenu",
+		"menu": [
+			{
+				"id": ".uno:FullScreen",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:ZoomPlus",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:ZoomMinus",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:Zoom100Percent",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:StatusBarVisible"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:ToggleSheetGrid"
+			},
+			{
+				"id": ".uno:GridMenu",
+				"menu": [
+					{
+						"id": ".uno:GridVisible"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Sidebar",
+				"hotkey": "Ctrl+F5"
+			}
+		]
+	},
+	{
+		"id": ".uno:InsertMenu",
+		"menu": [
+			{
+				"id": ".uno:InsertGraphic",
+				"comment": "替代指令"
+			},
+			{
+				"icon": "res:insertgraphicremote",
+				"name": "Remote image",
+				"id": "insertgraphicremote"
+			},
+			{
+				"id": ".uno:InsertObjectChart"
+			},
+			{
+				"id": ".uno:DataDataPilotRun"
+			},
+			{
+				"id": ".uno:ShapesMenu",
+				"menu": [
+					{
+						"id": ".uno:ShapesLineMenu",
+						"menu": [
+							{
+								"id": ".uno:LineArrowEnd"
+							},
+							{
+								"id": ".uno:LineCircleArrow"
+							},
+							{
+								"id": ".uno:LineSquareArrow"
+							},
+							{
+								"id": ".uno:LineArrows"
+							},
+							{
+								"id": ".uno:LineArrowStart"
+							},
+							{
+								"id": ".uno:LineArrowCircle"
+							},
+							{
+								"id": ".uno:LineArrowSquare"
+							},
+							{
+								"id": ".uno:Line"
+							}
+						]
+					},
+					{
+						"name": ".uno:BasicShapes",
+						"id": ".uno:BasicShapes",
+						"menu": [
+							{
+								"id": ".uno:BasicShapes.rectangle"
+							},
+							{
+								"id": ".uno:BasicShapes.round-rectangle"
+							},
+							{
+								"id": ".uno:BasicShapes.quadrat"
+							},
+							{
+								"id": ".uno:BasicShapes.round-quadrat"
+							},
+							{
+								"id": ".uno:BasicShapes.parallelogram"
+							},
+							{
+								"id": ".uno:BasicShapes.trapezoid"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.ellipse"
+							},
+							{
+								"id": ".uno:BasicShapes.circle"
+							},
+							{
+								"id": ".uno:BasicShapes.circle-pie"
+							},
+							{
+								"id": ".uno:BasicShapes.block-arc"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.isosceles-triangle"
+							},
+							{
+								"id": ".uno:BasicShapes.right-triangle"
+							},
+							{
+								"id": ".uno:BasicShapes.diamond"
+							},
+							{
+								"id": ".uno:BasicShapes.pentagon"
+							},
+							{
+								"id": ".uno:BasicShapes.hexagon"
+							},
+							{
+								"id": ".uno:BasicShapes.octagon"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.can"
+							},
+							{
+								"id": ".uno:BasicShapes.cube"
+							},
+							{
+								"id": ".uno:BasicShapes.paper"
+							},
+							{
+								"id": ".uno:BasicShapes.cross"
+							},
+							{
+								"id": ".uno:BasicShapes.frame"
+							},
+							{
+								"id": ".uno:BasicShapes.ring"
+							}
+						]
+					},
+					{
+						"name": ".uno:ArrowShapes",
+						"id": ".uno:ArrowShapes",
+						"menu": [
+							{
+								"id": ".uno:ArrowShapes.right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.down-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-down-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.circular-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.s-sharped-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.split-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.split-round-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.quad-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.corner-right-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.chevron"
+							},
+							{
+								"id": ".uno:ArrowShapes.pentagon-right"
+							},
+							{
+								"id": ".uno:ArrowShapes.striped-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-down-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.notched-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.right-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.down-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-right-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-down-arrow-callout"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.quad-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-arrow-callout"
+							}
+						]
+					},
+					{
+						"name": ".uno:SymbolShapes",
+						"id": ".uno:SymbolShapes",
+						"menu": [
+							{
+								"id": ".uno:SymbolShapes.smiley"
+							},
+							{
+								"id": ".uno:SymbolShapes.heart"
+							},
+							{
+								"id": ".uno:SymbolShapes.sun"
+							},
+							{
+								"id": ".uno:SymbolShapes.moon"
+							},
+							{
+								"id": ".uno:SymbolShapes.cloud"
+							},
+							{
+								"id": ".uno:SymbolShapes.lightning"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:SymbolShapes.flower"
+							},
+							{
+								"id": ".uno:SymbolShapes.forbidden"
+							},
+							{
+								"id": ".uno:SymbolShapes.puzzle"
+							},
+							{
+								"id": ".uno:SymbolShapes.quad-bevel"
+							},
+							{
+								"id": ".uno:SymbolShapes.octagon-bevel"
+							},
+							{
+								"id": ".uno:SymbolShapes.diamond-bevel"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:SymbolShapes.bracket-pair"
+							},
+							{
+								"id": ".uno:SymbolShapes.left-bracket"
+							},
+							{
+								"id": ".uno:SymbolShapes.right-bracket"
+							},
+							{
+								"id": ".uno:SymbolShapes.brace-pair"
+							},
+							{
+								"id": ".uno:SymbolShapes.left-brace"
+							},
+							{
+								"id": ".uno:SymbolShapes.right-brace"
+							}
+						]
+					},
+					{
+						"name": ".uno:StarShapes",
+						"id": ".uno:StarShapes",
+						"menu": [
+							{
+								"id": ".uno:StarShapes.star4"
+							},
+							{
+								"id": ".uno:StarShapes.star5"
+							},
+							{
+								"id": ".uno:StarShapes.star6"
+							},
+							{
+								"id": ".uno:StarShapes.star8"
+							},
+							{
+								"id": ".uno:StarShapes.star12"
+							},
+							{
+								"id": ".uno:StarShapes.star24"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:StarShapes.bang"
+							},
+							{
+								"id": ".uno:StarShapes.vertical-scroll"
+							},
+							{
+								"id": ".uno:StarShapes.horizontal-scroll"
+							},
+							{
+								"id": ".uno:StarShapes.signet"
+							},
+							{
+								"id": ".uno:StarShapes.doorplate"
+							},
+							{
+								"id": ".uno:StarShapes.concave-star6"
+							}
+						]
+					},
+					{
+						"name": ".uno:CalloutShapes",
+						"id": ".uno:CalloutShapes",
+						"menu": [
+							{
+								"id": ".uno:CalloutShapes.rectangular-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.round-rectangular-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.round-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.cloud-callout"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-1"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-2"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-3"
+							}
+						]
+					},
+					{
+						"name": ".uno:FlowChartShapes",
+						"id": ".uno:FlowChartShapes",
+						"menu": [
+							{
+								"id": ".uno:FlowChartShapes.flowchart-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-alternate-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-decision"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-data"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-predefined-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-internal-storage"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-document"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-multidocument"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-terminator"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-preparation"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-manual-input"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-manual-operation"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-connector"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-off-page-connector"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-card"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-punched-tape"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-summing-junction"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-or"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-collate"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-sort"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-extract"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-merge"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-stored-data"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-delay"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-sequential-access"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-magnetic-disk"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-direct-access-storage"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-display"
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DrawText"
+			},
+			{
+				"id": ".uno:VerticalText"
+			},
+			{
+				"id": ".uno:InsertAnnotation",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+Alt+C"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:HyperlinkDialog",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+K"
+			},
+			{
+				"id": ".uno:InsertSymbol"
+			},
+			{
+				"id": ".uno:FormattingMarkMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertNonBreakingSpace"
+					},
+					{
+						"id": ".uno:InsertHardHyphen"
+					},
+					{
+						"id": ".uno:InsertSoftHyphen"
+					},
+					{
+						"id": ".uno:InsertNarrowNobreakSpace"
+					},
+					{
+						"id": ".uno:InsertZWSP"
+					},
+					{
+						"id": ".uno:InsertZWNBSP"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:InsertCurrentDate",
+				"hotkey": "Ctrl+;"
+			},
+			{
+				"id": ".uno:InsertCurrentTime",
+				"hotkey": "Ctrl+Shift+;"
+			},
+			{
+				"id": ".uno:FieldMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertFieldDateVariable"
+					},
+					{
+						"id": ".uno:InsertFieldSheet"
+					},
+					{
+						"id": ".uno:InsertFieldDocTitle"
+					}
+				]
+			},
+			{
+				"id": ".uno:EditHeaderAndFooter"
+			}
+		]
+	},
+	{
+		"id": ".uno:FormatMenu",
+		"menu": [
+			{
+				"id": ".uno:FormatTextMenu",
+				"menu": [
+					{
+						"id": ".uno:Bold",
+						"hotkey": "Ctrl+B"
+					},
+					{
+						"id": ".uno:Italic",
+						"hotkey": "Ctrl+I"
+					},
+					{
+						"id": ".uno:Underline",
+						"hotkey": "Ctrl+U"
+					},
+					{
+						"id": ".uno:UnderlineDouble"
+					},
+					{
+						"id": ".uno:Strikeout",
+						"hotkey": "Ctrl+Alt+5"
+					},
+					{
+						"id": ".uno:Overline"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:SuperScript",
+						"hotkey": "Ctrl+Shift+P"
+					},
+					{
+						"id": ".uno:SubScript",
+						"hotkey": "Ctrl+Shift+B"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:Shadowed"
+					},
+					{
+						"id": ".uno:OutlineFont"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:WrapText"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToUpper"
+					},
+					{
+						"id": ".uno:ChangeCaseToLower"
+					},
+					{
+						"id": ".uno:ChangeCaseRotateCase",
+						"hotkey": "Shift+F3"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToSentenceCase"
+					},
+					{
+						"id": ".uno:ChangeCaseToTitleCase"
+					},
+					{
+						"id": ".uno:ChangeCaseToToggleCase"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToHalfWidth"
+					},
+					{
+						"id": ".uno:ChangeCaseToFullWidth"
+					},
+					{
+						"id": ".uno:ChangeCaseToHiragana"
+					},
+					{
+						"id": ".uno:ChangeCaseToKatakana"
+					}
+				]
+			},
+			{
+				"id": ".uno:FormatSpacingMenu",
+				"menu": [
+					{
+						"id": ".uno:SpacePara1"
+					},
+					{
+						"id": ".uno:SpacePara15",
+						"hotkey": "Ctrl+5"
+					},
+					{
+						"id": ".uno:SpacePara2",
+						"hotkey": "Ctrl+2"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ParaspaceIncrease"
+					},
+					{
+						"id": ".uno:ParaspaceDecrease"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:IncrementIndent"
+					},
+					{
+						"id": ".uno:DecrementIndent"
+					}
+				]
+			},
+			{
+				"name": ".uno:TextAlign",
+				"id": ".uno:TextAlign",
+				"menu": [
+					{
+						"id": ".uno:CommonAlignLeft",
+						"hotkey": "Ctrl+L"
+					},
+					{
+						"id": ".uno:CommonAlignHorizontalCenter",
+						"hotkey": "Ctrl+E"
+					},
+					{
+						"id": ".uno:CommonAlignRight",
+						"hotkey": "Ctrl+R"
+					},
+					{
+						"id": ".uno:CommonAlignJustified",
+						"hotkey": "Ctrl+J"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:CommonAlignTop"
+					},
+					{
+						"id": ".uno:CommonAlignVerticalCenter"
+					},
+					{
+						"id": ".uno:CommonAlignBottom"
+					}
+				]
+			},
+			{
+				"id": ".uno:NumberFormatMenu",
+				"menu": [
+					{
+						"id": ".uno:NumberFormatStandard",
+						"hotkey": "Ctrl+Shift+6"
+					},
+					{
+						"id": ".uno:NumberFormatDecimal",
+						"hotkey": "Ctrl+Shift+1"
+					},
+					{
+						"id": ".uno:NumberFormatPercent",
+						"hotkey": "Ctrl+Shift+5"
+					},
+					{
+						"id": ".uno:NumberFormatCurrency",
+						"hotkey": "Ctrl+Shift+4"
+					},
+					{
+						"id": ".uno:NumberFormatDate",
+						"hotkey": "Ctrl+Shift+3"
+					},
+					{
+						"id": ".uno:NumberFormatTime"
+					},
+					{
+						"id": ".uno:NumberFormatScientific",
+						"hotkey": "Ctrl+Shift+2"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:NumberFormatThousands"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FormatPaintbrush"
+			},
+			{
+				"id": ".uno:ResetAttributes",
+				"hotkey": "Ctrl+M"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FormatCellDialog",
+				"hotkey": "Ctrl+1"
+			},
+			{
+				"id": ".uno:RowMenu",
+				"menu": [
+					{
+						"id": ".uno:RowHeight"
+					},
+					{
+						"id": ".uno:SetOptimalRowHeight"
+					},
+					{
+						"id": ".uno:HideRow"
+					},
+					{
+						"id": ".uno:ShowRow"
+					}
+				]
+			},
+			{
+				"id": ".uno:ColumnMenu",
+				"menu": [
+					{
+						"id": ".uno:ColumnWidth"
+					},
+					{
+						"id": ".uno:SetOptimalColumnWidth"
+					},
+					{
+						"id": ".uno:HideColumn"
+					},
+					{
+						"id": ".uno:ShowColumn"
+					}
+				]
+			},
+			{
+				"id": ".uno:MergeCellsMenu",
+				"menu": [
+					{
+						"id": ".uno:ToggleMergeCells"
+					},
+					{
+						"id": ".uno:MergeCells"
+					},
+					{
+						"id": ".uno:SplitCell"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FontDialog"
+			},
+			{
+				"id": ".uno:ParagraphDialog"
+			},
+			{
+				"id": ".uno:PageFormatDialog"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:ObjectMenu",
+				"menu": [
+					{
+						"id": ".uno:TransformDialog"
+					},
+					{
+						"id": ".uno:FormatLine"
+					},
+					{
+						"id": ".uno:FormatArea"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:AnchorMenu",
+				"menu": [
+					{
+						"id": ".uno:SetAnchorToCell"
+					},
+					{
+						"id": ".uno:SetAnchorToCellResize"
+					},
+					{
+						"id": ".uno:SetAnchorToPage"
+					}
+				]
+			},
+			{
+				"id": ".uno:ArrangeMenu",
+				"menu": [
+					{
+						"id": ".uno:BringToFront"
+					},
+					{
+						"id": ".uno:ObjectForwardOne"
+					},
+					{
+						"id": ".uno:ObjectBackOne"
+					},
+					{
+						"id": ".uno:SendToBack"
+					}
+				]
+			},
+			{
+				"id": ".uno:GroupMenu",
+				"menu": [
+					{
+						"id": ".uno:FormatGroup"
+					},
+					{
+						"id": ".uno:FormatUngroup"
+					},
+					{
+						"id": ".uno:EnterGroup"
+					},
+					{
+						"id": ".uno:LeaveGroup"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:FormatStylesMenu",
+		"menu": [
+			{
+				"id": ".uno:DefaultCellStyles"
+			},
+			{
+				"id": ".uno:Accent1CellStyles"
+			},
+			{
+				"id": ".uno:Accent2CellStyles"
+			},
+			{
+				"id": ".uno:Accent3CellStyles"
+			},
+			{
+				"id": ".uno:Heading1CellStyles"
+			},
+			{
+				"id": ".uno:Heading2CellStyles"
+			},
+			{
+				"id": ".uno:GoodCellStyles"
+			},
+			{
+				"id": ".uno:BadCellStyles"
+			},
+			{
+				"id": ".uno:NeutralCellStyles"
+			},
+			{
+				"id": ".uno:ErrorCellStyles"
+			},
+			{
+				"id": ".uno:WarningCellStyles"
+			},
+			{
+				"id": ".uno:FootnoteCellStyles"
+			},
+			{
+				"id": ".uno:NoteCellStyles"
+			}
+		]
+	},
+	{
+		"id": ".uno:SheetMenu",
+		"menu": [
+			{
+				"id": ".uno:InsertCell",
+				"hotkey": "Ctrl++"
+			},
+			{
+				"id": ".uno:InsertRowsMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertRowsBefore"
+					},
+					{
+						"id": ".uno:InsertRowsAfter"
+					}
+				]
+			},
+			{
+				"id": ".uno:InsertColumnsMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertColumnsBefore"
+					},
+					{
+						"id": ".uno:InsertColumnsAfter"
+					}
+				]
+			},
+			{
+				"id": ".uno:InsertBreakMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertRowBreak"
+					},
+					{
+						"id": ".uno:InsertColumnBreak"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DeleteCell",
+				"hotkey": "Ctrl+-"
+			},
+			{
+				"id": ".uno:DeleteRows"
+			},
+			{
+				"id": ".uno:DeleteColumns"
+			},
+			{
+				"id": ".uno:DelBreakMenu",
+				"menu": [
+					{
+						"id": ".uno:DeleteRowbreak"
+					},
+					{
+						"id": ".uno:DeleteColumnbreak"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Insert",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:Add",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:Remove",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Delete"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Move",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:RenameTable",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:Hide"
+			},
+			{
+				"id": ".uno:Show",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:NavigateMenu",
+				"menu": [
+					{
+						"id": ".uno:JumpToPrevTable"
+					},
+					{
+						"id": ".uno:JumpToNextTable"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:DataMenu",
+		"menu": [
+			{
+				"id": ".uno:DataSort"
+			},
+			{
+				"id": ".uno:SortAscending"
+			},
+			{
+				"id": ".uno:SortDescending"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DataFilterAutoFilter"
+			},
+			{
+				"id": ".uno:FilterMenu",
+				"menu": [
+					{
+						"id": ".uno:DataFilterStandardFilter"
+					},
+					{
+						"id": ".uno:DataFilterSpecialFilter"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:DataFilterRemoveFilter"
+					},
+					{
+						"id": ".uno:DataFilterHideAutoFilter"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DefineDBName"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DataPilotMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertPivotTable"
+					},
+					{
+						"id": ".uno:RecalcPivotTable"
+					},
+					{
+						"id": ".uno:DeletePivotTable"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Validation"
+			},
+			{
+				"id": ".uno:DataSubTotals"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DataConsolidate"
+			},
+			{
+				"id": ".uno:GroupOutlineMenu",
+				"menu": [
+					{
+						"id": ".uno:Group"
+					},
+					{
+						"id": ".uno:Ungroup",
+						"hotkey": "Ctrl+F12"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:AutoOutline"
+					},
+					{
+						"id": ".uno:ClearOutline"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:HideDetail"
+					},
+					{
+						"id": ".uno:ShowDetail"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:ToolsMenu",
+		"menu": [
+			{
+				"id": ".uno:SpellDialog",
+				"hotkey": "F7"
+			},
+			{
+				"id": ".uno:SpellOnline",
+				"hotkey": "Shift+F7"
+			},
+			{
+				"id": ".uno:LanguageMenu",
+				"menu": [
+					{
+						"id": ".uno:SetLanguageAllTextMenu",
+						"menu": []
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:HelpMenu",
+		"menu": [
+			{
+				"icon": "res:keyboardshortcuts",
+				"name": "Keyboard shortcuts",
+				"id": "keyboard-shortcuts",
+				"hotkey": "Ctrl+Alt+Shift+?",
+				"iosapp": false
+			},
+			{
+				"icon": ".uno:ReportIssue",
+				"name": "Report an issue",
+				"id": "report-an-issue",
+				"iosapp": false
+			},
+			{
+				"icon": "res:about",
+				"name": "About",
+				"id": "about"
+			}
+		]
+	}
+]

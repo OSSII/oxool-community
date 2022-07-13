@@ -1,0 +1,73 @@
+<script>Admin.FontManager(host);</script>
+<div class="row row align-items-center">
+    <div class="col-md-5">
+        <div class="input-group input-group-sm">
+            <div class="btn">
+                <input class="form-check-input" type="checkbox" id="selectAllFiles">
+                <label class="form-check-label" for="selectAllFiles">
+                    <i class="bi bi-check-all">&nbsp;</i><span _="Select all"></span>
+                </label>
+            </div>
+            <buton class="btn btn-warning fw-bold" type="button" id="deleteButton" style="display:none"></buton>
+        </div>
+    </div>
+
+    <div class="col-md-4"></div>
+
+    <div class="col-md-3 text-end">
+        <span class="badge rounded-pill bg-secondary" id="totalFiles" style="display:none;"></span><!--幾個檔案-->
+        <span class="badge rounded-pill bg-secondary" id="totalFonts" style="display:none;"></span><!--幾個字型-->
+    </div>
+</div>
+<div class="table-responsive mt-1">
+    <table class="table table-hover align-middle col-12">
+        <thead>
+            <tr class="bg-success text-light">
+                <th _="File name"></th>
+                <th _="Font name (preview)"></th>
+                <th _="Style"></th>
+                <th _="Color font"></th>
+                <th _="Symbol font"></th>
+            </tr>
+        </thead>
+        <tbody id="font_list"></tbody>
+    </table>
+</div>
+
+<!-- 右下角上傳檔案按鈕 -->
+<div id="uploadFonts" class="rounded-circle bg-success text-light text-center shadow" style="width:64px; height:64px; right:24px; bottom:24px; opacity: 0.5; position:fixed;cursor:pointer;">
+    <i class="bi bi-cloud-plus-fill fs-3" style="line-height:64px;"></i>
+    <input type="file" id="fontFiles" name="fontFiles" multiple="multiple" accept=".ttf,.ttc,.otf" style="display:none;">
+</div>
+
+<!-- 上傳檔案進度視窗 -->
+<div class="modal" id="uploadProgress" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!--div class="modal-header"></div-->
+            <div class="modal-body">
+                <div id="progressTitle"></div>
+                <div class="progress">
+                    <div class="progress-bar bg-success" id="progressbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div id="progressHelp" class="text-center"></div>
+            </div>
+            <!--div class="modal-footer"></div-->
+        </div>
+    </div>
+</div>
+
+<!-- 刪除選取檔案視窗 -->
+<div class="modal fade" id="deleteFontDialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-body" id="deleteFontsMessage">
+            <span _="Delete selected files?"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" _="Cancel"></button>
+            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" id="deleteOK" _="OK"></button>
+        </div>
+        </div>
+    </div>
+</div>

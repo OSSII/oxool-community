@@ -1,0 +1,52 @@
+<?xml-stylesheet type="text/css" href="icons.css" ?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <g id="background"
+     class="icn icn--area-color"
+     fill="#fafafa"
+     stroke="#3a3a38"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     >
+      <path d="m 4.5,2.5 h 16 v 19 h -16 z" />
+  </g>
+  <g 
+     class="icn icn--secondary-line-color"
+     fill="#797774"
+     stroke="#797774"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     >
+      <path d="M 6.5 5.5 L 10.5 5.5 L 6.5 5.5 z M 6.5 9.5 L 10.5 9.5 L 6.5 9.5 z M 14.5 9.5 L 18.5 9.5 L 14.5 9.5 z M 6.5 12.5 L 10.5 12.5 L 6.5 12.5 z M 14.5 12.5 L 18.5 12.5 L 14.5 12.5 z M 6.5 15.5 L 10.5 15.5 L 6.5 15.5 z M 14.5 15.5 L 18.5 15.5 L 14.5 15.5 z M 14.5 18.5 L 18.5 18.5 L 14.5 18.5 z " />
+  </g>
+  <g id="symbol"
+     class="icn icn--negative-color-line"
+     fill="none" 
+     stroke="#da4453" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+      >
+      <path d="m 16.5,5.5 h -4 v 13 h -4" />
+  </g>
+  <g id="symbol-background"
+     class="icn icn--background"
+     stroke="#fff" 
+     stroke-width="3px"
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+     transform="translate(-5,0)"
+      >
+      <path d="m 22.5,22.5 -9,-9" />
+      <path d="m 13.5,22.5 9,-9" />
+  </g>
+  <g id="symbol"
+     class="icn icn--negative-color-line"
+     fill="none" 
+     stroke="#da4453" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+     transform="translate(-5,0)"
+      >
+      <path d="m 22.5,22.5 -9,-9" />
+      <path d="m 13.5,22.5 9,-9" />
+  </g>
+</svg>

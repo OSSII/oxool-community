@@ -1,0 +1,40 @@
+<script>Admin.Log(host);</script>
+<div class="row g-3 align-items-end">
+    <div class="col-7">
+        <div class="form-floating">
+            <select class="form-select" id="log-channel-filter">
+            <option _="None"></option>
+            </select>
+            <label for="log-channel-filter" _="Channel Filter:"></label>
+        </div>
+    </div>
+    <div class="col-5">
+        <div class="input-group">
+            <button type="button" class="btn btn-outline-success" id="refresh-log" _="Refresh Log"></button>
+            <button type="button" class="btn btn-outline-primary" id="button-open-log-list-modal" data-bs-toggle="modal" data-bs-target="#channel-list-modal" _="Set Log Levels"></button>
+        </div>
+    </div>
+    <div class="col-12">
+        <textarea id="log-lines" class="form-control bg-dark text-light" style="height:70vh;" readonly="true" wrap="off"></textarea>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="channel-list-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h4 class="modal-title" _="Log Levels"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </header>
+            <section class="modal-body">
+                <form id="form-channel-list">
+                </form>
+            </section>
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" _="Cancel"></button>
+                <button type="button" class="btn btn-primary" form="form-channel-list" id="update-log-levels" data-bs-dismiss="modal" _="Update Log Levels"></button>
+            </footer>
+        </div>
+    </div>
+</div>

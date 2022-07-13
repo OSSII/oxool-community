@@ -1,0 +1,24 @@
+[Unit]
+Description=OxOffice Online WebSocket Daemon
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/oxoolwsd
+ExecStart=/usr/bin/oxoolwsd
+KillSignal=SIGINT
+TimeoutStopSec=120
+User=lool
+KillMode=control-group
+Restart=always
+LimitNOFILE=infinity:infinity
+
+ProtectSystem=strict
+ReadWritePaths=/opt/oxool
+
+ProtectHome=yes
+PrivateTmp=yes
+ProtectControlGroups=yes
+CapabilityBoundingSet=CAP_FOWNER CAP_MKNOD CAP_SYS_CHROOT
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+{
+    "en": false,
+    "de": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/de-override.json",
+    "es": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/es-override.json"
+}

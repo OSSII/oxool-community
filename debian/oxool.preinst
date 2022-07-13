@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+# Stop any running oxoolwsd process
+service oxool stop 2>&1 /dev/null || true
+
+#DEBHELPER#

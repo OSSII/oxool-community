@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/css" href="icons.css" ?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path
+     style="fill:#d36118"
+     d="M 5,2 C 4.446,2 4,2.446 4,3 v 18 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 12 H 20 L 20,9.5 C 20,9.4 19.95,9.25 19.85,9.15 l -7,-7 C 12.76,2 12.6326,2 12.5,2 H 10 5.5 Z"
+     />
+  <path
+     d="M 5,3 V 21 H 19 V 9.7 L 12.3,3 Z"
+     style="fill:#fafafa"
+     />
+  <path
+     style="fill:#d36118"
+     d="m 15.4,2.0c -0.4,0.1 -0.5,0.8 -0.2,1.1 l 3.8,3.8 C 19.3,7.2 20,6.9 20,6.4 V 2.6 C 20,2.3 19.7,2 19.372512,2 h -3.8 c -0,-0 -0.1,-0 -0.2,0 z" />
+  <rect
+     style="fill:#d36118"
+     width="12"
+     height="9"
+     x="6"
+     y="10"
+     ry="1" />
+  <path
+     style="fill:#fafafa"
+     d="m 7,11 v 7 h 10 v -7 z"
+     />
+  <path
+     style="fill:#d36118"
+     d="m 8,12 v 1 h 8 v -1 z m 0,2 v 1 h 1 v -1 z m 2,0 v 1 h 6 v -1 z m -2,2 v 1 h 1 v -1 z m 2,0 v 1 h 6 v -1 z"
+     />
+</svg>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="generator" content="">
+    <link rel="localizations" href="%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/admin-localizations.json" type="application/vnd.oftn.l10n+json"/>
+    <link rel="localizations" href="%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno-localizations.json" type="application/vnd.oftn.l10n+json"/>
+    <title>OxOffice Online - Admin console</title>
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/bootstrap-icons.css" rel="stylesheet">
+    <link href="./css/dashboard.css" rel="stylesheet">
+    <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin-bundle.js"></script>
+</head>
+<body>
+    <!--%BRANDING_JS%-->
+    <script>
+    if (typeof brandProductName !== 'undefined') {
+        l10nstrings.productName = brandProductName
+    }
+    window.loleafletPath = '%SERVICE_ROOT%/loleaflet/%VERSION%';
+    document.title = l10nstrings.productName + ' - ' + _('Admin console');
+    var host = (window.location.protocol === 'https:' ? 'wss://': 'ws://') + window.location.host + '%SERVICE_ROOT%/lool/adminws/';
+    Admin.GlobalFunction(host);
+    </script>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <div class="container-fluid">
+        <span class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fw-bold" href="#"><script>document.write(l10nstrings.productName);</script></span>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="w-100 text-center fw-bold text-light fs-4" id="functionTitle"></div>
+        <div class="dropdown">
+            <button class="btn btn-dark text-warning btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                <span _="System"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-sm-end" id="navbar-menu">
+            </ul>
+        </div>
+    </div>
+    </header>
+
+    <div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="list-group" id="mainMenu">
+            <div class="list-group-item list-group-item-primary text-center">
+                <span class="fs-5 fw-bold" _="Admin console"></span>
+            </div>
+            <a class="list-group-item list-group-item-action" id="admin" href="admin.html"><i class="bi bi-info-circle">&nbsp;&nbsp;</i><span _="Overview"></span></a>
+            <a class="list-group-item list-group-item-action" id="adminAnalytics" href="adminAnalytics.html"><i class="bi bi-graph-up">&nbsp;&nbsp;</i><span _="Analytics"></span></a>
+            <a class="list-group-item list-group-item-action" id="adminLog" href="adminLog.html"><i class="bi bi-journal-text">&nbsp;&nbsp;</i><span _="Log"></span></a>
+            <a class="list-group-item list-group-item-action" id="adminFontManager" href="adminFontManager.html"><i class="bi bi-file-earmark-font">&nbsp;&nbsp;</i><span _="Font manager"></span></a>
+        </div>
+        <div class="text-center mt-2">
+            <span class="badge bg-secondary" id="version"></span>
+            <span class="badge bg-secondary" id="lokit"></span>
+        </div>
+        </nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-3" id="mainContent">
+        <!--%MAIN_CONTENT%-->
+        </main>
+    </div>
+    </div>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 翻譯整頁(只要 element 有 _="xxxx", _UNO="xxxx", title and placeholder 的，都翻)
+        l10nstrings.fullPageTranslation();
+
+        var menuList = $('#mainMenu .list-group-item');
+        // 找出與本頁相符的 item
+        for (var i=0 ; i < menuList.length ; i++) {
+            var element = menuList[i];
+            if (element.href === window.location.href)
+            {
+                document.title = l10nstrings.productName + ' - ' + _('Admin console') + ' / ' + element.innerText;
+                $('#functionTitle').html(element.innerHTML); // 更新導行列標題
+                element.classList.add('active'); // 設定這個 item 是 active
+                break;
+            }
+        }
+    </script>
+</body>
+</html>

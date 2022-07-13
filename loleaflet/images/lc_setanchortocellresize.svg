@@ -1,0 +1,89 @@
+<?xml-stylesheet type="text/css" href="icons.css" ?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <g id="background"
+     class="icn icn--area-color"
+     fill="#fafafa"
+     stroke="#3a3a38"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     >
+      <path d="m 2.5,2.5 h 19 v 19 h -19 z" />
+  </g>
+  <g 
+     class="icn icn--secondary-line-color"
+     fill="#797774"
+     stroke="#797774"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     >
+      <path d="m 2.5,5.5 h 19 z m 0,4 h 19 z m 0,4 h 19 z m 0,4 h 19 z" />
+      <path d="m 8.5,2.5 v 19 z m 7,0 v 19 z" />
+  </g>
+  <g id="background"
+     class="icn icn--line-color"
+     fill="none"
+     stroke="#3a3a38"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     >
+      <path d="m 2.5,2.5 h 19 v 19 h -19 z" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--background"
+     fill="#fff"
+     stroke="#fff" 
+     stroke-width="3px"
+	 stroke-linecap="round" 
+     stroke-linejoin="round" >
+      <path d="m 18.5,7 v -4.5 h -7" />
+      <path d="m 5.5,8 v 4.5 h 7" />
+      <path d="m 8.5,5.5 h 7 v 4 h -7 z" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--highlight-color"  
+     fill="#83beec" 
+     stroke="#1e8bcd" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+      >
+      <path d="m 8.5,5.5 h 7 v 4 h -7 z" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--positiv-color-color-line"
+     fill="none"
+     stroke="#18ab50" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+     >
+      <path d="m 18.5,7 v -4.5 h -7" />
+      <path d="m 5.5,8 v 4.5 h 7" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--background"
+     fill="#fff"
+     stroke="#fff" 
+     stroke-width="3px"
+	 stroke-linecap="round" 
+     stroke-linejoin="round" >
+      <path d="m 9.5,22.5 v -3 h 3" />
+      <path d="m 20.5,19.5 h 3 v 3" />
+      <path d="m 13.5,15.5 h 6" />
+      <path d="m 18.5,10.5 a 2,2 0 0 1 -2,2 2,2 0 0 1 -2,-2 2,2 0 0 1 2,-2 2,2 0 0 1 2,2 z" />
+      <path d="m 16.5,12.5 v 11" />
+      <path d="m 9.5,19.5 c 0,0 2.5,4 7,4 4.5,0 7,-4 7,-4" />
+  </g>
+  <g id="symbol"
+	 class="icn icn--highlight-color-line"  
+     fill="none" 
+     stroke="#1e8bcd" 
+	 stroke-linecap="round" 
+	 stroke-linejoin="round"
+      >
+      <path d="m 9.5,22.5 v -3 h 3" />
+      <path d="m 20.5,19.5 h 3 v 3" />
+      <path d="m 13.5,15.5 h 6" />
+      <path d="m 18.5,10.5 a 2,2 0 0 1 -2,2 2,2 0 0 1 -2,-2 2,2 0 0 1 2,-2 2,2 0 0 1 2,2 z" />
+      <path d="m 16.5,12.5 v 11" />
+      <path d="m 9.5,19.5 c 0,0 2.5,4 7,4 4.5,0 7,-4 7,-4" />
+  </g>
+</svg>

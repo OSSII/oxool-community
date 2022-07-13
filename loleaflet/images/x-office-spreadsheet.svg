@@ -1,0 +1,30 @@
+<?xml-stylesheet type="text/css" href="icons.css" ?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path
+     style="fill:#18a303"
+     d="M 5,2 C 4.446,2 4,2.446 4,3 v 18 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 12 H 20 L 20,9.5 C 20,9.4 19.95,9.25 19.85,9.15 l -7,-7 C 12.76,2 12.6326,2 12.5,2 H 10 5.5 Z"
+     />
+  <path
+     d="M 5,3 V 21 H 19 V 9.7 L 12.3,3 Z"
+     style="fill:#fafafa"
+     />
+  <path
+     style="fill:#18a303"
+     d="m 7,10 h 10 c 0.554,0 1,0.446 1,1 v 7 c 0,0.554 -0.446,1 -1,1 H 7 C 6.446,19 6,18.554 6,18 v -7 c 0,-0.554 0.446,-1 1,-1 z"
+     />
+  <path
+     style="fill:#18a303"
+     d="m 15.4,2 c -0.4,0.1 -0.5,0.8 -0.2,1.1 l 3.8,3.8 C 19.3,7.2 20,6.9 20,6.4 V 2.6 C 20,2.3 19.7,2 19.4,2 h -3.8 c -0,-0 -0.1,-0 -0.2,0 z" />
+  <path
+     style="fill:#fafafa"
+     d="M 7 13 L 7 15 L 11 15 L 11 13 L 7 13 z M 12 13 L 12 15 L 17 15 L 17 13 L 12 13 z M 7 16 L 7 18 L 11 18 L 11 16 L 7 16 z M 12 16 L 12 18 L 17 18 L 17 16 L 12 16 z "
+     />
+  <path
+     style="fill:#fafafa"
+     d="m 7,13 v 2 h 4 v -2 z m 5,0 v 2 h 5 v -2 z m -5,3 v 2 h 4 v -2 z m 5,0 v 2 h 5 v -2 z"
+     />
+  <path
+     style="fill:#fafafa"
+     d="m 7,13 v 2 h 4 v -2 z m 5,0 v 2 h 5 v -2 z m -5,3 v 2 h 4 v -2 z m 5,0 v 2 h 5 v -2 z"
+     />
+</svg>

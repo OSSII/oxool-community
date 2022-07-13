@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<!-- Proof of concept of running loleaflet.html in an iframe. Also
+     shows how to, from outside the iframe, invoke Python scripting in
+     the underlying LibreOffice instance that manipulates the document
+     being edited.
+
+     This demonstrates using the Python InsertText.py and Capitalise.py
+     scripts from javascript across iframes.
+-->
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Online Editor</title>
+
+    <style>
+      .alert {
+        font-size: large;
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+        margin-bottom: 15px;
+      }
+    </style>
+
+    <script>
+
+      function post(msg) {
+        window.frames[0].postMessage(JSON.stringify(msg), '*');
+      }
+
+      function insertText(text) {
+        post({'MessageId': 'CallPythonScript',
+              'SendTime': Date.now(),
+              'ScriptFile': 'InsertText.py',
+              'Function': 'InsertText',
+              'Values': { 'text': {'type': 'string', 'value': text}}
+            });
+      }
+
+      function capitalize() {
+        post({'MessageId': 'CallPythonScript',
+              'SendTime': Date.now(),
+              'ScriptFile': 'Capitalise.py',
+              'Function': 'capitalisePython',
+              'Values': null
+            });
+      }
+
+      function save() {
+        post({'MessageId': 'Action_Save',
+              'Values': { 'Notify': true, 'ExtendedData': 'CustomFlag=Custom Value;AnotherFlag=AnotherValue' }
+            });
+      }
+
+      function closeDocument() {
+        post({'MessageId': 'Action_Close',
+              'Values': null
+            });
+      }
+
+      function hide_commands(id) {
+        post({'MessageId': 'Hide_Menu_Item',
+              'Values': { 'id': id, }
+            });
+        post({'MessageId': 'Hide_Button',
+              'Values': { 'id': id, }
+            });
+      }
+
+      function show_commands(id) {
+        post({'MessageId': 'Show_Menu_Item',
+              'Values': { 'id': id, }
+            });
+        post({'MessageId': 'Show_Button',
+              'Values': { 'id': id, }
+            });
+      }
+
+      function disable_default_uiaction(action, disable) {
+        post({'MessageId': 'Disable_Default_UIAction',
+              'Values': { 'action': action, 'disable': disable }
+            });
+      }
+
+      function ShowMenubar(visible) {
+        var messageId = visible ? 'Show_Menubar' : 'Hide_Menubar';
+        post({'MessageId': 'Host_PostmessageReady'});
+        post({'MessageId': messageId});
+      }
+
+      function ShowInsertButton() {
+        post({'MessageId': 'Insert_Button',
+              'Values': { 'id': 'Save', 'imgurl': 'images/lc_save.svg', 'hint': '', 'mobile': false, 'label': 'Show additional btns via Insert_Button', 'insertBefore': 'Save', 'unoCommand': '.uno:Save'}
+            });
+      }
+
+      function ShowNotebookbar(notebookbar) {
+        var value = notebookbar ? 'notebookbar' : 'classic';
+        post({'MessageId': 'Host_PostmessageReady'});
+        post({'MessageId': 'Action_ChangeUIMode',
+              'Values': {'Mode': value}});
+      }
+
+      function reset_access_token(accesstoken) {
+        post({'MessageId': 'Reset_Access_Token',
+              'Values': { 'token': accesstoken, }
+            });
+      }
+
+      // This function is invoked when the iframe posts a message back.
+
+      function receiveMessage(event) {
+        console.log('==== framed.doc.html receiveMessage: ' + event.data);
+        var msg = JSON.parse(event.data);
+        if (!msg) {
+          return;
+        }
+        if (msg.MessageId == 'App_LoadingStatus') {
+          if (msg.Values) {
+            if (msg.Values.Status == 'Document_Loaded') {
+              post({'MessageId': 'Host_PostmessageReady'});
+            }
+          }
+        } else if (msg.MessageId == 'Doc_ModifiedStatus') {
+          if (msg.Values) {
+            if (msg.Values.Modified == true) {
+              document.getElementById("ModifiedStatus").innerHTML = "Modified";
+            }
+            else {
+              document.getElementById("ModifiedStatus").innerHTML = "Saved";
+            }
+          }
+        } else if (msg.MessageId == 'Action_Save_Resp') {
+          if (msg.Values) {
+            if (msg.Values.success == true) {
+              document.getElementById("ModifiedStatus").innerHTML = "Saved";
+            } else {
+              document.getElementById("ModifiedStatus").innerHTML = "Error during save";
+            }
+          }
+        }
+      }
+
+      // 'main' code of this <script> block, run when page is being
+      // rendered. Install the message listener.
+      window.addEventListener("message", receiveMessage, false);
+
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body>
+    <div id="usage" class="alert" style="display:none">
+      <h2>Usage</h2>
+      <p>
+        Load this page via https or http, depending on whether SSL is enabled or not, from the Online server directly.</br>
+        The document to load must be given as a query parameter called file_path. The document can be any accessible URL, including on disk, via file://.
+      </p>
+
+      <h4>Example</h4>
+      <p>
+        http://localhost:9980/loleaflet/dist/framed.doc.html?file_path=file:///path/to/document/hello-world.odt
+      </p>
+    </div>
+
+    <h3>PostMessage test harness</h3>
+
+    <h4>Run python scripts</h4>
+    <form id="insert-text-form">
+      <label for="fname"><b>InsertText.py</b>: inserts text into the document</label><br>
+      <textarea name="source" value="" rows="5" cols="50">Type your text and press Insert text</textarea><br>
+      <button onclick="insertText(document.forms['insert-text-form'].elements['source'].value); return false;">Insert text</button>
+    </form>
+    <br>
+    <form id="insert-text-form">
+      <label for="fname"><b>Capitalize.py</b>: capitalize selected text in the document</label><br>
+      <button onclick="capitalize(); return false;">Capitalize selected text</button></br></br>
+    </form>
+
+    <h4>Various other messages to post</h4>
+    <form>
+      <button onclick="save(); return false;">Save</button>
+      <button onclick="closeDocument(); return false;">Close</button></br></br>
+      <button onclick="hide_commands('save'); return false;">Hide Save Commands</button>
+      <button onclick="show_commands('save'); return false;">Show Save Commands</button></br>
+      <button onclick="hide_commands('print'); return false;">Hide Print Commands</button>
+      <button onclick="show_commands('print'); return false;">Show Print Commands</button></br></br>
+      <button onclick="disable_default_uiaction('UI_Save', true); return false;">Disable default save action</button></br>
+      <button onclick="disable_default_uiaction('UI_Save', false); return false;">Enable default save action</button></br></br>
+      <label for="new-access-token"><b>New Access-Token</b>: </label><br>
+      <textarea name="new-access-token" id="new-access-token" value="" rows="1" cols="30">123456789AA</textarea><br>
+      <button onclick="reset_access_token(document.getElementById('new-access-token').value); return false;">Reset Access-Token</button>
+    </form>
+
+    <h3>Modified Status: <span id="ModifiedStatus">Saved</span></h3>
+
+    <h3>UI modification</h3>
+    <form id="menubar-toggle">
+      <button onclick="ShowMenubar(false); return false;">Hide Menubar</button>
+      <button onclick="ShowMenubar(true); return false;">Show Menubar</button>
+      <button onclick="ShowInsertButton(); return false;" title="via Insert_Button">Insert custom button</button>
+      <p>
+      <button onclick="ShowNotebookbar(false); return false;">Compact Toolbar</button>
+      <button onclick="ShowNotebookbar(true); return false;">Tabbed Toolbar</button>
+    </form>
+
+    <h3>Document frame</h3>
+    <h4>If the frame fails to load click <a id="link">here and accept security bits</a></h4>
+    <h4>If the frame still fails to load ensure you have <code>localhost:*</code> included in your <code>net.frame_ancestors</code> in oxoolwsd.xml</h4>
+    <iframe id="frame" height="1000" width="1000"></iframe>
+
+    <script>
+      if (document.location.protocol == 'file:' || window.location.search == '') {
+        document.getElementById("usage").style.display = "block";
+        alert('Incorrect usage, please follow the instructions at the top of this page.');
+      }
+
+      var query = '?';
+      if (window.location.search !== '')
+        query = window.location.search + '&';
+      query += 'NotWOPIButIframe=true';
+
+      var path = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/') + 1) + 'loleaflet.html';
+      var uriBase = window.location.protocol + '//' + window.location.host + path + query;
+      var iframe = document.getElementById("frame");
+      iframe.src = uriBase;
+      link.href = uriBase;
+    </script>
+  </body>
+</html>

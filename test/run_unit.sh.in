@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+#
+# DO NOT EDIT - this file is generated from run_unit.sh.in.
+#
+
+cmd_line="$0 $@"
+
+# substituted variables in one place:
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+abs_top_builddir="${DIR}/.."
+systemplate_path="@SYSTEMPLATE_PATH@"
+enable_debug="@ENABLE_DEBUG@"
+jails_path="@JAILS_PATH@"
+lo_path="@LO_PATH@"
+valgrind_cmd="valgrind --tool=memcheck --trace-children=no -v --read-var-info=yes"
+verbose=''
+
+# Note that these options are used by commands in the Makefile that
+# Automake generates. Don't be mislead by 'git grep' not showing any
+# use of --test-name for instance.
+
+print_help ()
+{
+    echo "Usage: run_unit.sh --test-name <name.la> [OPTIONS]"
+    echo "Runs a specified unit test"
+    echo ""
+    echo "   --log-file <file>   Log output to this file - default /dev/stderr"
+    echo "   --trs-file <file>   Records the results of a test for automake (default /dev/stderr)"
+    echo "   --gdb               Run under gdb if enabled"
+    echo "   --valgrind          Run under valgrind if enabled"
+    echo "   --verbose           Print out more stuff - if you run out of things to read"
+    exit 1
+}
+
+tst=
+tst_log=/dev/stderr
+tst_output=/dev/stderr
+while test $# -gt 0; do
+  case $1 in
+      --test-name) tst=$2; shift;;
+      --log-file)  tst_log=$2; shift;;
+      --trs-file)  test_output=$2; shift;;
+      --gdb)       trace='gdb --args'; shift;;
+      --valgrind)  trace=$valgrind_cmd; shift;;
+      --verbose)   verbose="--verbose";;
+      --help)      print_help ;;
+  -*) ;; # ignore
+  esac
+  shift
+done
+
+echo
+echo "Running ${tst}"
+echo "	$cmd_line"
+
+# drop .la suffix
+tst=`echo $tst | sed "s/\.la//"`;
+
+export LOOL_LOGLEVEL=trace
+
+if test "z$enable_debug" != "ztrue"; then
+    echo ""
+    echo "It is necessary to configure with --enable-debug for unit tests to pass"
+    echo ""
+    echo ":test-result: FAIL $tst" > $test_output
+    exit 1;
+fi
+
+# result logging
+echo "Test output is '$test_output'"
+echo > $test_output
+
+echo "Running $tst | $tst_log ...";
+if ${trace} \
+       ${abs_top_builddir}/loolwsd --o:sys_template_path="$systemplate_path" \
+       --o:child_root_path="$jails_path" \
+                                   --o:storage.filesystem[@allow]=true \
+                                   --o:logging.level=trace \
+                                   --o:ssl.key_file_path="${abs_top_builddir}/etc/key.pem" \
+                                   --o:ssl.cert_file_path="${abs_top_builddir}/etc/cert.pem" \
+                                   --o:ssl.ca_file_path="${abs_top_builddir}/etc/ca-chain.cert.pem" \
+                                   --o:admin_console.username=admin --o:admin_console.password=admin \
+                                   --o:storage.ssl.enable=false \
+                                   --unitlib="${abs_top_builddir}/test/.libs/$tst.so" 2> "$tst_log"; then
+        echo "Test $tst passed."
+        echo ":test-result: PASS $tst" >> $test_output
+else
+	cat $tst_log
+        echo "============================================================="
+        echo "Test failed on unit: $tst re-run with:"
+        echo "   $ gdb --args ${abs_top_builddir}/loolwsd --o:sys_template_path=\"$systemplate_path\" \\"
+        echo "         --o:child_root_path=\"$jails_path\" \\"
+        echo "         --o:storage.filesystem[@allow]=true \\"
+        echo "         --o:storage.ssl.enable=false \\"
+        echo "         --o:logging.level=trace \\"
+        echo "         --o:ssl.key_file_path=\"${abs_top_builddir}/etc/key.pem\" \\"
+        echo "         --o:ssl.cert_file_path=\"${abs_top_builddir}/etc/cert.pem\" \\"
+        echo "         --o:ssl.ca_file_path=\"${abs_top_builddir}/etc/ca-chain.cert.pem\" \\"
+        echo "         --o:admin_console.username=admin --o:admin_console.password=admin \\"
+        echo "         --unitlib=\"${abs_top_builddir}/test/.libs/$tst.so\""
+	echo ""
+	echo "   $ less $tst_log # for detailed failure log files"
+        echo "============================================================="
+        echo ":test-result: FAIL $tst" >> $test_output
+fi
+
+# vim:set shiftwidth=4 expandtab:

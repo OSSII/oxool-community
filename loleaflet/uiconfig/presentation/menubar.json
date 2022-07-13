@@ -1,0 +1,1266 @@
+[
+	{
+		"id": ".uno:PickList",
+		"menu": [
+			{
+				"id": ".uno:Save",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+S"
+			},
+			{
+				"id": ".uno:SaveAs",
+				"comment": "替代指令"
+			},
+			{
+				"icon": ".uno:ShareDocument",
+				"name": "Share",
+				"comment": "替代指令",
+				"id": "ShareAs"
+			},
+			{
+				"id": ".uno:Print",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+P"
+			},
+			{
+				"icon": "res:rev-history",
+				"name": "See history",
+				"comment": "替代指令",
+				"id": "rev-history"
+			},
+			{
+				"icon": ".uno:ExportTo",
+				"name": "Download as",
+				"id": "downloadas",
+				"menu": [
+					{
+						"icon": "res:downloadas-pdf",
+						"name": "PDF Document (.pdf)",
+						"id": "downloadas-pdf"
+					},
+					{
+						"icon": ".uno:NewHtmlDoc",
+						"name": "HTML Document (.html)",
+						"id": "downloadas-html"
+					},
+					{
+						"icon": "res:downloadas-odp",
+						"name": "ODF presentation (.odp)",
+						"id": "downloadas-odp"
+					},
+					{
+						"icon": "res:downloadas-odg",
+						"name": "ODF Drawing (.odg)",
+						"id": "downloadas-odg"
+					},
+					{
+						"icon": "res:downloadas-ppt",
+						"name": "PowerPoint 2003 Presentation (.ppt)",
+						"id": "downloadas-ppt"
+					},
+					{
+						"icon": "res:downloadas-pptx",
+						"name": "PowerPoint Presentation (.pptx)",
+						"id": "downloadas-pptx"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:CloseDoc",
+				"comment": "替代指令"
+			}
+		]
+	},
+	{
+		"id": ".uno:EditMenu",
+		"menu": [
+			{
+				"id": ".uno:Undo",
+				"hotkey": "Ctrl+Z"
+			},
+			{
+				"id": ".uno:Redo",
+				"hotkey": "Ctrl+Y"
+			},
+			{
+				"icon": "res:repair",
+				"name": "Repair",
+				"comment": "替代指令",
+				"id": "Repair"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Cut",
+				"hotkey": "Ctrl+X"
+			},
+			{
+				"id": ".uno:Copy",
+				"hotkey": "Ctrl+C"
+			},
+			{
+				"id": ".uno:Paste",
+				"hotkey": "Ctrl+V"
+			},
+			{
+				"id": ".uno:PasteSpecialMenu",
+				"menu": [
+					{
+						"id": ".uno:PasteUnformatted",
+						"hotkey": "Ctrl+Alt+Shift+V"
+					},
+					{
+						"id": ".uno:PasteSpecial",
+						"hotkey": "Ctrl+Shift+V"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:CopyObjects",
+				"hotkey": "Shift+F3"
+			},
+			{
+				"id": ".uno:SelectAll",
+				"hotkey": "Ctrl+A"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SearchDialog",
+				"hotkey": "Ctrl+H"
+			}
+		]
+	},
+	{
+		"id": ".uno:ViewMenu",
+		"menu": [
+			{
+				"id": ".uno:FullScreen",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:ZoomPlus",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:ZoomMinus",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:Zoom100Percent",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:GridMenu",
+				"menu": [
+					{
+						"id": ".uno:GridVisible"
+					},
+					{
+						"id": ".uno:GridFront"
+					}
+				]
+			},
+			{
+				"id": ".uno:SnapLinesMenu",
+				"menu": [
+					{
+						"id": ".uno:HelplinesVisible"
+					},
+					{
+						"id": ".uno:HelplinesFront"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:GridUse"
+					},
+					{
+						"id": ".uno:HelplinesUse"
+					},
+					{
+						"id": ".uno:SnapFrame"
+					},
+					{
+						"id": ".uno:SnapPoints"
+					},
+					{
+						"id": ".uno:SnapBorder"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:InsertMenu",
+		"menu": [
+			{
+				"id": ".uno:InsertGraphic",
+				"comment": "替代指令"
+			},
+			{
+				"icon": "res:insertgraphicremote",
+				"name": "Remote image",
+				"id": "insertgraphicremote"
+			},
+			{
+				"id": ".uno:InsertObjectChart"
+			},
+			{
+				"id": ".uno:ShapesMenu",
+				"menu": [
+					{
+						"id": ".uno:ShapesLineMenu",
+						"menu": [
+							{
+								"id": ".uno:LineArrowEnd"
+							},
+							{
+								"id": ".uno:LineCircleArrow"
+							},
+							{
+								"id": ".uno:LineSquareArrow"
+							},
+							{
+								"id": ".uno:LineArrows"
+							},
+							{
+								"id": ".uno:LineArrowStart"
+							},
+							{
+								"id": ".uno:LineArrowCircle"
+							},
+							{
+								"id": ".uno:LineArrowSquare"
+							},
+							{
+								"id": ".uno:Line"
+							}
+						]
+					},
+					{
+						"name": ".uno:BasicShapes",
+						"id": ".uno:BasicShapes",
+						"menu": [
+							{
+								"id": ".uno:BasicShapes.rectangle"
+							},
+							{
+								"id": ".uno:BasicShapes.round-rectangle"
+							},
+							{
+								"id": ".uno:BasicShapes.quadrat"
+							},
+							{
+								"id": ".uno:BasicShapes.round-quadrat"
+							},
+							{
+								"id": ".uno:BasicShapes.parallelogram"
+							},
+							{
+								"id": ".uno:BasicShapes.trapezoid"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.ellipse"
+							},
+							{
+								"id": ".uno:BasicShapes.circle"
+							},
+							{
+								"id": ".uno:BasicShapes.circle-pie"
+							},
+							{
+								"id": ".uno:BasicShapes.block-arc"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.isosceles-triangle"
+							},
+							{
+								"id": ".uno:BasicShapes.right-triangle"
+							},
+							{
+								"id": ".uno:BasicShapes.diamond"
+							},
+							{
+								"id": ".uno:BasicShapes.pentagon"
+							},
+							{
+								"id": ".uno:BasicShapes.hexagon"
+							},
+							{
+								"id": ".uno:BasicShapes.octagon"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:BasicShapes.can"
+							},
+							{
+								"id": ".uno:BasicShapes.cube"
+							},
+							{
+								"id": ".uno:BasicShapes.paper"
+							},
+							{
+								"id": ".uno:BasicShapes.cross"
+							},
+							{
+								"id": ".uno:BasicShapes.frame"
+							},
+							{
+								"id": ".uno:BasicShapes.ring"
+							}
+						]
+					},
+					{
+						"name": ".uno:ArrowShapes",
+						"id": ".uno:ArrowShapes",
+						"menu": [
+							{
+								"id": ".uno:ArrowShapes.right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.down-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-down-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.circular-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.s-sharped-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.split-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.split-round-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.quad-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.corner-right-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.chevron"
+							},
+							{
+								"id": ".uno:ArrowShapes.pentagon-right"
+							},
+							{
+								"id": ".uno:ArrowShapes.striped-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-down-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.notched-right-arrow"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-arrow"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.right-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.down-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.left-right-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-down-arrow-callout"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:ArrowShapes.quad-arrow-callout"
+							},
+							{
+								"id": ".uno:ArrowShapes.up-right-arrow-callout"
+							}
+						]
+					},
+					{
+						"name": ".uno:SymbolShapes",
+						"id": ".uno:SymbolShapes",
+						"menu": [
+							{
+								"id": ".uno:SymbolShapes.smiley"
+							},
+							{
+								"id": ".uno:SymbolShapes.heart"
+							},
+							{
+								"id": ".uno:SymbolShapes.sun"
+							},
+							{
+								"id": ".uno:SymbolShapes.moon"
+							},
+							{
+								"id": ".uno:SymbolShapes.cloud"
+							},
+							{
+								"id": ".uno:SymbolShapes.lightning"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:SymbolShapes.flower"
+							},
+							{
+								"id": ".uno:SymbolShapes.forbidden"
+							},
+							{
+								"id": ".uno:SymbolShapes.puzzle"
+							},
+							{
+								"id": ".uno:SymbolShapes.quad-bevel"
+							},
+							{
+								"id": ".uno:SymbolShapes.octagon-bevel"
+							},
+							{
+								"id": ".uno:SymbolShapes.diamond-bevel"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:SymbolShapes.bracket-pair"
+							},
+							{
+								"id": ".uno:SymbolShapes.left-bracket"
+							},
+							{
+								"id": ".uno:SymbolShapes.right-bracket"
+							},
+							{
+								"id": ".uno:SymbolShapes.brace-pair"
+							},
+							{
+								"id": ".uno:SymbolShapes.left-brace"
+							},
+							{
+								"id": ".uno:SymbolShapes.right-brace"
+							}
+						]
+					},
+					{
+						"name": ".uno:StarShapes",
+						"id": ".uno:StarShapes",
+						"menu": [
+							{
+								"id": ".uno:StarShapes.star4"
+							},
+							{
+								"id": ".uno:StarShapes.star5"
+							},
+							{
+								"id": ".uno:StarShapes.star6"
+							},
+							{
+								"id": ".uno:StarShapes.star8"
+							},
+							{
+								"id": ".uno:StarShapes.star12"
+							},
+							{
+								"id": ".uno:StarShapes.star24"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:StarShapes.bang"
+							},
+							{
+								"id": ".uno:StarShapes.vertical-scroll"
+							},
+							{
+								"id": ".uno:StarShapes.horizontal-scroll"
+							},
+							{
+								"id": ".uno:StarShapes.signet"
+							},
+							{
+								"id": ".uno:StarShapes.doorplate"
+							},
+							{
+								"id": ".uno:StarShapes.concave-star6"
+							}
+						]
+					},
+					{
+						"name": ".uno:CalloutShapes",
+						"id": ".uno:CalloutShapes",
+						"menu": [
+							{
+								"id": ".uno:CalloutShapes.rectangular-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.round-rectangular-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.round-callout"
+							},
+							{
+								"id": ".uno:CalloutShapes.cloud-callout"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-1"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-2"
+							},
+							{
+								"id": ".uno:CalloutShapes.line-callout-3"
+							}
+						]
+					},
+					{
+						"name": ".uno:FlowChartShapes",
+						"id": ".uno:FlowChartShapes",
+						"menu": [
+							{
+								"id": ".uno:FlowChartShapes.flowchart-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-alternate-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-decision"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-data"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-predefined-process"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-internal-storage"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-document"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-multidocument"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-terminator"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-preparation"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-manual-input"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-manual-operation"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-connector"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-off-page-connector"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-card"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-punched-tape"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-summing-junction"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-or"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-collate"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-sort"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-extract"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-merge"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-stored-data"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-delay"
+							},
+							{
+								"type": "--"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-sequential-access"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-magnetic-disk"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-direct-access-storage"
+							},
+							{
+								"id": ".uno:FlowChartShapes.flowchart-display"
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:Text",
+				"hotkey": "F2"
+			},
+			{
+				"id": ".uno:VerticalText"
+			},
+			{
+				"id": ".uno:InsertAnnotation",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+Alt+C"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:HyperlinkDialog",
+				"hotkey": "Ctrl+K"
+			},
+			{
+				"id": ".uno:InsertSymbol"
+			},
+			{
+				"id": ".uno:FormattingMarkMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertNonBreakingSpace"
+					},
+					{
+						"id": ".uno:InsertHardHyphen"
+					},
+					{
+						"id": ".uno:InsertSoftHyphen"
+					},
+					{
+						"id": ".uno:InsertNarrowNobreakSpace"
+					},
+					{
+						"id": ".uno:InsertZWSP"
+					},
+					{
+						"id": ".uno:InsertZWNBSP"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FieldMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertDateFieldFix"
+					},
+					{
+						"id": ".uno:InsertDateFieldVar"
+					},
+					{
+						"id": ".uno:InsertTimeFieldFix"
+					},
+					{
+						"id": ".uno:InsertTimeFieldVar"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:InsertAuthorField"
+					},
+					{
+						"id": ".uno:InsertSlideField"
+					},
+					{
+						"id": ".uno:InsertSlideTitleField"
+					},
+					{
+						"id": ".uno:InsertSlidesField"
+					}
+				]
+			},
+			{
+				"id": ".uno:HeaderAndFooter"
+			}
+		]
+	},
+	{
+		"id": ".uno:FormatMenu",
+		"menu": [
+			{
+				"id": ".uno:FormatTextMenu",
+				"menu": [
+					{
+						"id": ".uno:Bold",
+						"hotkey": "Ctrl+B"
+					},
+					{
+						"id": ".uno:Italic",
+						"hotkey": "Ctrl+I"
+					},
+					{
+						"id": ".uno:Underline",
+						"hotkey": "Ctrl+U"
+					},
+					{
+						"name": ".uno:UnderlineDouble",
+						"id": ".uno:Underline?Underline.LineStyle:short=2"
+					},
+					{
+						"id": ".uno:Strikeout"
+					},
+					{
+						"id": ".uno:Overline"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:SuperScript",
+						"hotkey": "Ctrl+Shift+P"
+					},
+					{
+						"id": ".uno:SubScript",
+						"hotkey": "Ctrl+Shift+B"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:Shadowed"
+					},
+					{
+						"id": ".uno:OutlineFont"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:Grow",
+						"hotkey": "Ctrl+]"
+					},
+					{
+						"id": ".uno:Shrink",
+						"hotkey": "Ctrl+["
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToUpper"
+					},
+					{
+						"id": ".uno:ChangeCaseToLower"
+					},
+					{
+						"id": ".uno:ChangeCaseRotateCase"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToSentenceCase"
+					},
+					{
+						"id": ".uno:ChangeCaseToTitleCase"
+					},
+					{
+						"id": ".uno:ChangeCaseToToggleCase"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:SmallCaps"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ChangeCaseToHalfWidth"
+					},
+					{
+						"id": ".uno:ChangeCaseToFullWidth"
+					},
+					{
+						"id": ".uno:ChangeCaseToHiragana"
+					},
+					{
+						"id": ".uno:ChangeCaseToKatakana"
+					}
+				]
+			},
+			{
+				"id": ".uno:FormatSpacingMenu",
+				"menu": [
+					{
+						"id": ".uno:SpacePara1",
+						"hotkey": "Ctrl+1"
+					},
+					{
+						"id": ".uno:SpacePara15",
+						"hotkey": "Ctrl+5"
+					},
+					{
+						"id": ".uno:SpacePara2",
+						"hotkey": "Ctrl+2"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:ParaspaceIncrease"
+					},
+					{
+						"id": ".uno:ParaspaceDecrease"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:IncrementIndent"
+					},
+					{
+						"id": ".uno:DecrementIndent"
+					}
+				]
+			},
+			{
+				"name": ".uno:TextAlign",
+				"id": ".uno:TextAlign",
+				"menu": [
+					{
+						"id": ".uno:LeftPara",
+						"hotkey": "Ctrl+L"
+					},
+					{
+						"id": ".uno:CenterPara",
+						"hotkey": "Ctrl+E"
+					},
+					{
+						"id": ".uno:RightPara",
+						"hotkey": "Ctrl+R"
+					},
+					{
+						"id": ".uno:JustifyPara",
+						"hotkey": "Ctrl+J"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:CellVertTop"
+					},
+					{
+						"id": ".uno:CellVertCenter"
+					},
+					{
+						"id": ".uno:CellVertBottom"
+					}
+				]
+			},
+			{
+				"id": ".uno:FormatBulletsMenu",
+				"menu": [
+					{
+						"id": ".uno:DefaultBullet"
+					},
+					{
+						"id": ".uno:DefaultNumbering"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:OutlineRight",
+						"hotkey": "Alt+Shift+Right"
+					},
+					{
+						"id": ".uno:OutlineLeft",
+						"hotkey": "Alt+Shift+Left"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:OutlineDown",
+						"hotkey": "Alt+Shift+Down"
+					},
+					{
+						"id": ".uno:OutlineUp",
+						"hotkey": "Alt+Shift+Up"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SetDefault",
+				"hotkey": "Ctrl+Shift+M"
+			},
+			{
+				"id": ".uno:FormatPaintbrush"
+			},
+			{
+				"id": ".uno:EditStyle"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FontDialog"
+			},
+			{
+				"id": ".uno:ParagraphDialog"
+			},
+			{
+				"id": ".uno:OutlineBullet"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:FormatObjectMenu",
+				"menu": [
+					{
+						"id": ".uno:TransformDialog"
+					},
+					{
+						"id": ".uno:TextAttributes"
+					},
+					{
+						"id": ".uno:FormatLine"
+					},
+					{
+						"id": ".uno:FormatArea"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:MirrorMenu",
+				"menu": [
+					{
+						"id": ".uno:MirrorVert"
+					},
+					{
+						"id": ".uno:MirrorHorz"
+					}
+				]
+			},
+			{
+				"type": "--"
+			},
+			{
+				"name": ".uno:ObjectAlign",
+				"id": ".uno:ObjectAlign",
+				"menu": [
+					{
+						"id": ".uno:ObjectAlignLeft"
+					},
+					{
+						"id": ".uno:AlignCenter"
+					},
+					{
+						"id": ".uno:ObjectAlignRight"
+					},
+					{
+						"type": "--"
+					},
+					{
+						"id": ".uno:AlignUp"
+					},
+					{
+						"id": ".uno:AlignMiddle"
+					},
+					{
+						"id": ".uno:AlignDown"
+					}
+				]
+			},
+			{
+				"id": ".uno:GroupMenu",
+				"menu": [
+					{
+						"id": ".uno:FormatGroup"
+					},
+					{
+						"id": ".uno:FormatUngroup"
+					},
+					{
+						"id": ".uno:EnterGroup"
+					},
+					{
+						"id": ".uno:LeaveGroup"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:TableMenu",
+		"menu": [
+			{
+				"id": ".uno:SetMinimalRowHeight"
+			},
+			{
+				"id": ".uno:SetOptimalRowHeight"
+			},
+			{
+				"id": ".uno:DistributeRows"
+			},
+			{
+				"id": ".uno:EntireRow"
+			},
+			{
+				"id": ".uno:InsertRowDialog"
+			},
+			{
+				"id": ".uno:DeleteRows"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SetMinimalColumnWidth"
+			},
+			{
+				"id": ".uno:SetOptimalColumnWidth"
+			},
+			{
+				"id": ".uno:DistributeColumns"
+			},
+			{
+				"id": ".uno:EntireColumn"
+			},
+			{
+				"id": ".uno:InsertColumnDialog"
+			},
+			{
+				"id": ".uno:DeleteColumns"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:MergeCells"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SelectTable"
+			},
+			{
+				"id": ".uno:TableDialog"
+			}
+		]
+	},
+	{
+		"id": ".uno:SlideMenu",
+		"menu": [
+			{
+				"id": ".uno:Presentation",
+				"hotkey": "F5",
+				"comment": "替代指令"
+			},
+			{
+				"id": ".uno:PresentationCurrentSlide",
+				"hotkey": "Shift+F5",
+				"comment": "替代指令"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"name": ".uno:InsertSlide",
+				"id": "insertpage",
+				"hotkey": "Ctrl+M"
+			},
+			{
+				"name": ".uno:DuplicateSlide",
+				"id": "duplicatepage"
+			},
+			{
+				"name": ".uno:DeleteSlide",
+				"id": "deletepage"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SlideSetup"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SlideMoveMenu",
+				"menu": [
+					{
+						"id": ".uno:MoveSlideFirst",
+						"hotkey": "Ctrl+Shift+Home"
+					},
+					{
+						"id": ".uno:MoveSlideUp",
+						"hotkey": "Ctrl+Shift+Up"
+					},
+					{
+						"id": ".uno:MoveSlideDown",
+						"hotkey": "Ctrl+Shift+Down"
+					},
+					{
+						"id": ".uno:MoveSlideLast",
+						"hotkey": "Ctrl+Shift+End"
+					}
+				]
+			},
+			{
+				"id": ".uno:NavigateMenu",
+				"menu": [
+					{
+						"id": ".uno:FirstSlide"
+					},
+					{
+						"id": ".uno:PreviousSlide",
+						"hotkey": "PageUp"
+					},
+					{
+						"id": ".uno:NextSlide",
+						"hotkey": "PageDown"
+					},
+					{
+						"id": ".uno:LastSlide"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:ToolsMenu",
+		"menu": [
+			{
+				"id": ".uno:SpellDialog",
+				"hotkey": "F7"
+			},
+			{
+				"id": ".uno:SpellOnline",
+				"hotkey": "Shift+F7"
+			},
+			{
+				"id": ".uno:LanguageMenu",
+				"menu": [
+					{
+						"id": ".uno:SetLanguageAllTextMenu",
+						"menu": []
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:HelpMenu",
+		"menu": [
+			{
+				"icon": "res:keyboardshortcuts",
+				"name": "Keyboard shortcuts",
+				"id": "keyboard-shortcuts",
+				"hotkey": "Ctrl+Alt+Shift+?",
+				"iosapp": false
+			},
+			{
+				"icon": ".uno:ReportIssue",
+				"name": "Report an issue",
+				"id": "report-an-issue",
+				"iosapp": false
+			},
+			{
+				"icon": "res:about",
+				"name": "About",
+				"id": "about"
+			}
+		]
+	}
+]

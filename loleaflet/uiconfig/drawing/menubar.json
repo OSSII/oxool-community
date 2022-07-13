@@ -1,0 +1,359 @@
+[
+	{
+		"id": ".uno:PickList",
+		"menu": [
+			{
+				"id": ".uno:Save",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+S"
+			},
+			{
+				"id": ".uno:SaveAs",
+				"comment": "替代指令"
+			},
+			{
+				"name": "Save Comments",
+				"id": "savecomments"
+			},
+			{
+				"name": "Share...",
+				"id": "shareas"
+			},
+			{
+				"id": ".uno:Print",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+P"
+			},
+			{
+				"name": "See revision history",
+				"id": "rev-history"
+			},
+			{
+				"icon": ".uno:ExportTo",
+				"name": "Download as",
+				"id": "downloadas",
+				"menu": [
+					{
+						"icon": "res:pdf",
+						"name": "PDF Document (.pdf)",
+						"id": "downloadas-pdf"
+					},
+					{
+						"icon": "res:odg",
+						"name": "ODF Drawing (.odg)",
+						"id": "downloadas-odg"
+					}
+				]
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:CloseDoc",
+				"comment": "替代指令"
+			}
+		]
+	},
+	{
+		"id": ".uno:EditMenu",
+		"menu": [
+			{
+				"id": ".uno:Undo"
+			},
+			{
+				"id": ".uno:Redo"
+			},
+			{
+				"name": "Repair",
+				"id": "repair"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:Cut"
+			},
+			{
+				"id": ".uno:Copy"
+			},
+			{
+				"id": ".uno:Paste"
+			},
+			{
+				"id": ".uno:SelectAll"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:SearchDialog"
+			}
+		]
+	},
+	{
+		"id": ".uno:ViewMenu",
+		"menu": [
+			{
+				"name": ".uno:FullScreen",
+				"id": "fullscreen"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"name": ".uno:ZoomPlus",
+				"id": "zoomin"
+			},
+			{
+				"name": ".uno:ZoomMinus",
+				"id": "zoomout"
+			},
+			{
+				"name": "Reset zoom",
+				"id": "zoomreset"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:Sidebar"
+			},
+			{
+				"name": "Show Status Bar",
+				"id": "showstatusbar"
+			}
+		]
+	},
+	{
+		"id": ".uno:InsertMenu",
+		"menu": [
+			{
+				"name": "Local Image...",
+				"id": "insertgraphic"
+			},
+			{
+				"name": ".uno:InsertGraphic",
+				"id": "insertgraphicremote"
+			},
+			{
+				"name": ".uno:SelectBackground",
+				"id": "selectbackground"
+			},
+			{
+				"id": ".uno:InsertAnnotation",
+				"comment": "替代指令",
+				"hotkey": "Ctrl+Alt+C"
+			},
+			{
+				"id": ".uno:InsertObjectChart"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"name": ".uno:HyperlinkDialog",
+				"id": "inserthyperlink"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:InsertSymbol"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:FieldMenu",
+				"menu": [
+					{
+						"id": ".uno:InsertDateFieldFix"
+					},
+					{
+						"id": ".uno:InsertDateFieldVar"
+					},
+					{
+						"id": ".uno:InsertTimeFieldFix"
+					},
+					{
+						"id": ".uno:InsertTimeFieldVar"
+					},
+					{
+						"type": "separator"
+					},
+					{
+						"name": ".uno:InsertSlideField",
+						"id": "insertslidefield"
+					},
+					{
+						"name": ".uno:InsertSlideTitleField",
+						"id": "insertslidetitlefield"
+					},
+					{
+						"name": ".uno:InsertSlidesField",
+						"id": "insertslidesfield"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:FormatMenu",
+		"menu": [
+			{
+				"id": ".uno:FontDialog"
+			},
+			{
+				"id": ".uno:ParagraphDialog"
+			},
+			{
+				"id": ".uno:PageSetup"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:TransformDialog"
+			},
+			{
+				"id": ".uno:FormatLine"
+			},
+			{
+				"id": ".uno:FormatArea"
+			},
+			{
+				"type": "separator"
+			},
+			{
+				"id": ".uno:OutlineBullet"
+			}
+		]
+	},
+	{
+		"id": ".uno:TableMenu",
+		"menu": [
+			{
+				"id": ".uno:SetMinimalRowHeight"
+			},
+			{
+				"id": ".uno:SetOptimalRowHeight"
+			},
+			{
+				"id": ".uno:DistributeRows"
+			},
+			{
+				"id": ".uno:EntireRow"
+			},
+			{
+				"id": ".uno:InsertRowDialog"
+			},
+			{
+				"id": ".uno:DeleteRows"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:SetMinimalColumnWidth"
+			},
+			{
+				"id": ".uno:SetOptimalColumnWidth"
+			},
+			{
+				"id": ".uno:DistributeColumns"
+			},
+			{
+				"id": ".uno:EntireColumn"
+			},
+			{
+				"id": ".uno:InsertColumnDialog"
+			},
+			{
+				"id": ".uno:DeleteColumns"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:MergeCells"
+			},
+			{
+				"id": ".uno:SplitCell"
+			},
+			{
+				"type": "--"
+			},
+			{
+				"id": ".uno:DeleteTable"
+			},
+			{
+				"id": ".uno:SelectTable"
+			},
+			{
+				"id": ".uno:TableDialog"
+			}
+		]
+	},
+	{
+		"id": ".uno:PageMenu",
+		"menu": [
+			{
+				"name": ".uno:InsertPage",
+				"id": "insertpage"
+			},
+			{
+				"name": ".uno:DuplicatePage",
+				"id": "duplicatedrawpage"
+			},
+			{
+				"name": ".uno:DeletePage",
+				"id": "deletepage"
+			}
+		]
+	},
+	{
+		"id": ".uno:ToolsMenu",
+		"menu": [
+			{
+				"id": ".uno:SpellDialog"
+			},
+			{
+				"id": ".uno:SpellOnline"
+			},
+			{
+				"name": ".uno:LanguageMenu",
+				"menu": [
+					{
+						"name": "None (Do not check spelling)",
+						"id": ".uno:LanguageStatus?Language:string=Default_LANGUAGE_NONE"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": ".uno:HelpMenu",
+		"menu": [
+			{
+				"name": "Online Help",
+				"id": "online-help",
+				"iosapp": false
+			},
+			{
+				"name": "Keyboard shortcuts",
+				"id": "keyboard-shortcuts",
+				"hotkey": "Ctrl+Alt+Shift+?",
+				"iosapp": false
+			},
+			{
+				"name": "Report an issue",
+				"id": "report-an-issue",
+				"iosapp": false
+			},
+			{
+				"name": "About",
+				"id": "about"
+			}
+		]
+	}
+]
