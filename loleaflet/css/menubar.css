@@ -263,7 +263,7 @@ li .disabled .img-icon {
 }
 
 .hotkey .keyboard {
-	font-family: monospace;
+	font-family: var(--oxoolfont);
 	font-weight: normal;
 	font-style: normal;
 	border-radius: 3px;

@@ -3,7 +3,7 @@
 
 html, body, input, select, button, textarea, table {
 	font-size: 100%;
-	font-family: var(--docs-font);
+	font-family: var(--oxool-font);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
