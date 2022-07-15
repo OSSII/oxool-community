@@ -5,7 +5,7 @@
  * @author Firefly <firefly@ossii.com.tw>
  */
 
-/* global app _ _UNO $ UNOModifier */
+/* global app _ _UNO $ */
 L.Map.include({
 	// 可被執行的指令
 	_allowedCommands: {
@@ -377,6 +377,17 @@ L.Map.include({
 		return null;
 	},
 
+	/**
+	 * 取得快捷鍵執行命令
+	 * @param {string} key - 易讀的按鍵組合字串(一律小寫)
+	 * 組合按鍵順序為 ctrl+alt+shift+key
+	 *
+	 * @returns undefined: 沒有, string: 指令名稱
+	 */
+	getHotkeyCommand: function(key) {
+		return this._hotkeyCommands[key.toLowerCase()];
+	},
+
 	// Add by Firefly <firefly@ossii.com.tw>
 	// 將指令加入白名單中
 	// 指令為 json 物件，內如下：
@@ -492,45 +503,6 @@ L.Map.include({
 			return false;
 		}
 		return true;
-	},
-
-	// Add by Firefly <firefly@ossii.com.tw>
-	// 依據按鍵事件，執行
-	// 傳回 true 表示該按鍵是捷徑，否則傳回 false
-	handleHotkey: function(e, modifier) {
-		// 只處理 keydown 事件
-		if (e.type !== 'keydown')
-			return false;
-
-		if (modifier === undefined) {
-			var shift = e.shiftKey ? UNOModifier.SHIFT : 0;
-			var ctrl = e.ctrlKey ? UNOModifier.CTRL : 0;
-			var alt = e.altKey ? UNOModifier.ALT : 0;
-			var cmd = e.metaKey ? UNOModifier.CTRL : 0;
-			modifier = shift | ctrl | alt | cmd;
-		}
-
-		var hotkey = []; // 準備要組合的按鍵易讀名稱
-		var key = e.key;
-		if (modifier & UNOModifier.CTRL)
-			hotkey.push('Ctrl');
-		if (modifier & UNOModifier.ALT)
-			hotkey.push('Alt');
-		if (modifier &  UNOModifier.SHIFT)
-			hotkey.push('Shift');
-		if (key.startsWith('Arrow'))
-			key = key.substr(5);
-		hotkey.push(key);
-		var mergeKeys = hotkey.join('+').toLowerCase();
-		var matchCommand = this._hotkeyCommands[mergeKeys];
-		if (matchCommand !== undefined) {
-			window.app.console.debug('Found Hot command->' + matchCommand);
-			if (this.executeAllowedCommand(matchCommand)) {
-				e.preventDefault();
-				return true;
-			}
-		}
-		return false;
 	},
 
 	/**

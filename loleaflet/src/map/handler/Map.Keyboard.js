@@ -310,20 +310,8 @@ L.Map.Keyboard = L.Handler.extend({
 			}
 		}
 
-		// 快捷鍵處理，只有在編輯文件時，才可執行
-		if (this._map.editorHasFocus()) {
-			// 是否啟用 Ctrl+Alt+Shift+D 切換拼貼除錯模式
-			if (ev.type === 'keydown' && ctrl && alt && shift && ev.keyCode === 68) {
-				this._map._docLayer.toggleTileDebugMode();
-			}
-			// 處理配合 Ctrl 的快捷鍵
-			if ((ctrl || cmd) && this._handleCtrlCommand(ev)) {
-				return;
-			}
-			// 處理其他在選單上有定義快捷鍵的指令
-			if (this._map.handleHotkey(ev, this.modifier)) {
-				return;
-			}
+		if (this._handleShortcutCommand(ev)) {
+			return;
 		}
 
 		var charCode = ev.charCode;
@@ -349,11 +337,6 @@ L.Map.Keyboard = L.Handler.extend({
 
 				return;
 			}
-		}
-
-		if (this._map.stateChangeHandler._items['.uno:SlideMasterPage'] === 'true') {
-			ev.preventDefault();
-			return;
 		}
 
 		if (this._map.isPermissionEdit()) {
@@ -451,68 +434,107 @@ L.Map.Keyboard = L.Handler.extend({
 			return e.ctrlKey;
 	},
 
-	// Given a DOM keyboard event that happened while the Control key was depressed,
-	// triggers the appropriate action or oxoolwsd message.
-	_handleCtrlCommand: function (e) {
-		if (this._map.uiManager.isUIBlocked())
+	/**
+	 * 處理鍵盤快捷鍵，以執行相應的指令或訊息
+	 * Handle keyboard shortcuts to execute corresponding commands or messages.
+	 * @param {object} e - keyboard event
+	 * @returns true:已處理(processed), false: 未處理(not processed)
+	 */
+	_handleShortcutCommand: function(e) {
+		if (this._map.uiManager.isUIBlocked()) {
 			return;
+		}
 
-		// Control
-		if (e.keyCode == 17)
+		// 指按下 Shift / Control / Alt 未配合其他按鍵
+		if (e.keyCode === 16 || e.keyCode === 17 || e.keyCode === 18) {
+			console.debug('haha Shift/Control/Alt key');
 			return true;
+		}
 
-		if (e.type !== 'keydown' && e.key !== 'c' && e.key !== 'v' && e.key !== 'x' &&
+		if (this.modifier === UNOModifier.CTRL && e.type !== 'keydown' && e.key !== 'c' && e.key !== 'v' && e.key !== 'x' &&
 		/* Safari */ e.keyCode !== 99 && e.keyCode !== 118 && e.keyCode !== 120) {
 			e.preventDefault();
 			return true;
 		}
 
-		if (e.keyCode !== 67 && e.keyCode !== 86 && e.keyCode !== 88 &&
-		/* Safari */ e.keyCode !== 99 && e.keyCode !== 118 && e.keyCode !== 120 &&
-			e.key !== 'c' && e.key !== 'v' && e.key !== 'x') {
-			// not copy or paste
-			e.preventDefault();
-		}
+		// 組合按鍵易讀名稱
+		var hotkey = [];
+		if (this.modifier & UNOModifier.CTRL)
+			hotkey.push('Ctrl');
+		if (this.modifier & UNOModifier.ALT)
+			hotkey.push('Alt');
+		if (this.modifier &  UNOModifier.SHIFT)
+			hotkey.push('Shift');
 
-		// Handles paste special. The "Your browser" thing seems to indicate that this code
-		// snippet is relevant in a browser only.
-		if (!window.ThisIsAMobileApp && e.ctrlKey && e.shiftKey && e.altKey && (e.key === 'v' || e.key === 'V')) {
-			this._map._clip._openPasteSpecialPopup();
-			return true;
-		}
+		hotkey.push(e.key.startsWith('Arrow') ? e.key.substr(5) : e.key);
+		var mergeKeys = hotkey.join('+').toLowerCase();
 
-		// Handles unformatted paste
-		if (this._isCtrlKey(e) && e.shiftKey && (e.key === 'v' || e.key === 'V')) {
-			return true;
-		}
-
-		if (this._isCtrlKey(e) && !e.shiftKey && !e.altKey && (e.key === 'f' || e.key === 'F')) {
-			if (!this._map.uiManager.isStatusBarVisible()) {
-				this._map.uiManager.showStatusBar();
+		// 只處理 key down
+		if (e.type === 'keydown') {
+			// 在 app 執行
+			if (window.ThisIsAMobileApp) {
+				switch (mergeKeys) {
+				case 'ctrl+c':
+					app.socket.sendMessage('uno .uno:Copy');
+					return true;
+				case 'ctrl+v':
+					app.socket.sendMessage('uno .uno:Paste');
+					return true;
+				case 'ctrl+x':
+					app.socket.sendMessage('uno .uno:Cut');
+					return true;
+				}
+			// 桌面環境
+			} else {
+				switch (mergeKeys) {
+				case 'ctrl+c': // copy
+				case 'ctrl+x': // cut
+					// we prepare for a copy or cut event
+					this._map.focus();
+					this._map._textInput.select();
+					return true;
+				case 'ctrl+v': // paste
+				case 'ctrl+shiht+v': // unformatted paste
+					return true;
+				}
 			}
-			this._map.fire('focussearch');
-			e.preventDefault();
-			return true;
-		}
 
-		/* Without specifying the key type, the messages are sent twice (both keydown/up) */
-		if (e.type === 'keydown' && window.ThisIsAMobileApp) {
-			if (e.key === 'c' || e.key === 'C') {
-				app.socket.sendMessage('uno .uno:Copy');
+			// 焦點在編輯區時，才比對並執行相應的快捷鍵
+			if (this._map.editorHasFocus()) {
+				switch (mergeKeys) {
+				case 'ctrl+f': // 搜尋(search)
+					if (!this._map.uiManager.isStatusBarVisible()) {
+						this._map.uiManager.showStatusBar();
+					}
+					this._map.fire('focussearch');
+					e.preventDefault();
+					return true;
+				case 'ctrl+alt+shift+v':
+					// Handles paste special. The "Your browser" thing seems to indicate that this code
+					// snippet is relevant in a browser only.
+					this._map._clip._openPasteSpecialPopup();
+					return true;
+				case 'ctrl+alt+shift+d': // 切換除錯模式
+					this._map._docLayer.toggleTileDebugMode();
+					break;
+				default:
+					var command = this._map.getHotkeyCommand(mergeKeys);
+					if (command) {
+						window.app.console.debug('Found Shortcut command:' + command);
+						if (this._map.executeAllowedCommand(command)) {
+							e.preventDefault();
+							return true;
+						}
+					}
+					break;
+				}
+			}
+		} else if (e.type === 'keypress') {
+			if (mergeKeys === 'ctrl+c' || mergeKeys === 'ctrl+v' || mergeKeys === 'ctrl+x') {
+				// need to handle this separately for Firefox
 				return true;
 			}
-			else if (e.key === 'v' || e.key === 'V') {
-				app.socket.sendMessage('uno .uno:Paste');
-				return true;
-			}
-			else if (e.key === 'x' || e.key === 'X') {
-				app.socket.sendMessage('uno .uno:Cut');
-				return true;
-			}
-			if (window.ThisIsTheAndroidApp)
-				e.preventDefault();
 		}
-
 		return false;
 	}
 });
