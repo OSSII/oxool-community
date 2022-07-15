@@ -732,11 +732,11 @@
 				"type": "--"
 			},
 			{
-				"id": ".uno:HyperlinkDialog"
+				"id": ".uno:HyperlinkDialog",
+				"hotkey": "Ctrl+K"
 			},
 			{
-				"id": ".uno:InsertBookmark",
-				"hotkey": "Ctrl+K"
+				"id": ".uno:InsertBookmark"
 			},
 			{
 				"type": "--"
