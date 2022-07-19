@@ -164,7 +164,7 @@ L.Control.AlternativeCommand = L.Control.extend({
 		 * 重設遠近
 		 */
 		'.uno:Zoom100Percent': function() {
-			this._map.setZoom(this._map.options.zoom);
+			this._map.setZoom(this._map.options.zoom, null, true);
 		},
 		/**
 		 * 插入電腦(本地)圖片

@@ -74,7 +74,7 @@ L.Control.StatusBar = L.Control.extend({
 			this.map.setZoom(item.scale, null, true /* animate? */);
 		}
 		else if (id === 'zoomreset') {
-			this.map.setZoom(this.map.options.zoom);
+			this.map.setZoom(this.map.options.zoom, null, true);
 		}
 		else if (id === 'prev' || id === 'next') {
 			if (docLayer._docType === 'text') {
