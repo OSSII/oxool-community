@@ -447,7 +447,6 @@ L.Map.Keyboard = L.Handler.extend({
 
 		// 指按下 Shift / Control / Alt 未配合其他按鍵
 		if (e.keyCode === 16 || e.keyCode === 17 || e.keyCode === 18) {
-			console.debug('haha Shift/Control/Alt key');
 			return true;
 		}
 
@@ -471,21 +470,7 @@ L.Map.Keyboard = L.Handler.extend({
 
 		// 只處理 key down
 		if (e.type === 'keydown') {
-			// 在 app 執行
-			if (window.ThisIsAMobileApp) {
-				switch (mergeKeys) {
-				case 'ctrl+c':
-					app.socket.sendMessage('uno .uno:Copy');
-					return true;
-				case 'ctrl+v':
-					app.socket.sendMessage('uno .uno:Paste');
-					return true;
-				case 'ctrl+x':
-					app.socket.sendMessage('uno .uno:Cut');
-					return true;
-				}
-			// 桌面環境
-			} else {
+			if (!window.ThisIsAMobileApp) {
 				switch (mergeKeys) {
 				case 'ctrl+c': // copy
 				case 'ctrl+x': // cut
