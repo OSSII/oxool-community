@@ -976,7 +976,7 @@
 			},
 			{
 				"id": ".uno:SetDefault",
-				"hotkey": "Ctrl+Shift+M"
+				"hotkey": "Ctrl+M"
 			},
 			{
 				"id": ".uno:FormatPaintbrush"
@@ -1156,16 +1156,18 @@
 			},
 			{
 				"name": ".uno:InsertSlide",
-				"id": "insertpage",
-				"hotkey": "Ctrl+M"
+				"id": ".uno:InsertPage",
+				"comment": "替代指令"
 			},
 			{
 				"name": ".uno:DuplicateSlide",
-				"id": "duplicatepage"
+				"id": ".uno:DuplicatePage",
+				"comment": "替代指令"
 			},
 			{
 				"name": ".uno:DeleteSlide",
-				"id": "deletepage"
+				"id": ".uno:DeletePage",
+				"comment": "替代指令"
 			},
 			{
 				"type": "--"

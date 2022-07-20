@@ -311,6 +311,32 @@ L.Control.AlternativeCommand = L.Control.extend({
 			this._map.fire('fullscreen', {startSlideNumber: this._map.getCurrentPartNumber()});
 		},
 		/**
+		 * impress: 新增投影片
+		 */
+		 '.uno:InsertPage': function() {
+			this._map.insertPage();
+		},
+		/**
+		 * impress: 再製投影片
+		 */
+		'.uno:DuplicatePage': function() {
+			this._map.duplicatePage();
+		},
+		/**
+		 * impress: 刪除投影片
+		 */
+		'.uno:DeletePage': function() {
+			L.dialog.confirm({
+				icon: 'warning',
+				message: _('Are you sure you want to delete this slide?'),
+				callback: function(ans) {
+					if (ans) {
+						this._map.deletePage();
+					}
+				}.bind(this)
+			});
+		},
+		/**
 		 * 顯示線上說明
 		 */
 		'online-help': function() {
