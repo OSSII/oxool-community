@@ -156,6 +156,8 @@ L.Map.Mouse = L.Handler.extend({
 				this._clickTime = Date.now();
 				this._clickCount = 1;
 				mousePos = docLayer._latLngToTwips(e.latlng);
+				mousePos.x = Math.trunc(mousePos.x);
+				mousePos.y = Math.trunc(mousePos.y);
 				var timeOut = 250;
 				if (this._map.isPermissionEdit()) {
 					timeOut = 0;
@@ -196,7 +198,7 @@ L.Map.Mouse = L.Handler.extend({
 			}
 			if (!this._map.dragging.enabled()) {
 				mousePos = docLayer._latLngToTwips(e.latlng);
-				docLayer._postMouseEvent('move', mousePos.x, mousePos.y, 1, buttons, modifier);
+				docLayer._postMouseEvent('move', Math.trunc(mousePos.x), Math.trunc(mousePos.y), 1, buttons, modifier);
 
 				for (key in docLayer._selectionHandles) {
 					handle = docLayer._selectionHandles[key];
