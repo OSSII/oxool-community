@@ -3,7 +3,7 @@
  * L.Control.PresentationBar
  */
 
-/* global $ w2ui _UNO */
+/* global $ _UNO */
 L.Control.PresentationBar = L.Control.extend({
 	options: {
 		shownavigation: true
@@ -16,7 +16,7 @@ L.Control.PresentationBar = L.Control.extend({
 		this.create();
 
 		map.on('wopiprops', this.onWopiProps, this);
-		map.on('doclayerinit', this.onDocLayerInit, this);
+		map.on('updatepermission', this.onUpdatePermission, this);
 	},
 
 	create: function() {
@@ -55,11 +55,8 @@ L.Control.PresentationBar = L.Control.extend({
 
 		this.map.uiManager.enableTooltip(toolbar);
 
-		if (this.map.getDocType() === 'drawing')
-			w2ui['presentation-toolbar'].disable('presentation');
-
 		toolbar.bind('touchstart', function() {
-			w2ui['presentation-toolbar'].touchStarted = true;
+			this._bar.touchStarted = true;
 		});
 
 		this.map.setupStateChangesForToolbar({toolbar: this._bar});
@@ -82,20 +79,25 @@ L.Control.PresentationBar = L.Control.extend({
 		return '';
 	},
 
-	onWopiProps: function(e) {
-		if (e.HideExportOption) {
-			w2ui['presentation-toolbar'].hide('presentation', 'presentationcurrentslide', 'presentationbreak');
+	// 切換縮圖視窗工具列上的投影按鈕
+	_switchPresentationButton: function(isOff) {
+		if (!isOff && this.map.getDocType() === 'presentation') {
+			this._bar.show('presentation', 'presentationcurrentslide', 'presentationbreak');
+		} else {
+			this._bar.hide('presentation', 'presentationcurrentslide', 'presentationbreak');
 		}
 	},
 
-	onDocLayerInit: function() {
-		var presentationToolbar = w2ui['presentation-toolbar'];
-		if (!this.map['wopi'].HideExportOption && presentationToolbar && this._map.getDocType() !== 'drawing') {
-			presentationToolbar.show('presentation', 'presentationcurrentslide', 'presentationbreak');
-		}
+	onWopiProps: function(e) {
+		this._switchPresentationButton(e.HideExportOption === true);
+	},
 
-		if (!window.mode.isMobile()) {
+	onUpdatePermission: function(e) {
+		this._switchPresentationButton(this.map['wopi'].HideExportOption === true);
+		if (e.perm === 'edit') {
 			$('#presentation-toolbar').show();
+		} else {
+			$('#presentation-toolbar').hide();
 		}
 	},
 });
