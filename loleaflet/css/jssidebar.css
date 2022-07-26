@@ -140,9 +140,6 @@
 	width: 275px;
 }
 
-.sidebar #orientationdegrees {
-	position: relative;
-}
 #textorientbox {
 	position: relative;
 	display: flex;
@@ -191,10 +188,6 @@ div#thousandseparator.checkbutton.jsdialog.sidebar {
 
 #NumberFormatPropertyPanel > tr > td > div > div > div > div > div > div {
 	text-align: right;
-}
-#NumberFormatPropertyPanel #table-box2,
-#NumberFormatPropertyPanel #leadingzeroes {
-	position: relative;
 }
 #NumberFormatPropertyPanel #leadingzeroeslabel {
 	margin-left: 2px;
@@ -393,13 +386,6 @@ button#button2.ui-pushbutton.jsdialog.sidebar {
 	position: relative;
 }
 .sidebar #LB_GLOW_COLOR {
-	position: relative;
-}
-
-.sidebar #leftindent,
-.sidebar #LB_GLOW_TRANSPARENCY,
-.sidebar #LB_DISTANCE,
-.sidebar #LB_SHADOW_BLUR {
 	position: relative;
 }
 
