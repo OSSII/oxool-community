@@ -560,7 +560,7 @@ L.Control.LokDialog = L.Control.extend({
 		var dialog = this._getActiveDialog();
 		this._map.notifyActive();
 
-		if (e.type === 'blur' && dialog._isComposing) {
+		if (e.type === 'blur' && dialog && dialog._isComposing) {
 			this._abortComposition();
 		}
 	},
