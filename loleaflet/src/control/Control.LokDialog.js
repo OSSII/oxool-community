@@ -651,10 +651,11 @@ L.Control.LokDialog = L.Control.extend({
 			return;
 		}
 
+		var oneKey = !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey;
 		var keyboardHandler = this._map['keyboard']; // Map.keyboard.js
 		var unoKeyCode = keyboardHandler._toUNOKeyCode(e.keyCode);
 
-		if (e.type !== 'keypress' && (e.keyCode === 8 || e.keyCode === 13 || e.keyCode === 46)) {
+		if (e.type !== 'keypress' && oneKey && (e.keyCode === 8 || e.keyCode === 13 || e.keyCode === 46)) {
 			this._map._textInput._sendKeyEvent(e.charCode, unoKeyCode,(e.type === 'keydown' ? 'input' : 'up'));
 		} else {
 			keyboardHandler._handleKeyEvent(e, L.bind(this._postWindowKeyboardEvent, this));

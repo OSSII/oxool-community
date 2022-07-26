@@ -498,13 +498,16 @@ L.TextInputDesktopIOS = L.Layer.extend({
 		if (this._isComposing || this._map.uiManager.isUIBlocked())
 			return;
 
-		switch (ev.keyCode) {
-		case  8: // Backspace
-		case 46: // Delete
-		case 13: // Enter
-			var unoKeyCode = this._map['keyboard']._toUNOKeyCode(ev.keyCode);
-			this._sendKeyEvent(ev.charCode, unoKeyCode);
-			break;
+		var oneKey = !ev.shiftKey && !ev.ctrlKey && !ev.altKey && !ev.metaKey;
+		if (oneKey) {
+			switch (ev.keyCode) {
+			case  8: // Backspace
+			case 46: // Delete
+			case 13: // Enter
+				var unoKeyCode = this._map['keyboard']._toUNOKeyCode(ev.keyCode);
+				this._sendKeyEvent(ev.charCode, unoKeyCode);
+				break;
+			}
 		}
 	},
 
