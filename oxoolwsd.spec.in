@@ -15,19 +15,27 @@ Release:        @LOOLWSD_VERSION_DIST@.@LOOLWSD_BRANCH@%{?dist}
 Vendor:         %{vendor}
 Summary:        OxOffice Online WebSocket Daemon for @LOOLWSD_BRANCH@
 License:        MPL
-Obsoletes:	oxoolwsd
+Provides:       oxoolwsd
+Obsoletes:	    oxoolwsd
 Source0:        @PACKAGE_NAME@-%{version}-@LOOLWSD_BRANCH@.tar.gz
-BuildRequires:  libcap-devel libpng-devel poco-devel >= 1.7.5
+BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make 
+BuildRequires:  poco-devel >= 1.7.5
 BuildRequires:  freetype-devel >= 2.8 fontconfig-devel >= 2.12.6
-%if 0%{?fedora} || 0%{?rhel} >= 7
-BuildRequires:  libpcap kernel-headers
+
+# RHEL and its derivatives
+%if 0%{?rhel} == 7
+BuildRequires:  libpcap kernel-headers python36-polib python36-lxml
 %endif
+
+%if 0%{?rhel} == 8
+BuildRequires:  libpcap kernel-headers python3-polib python3-lxml
+%endif
+
+Requires:       oxoffice oxoffice-ure oxofficelib-core oxofficelib-writer oxofficelib-impress oxofficelib-graphicfilter oxofficelib-en-US oxofficelib-calc oxofficelib-ooofonts oxofficelib-images oxofficelib-draw oxofficelib-extension-pdf-import oxofficelib-ooolinguistic oxofficelib-math
 Requires(post): coreutils grep sed cpio
-%if 0%{?fedora} || 0%{?rhel} >= 7
 # oxoolwsd dependencies
-Requires:       systemd expat keyutils-libs krb5-libs libattr libcap libcom_err libgcc libpng libselinux openssh-clients openssl-libs pcre xz-libs zlib unzip sudo expat fontconfig freetype libuuid bzip2-libs sudo
-Requires:       poco-crypto >= 1.7.5 poco-foundation >= 1.7.5 poco-json >= 1.7.5 poco-net >= 1.7.5 poco-netssl >= 1.7.5 poco-util >= 1.7.5 poco-xml >= 1.7.5
-%endif
+Requires:       systemd expat keyutils-libs krb5-libs libattr libcap libcom_err libgcc libpng libselinux openssh-clients openssl-libs pcre xz-libs zlib unzip sudo fontconfig freetype libuuid bzip2-libs
+Requires:       	poco-activerecord >= 1.7.5 poco-crypto >= 1.7.5 poco-data >= 1.7.5 poco-debug >= 1.7.5 poco-encodings >= 1.7.5 poco-foundation >= 1.7.5 poco-json >= 1.7.5 poco-jwt >= 1.7.5 poco-mongodb >= 1.7.5 poco-mysql >= 1.7.5 poco-net >= 1.7.5 poco-netssl >= 1.7.5 poco-odbc >= 1.7.5 poco-pagecompiler >= 1.7.5 poco-sqlite >= 1.7.5 poco-util >= 1.7.5 poco-xml >= 1.7.5 poco-zip >= 1.7.5
 
 %description
 
