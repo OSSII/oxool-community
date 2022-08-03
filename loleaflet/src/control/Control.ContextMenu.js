@@ -105,7 +105,9 @@ L.Control.ContextMenu = L.Control.extend({
 	_onMouseDown: function(e) {
 		this._prevMousePos = {x: e.originalEvent.pageX, y: e.originalEvent.pageY};
 
-		this._onClosePopup();
+		if (this.hasContextMenu) {
+			this._onClosePopup();
+		}
 	},
 
 	_onKeyDown: function(e) {
@@ -132,6 +134,7 @@ L.Control.ContextMenu = L.Control.extend({
 		// 桌面模式且開啟 Debug 模式，在右鍵選單最後，加上輸入框，方便輸入任何指令
 		// .uno: 開頭, dialog:開頭, macro:開頭, 或 menu id
 		if (window.mode.isDesktop() && window.protocolDebug === true) {
+			var that = this;
 			contextMenu['debugSep'] = this.options.SEPARATOR;
 			contextMenu['debugRunCommand'] = {
 				name: _('Command') + ' :',
@@ -143,8 +146,15 @@ L.Control.ContextMenu = L.Control.extend({
 					keyup: function(e) {
 						if (e.keyCode === 13) { // 按下 enter 鍵
 							map.sendUnoCommand(e.target.value);
-							$.contextMenu('destroy', '.leaflet-layer');
+							that._onClosePopup();
 						}
+						e.stopPropagation();
+					},
+					contextmenu: function(e) {
+						e.stopPropagation();
+					},
+					paste: function(e) {
+						e.stopPropagation();
 					}
 				}
 			};
@@ -176,7 +186,7 @@ L.Control.ContextMenu = L.Control.extend({
 								if (spellingContextMenu)
 									map._docLayer._clearSelections();
 								// Give the stolen focus back to map
-								if (!window.mode.isMobile() && key !== '.uno:InsertAnnotation')
+								if (key !== '.uno:InsertAnnotation')
 									map.focus();
 							}
 						},
