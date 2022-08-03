@@ -33,8 +33,7 @@ case "$1" in
 	@PACKAGE_NAME@wsd-generate-proof-key >/dev/null 2>&1
     cat << EOF > /etc/apt/apt.conf.d/25@PACKAGE_NAME@wsd
 // Rebuild systemplate of @PACKAGE_NAME@
-DPkg::Post-Invoke { "echo Updating @PACKAGE_NAME@wsd systemplate;@PACKAGE_NAME@wsd-systemplate-setup
- /opt/@PACKAGE_NAME@/systemplate @LO_PATH@ >/dev/null 2>&1 || true"; };
+DPkg::Post-Invoke { "echo Updating @PACKAGE_NAME@wsd systemplate;@PACKAGE_NAME@wsd-systemplate-setup /opt/@PACKAGE_NAME@/systemplate @LO_PATH@ >/dev/null 2>&1 || true"; };
 EOF
 
 	;;
