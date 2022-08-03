@@ -65,7 +65,7 @@ install -d -m 755 %{buildroot}/var/adm/fillup-templates
 install -D -m 444 oxoolwsd.service %{buildroot}%{_unitdir}/oxoolwsd.service
 # systemd in RHEL 7 does not understand these options
 %if 0%{?rhel} <= 7
-sed -i "/^ReadWritePaths/d;/^ProtectControlGroups/d;/^ProtectSystem/d;/^CapabilityBoundingSet/d" %{buildroot}%{_unitdir}/oxoolwsd.service
+sed -i "/^ReadWritePaths/d;/^ProtectControlGroups/d;/^ProtectSystem/d" %{buildroot}%{_unitdir}/oxoolwsd.service
 %endif
 %endif
 mkdir -p %{buildroot}/etc/pam.d
@@ -106,7 +106,7 @@ getent passwd lool >/dev/null || useradd -g lool -r lool -d /opt/oxool -s /bin/b
 
 %post
 setcap cap_dac_override,cap_net_bind_service=ep /usr/bin/oxoolwsd
-setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/oxoolforkit
+setcap cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep /usr/bin/oxoolforkit
 setcap cap_sys_admin=ep /usr/bin/oxoolmount
 
 %if 0%{?fedora} || 0%{?rhel} >= 7

@@ -13,12 +13,12 @@ Restart=always
 LimitNOFILE=infinity:infinity
 
 ProtectSystem=strict
-ReadWritePaths=/opt/oxool
+ReadWritePaths=/opt/oxool /var/log
 
 ProtectHome=yes
 PrivateTmp=yes
 ProtectControlGroups=yes
-CapabilityBoundingSet=CAP_FOWNER CAP_MKNOD CAP_SYS_CHROOT
+CapabilityBoundingSet=CAP_FOWNER CAP_CHOWN CAP_MKNOD CAP_SYS_CHROOT CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target

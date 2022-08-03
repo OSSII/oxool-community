@@ -289,7 +289,7 @@ CAPABILITIES = $(if @ENABLE_SETCAP@,true,false)
 RUN_GDB = $(if $(GDB_FRONTEND),$(GDB_FRONTEND),gdb --tui --args)
 
 if ENABLE_SETCAP
-SET_CAPS_COMMAND=sudo @SETCAP@ cap_fowner,cap_mknod,cap_sys_chroot=ep oxoolforkit && sudo @SETCAP@ cap_sys_admin=ep oxoolmount && sudo @SETCAP@ cap_dac_override,cap_net_bind_service=+ep oxoolwsd
+SET_CAPS_COMMAND=sudo @SETCAP@ cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep oxoolforkit && sudo @SETCAP@ cap_sys_admin=ep oxoolmount && sudo @SETCAP@ cap_dac_override,cap_net_bind_service=+ep oxoolwsd
 else
 SET_CAPS_COMMAND=echo "Skipping capability setting"
 endif
