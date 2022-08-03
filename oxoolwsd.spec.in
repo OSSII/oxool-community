@@ -98,8 +98,6 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %config(noreplace) /etc/%{name}/*.pem
 %config %attr(440, root, root) /etc/sudoers.d/lool
 
-%doc README
-
 %pre
 getent group lool >/dev/null || groupadd -r lool
 getent passwd lool >/dev/null || useradd -g lool -r lool -d /opt/oxool -s /bin/bash
