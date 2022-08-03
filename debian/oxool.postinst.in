@@ -5,15 +5,12 @@ set -e
 case "$1" in
     configure)
 	setcap cap_net_bind_service=+ep /usr/bin/@PACKAGE_NAME@wsd || true
-	setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/@PACKAGE_NAME@forkit || true
+	setcap cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep /usr/bin/@PACKAGE_NAME@forkit || true
 	setcap cap_sys_admin=ep /usr/bin/@PACKAGE_NAME@mount || true
 
 	fc-cache -f
 
 	adduser --quiet --system --group --home /opt/@PACKAGE_NAME@ lool
-
-	mkdir -p /var/cache/@PACKAGE_NAME@ && chown lool:lool /var/cache/@PACKAGE_NAME@
-	rm -rf /var/cache/@PACKAGE_NAME@/*
 
 	touch /var/log/@PACKAGE_NAME@wsd.log && chown lool:lool /var/log/@PACKAGE_NAME@wsd.log
 
@@ -31,10 +28,15 @@ case "$1" in
 
 	fc-cache @LO_PATH@/share/fonts/truetype
 
-	# rm -f /etc/systemd/system/@PACKAGE_NAME@wsd.service || true
-	# ln -fs /lib/systemd/system/@PACKAGE_NAME@wsd.service /etc/systemd/system || true
+	@PACKAGE_NAME@wsd-systemplate-setup /opt/@PACKAGE_NAME@/systemplate @LO_PATH@ >/dev/null 2>&1
 
-	su lool --shell=/bin/sh -c "@PACKAGE_NAME@wsd-systemplate-setup /opt/@PACKAGE_NAME@/systemplate @LO_PATH@ >/dev/null 2>&1"
+	@PACKAGE_NAME@wsd-generate-proof-key >/dev/null 2>&1
+    cat << EOF > /etc/apt/apt.conf.d/25@PACKAGE_NAME@wsd
+// Rebuild systemplate of @PACKAGE_NAME@
+DPkg::Post-Invoke { "echo Updating @PACKAGE_NAME@wsd systemplate;@PACKAGE_NAME@wsd-systemplate-setup
+ /opt/@PACKAGE_NAME@/systemplate @LO_PATH@ >/dev/null 2>&1 || true"; };
+EOF
+
 	;;
 
 esac

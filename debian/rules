@@ -9,7 +9,7 @@ CONFFLAGS = --enable-silent-rules --with-lokit-path=`pwd`/bundled/include --disa
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --with=systemd
+	dh $@ --with=systemd --parallel
 
 override_dh_auto_configure:
 	./autogen.sh

@@ -3,6 +3,8 @@
 set -e
 
 # Stop any running oxoolwsd process
-service oxool stop 2>&1 /dev/null || true
+if [ -d /run/systemd/system ]; then
+    deb-systemd-invoke stop oxool.service >/dev/null || true
+fi
 
 #DEBHELPER#

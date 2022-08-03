@@ -2,6 +2,8 @@
 
 set -e
 
+rm -f /etc/apt/apt.conf.d/25oxoolwsd
+
 case "$1" in
     remove)
 	rm -f /var/log/oxoolwsd.log
