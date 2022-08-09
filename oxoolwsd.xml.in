@@ -5,8 +5,8 @@
 
     <allowed_languages desc="List of supported languages of Writing Aids (spell checker, grammar checker, thesaurus, hyphenation) on this instance. Allowing too many has negative effect on startup performance." default="de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru">de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru</allowed_languages>
 
-    <sys_template_path desc="Path to a template tree with shared libraries etc to be used as source for chroot jails for child processes." type="path" relative="true" default="systemplate">@LO_PATH@/../@PACKAGE_NAME@/systemplate</sys_template_path>
-    <child_root_path desc="Path to the directory under which the chroot jails for the child processes will be created. Should be on the same file system as systemplate and lotemplate. Must be an empty directory." type="path" relative="true" default="jails">@LO_PATH@/../@PACKAGE_NAME@/child-roots</child_root_path>
+    <sys_template_path desc="Path to a template tree with shared libraries etc to be used as source for chroot jails for child processes." type="path" relative="true" default="systemplate">@LO_PARENT_PATH@/@PACKAGE_NAME@/systemplate</sys_template_path>
+    <child_root_path desc="Path to the directory under which the chroot jails for the child processes will be created. Should be on the same file system as systemplate and lotemplate. Must be an empty directory." type="path" relative="true" default="jails">@LO_PARENT_PATH@/@PACKAGE_NAME@/child-roots</child_root_path>
     <mount_jail_tree desc="Controls whether the systemplate and lotemplate contents are mounted or not, which is much faster than the default of linking/copying each file." type="bool" default="true"></mount_jail_tree>
 
     <server_name desc="External hostname:port of the server running oxoolwsd. If empty, it's derived from the request (please set it if this doesn't work). Must be specified when behind a reverse-proxy or when the hostname is not reachable directly." type="string" default=""></server_name>

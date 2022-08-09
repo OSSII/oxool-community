@@ -589,6 +589,10 @@ AC_SUBST(JAILS_PATH)
 AC_SUBST(SYSTEMPLATE_PATH)
 AM_CONDITIONAL(HAVE_LO_PATH,[test "$have_lo_path" = "true"])
 
+LO_PARENT_PATH=`dirname "$LO_PATH"`
+AC_SUBST(LO_PARENT_PATH)
+AC_DEFINE_UNQUOTED([LO_PARENT_PATH],["$LO_PARENT_PATH"],[Path to OxOffice installation parent path])
+
 AS_IF([test -n "$with_poco_includes"],
       [CPPFLAGS="$CPPFLAGS -isystem ${with_poco_includes}"])
 
