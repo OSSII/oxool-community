@@ -628,11 +628,15 @@ a.leaflet-control-buttons:hover:first-child {
 
 .leaflet-cursor-header {
 	background: black;
-	height: 10px;
-	margin-top: -10px;
+	height: 20px;
+	margin-top: -20px;
 	pointer-events: none;
 	color: white;
-	font-size: 9px;
+	font-family: var(--oxool-font);
+	font-size: 14px;
+	padding-left: 3px;
+	padding-right: 3px;
+	border-radius: var(--border-radius);
 }
 
 div.leaflet-cursor-container:hover > .leaflet-cursor-header {
