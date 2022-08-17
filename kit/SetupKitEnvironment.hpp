@@ -41,15 +41,10 @@ inline void setupKitEnvironment(const std::string& userInterface)
 
     // Set various options we need.
     std::string options = "unipoll";
-#if !MOBILEAPP
-    if (Log::logger().trace())
-        options += ":profile_events";
-#endif
-
     if (userInterface == "notebookbar")
         options += ":notebookbar";
 
-//    options += ":sc_no_grid_bg"; // leave this disabled for now, merged-cells needs more work.
+    options += ":sc_no_grid_bg";
 
     options += ":sc_print_twips_msgs";
 
