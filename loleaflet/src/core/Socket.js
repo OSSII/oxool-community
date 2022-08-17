@@ -1114,6 +1114,7 @@ app.definitions.Socket = L.Class.extend({
 				this.ReconnectCount = 0;
 				clearTimeout(vex.timer);
 				vex.closeAll();
+				this._map.hideBusy();
 			}
 		}
 		else if (window.ThisIsAMobileApp && textMsg.startsWith('mobile:')) {
