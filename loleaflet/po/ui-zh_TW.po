@@ -2735,23 +2735,23 @@ msgstr "移除"
 
 #: src/layer/tile/CommentListSection.ts:821
 msgid "Remove Thread"
-msgstr "移除討論"
+msgstr "移除討論串"
 
 #: src/layer/tile/CommentListSection.ts:827
 msgid "Resolve"
-msgstr "已解決"
+msgstr "標記為已解決"
 
 #: src/layer/tile/CommentListSection.ts:827
 msgid "Unresolve"
-msgstr "未解決"
+msgstr "標記為未解決"
 
 #: src/layer/tile/CommentListSection.ts:833
 msgid "Unresolve Thread"
-msgstr "未解決的討論"
+msgstr "將討論串標記為未解決"
 
 #: src/layer/tile/CommentListSection.ts:833
 msgid "Resolve Thread"
-msgstr "未解決的討論"
+msgstr "將討論串標記為已解決"
 
 #: src/layer/tile/CommentSection.ts:260
 msgid "Open menu"
