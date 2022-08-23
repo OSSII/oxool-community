@@ -2534,9 +2534,6 @@ L.CanvasTileLayer = L.Layer.extend({
 			if (this._map.getDocType() === 'text' || this._map.getDocType() === 'presentation') {
 				this.goToViewCursor(viewId);
 			}
-			else if (this._map.getDocType() === 'spreadsheet') {
-				this.goToCellViewCursor(viewId);
-			}
 		}
 
 		this._saveMessageForReplay(textMsg, viewId);
@@ -2573,13 +2570,20 @@ L.CanvasTileLayer = L.Layer.extend({
 			var corePixelBounds = this._twipsToCorePixelsBounds(boundsTwips);
 			corePixelBounds.round();
 			this._cellViewCursors[viewId].corePixelBounds = corePixelBounds;
+			this._cellViewCursors[viewId].col = parseInt(strTwips[4]);
+			this._cellViewCursors[viewId].row = parseInt(strTwips[5]) + 1;
 		}
 
-		this._cellViewCursors[viewId].part = parseInt(obj.part);
+		var part = parseInt(obj.part);
+		this._cellViewCursors[viewId].part = part;
 		this._onUpdateCellViewCursor(viewId);
 
 		if (this.isCalc()) {
 			this._saveMessageForReplay(textMsg, viewId);
+			var docLayer = this._map._docLayer;
+			if (docLayer._followThis === viewId && (docLayer._followEditor || docLayer._followUser) && this._selectedPart === part) {
+				this.goToCellViewCursor(viewId);
+			}
 		}
 	},
 
@@ -2619,8 +2623,8 @@ L.CanvasTileLayer = L.Layer.extend({
 
 	goToCellViewCursor: function(viewId) {
 		if (this._cellViewCursors[viewId] && !this._isEmptyRectangle(this._cellViewCursors[viewId].bounds)) {
-			if (!this._map.getBounds().contains(this._cellViewCursors[viewId].bounds)) {
-				var mapBounds = this._map.getBounds();
+			var mapBounds = this._map.getBounds();
+			if (!mapBounds.contains(this._cellViewCursors[viewId].bounds)) {
 				var scrollX = 0;
 				var scrollY = 0;
 				var spacingX = Math.abs(this._cellViewCursors[viewId].bounds.getEast() - this._cellViewCursors[viewId].bounds.getWest()) / 4.0;
@@ -2638,19 +2642,43 @@ L.CanvasTileLayer = L.Layer.extend({
 				}
 
 				if (scrollX !== 0 || scrollY !== 0) {
-					var newCenter = mapBounds.getCenter();
-					newCenter.lat += scrollX;
-					newCenter.lat += scrollY;
-					var center = this._map.project(newCenter);
-					center = center.subtract(this._map.getSize().divideBy(2));
-					center.x = Math.round(center.x < 0 ? 0 : center.x);
-					center.y = Math.round(center.y < 0 ? 0 : center.y);
-					this._map.fire('scrollto', {x: center.x, y: center.y});
+					if (true) {
+						var letter = '';
+						var nCol = this._cellViewCursors[viewId].col;
+						while (nCol >= 26) {
+							var nC = nCol % 26;
+							letter = String.fromCharCode(65 + nC) + letter;
+							nCol = nCol - nC;
+							nCol = Math.trunc(nCol / 26 - 1);
+						}
+						letter = String.fromCharCode(65 + nCol) + letter;
+
+						var value = '$' + letter + '$' + this._cellViewCursors[viewId].row;
+						var command = {
+							ToPoint : {
+								type: 'string',
+								value: value
+							}
+
+						};
+						this._map.sendUnoCommand('.uno:GoToCell', command);
+					} else {
+						var newCenter = mapBounds.getCenter();
+						newCenter.lat += scrollX;
+						newCenter.lat += scrollY;
+						var center = this._map.project(newCenter);
+						center = center.subtract(this._map.getSize().divideBy(2));
+						center.x = Math.round(center.x < 0 ? 0 : center.x);
+						center.y = Math.round(center.y < 0 ? 0 : center.y);
+						this._map.fire('scrollto', {x: center.x, y: center.y});
+					}
 				}
 			}
 
-			var backgroundColor = L.LOUtil.rgbToHex(this._map.getViewColor(viewId));
-			this._cellViewCursors[viewId].marker.bindPopup(this._map.getViewName(viewId), {autoClose: false, autoPan: false, backgroundColor: backgroundColor, color: 'white', closeButton: false});
+			if (this._cellViewCursors[viewId].marker) {
+				var backgroundColor = L.LOUtil.rgbToHex(this._map.getViewColor(viewId));
+				this._cellViewCursors[viewId].marker.bindPopup(this._map.getViewName(viewId), {autoClose: false, autoPan: false, backgroundColor: backgroundColor, color: 'white', closeButton: false});
+			}
 		}
 	},
 

@@ -1845,10 +1845,14 @@ L.Map = L.Evented.extend({
 		if (id === -1)
 			return;
 
+		var docLayer = this._docLayer;
 		if (this.getDocType() === 'spreadsheet') {
-			this._docLayer.goToCellViewCursor(id);
+			if (docLayer._selectedPart !== docLayer._cellViewCursors[id].part) {
+				this.setPart(docLayer._cellViewCursors[id].part);
+			}
+			docLayer.goToCellViewCursor(id);
 		} else if (this.getDocType() === 'text' || this.getDocType() === 'presentation') {
-			this._docLayer.goToViewCursor(id);
+			docLayer.goToViewCursor(id);
 		}
 	},
 
