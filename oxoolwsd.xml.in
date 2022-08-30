@@ -61,7 +61,7 @@
         <lokit_sal_log type="string" desc="Fine tune log messages from LOKit. Default is to suppress log messages from LOKit." default="-INFO-WARN">-INFO-WARN</lokit_sal_log>
         <file enable="@LOOLWSD_LOG_TO_FILE@">
             <property name="path" desc="Log file path.">@LOOLWSD_LOGFILE@</property>
-            <property name="rotation" desc="Log file rotation strategy. See Poco FileChannel.">never</property>
+            <property name="rotation" desc="Log file rotation strategy. See Poco FileChannel.">monthly</property>
             <property name="archive" desc="Append either timestamp or number to the archived log filename.">timestamp</property>
             <property name="times" desc="Specifies whether times for rotation are treated as local or UTC. Valid values are local and utc.">local</property>
             <property name="compress" desc="Enable/disable log file compression.">true</property>
