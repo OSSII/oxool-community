@@ -970,7 +970,7 @@ input[type='checkbox']#UseBandingColumnStyle, input[type='checkbox']#UseLastColu
 div#enablecontour + p, #arrangelabel, #SetMinimalRowHeight {clear: both;}
 
 label.disabled {
-	color: var(--color-text-lighter) !important;
+	color: var(--color-text-disabled) !important;
 }
 
 .ui-checkbox.mobile-wizard {
