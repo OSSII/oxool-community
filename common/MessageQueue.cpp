@@ -563,6 +563,31 @@ TileQueue::Payload TileQueue::get_impl()
         return Payload(msg.data(), msg.data() + msg.size());
     }
 
+    // n^2 but lists are short.
+    for (size_t i = 0; i < tiles.size() - 1; ++i)
+    {
+        const auto &a = tiles[i];
+        for (size_t j = i + 1; j < tiles.size();)
+        {
+            const auto &b = tiles[j];
+            assert(a.getPart() == b.getPart());
+            assert(a.getWidth() == b.getWidth());
+            assert(a.getHeight() == b.getHeight());
+            assert(a.getTileWidth() == b.getTileWidth());
+            assert(a.getTileHeight() == b.getTileHeight());
+            if (a.getTilePosX() == b.getTilePosX() &&
+                a.getTilePosY() == b.getTilePosY())
+            {
+                LOG_TRC("MessageQueue: dropping duplicate tile: " <<
+                        j << " vs. " << i << " at: " <<
+                        a.getTilePosX() << "," << a.getTilePosY());
+                tiles.erase(tiles.begin() + j);
+            }
+            else
+                j++;
+        }
+    }
+
     std::string tileCombined = TileCombined::create(tiles).serialize("tilecombine");
     LOG_TRC("MessageQueue res: " << LOOLProtocol::getAbbreviatedMessage(tileCombined));
     return Payload(tileCombined.data(), tileCombined.data() + tileCombined.size());
