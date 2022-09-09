@@ -21,6 +21,7 @@ Source0:        @PACKAGE_NAME@-%{version}-@LOOLWSD_BRANCH@.tar.gz
 BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make 
 BuildRequires:  poco-devel >= 1.7.5
 BuildRequires:  freetype-devel >= 2.8 fontconfig-devel >= 2.12.6
+BuildRequires:  ossiiProduct-devel >= 1.0.0
 
 # RHEL and its derivatives
 %if 0%{?rhel} == 7
@@ -38,6 +39,12 @@ Requires:       systemd expat keyutils-libs krb5-libs libattr libcap libcom_err 
 Requires:       poco-crypto >= 1.7.5 poco-data >= 1.7.5 poco-encodings >= 1.7.5 poco-foundation >= 1.7.5 poco-json >= 1.7.5 poco-mongodb >= 1.7.5 poco-mysql >= 1.7.5 poco-net >= 1.7.5 poco-netssl >= 1.7.5 poco-odbc >= 1.7.5 poco-pagecompiler >= 1.7.5 poco-sqlite >= 1.7.5 poco-util >= 1.7.5 poco-xml >= 1.7.5 poco-zip >= 1.7.5
 
 %description
+
+%package	devel
+Summary:	Files for build OxOffice Online Editor.
+Requires:	%{name} = %{version}
+%description	devel
+Files for build OxOffice Online Editor.
 
 %prep
 %setup -q -n %{name}-%{version}-@LOOLWSD_BRANCH@
@@ -75,6 +82,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
+%{_libdir}/*.so.*
 %dir /usr/share/%{name}
 /usr/share/%{name}/loleaflet
 /usr/share/%{name}/discovery.xml
@@ -97,6 +105,11 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %config /etc/%{name}/oxoolkitconfig.xcu
 %config(noreplace) /etc/%{name}/*.pem
 %config %attr(440, root, root) /etc/sudoers.d/lool
+
+%files devel
+%{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 
 %pre
 getent group lool >/dev/null || groupadd -r lool

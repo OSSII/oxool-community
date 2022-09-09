@@ -2,7 +2,7 @@ ETAGS=ctags -e
 
 distdir = $(PACKAGE)-$(VERSION)-$(LOOLWSD_BRANCH)
 
-SUBDIRS = . loleaflet extensions fonts support
+SUBDIRS = src . loleaflet extensions fonts support
 
 export ENABLE_DEBUG
 
@@ -40,6 +40,9 @@ sudoers_DATA = etc/sudoers.d/lool
 servicesysconfigdir = ${sysconfdir}/sysconfig
 servicesysconfig_DATA = etc/sysconfig/oxoolwsd
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = oxool.pc
+
 oxoolwsdconfigdir = @LOOLWSD_CONFIGDIR@
 
 oxool_modulesdir = @LOOLWSD_MODULES_DIR@
@@ -57,7 +60,7 @@ oxoolwsdconfig_DATA = oxoolwsd.xml \
 ACLOCAL_AMFLAGS = -I m4
 
 # quick and easy for now.
-include_paths = -I${top_srcdir}/common -I${top_srcdir}/net -I${top_srcdir}/wsd -I${top_srcdir}/kit ${ZLIB_CFLAGS} ${FONTCONFIG_CFLAGS}
+include_paths = -I${top_srcdir}/common -I${top_srcdir}/net -I${top_srcdir}/wsd -I${top_srcdir}/kit -I${top_srcdir}/src/include ${ZLIB_CFLAGS} ${FONTCONFIG_CFLAGS}
 
 AM_CPPFLAGS = -pthread -DLOOLWSD_DATADIR='"@LOOLWSD_DATADIR@"' \
 	      -DLOOLWSD_CONFIGDIR='"@LOOLWSD_CONFIGDIR@"' \
@@ -72,8 +75,9 @@ AM_LDFLAGS = -pthread -Wl,-E,-rpath,/snap/oxoolwsd/current/usr/lib -lpam $(ZLIB_
 
 if ENABLE_SSL
 AM_LDFLAGS += -lssl -lcrypto
+oxoolwsd_LDADD = $(top_builddir)/src/lib/libOxOOL.la
 else
-oxoolwsd_LDADD = -lssl -lcrypto
+oxoolwsd_LDADD = -lssl -lcrypto $(top_builddir)/src/lib/libOxOOL.la
 oxoolconfig_LDADD = -lssl -lcrypto
 endif
 
@@ -252,6 +256,7 @@ dist-hook:
 	git log -1 --format=%h > $(distdir)/dist_git_hash 2> /dev/null || rm $(distdir)/dist_git_hash
 	git rev-parse --abbrev-ref HEAD | cut -d '-' -f 1 > $(distdir)/dist_git_branch 2> /dev/null || rm $(distdir)/dist_git_branch
 	( if test -f dist_project; then mv dist_project $(distdir); fi ) || rm $(distdir)/dist_project
+	cp -aR bundled $(distdir)/
 
 EXTRA_DIST = discovery.xml \
              favicon.ico \
@@ -259,7 +264,6 @@ EXTRA_DIST = discovery.xml \
              oxoolwsd.spec \
              oxoolwsd.xml.in \
              oxoolwsd.service \
-             bundled/* \
              debian/changelog \
              debian/compat \
              debian/control \
@@ -289,7 +293,7 @@ CAPABILITIES = $(if @ENABLE_SETCAP@,true,false)
 RUN_GDB = $(if $(GDB_FRONTEND),$(GDB_FRONTEND),gdb --tui --args)
 
 if ENABLE_SETCAP
-SET_CAPS_COMMAND=sudo @SETCAP@ cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep oxoolforkit && sudo @SETCAP@ cap_sys_admin=ep oxoolmount && sudo @SETCAP@ cap_dac_override,cap_net_bind_service=+ep oxoolwsd
+SET_CAPS_COMMAND=sudo @SETCAP@ cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep oxoolforkit && sudo @SETCAP@ cap_sys_admin=ep oxoolmount && sudo @SETCAP@ cap_dac_override,cap_net_bind_service=+ep .libs/oxoolwsd
 else
 SET_CAPS_COMMAND=echo "Skipping capability setting"
 endif

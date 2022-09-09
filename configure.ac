@@ -820,11 +820,15 @@ AC_CONFIG_FILES([Makefile
                  loleaflet/Makefile
                  loleaflet/npm-shrinkwrap.json
                  extensions/Makefile
+                 src/Makefile
+                 src/include/Makefile
+                 src/lib/Makefile
                  fonts/Makefile
                  fonts/00-oxool.conf
                  support/Makefile
                  oxoolwsd.spec
                  oxoolwsd.xml
+                 oxool.pc
                  debian/oxool.postinst])
 
 AC_CONFIG_FILES([test/run_unit.sh],[chmod +x test/run_unit.sh])

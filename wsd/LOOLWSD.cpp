@@ -901,7 +901,11 @@ void LOOLWSD::initialize(Application& self)
     }
 #endif
 
+#if ENABLE_DEBUG
+    Util::setApplicationPath(DEBUG_ABSSRCDIR);
+#else
     Util::setApplicationPath(Poco::Path(Application::instance().commandPath()).parent().toString());
+#endif
 
     if (!UnitWSD::init(UnitWSD::UnitType::Wsd, UnitTestLibrary))
     {
@@ -2014,7 +2018,11 @@ bool LOOLWSD::createForKit()
 #ifdef STRACE_LOOLFORKIT
     std::string forKitPath = "strace";
 #else
+#if ENABLE_DEBUG
+    std::string forKitPath = DEBUG_ABSSRCDIR "/oxoolforkit";
+#else
     std::string forKitPath = Path(Application::instance().commandPath()).parent().toString() + "oxoolforkit";
+#endif
 #endif
 
     // Always reap first, in case we haven't done so yet.
