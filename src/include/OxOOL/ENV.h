@@ -5,10 +5,9 @@
 
 namespace OxOOL
 {
-class ENV
+struct ENV
 {
-public:
-    static std::string FileServerRoot;
+    std::string FileServerRoot;
 };
 
-}; // namespace OxOOL
+} // namespace OxOOL
