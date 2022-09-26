@@ -970,14 +970,14 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
                                 fullKey += "[@" + subIt->first + "]";
                             }
                             // 變更 fullKey 的值
-                            config.setString(fullKey, subIt->second.toString());
+                            config.setString(fullKey, Poco::XML::fromXMLString(subIt->second.toString()));
                         }
                     }
                 }
                 // 直接填入字串
                 else
                 {
-                    config.setString(key, it->second.toString());
+                    config.setString(key, Poco::XML::fromXMLString(it->second.toString()));
                 }
             }
             config.save(LOOLWSD::ConfigFile); // 存回檔案
