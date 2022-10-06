@@ -56,6 +56,7 @@
 #include <Poco/RandomStream.h>
 #include <Poco/TemporaryFile.h>
 #include <Poco/Timestamp.h>
+#include <Poco/DateTimeFormat.h>
 #include <Poco/Util/Application.h>
 #include <Poco/Crypto/Crypto.h>
 #include <Poco/Crypto/Cipher.h>
@@ -866,14 +867,8 @@ namespace Util
 
     std::string getHttpTimeNow()
     {
-        char time_now[64];
-        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-        std::tm now_tm;
-        gmtime_r(&now_c, &now_tm);
-        strftime(time_now, sizeof(time_now), "%a, %d %b %Y %T", &now_tm);
-
-        return time_now;
+        return Poco::DateTimeFormatter::format(
+                Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT);
     }
 
     std::string getHttpTime(std::chrono::system_clock::time_point time)
