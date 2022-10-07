@@ -1,13 +1,13 @@
 
 lib_LTLIBRARIES = libOxOOL.la
 
-include_paths = -I$(top_srcdir) \
-		-I$(top_srcdir)/src/include \
-		-I${top_srcdir}/bundled/include \
-		-I${top_srcdir}/common \
-		-I${top_srcdir}/net \
-		-I${top_srcdir}/wsd \
-		-I${top_srcdir}/kit
+include_paths = -I$(abs_top_builddir) \
+		-I$(abs_top_builddir)/src/include \
+		-I${abs_top_builddir}/common \
+		-I${abs_top_builddir}/net \
+		-DLOOLWSD_MODULE_CONFIG_DIR='"@LOOLWSD_MODULE_CONFIG_DIR@"' \
+                -DLOOLWSD_MODULE_DIR='"@LOOLWSD_MODULE_DIR@"' \
+                -DLOOLWSD_MODULE_DATA_DIR='"@LOOLWSD_MODULE_DATA_DIR@"'
 
 AM_CPPFLAGS = -pthread ${include_paths} -fPIC
 
@@ -19,4 +19,7 @@ AM_LDFLAGS = -pthread -Wl,-E
 
 libOxOOL_la_SOURCES = \
 	OxOOL/ENV.cpp \
+	OxOOL/ModuleManager.cpp \
+	OxOOL/HttpHelper.cpp \
+	OxOOL/XMLConfig.cpp \
 	OxOOL/Module/Base.cpp

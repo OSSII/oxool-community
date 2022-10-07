@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <OxOOL/OxOOL.h>
+
 #include <string>
 
 namespace OxOOL

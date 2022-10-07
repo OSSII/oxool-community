@@ -45,7 +45,7 @@ pkgconfig_DATA = oxool.pc
 
 oxoolwsdconfigdir = @LOOLWSD_CONFIGDIR@
 
-oxool_modulesdir = @LOOLWSD_MODULES_DIR@
+oxool_modulesdir = @LOOLWSD_MODULE_DIR@
 
 oxool_module_confdir = @LOOLWSD_MODULE_CONFIG_DIR@
 
@@ -64,7 +64,7 @@ include_paths = -I${top_srcdir}/common -I${top_srcdir}/net -I${top_srcdir}/wsd -
 
 AM_CPPFLAGS = -pthread -DLOOLWSD_DATADIR='"@LOOLWSD_DATADIR@"' \
 	      -DLOOLWSD_CONFIGDIR='"@LOOLWSD_CONFIGDIR@"' \
-	      -DDEBUG_ABSSRCDIR='"@abs_srcdir@"' \
+	      -DDEBUG_ABSSRCDIR='"@abs_top_builddir@"' \
 	      ${include_paths}
 
 if !ENABLE_DEBUG
@@ -75,9 +75,7 @@ AM_LDFLAGS = -pthread -Wl,-E,-rpath,/snap/oxoolwsd/current/usr/lib -lpam $(ZLIB_
 
 if ENABLE_SSL
 AM_LDFLAGS += -lssl -lcrypto
-oxoolwsd_LDADD = $(top_builddir)/src/lib/libOxOOL.la
 else
-oxoolwsd_LDADD = -lssl -lcrypto $(top_builddir)/src/lib/libOxOOL.la
 oxoolconfig_LDADD = -lssl -lcrypto
 endif
 
@@ -125,6 +123,8 @@ oxoolwsd_json = $(patsubst %.cpp,%.cmd,$(oxoolwsd_sources))
 
 oxoolwsd_SOURCES = $(oxoolwsd_sources) \
                   $(shared_sources)
+
+oxoolwsd_LDADD = $(top_builddir)/src/lib/libOxOOL.la
 
 noinst_PROGRAMS = clientnb \
                   connect \
@@ -463,12 +463,12 @@ all-local: $(ALL_LOCAL_DEPS) @JAILS_PATH@ $(SYSTEM_STAMP)
 build-nocheck: all-am
 
 install-data-local:
-	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULES_DIR)
+	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULE_DIR)
 	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULE_CONFIG_DIR)
 	$(MKDIR_P) $(DESTDIR)$(LOOLWSD_MODULE_DATA_DIR)
 
 uninstall-local:
-	rmdir $(DESTDIR)$(LOOLWSD_MODULES_DIR)
+	rmdir $(DESTDIR)$(LOOLWSD_MODULE_DIR)
 	rmdir $(DESTDIR)$(LOOLWSD_MODULE_CONFIG_DIR)
 	rmdir $(DESTDIR)$(LOOLWSD_MODULE_DATA_DIR)
 

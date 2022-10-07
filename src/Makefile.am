@@ -1,2 +1,2 @@
 
-SUBDIRS = include lib
+SUBDIRS = include lib modules

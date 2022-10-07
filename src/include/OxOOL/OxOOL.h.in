@@ -1,0 +1,12 @@
+
+#pragma once
+
+#include <string>
+
+namespace OxOOL
+{
+const std::string Version = "@VERSION@";
+const std::string VersionHash = "@LOOLWSD_VERSION_HASH@";
+const std::string WopiAgentString = "OxOOL WOPI Agent " + Version;
+const std::string HttpAgentString = "OxOOL HTTP Agent " + Version;
+} // namespace OxOOL

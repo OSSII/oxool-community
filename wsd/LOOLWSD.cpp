@@ -106,6 +106,8 @@ using Poco::Net::PartHandler;
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/Util/XMLConfiguration.h>
 
+#include <OxOOL/ModuleManager.h>
+
 #include "Admin.hpp"
 #include "Auth.hpp"
 #include "ClientSession.hpp"
@@ -1531,6 +1533,21 @@ void LOOLWSD::initialize(Application& self)
                   << getServiceURI("/hosting/discovery") << '\n'
                   << std::endl;
 
+    // 取得所有模組資料
+    std::vector<OxOOL::Module::Detail> details = OxOOL::ModuleManager::instance().getAllModuleDetails();
+    if (!details.empty())
+    {
+        for (auto it : details)
+        {
+            // 該模組有指定服務位址
+            if (!it.serviceURI.empty())
+            {
+                std::cerr << std::endl << "Module '" << it.name << "': " << it.summary << std::endl
+                          << getServiceURI(it.serviceURI, it.adminPrivilege) << std::endl;
+            }
+        }
+    }
+
     std::cerr << std::endl;
 #endif
 
@@ -2544,6 +2561,11 @@ private:
             if (UnitWSD::get().handleHttpRequest(request, message, socket))
             {
                 // Unit testing, nothing to do here
+            }
+            // 優先讓模組處理
+            if (OxOOL::ModuleManager::instance().handleRequest(requestDetails, request, disposition))
+            {
+                // Do othing.
             }
             else if (requestDetails.equals(RequestDetails::Field::Type, "loleaflet"))
             {
@@ -3844,6 +3866,7 @@ public:
 
 #if !MOBILEAPP
         Admin::instance().start();
+        OxOOL::ModuleManager::instance().start();
 #endif
     }
 

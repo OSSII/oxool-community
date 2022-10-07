@@ -18,7 +18,7 @@ License:        MPL
 Provides:       oxoolwsd
 Obsoletes:	    oxoolwsd
 Source0:        @PACKAGE_NAME@-%{version}-@LOOLWSD_BRANCH@.tar.gz
-BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make 
+BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make
 BuildRequires:  poco-devel >= 1.7.5
 BuildRequires:  freetype-devel >= 2.8 fontconfig-devel >= 2.12.6
 BuildRequires:  ossiiProduct-devel >= 1.0.0
@@ -39,6 +39,12 @@ Requires:       systemd expat keyutils-libs krb5-libs libattr libcap libcom_err 
 Requires:       poco-crypto >= 1.7.5 poco-data >= 1.7.5 poco-encodings >= 1.7.5 poco-foundation >= 1.7.5 poco-json >= 1.7.5 poco-mongodb >= 1.7.5 poco-mysql >= 1.7.5 poco-net >= 1.7.5 poco-netssl >= 1.7.5 poco-odbc >= 1.7.5 poco-pagecompiler >= 1.7.5 poco-sqlite >= 1.7.5 poco-util >= 1.7.5 poco-xml >= 1.7.5 poco-zip >= 1.7.5
 
 %description
+
+%package	modules
+Summary:	Expansion modules for OxOffice Online.
+Requires:	%{name} = %{version}
+%description	modules
+Expansion modules for OxOffice Online.
 
 %package	devel
 Summary:	Files for build OxOffice Online Editor.
@@ -67,6 +73,7 @@ env BUILDING_FROM_RPMBUILD=yes make %{?_smp_mflags}
 %install
 env BUILDING_FROM_RPMBUILD=yes make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
+rm -f %{buildroot}/%{_libdir}/@PACKAGE_NAME@/*.la
 install -d -m 755 %{buildroot}/var/adm/fillup-templates
 %if 0%{?rhel}
 install -D -m 444 oxoolwsd.service %{buildroot}%{_unitdir}/oxoolwsd.service
@@ -88,6 +95,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 /usr/share/%{name}/discovery.xml
 /usr/share/%{name}/favicon.ico
 /usr/share/%{name}/extensions
+/usr/share/%{name}/modules
 /usr/share/doc/%{name}/*
 /usr/share/man/man1/*
 /etc/fonts/conf.d/*.conf
@@ -98,13 +106,16 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 
 %dir /etc/%{name}
 %dir /etc/%{name}/conf.d
-%dir %attr(750, lool, root) /var/lib/%{name}
 %dir %{_libdir}/%{name}
 %config(noreplace) /etc/pam.d/%{name}
 %config(noreplace) %attr(640, lool, root) /etc/%{name}/oxoolwsd.xml
 %config /etc/%{name}/oxoolkitconfig.xcu
 %config(noreplace) /etc/%{name}/*.pem
 %config %attr(440, root, root) /etc/sudoers.d/lool
+
+%files modules
+%{_libdir}/@PACKAGE_NAME@/*.so
+/etc/%{name}/conf.d/*
 
 %files devel
 %{_includedir}/*
