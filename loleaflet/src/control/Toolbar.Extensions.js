@@ -83,6 +83,11 @@ L.Map.include({
 				{id: '.uno:FillModeTraceSuccessor'}, // 追蹤依賴此的
 				{id: '.uno:FillModeRemoveSuccessor'}, // 移除出去箭號
 				{id: '.uno:FillModeEnd'}, // 離開填入模式
+				{id: '.uno:AutoSum'}, // 總和
+				{id: '.uno:AutoAverage'}, // AutoAverage
+				{id: '.uno:AutoMin'}, // AutoMin
+				{id: '.uno:AutoMax'}, // AutoMax
+				{id: '.uno:AutoCount'}, // AutoCount
 			],
 			presentation: [
 				{id: '.uno:CloseMasterView'}, // 關閉母片檢視
