@@ -232,105 +232,45 @@ L.Control.Menubar = L.Control.extend({
 
 		mobileInsertMenu : {
 			text : {
-				name: _UNO('.uno:InsertMenu', 'text'), id: 'insert', type: 'menu', menu: [
-					{name: _('Local Image...'), id: 'insertgraphic', type: 'action'},
-					{name: _UNO('.uno:InsertGraphic', 'text'), id: 'insertgraphicremote', type: 'action'},
-					{uno: '.uno:InsertObjectChart'},
-					{name: _UNO('.uno:InsertAnnotation', 'text'), id: 'insertcomment', type: 'action'},
-					{name: _UNO('.uno:TableMenu'), id: 'inserttable', type: 'action'},
+				id: '.uno:InsertMenu', menu: [
+					{id: '.uno:InsertGraphic'},
+					{id: '.uno:InsertObjectChart'},
+					{id: '.uno:InsertAnnotation'},
+					{name: '.uno:InsertTable', id: 'inserttable'},
 					{type: 'separator'},
-					{name: _UNO('.uno:InsertField', 'text'), id: 'insertfield', type: 'menu', menu: [
-						{uno: '.uno:InsertPageNumberField'},
-						{uno: '.uno:InsertPageCountField'},
-						{uno: '.uno:InsertDateField'},
-						{uno: '.uno:InsertTimeField'},
-						{uno: '.uno:InsertTitleField'},
-						{uno: '.uno:InsertAuthorField'},
-						{uno: '.uno:InsertTopicField'}
-					]},
-					{name: _UNO('.uno:InsertHeaderFooterMenu', 'text'), id: 'insertheaderfooter', type: 'menu', menu: [
-						{name: _UNO('.uno:InsertPageHeader', 'text'), id: 'insertpageheader', type: 'menu', menu: [
-							{name: _('All'), disabled: true, id: 'insertheader', tag: '_ALL_', uno: '.uno:InsertPageHeader?On:bool=true'}]},
-						{name: _UNO('.uno:InsertPageFooter', 'text'), id: 'insertpagefooter', type: 'menu', menu: [
-							{name: _('All'), disabled: true, id: 'insertfooter', tag: '_ALL_', uno: '.uno:InsertPageFooter?On:bool=true'}]}
-					]},
-					{uno: '.uno:InsertFootnote'},
-					{uno: '.uno:InsertEndnote'},
+					{id: '.uno:InsertFootnote'},
+					{id: '.uno:InsertEndnote'},
 					{type: 'separator'},
-					{uno: '.uno:InsertPagebreak'},
-					{name: _UNO('.uno:InsertColumnBreak', 'spreadsheet'), uno: '.uno:InsertColumnBreak'},
+					{id: '.uno:InsertPagebreak'},
+					{id: '.uno:InsertColumnBreak'},
 					{type: 'separator'},
-					{name: _UNO('.uno:HyperlinkDialog'), id: 'inserthyperlink', type: 'action'},
-					{name: _UNO('.uno:ShapesMenu'), id: 'insertshape', type: 'action'},
-					{name: _UNO('.uno:FontworkGalleryFloater'), uno: '.uno:FontworkGalleryFloater'},
-					{name: _UNO('.uno:FormattingMarkMenu', 'text'), id: 'formattingmark', type: 'menu', menu: [
-						{uno: '.uno:InsertNonBreakingSpace'},
-						{uno: '.uno:InsertHardHyphen'},
-						{uno: '.uno:InsertSoftHyphen'},
-						{uno: '.uno:InsertZWSP'},
-						{uno: '.uno:InsertZWNBSP'},
-						{uno: '.uno:InsertLRM'},
-						{uno: '.uno:InsertRLM'}]},
 				]
 			},
 			spreadsheet : {
-				name: _UNO('.uno:InsertMenu', 'spreadsheet'), id: 'insert', type: 'menu', menu: [
-					{name: _('Local Image...'), id: 'insertgraphic', type: 'action'},
-					{name: _UNO('.uno:InsertGraphic', 'spreadsheet'), id: 'insertgraphicremote', type: 'action'},
-					{uno: '.uno:InsertObjectChart'},
-					{name: _UNO('.uno:InsertAnnotation', 'spreadsheet'), id: 'insertcomment', type: 'action'},
+				id: '.uno:InsertMenu', menu: [
+					{id: '.uno:InsertGraphic'},
+					{id: '.uno:InsertObjectChart'},
+					{id: '.uno:InsertAnnotation'},
 					{type: 'separator'},
-					{name: _UNO('.uno:HyperlinkDialog'), id: 'inserthyperlink', type: 'action'},
-					{name: _UNO('.uno:ShapesMenu'), id: 'insertshape', type: 'action'},
-					{uno: '.uno:InsertCurrentDate'},
-					{uno: '.uno:InsertCurrentTime'},
+					{id: '.uno:InsertCurrentDate'},
+					{id: '.uno:InsertCurrentTime'},
 					// other fields need EditEngine context & can't be disabled in the menu.
 				]
 			},
 			presentation : {
-				name: _UNO('.uno:InsertMenu', 'presentation'), id: 'insert', type: 'menu', menu: [
-					{name: _('Local Image...'), id: 'insertgraphic', type: 'action'},
-					{name: _UNO('.uno:InsertGraphic', 'presentation'), id: 'insertgraphicremote', type: 'action'},
-					{uno: '.uno:InsertObjectChart'},
-					{name: _UNO('.uno:InsertAnnotation', 'presentation'), id: 'insertcomment', type: 'action'},
-					{name: _UNO('.uno:TableMenu'), id: 'inserttable', type: 'action'},
-					{name: _UNO('.uno:HyperlinkDialog'), id: 'inserthyperlink', type: 'action'},
-					{name: _UNO('.uno:ShapesMenu'), id: 'insertshape', type: 'action'},
-					{name: _UNO('.uno:FontworkGalleryFloater'), uno: '.uno:FontworkGalleryFloater'},
-					{name: _UNO('.uno:Text', 'presentation'), id: 'inserttextbox', type: 'action'},
-					{name: _UNO('.uno:InsertField', 'text'), id: 'insertfield', type: 'menu', menu: [
-						{uno: '.uno:InsertDateFieldFix'},
-						{uno: '.uno:InsertDateFieldVar'},
-						{uno: '.uno:InsertTimeFieldFix'},
-						{uno: '.uno:InsertTimeFieldVar'},
-						{type: 'separator'},
-						{name: _UNO('.uno:InsertSlideField', 'presentation'), id: 'insertslidefield', type: 'action'},
-						{name: _UNO('.uno:InsertSlideTitleField', 'presentation'), id: 'insertslidetitlefield', type: 'action'},
-						{name: _UNO('.uno:InsertSlidesField', 'presentation'), id: 'insertslidesfield', type: 'action'},
-					]},
+				id: '.uno:InsertMenu', menu: [
+					{id: '.uno:InsertGraphic'},
+					{id: '.uno:InsertObjectChart'},
+					{id: '.uno:InsertAnnotation'},
+					{name: '.uno:InsertTable', id: 'inserttable'},
 				]
 			},
 			drawing : {
-				name: _UNO('.uno:InsertMenu', 'drawing'), id: 'insert', type: 'menu', menu: [
-					{name: _('Local Image...'), id: 'insertgraphic', type: 'action'},
-					{name: _UNO('.uno:InsertGraphic', 'drawing'), id: 'insertgraphicremote', type: 'action'},
-					{uno: '.uno:InsertObjectChart'},
-					{name: _UNO('.uno:InsertAnnotation', 'drawing'), id: 'insertcomment', type: 'action'},
-					{name: _UNO('.uno:TableMenu'), id: 'inserttable', type: 'action'},
-					{name: _UNO('.uno:HyperlinkDialog'), id: 'inserthyperlink', type: 'action'},
-					{name: _UNO('.uno:ShapesMenu'), id: 'insertshape', type: 'action'},
-					{name: _UNO('.uno:FontworkGalleryFloater'), uno: '.uno:FontworkGalleryFloater'},
-					{name: _UNO('.uno:Text', 'drawing'), id: 'inserttextbox', type: 'action'},
-					{name: _UNO('.uno:InsertField', 'text'), id: 'insertfield', type: 'menu', menu: [
-						{uno: '.uno:InsertDateFieldFix'},
-						{uno: '.uno:InsertDateFieldVar'},
-						{uno: '.uno:InsertTimeFieldFix'},
-						{uno: '.uno:InsertTimeFieldVar'},
-						{type: 'separator'},
-						{name: _UNO('.uno:InsertSlideField', 'drawing'), id: 'insertslidefield', type: 'action'},
-						{name: _UNO('.uno:InsertSlideTitleField', 'drawing'), id: 'insertslidetitlefield', type: 'action'},
-						{name: _UNO('.uno:InsertSlidesField', 'drawing'), id: 'insertslidesfield', type: 'action'},
-					]},
+				id: '.uno:InsertMenu', menu: [
+					{id: '.uno:InsertGraphic'},
+					{id: '.uno:InsertObjectChart'},
+					{id: '.uno:InsertAnnotation'},
+					{name: '.uno:InsertTable', id: 'inserttable'},
 				]
 			}
 		},
@@ -1554,21 +1494,27 @@ L.Control.Menubar = L.Control.extend({
 		if (item.id === 'feedback' && !this._map.feedback)
 			return undefined;
 
+		// 處理選項名稱
 		var itemName;
-		if (item.name)
-			itemName = item.name;
-		else if (item.uno)
-			itemName = _UNO(item.uno, docType);
-		else
+		// 有指定選項名稱
+		if (item.name) {
+			// 選項名稱若是 uno 指令，就翻譯，否則不變
+			itemName = this._map.isUnoCommand(item.name) ? _UNO(item.name, docType) : item.name;
+		// 若 id 是 uno 指令，翻譯 id
+		} else if (this._map.isUnoCommand(item.id)) {
+			itemName = _UNO(item.id, docType);
+		} else {
 			return undefined; // separator
+		}
+
+		var icon = item.icon ? item.icon : (this._map.isUnoCommand(item.name) ? item.name : item.id);
 
 		var menuStructure = {
 			id : item.id,
+			icon: icon,
 			type : itemType,
 			enabled : !item.disabled,
 			text : itemName,
-			command : item.uno,
-			executionType : item.type,
 			data : item,
 			children : []
 		};
@@ -1576,20 +1522,20 @@ L.Control.Menubar = L.Control.extend({
 		// Checked state for insert header / footer
 		var insertHeaderString = '.uno:InsertPageHeader?PageStyle:string=';
 		var insertFooterString = '.uno:InsertPageFooter?PageStyle:string=';
-		if (item.uno && (item.uno.startsWith(insertHeaderString) || item.uno.startsWith(insertFooterString))) {
-			var style = decodeURIComponent(item.uno.slice(item.uno.search('=') + 1));
+		if (item.id && (item.id.startsWith(insertHeaderString) || item.id.startsWith(insertFooterString))) {
+			var style = decodeURIComponent(item.id.slice(item.id.search('=') + 1));
 			style = style.slice(0, style.length - 1);
-			var shortUno = item.uno.slice(0, item.uno.search('\\?'));
+			var shortUno = item.id.slice(0, item.id.search('\\?'));
 			var state = this._map['stateChangeHandler'].getItemValue(shortUno);
 			if (state && state[style]) {
 				menuStructure['checked'] = true;
 			}
-		} else if (item.uno === '.uno:TrackChanges' ||
-			item.uno === '.uno:ShowTrackedChanges' ||
-			item.uno === '.uno:ControlCodes' ||
-			item.uno === '.uno:SpellOnline' ||
-			item.uno === '.uno:ShowResolvedAnnotations') {
-			if (this._map['stateChangeHandler'].getItemValue(item.uno) === 'true') {
+		} else if (item.id === '.uno:TrackChanges' ||
+			item.id === '.uno:ShowTrackedChanges' ||
+			item.id === '.uno:ControlCodes' ||
+			item.id === '.uno:SpellOnline' ||
+			item.id === '.uno:ShowResolvedAnnotations') {
+			if (this._map['stateChangeHandler'].getItemValue(item.id) === 'true') {
 				menuStructure['checked'] = true;
 			}
 		}

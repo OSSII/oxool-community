@@ -60,6 +60,7 @@ L.Map.include({
 			text: [
 				{id: '.uno:OutlineBullet'}, // 項目符號與編號
 				{id: '.uno:FrameDialog'}, // 外框屬性
+				{id: 'inserttable'}, // inserttable
 			],
 			spreadsheet: [
 				{id: '.uno:TableSelectAll'}, // 選取全部的工作表
@@ -96,9 +97,10 @@ L.Map.include({
 				{id: '.uno:InsertColumnsBefore'}, // 前方插入欄
 				{id: '.uno:InsertColumnsAfter'}, // 後方插入欄
 				{id: '.uno:TextAutoFitToSize'}, // 自動調整文字
+				{id: 'inserttable'}, // inserttable
 			],
 			drawing: [
-
+				{id: 'inserttable'}, // inserttable
 			]
 		},
 		// 工具列的 uno 指令

@@ -2961,9 +2961,8 @@ L.Control.JSDialogBuilder = L.Control.extend({
 		}
 
 		var icon = null;
-		var commandName = data.command && data.command.startsWith('.uno:') ? data.command.substring('.uno:'.length) : data.id;
-		if (commandName && commandName.length && L.LOUtil.existsIconForCommand(commandName, builder.map.getDocType())) {
-			var iconName = builder._generateMenuIconName(commandName);
+		if (data.id && data.id.length && L.LOUtil.existsIconForCommand(data.id, builder.map.getDocType())) {
+			var iconName = data.icon !== undefined ? data.icon : builder._generateMenuIconName(data.id);
 			var iconSpan = L.DomUtil.create('span', 'menu-entry-icon ' + iconName, menuEntry);
 			var iconURL = builder.map.getIconURL(iconName);
 			icon = L.DomUtil.create('img', '', iconSpan);
@@ -2994,18 +2993,16 @@ L.Control.JSDialogBuilder = L.Control.extend({
 				}
 
 				// before close the wizard then execute the action
-				if (data.executionType === 'action') {
-					builder.map.menubar._executeAction(undefined, data);
-				} else if (data.executionType === 'callback') {
+				if (data.executionType === 'callback') {
 					data.callback();
-				} else if (!builder.map._clip || !builder.map._clip.filterExecCopyPaste(data.command)) {
+				} else if (!builder.map._clip || !builder.map._clip.filterExecCopyPaste(data.id)) {
 					// Header / footer is already inserted.
-					if ((data.command.startsWith('.uno:InsertPageHeader') ||
-							 data.command.startsWith('.uno:InsertPageFooter')) &&
+					if ((data.id.startsWith('.uno:InsertPageHeader') ||
+							 data.id.startsWith('.uno:InsertPageFooter')) &&
 							data.checked && data.checked === true) {
 						return;
 					}
-					builder.map.sendUnoCommand(data.command);
+					builder.map.executeAllowedCommand(data.id);
 				}
 			});
 		} else {
