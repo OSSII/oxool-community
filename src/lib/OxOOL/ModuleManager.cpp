@@ -209,7 +209,7 @@ bool ModuleManager::handleRequest(const RequestDetails& requestDetails,
     if (OxOOL::Module::Ptr module = handleByModule(requestDetails); module != nullptr)
     {
         disposition.setMove(
-            [=](const std::shared_ptr<Socket>& moveSocket)
+            [&](const std::shared_ptr<Socket>& moveSocket)
             {
                 insertNewSocket(moveSocket);
 
@@ -245,7 +245,7 @@ bool ModuleManager::handleRequest(const RequestDetails& requestDetails,
 
                 if (!needAuthenticate)
                 {
-                    addCallback([=]
+                    addCallback([&]
                     {
                         // 指派給模組處理
                         module->handleRequest(requestDetails, request, socket);
