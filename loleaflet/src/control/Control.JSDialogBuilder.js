@@ -2995,7 +2995,7 @@ L.Control.JSDialogBuilder = L.Control.extend({
 				// before close the wizard then execute the action
 				if (data.executionType === 'callback') {
 					data.callback();
-				} else if (!builder.map._clip || !builder.map._clip.filterExecCopyPaste(data.id)) {
+				} else if (data.id && (!builder.map._clip || !builder.map._clip.filterExecCopyPaste(data.id))) {
 					// Header / footer is already inserted.
 					if ((data.id.startsWith('.uno:InsertPageHeader') ||
 							 data.id.startsWith('.uno:InsertPageFooter')) &&
