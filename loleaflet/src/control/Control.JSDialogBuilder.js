@@ -3267,7 +3267,7 @@ L.Control.JSDialogBuilder.getMenuStructureForMobileWizard = function(menu, mainM
 		children : []
 	};
 	if (itemCommand)
-		menuStructure['command'] = itemCommand;
+		menuStructure['id'] = itemCommand;
 	if (menu.icon)
 		menuStructure['checked'] = true;
 	if (menu.callback)

@@ -1507,17 +1507,20 @@ L.Control.Menubar = L.Control.extend({
 			return undefined; // separator
 		}
 
-		var icon = item.icon ? item.icon : (this._map.isUnoCommand(item.name) ? item.name : item.id);
-
 		var menuStructure = {
 			id : item.id,
-			icon: icon,
 			type : itemType,
 			enabled : !item.disabled,
 			text : itemName,
 			data : item,
 			children : []
 		};
+
+		if (item.icon) {
+			menuStructure.icon = item.icon;
+		} else if (this._map.isUnoCommand(item.name)) {
+			menuStructure.icon = item.name;
+		}
 
 		// Checked state for insert header / footer
 		var insertHeaderString = '.uno:InsertPageHeader?PageStyle:string=';
