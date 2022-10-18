@@ -502,7 +502,8 @@ L.Control.MobileBottomBar = L.Control.extend({
 					stateChange: true
 				},
 				{	// 項目符號
-					type: 'button',  id: 'defaultbullet',  img: 'bullet', hint: _UNO('.uno:DefaultBullet', docType), uno: '.uno:DefaultBullet'
+					type: 'button',  id: 'defaultbullet',  img: 'bullet', hint: _UNO('.uno:DefaultBullet', docType), uno: '.uno:DefaultBullet',
+					stateChange: true
 				},
 				{	// 物件對齊選單
 					type: 'menu', id: 'objectalign', img: 'objectalignleft',
