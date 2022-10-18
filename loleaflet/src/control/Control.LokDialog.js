@@ -281,7 +281,8 @@ L.Control.LokDialog = L.Control.extend({
 		    e.winType !== 'calc-input-win' &&
 		    e.winType !== 'child' &&
 		    e.winType !== 'deck' &&
-		    e.winType !== 'tooltip') {
+		    e.winType !== 'tooltip' &&
+		    e.winType !== 'dropdown') {
 			return;
 		}
 
@@ -309,7 +310,7 @@ L.Control.LokDialog = L.Control.extend({
 		}
 
 		if (e.action === 'created') {
-			if (e.winType === 'dialog' && !window.mode.isMobile()) {
+			if ((e.winType === 'dialog' || e.winType === 'dropdown') && !window.mode.isMobile()) {
 				// When left/top are invalid, the dialog shows in the center.
 				this._launchDialog(e.id, left, top, width, height, e.title);
 			} else if (e.winType === 'calc-input-win') {
@@ -949,7 +950,7 @@ L.Control.LokDialog = L.Control.extend({
 		return changed;
 	},
 
-	_launchDialog: function(id, leftTwips, topTwips, width, height, title) {
+	_launchDialog: function(id, leftTwips, topTwips, width, height, title, type) {
 		if (window.ThisIsTheiOSApp) {
 			if (w2ui['editbar'])
 				w2ui['editbar'].disable('closemobile');
@@ -1007,7 +1008,12 @@ L.Control.LokDialog = L.Control.extend({
 			var top = pixels.y + panePos.y - origin.y;
 
 			if (left >= 0 && top >= 0) {
-				$(dialogContainer).dialog('option', 'position', { my: 'left top', at: 'left+' + left + ' top+' + top, of: '#document-container', collision: 'fit' });
+				$(dialogContainer).dialog('option', 'position',
+							  { my: 'left top',
+							    at: 'left+' + left + ' top+' + top,
+							    of: type === 'dropdown' ? '#map' :
+							    '#document-container',
+							    collision: 'fit' });
 			}
 		}
 
