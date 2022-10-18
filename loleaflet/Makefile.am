@@ -198,6 +198,7 @@ OXOOL_JS_LST =\
 	src/geo/crs/CRS.Simple.js \
 	src/map/Map.js \
 	src/map/Clipboard.js \
+	src/layer/tile/SheetSwitch.ts \
 	src/layer/Layer.js \
 	src/layer/tile/SheetGeometry.ts \
 	src/layer/tile/CanvasSectionProps.js \
