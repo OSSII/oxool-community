@@ -1230,6 +1230,11 @@ WopiStorage::saveLocalFileToStorage(const Authorization& auth, const std::string
         {
             saveResult.setResult(StorageBase::SaveResult::STATUS_CODE_499);
         }
+        // 自訂錯誤碼 551
+        else if (response.getStatus() == 551)
+        {
+            saveResult.setResult(StorageBase::SaveResult::STATUS_CODE_551);
+        }
         else
         {
             // Internal server error, and other failures.

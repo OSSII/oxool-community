@@ -49,6 +49,7 @@ if (window.ThisIsAMobileApp) {
 		code413: _('The file could not be saved. It may be that the file capacity has exceeded the upload limit.'),
 		code500: _('Server error or connection timeout, the document cannot be saved temporarily. Please try again later.'),
 		code501: _('This operation is not supported, please contact the administrator.'),
+		code551: _('The document could not be saved. The file contains sensitive data or does not have writing permission.'),
 	};
 }
 

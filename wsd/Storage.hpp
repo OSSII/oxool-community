@@ -118,7 +118,8 @@ public:
             REQUEST_ENTITY_TOO_LARGE,
             INTERNAL_SERVER_ERROR,
             NOT_IMPLEMENTED,
-            STATUS_CODE_499
+            STATUS_CODE_499,
+            STATUS_CODE_551
         };
 
         SaveResult(Result result) : _result(result)

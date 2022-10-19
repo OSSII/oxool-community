@@ -1356,6 +1356,13 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
         it->second->sendTextFrame("error: cmd=storage kind=code501");
         broadcastSaveResult(false, "This operation is not supported.");
     }
+    // Add by Firefly <firefly@ossii.com.tw>
+    else if (storageSaveResult.getResult() == StorageBase::SaveResult::STATUS_CODE_551)
+    {
+        LOG_ERR("PutFile return code 551!");
+        it->second->sendTextFrame("error: cmd=storage kind=code551");
+        broadcastSaveResult(false, "The file contains sensitive data or does not have writing permission.");
+    }
 
     return false;
 }
