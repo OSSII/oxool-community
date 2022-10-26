@@ -10,22 +10,62 @@
 #include <OxOOL/Module/Base.h>
 
 #include <string>
+#include <map>
+#include <vector>
+#include <chrono>
 #include <memory>
+#include <thread>
+#include <mutex>
 
-namespace Poco
-{
-class MemoryInputStream;
-namespace Net
-{
-class HTTPReques;
-}
-} // namespace Poco
-
-class RequestDetails;
-class StreamSocket;
+#include <Poco/Net/HTTPRequest.h>
+#include <net/Socket.hpp>
 
 namespace OxOOL
 {
+
+class ModuleAgent : public SocketPoll
+{
+
+public:
+    ModuleAgent(const std::string& threadName);
+
+    ~ModuleAgent() {}
+
+    static int AgentTimeoutMicroS;
+
+    void handleRequest(OxOOL::Module::Ptr module,
+                       const Poco::Net::HTTPRequest request,
+                       SocketDisposition& disposition);
+
+    void pollingThread() override;
+
+    bool isIdle() const { return isAlive() && !mbBusy; }
+
+private:
+    /// @brief 從執行緒代理請求
+    void startRunning();
+
+    /// @brief 代理請求結束
+    void stopRunning();
+
+    /// @brief 清除最近代理的資料，並恢復閒置狀態
+    void purge();
+
+    std::chrono::steady_clock::time_point mpLastIdleTime;
+
+    /// @brief 與 Client 的 socket
+    std::shared_ptr<StreamSocket> mpSocket;
+
+    /// @brief 要代理的模組
+    OxOOL::Module::Ptr mpModule;
+    /// @brief HTTP Request
+    Poco::Net::HTTPRequest mRequest;
+
+    /// @brief 是否正在代理請求
+    std::atomic<bool> mbBusy;
+    /// @brief 模組正在處理代理送去的請求
+    std::atomic<bool> mbModuleRunning;
+};
 
 class ModuleManager : public SocketPoll
 {
@@ -42,7 +82,7 @@ public:
         return mModuleManager;
     }
 
-    void start() { SocketPoll::startThread(); }
+    void start() { startThread(); }
 
     void pollingThread() override;
 
@@ -71,9 +111,11 @@ public:
     /// @param message
     /// @param socket
     /// @return true: request 已被某個模組處理
-    bool handleRequest(const RequestDetails& requestDetails,
-                       const Poco::Net::HTTPRequest& request,
+    bool handleRequest(const Poco::Net::HTTPRequest request,
                        SocketDisposition& disposition);
+
+    /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
+    void cleanupDeadAgents();
 
     std::string handleAdminMessage(const std::string& moduleName, const std::string& message);
 
@@ -95,11 +137,14 @@ private:
     /// @return nullptr - fail
     OxOOL::Module::Ptr loadModule(const std::string& moduleFile);
 
-    OxOOL::Module::Ptr handleByModule(const RequestDetails& requestDetails);
+    OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
 
 private:
     /// @brief key: module file, value: module class
     std::map<std::string, OxOOL::Module::Ptr> mpModules;
+
+    std::mutex mAgentsMutex;
+    std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
 };
 
 } // namespace OxOOL

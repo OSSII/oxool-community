@@ -2563,9 +2563,9 @@ private:
                 // Unit testing, nothing to do here
             }
             // 優先讓模組處理
-            if (OxOOL::ModuleManager::instance().handleRequest(requestDetails, request, disposition))
+            if (OxOOL::ModuleManager::instance().handleRequest(request, disposition))
             {
-                // Do othing.
+                // Do nothing.
             }
             else if (requestDetails.equals(RequestDetails::Field::Type, "loleaflet"))
             {

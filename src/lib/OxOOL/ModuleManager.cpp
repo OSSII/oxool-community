@@ -10,24 +10,110 @@
 #include <OxOOL/XMLConfig.h>
 #include <OxOOL/HttpHelper.h>
 
-#include <chrono>
-
 #include <dlfcn.h> // for dlopen()
 
 #include <Poco/DirectoryIterator.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/NetException.h>
-#include <Poco/MemoryStream.h>
 
 #include <common/SigUtil.hpp>
 #include <common/Log.hpp>
-#include <net/Socket.hpp>
-#include <wsd/FileServer.hpp>
 
 namespace OxOOL
 {
+int ModuleAgent::AgentTimeoutMicroS = 60 * 1000 * 1000; // 1 分鐘
+
+ModuleAgent::ModuleAgent(const std::string& threadName) :
+    SocketPoll(threadName)
+{
+    purge();
+
+    startThread();
+}
+
+void ModuleAgent::handleRequest(OxOOL::Module::Ptr module,
+                                const Poco::Net::HTTPRequest request,
+                                SocketDisposition& disposition)
+{
+    mbBusy = true; // 設定忙碌狀態
+
+    mpModule = module;
+    mRequest = request;
+
+    disposition.setMove([=](const std::shared_ptr<Socket>& moveSocket)
+    {
+        mpSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
+        insertNewSocket(moveSocket);
+        startRunning();
+    });
+}
+
+void ModuleAgent::pollingThread()
+{
+    while (SocketPoll::continuePolling() && !SigUtil::getTerminationFlag())
+    {
+        // 正在處理請求
+        if (mbBusy)
+        {
+            if ((mpSocket != nullptr && mpSocket->isClosed()) && !mbModuleRunning)
+            {
+                purge(); // 清理資料，恢復閒置狀態
+            }
+        }
+        int rc = poll(AgentTimeoutMicroS);
+        if (rc == 0)
+        {
+            // 現在時間
+            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+            int durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime).count();
+            if (durationTime >= AgentTimeoutMicroS)
+            {
+                break;
+            }
+        }
+        else if (rc > 0) // Number of Events signalled.
+        {
+            mpLastIdleTime = std::chrono::steady_clock::now();
+        }
+        else // error
+        {
+            // do nothing.
+        }
+    }
+    OxOOL::ModuleManager::instance().cleanupDeadAgents();
+}
+
+void ModuleAgent::startRunning()
+{
+    addCallback([this]()
+    {
+        // 指派給模組處理
+        if (!mpModule->needAdminAuthenticate(mRequest, mpSocket))
+        {
+            mpModule->handleRequest(mRequest, mpSocket);
+        }
+        stopRunning();
+    });
+}
+
+void ModuleAgent::stopRunning()
+{
+    if (!mpSocket->isClosed())
+    {
+        mpSocket->shutdown();
+    }
+    mbModuleRunning = false; // 模組已經結束
+    wakeup();  // 喚醒 main thread.(就是 ModuleAgent::pollingThread() loop)
+}
+
+void ModuleAgent::purge()
+{
+    mpModule = nullptr;
+    mpSocket = nullptr;
+    mbModuleRunning = false;
+    mbBusy = false;
+    mpLastIdleTime = std::chrono::steady_clock::now(); // 紀錄最近閒置時間
+}
 
 ModuleManager::ModuleManager() :
     SocketPoll("ModuleManager")
@@ -42,7 +128,6 @@ void ModuleManager::pollingThread()
     {
         poll(SocketPoll::DefaultPollTimeoutMicroS);
     }
-    SocketPoll::joinThread();
 }
 
 void ModuleManager::loadModulesFromDirectory(const std::string& modulePath, const std::string& type)
@@ -202,59 +287,65 @@ bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
     return mpModules.find(moduleFile) != mpModules.end() ? true : false;
 }
 
-bool ModuleManager::handleRequest(const RequestDetails& requestDetails,
-                                  const Poco::Net::HTTPRequest& request,
+bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest request,
                                   SocketDisposition& disposition)
 {
-    if (OxOOL::Module::Ptr module = handleByModule(requestDetails); module != nullptr)
+    // 取得處理該 request 的模組
+    if (OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
     {
-        disposition.setMove(
-            [&](const std::shared_ptr<Socket>& moveSocket)
+        std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
+        // 尋找可用的模組代理
+        std::shared_ptr<ModuleAgent> moduleAgent = nullptr;
+        for (auto &it : mpAgentsPool)
             {
-                insertNewSocket(moveSocket);
+            if (it->isIdle())
+            {
+                moduleAgent = it;
+                break;
+            }
+        }
+        // 沒有找到空閒的代理
+        if (moduleAgent == nullptr)
+        {
+            moduleAgent = std::make_shared<ModuleAgent>("Module Agent");
+            mpAgentsPool.push_back(moduleAgent);
+        }
+        moduleAgent->handleRequest(module, request, disposition);
+        agentsLock.unlock();
 
-                std::shared_ptr<StreamSocket> socket
-                    = std::static_pointer_cast<StreamSocket>(moveSocket);
-
-                OxOOL::Module::Detail detail = module->getDetail();
-                LOG_DBG("[ModuleManager] HTTP request: " << requestDetails.getURI());
-                LOG_DBG("Leave it to module '" << detail.name << "' for processing.");
-
-                bool needAuthenticate = false; // 預設不需認證
-                // 該 Service URI 需要有管理者權限
-                if (detail.adminPrivilege)
-                {
-                    std::shared_ptr<Poco::Net::HTTPResponse> response
-                        = std::make_shared<Poco::Net::HTTPResponse>();
-
-                    try
-                    {
-                        if (!FileServerRequestHandler::isAdminLoggedIn(request, *response))
-                            throw Poco::Net::NotAuthenticatedException("Invalid admin login");
-                    }
-                    catch (const Poco::Net::NotAuthenticatedException& exc)
-                    {
-                        needAuthenticate = true;
-                        OxOOL::HttpHelper::KeyValueMap extraHeader
-                            = { { "WWW-authenticate", "Basic realm=\"OxOffice Online\"" } };
-                        OxOOL::HttpHelper::sendErrorAndShutdown(
-                            Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED, socket, "", "",
-                            extraHeader);
-                    }
-                }
-
-                if (!needAuthenticate)
-                {
-                    addCallback([&]
-                    {
-                        // 指派給模組處理
-                        module->handleRequest(requestDetails, request, socket);
-                    });
-                }
-            });
         return true;
     }
     return false;
+}
+
+void ModuleManager::cleanupDeadAgents()
+{
+    // 交給 thread 執行清理工作，避免搶走 main thread
+    addCallback([this]()
+    {
+        int beforeClean = mpAgentsPool.size();
+        // 有 agents 才進行清理工作
+        if (beforeClean > 0)
+        {
+            std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
+
+            for (auto it = mpAgentsPool.begin(); it != mpAgentsPool.end(); )
+                {
+                if (!it->get()->isAlive())
+                    {
+                    mpAgentsPool.erase(it);
+                    continue;
+                    }
+                else
+                    {
+                    ++it;
+                    }
+                }
+            int afterClean = mpAgentsPool.size();
+            LOG_DBG("Clean " << beforeClean - afterClean << " dead agents, leaving " << afterClean << ".");
+            agentsLock.unlock();
+                }
+            });
 }
 
 std::string ModuleManager::handleAdminMessage(const std::string& moduleName,
@@ -362,47 +453,43 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
     return nullptr;
 }
 
-OxOOL::Module::Ptr ModuleManager::handleByModule(const RequestDetails& requestDetails)
+OxOOL::Module::Ptr ModuleManager::handleByModule(const Poco::Net::HTTPRequest& request)
 {
-    // 不處理 Web socket
-    if (!requestDetails.isWebSocket())
+    // 實際請求位址
+    std::string requestURI = request.getURI();
+    // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
+    if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
+        requestURI.resize(queryPos);
+
+    // 找出是哪個 module 要處理這個請求
+    for (auto& it : mpModules)
     {
-        // 實際請求位址
-        std::string requestURI = requestDetails.getURI();
-        // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
-        if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
-            requestURI.resize(queryPos);
-
-        // 找出是哪個 module 要處理這個請求
-        for (auto& it : mpModules)
+        OxOOL::Module::Ptr module = it.second;
+        // 取得該模組指定的 service uri, uri 長度至少 2 個字元
+        if (std::string serviceURI = it.second->getDetail().serviceURI; serviceURI.length() > 1)
         {
-            OxOOL::Module::Ptr module = it.second;
-            // 取得該模組指定的 service uri, uri 長度至少 2 個字元
-            if (std::string serviceURI = it.second->getDetail().serviceURI; serviceURI.length() > 1)
+            bool correct = false;
+
+            // service uri 是否為 End point?(最後字元不是 '/')
+            bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
+
+            // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
+            if (isEndPoint)
             {
-                bool correct = false;
-
-                // service uri 是否為 End point?(最後字元不是 '/')
-                bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
-
-                // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
-                if (isEndPoint)
-                {
-                    correct = (serviceURI == requestURI);
-                }
-                else
-                {
-                    // 該位址可以為 "/endpoint" or "/endpoint/"
-                    std::string endpoint(serviceURI);
-                    endpoint.pop_back(); // 移除最後的 '/' 字元，轉成 /endpoint
-
-                    // 位址列開始爲 "/endpoint/" 或等於 "/endpoint"，視為正確位址
-                    correct = (requestURI.find(serviceURI) == 0 || requestURI == endpoint);
-                }
-
-                if (correct)
-                    return module;
+                correct = (serviceURI == requestURI);
             }
+            else
+            {
+                // 該位址可以為 "/endpoint" or "/endpoint/"
+                std::string endpoint(serviceURI);
+                endpoint.pop_back(); // 移除最後的 '/' 字元，轉成 /endpoint
+
+                // 位址列開始爲 "/endpoint/" 或等於 "/endpoint"，視為正確位址
+                correct = (requestURI.find(serviceURI) == 0 || requestURI == endpoint);
+            }
+
+            if (correct)
+                return module;
         }
     }
     return nullptr;

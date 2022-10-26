@@ -13,13 +13,11 @@
 #include <OxOOL/OxOOL.h>
 
 #include <memory>
-#include <thread>
 
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/MemoryStream.h>
 
 #include <net/Socket.hpp>
-#include <wsd/RequestDetails.hpp>
 
 #define MODULE_METHOD_IS_ABSTRACT "@OxOOL::Module::Base"
 
@@ -52,10 +50,16 @@ public:
     const std::string& getDocumentRoot() const { return rootPath; }
     void setDocumentRoot(const std::string& documentRoot) { rootPath = documentRoot; }
 
+    /// @brief 需要管理員身份驗證
+    /// @param request
+    /// @param socket
+    /// @return true: 是， false:不需要或已驗證通過
+    bool needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
+                               const std::shared_ptr<StreamSocket> socket);
+
 public:
-    virtual void handleRequest(const RequestDetails& requestDetails,
-                               const Poco::Net::HTTPRequest& request,
-                               const std::shared_ptr<StreamSocket>& socket);
+    virtual void handleRequest(const Poco::Net::HTTPRequest& request,
+                               const std::shared_ptr<StreamSocket> socket);
 
     virtual std::string handleAdminMessage(const std::string& message);
 
@@ -66,7 +70,7 @@ protected:
     /// @brief 解析模組實際請求位址
     /// @param requestDetails
     /// @return 實際的請求位址
-    std::string parseRealURI(const RequestDetails& requestDetails) const;
+    std::string parseRealURI(const Poco::Net::HTTPRequest& request) const;
 
 protected:
     Detail detail;
