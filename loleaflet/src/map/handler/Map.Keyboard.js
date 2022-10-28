@@ -479,7 +479,6 @@ L.Map.Keyboard = L.Handler.extend({
 					this._map._textInput.select();
 					return true;
 				case 'ctrl+v': // paste
-				case 'ctrl+shiht+v': // unformatted paste
 					return true;
 				}
 			}
@@ -493,11 +492,6 @@ L.Map.Keyboard = L.Handler.extend({
 					}
 					this._map.fire('focussearch');
 					e.preventDefault();
-					return true;
-				case 'ctrl+alt+shift+v':
-					// Handles paste special. The "Your browser" thing seems to indicate that this code
-					// snippet is relevant in a browser only.
-					this._map._clip._openPasteSpecialPopup();
 					return true;
 				case 'ctrl+alt+shift+d': // 切換除錯模式
 					this._map._docLayer.toggleTileDebugMode();

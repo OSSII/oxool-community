@@ -132,6 +132,18 @@ L.Control.AlternativeCommand = L.Control.extend({
 			this._map.closeDocument();
 		},
 		/**
+		 * 貼上無格式設定的文字
+		 */
+		'.uno:PasteUnformatted': function(e) {
+			this._map._clip._openPasteSpecialPopup(e.commandName);
+		},
+		/**
+		 * 選擇性貼上
+		 */
+		'.uno:PasteSpecial': function(e) {
+			this._map._clip._openPasteSpecialPopup(e.commandName);
+		},
+		/**
 		 * 編輯檔案
 		 */
 		'.uno:EditDoc': function() {

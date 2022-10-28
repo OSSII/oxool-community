@@ -3,7 +3,7 @@
  * L.Clipboard is used to abstract our storage and management of
  * local & remote clipboard data.
  */
-/* global app _ vex brandProductName isAnyVexDialogActive $ */
+/* global app _ vex brandProductName isAnyVexDialogActive $ _UNO */
 
 // Get all interesting clipboard related events here, and handle
 // download logic in one place ...
@@ -655,8 +655,8 @@ L.Clipboard = L.Class.extend({
 			this._execCopyCutPaste('cut', cmd);
 		} else if (cmd === '.uno:Paste') {
 			this._execCopyCutPaste('paste', cmd);
-		} else if (cmd === '.uno:PasteSpecial') {
-			this._openPasteSpecialPopup();
+		} else if (cmd === '.uno:PasteSpecial' || cmd === '.uno:PasteUnformatted') {
+			this._openPasteSpecialPopup(cmd);
 		} else {
 			return false;
 		}
@@ -703,7 +703,11 @@ L.Clipboard = L.Class.extend({
 			map._textInput._sendKeyEvent(0, KEY_PASTE);
 		} else if (this.pasteSpecialVex && this.pasteSpecialVex.isOpen) {
 			this.pasteSpecialVex.close();
-			app.socket.sendMessage('uno .uno:PasteSpecial');
+			if (map.isUnoCommand(this.pasteSpecialVex.filterCmd)) {
+				app.socket.sendMessage('uno ' + this.pasteSpecialVex.filterCmd);
+			} else {
+				app.socket.sendMessage('uno .uno:PasteSpecial');
+			}
 		} else {
 			// paste into document
 			app.socket.sendMessage('uno .uno:Paste');
@@ -894,9 +898,10 @@ L.Clipboard = L.Class.extend({
 		});
 	},
 
-	_openPasteSpecialPopup: function () {
+	_openPasteSpecialPopup: function (cmd) {
 		var self = this;
-		var msg = _('<p>Your browser has very limited access to the clipboard</p><p>Please press now: <kbd>Ctrl</kbd><span class="kbd--plus">+</span><kbd>V</kbd> to see more options</p><p class="vex-footnote">Close popup to ignore paste special</p>');
+		var title = (cmd === undefined ? '' : '<h3>' + _UNO(cmd, this._map.getDocType()) + '</h3>');
+		var msg = title + _('<p>Your browser has very limited access to the clipboard</p><p>Please press now: <kbd>Ctrl</kbd><span class="kbd--plus">+</span><kbd>V</kbd> to see more options</p><p class="vex-footnote">Close popup to ignore paste special</p>');
 		msg = L.Util.replaceCtrlAltInMac(msg);
 		self._map._clip.pasteSpecialVex = vex.open({
 			unsafeContent: msg,
@@ -908,6 +913,7 @@ L.Clipboard = L.Class.extend({
 				self._map.focus();
 			}
 		});
+		this._map._clip.pasteSpecialVex.filterCmd = cmd;
 	},
 });
 
