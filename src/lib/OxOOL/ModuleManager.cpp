@@ -40,7 +40,7 @@ void ModuleAgent::handleRequest(OxOOL::Module::Ptr module,
     mpSavedModule = module;
     mpSavedSocket = std::static_pointer_cast<StreamSocket>(disposition.getSocket());
 // Poco 版本小於 1.10，mRequest 必須 parse 才能產生
-#if POCO_VERSION < 0x01100000
+#if POCO_VERSION < 0x010A0000
     {
         (void)request;
         StreamSocket::MessageMap map;
