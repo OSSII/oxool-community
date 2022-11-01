@@ -12,6 +12,7 @@
 
 #include <dlfcn.h> // for dlopen()
 
+#include <Poco/Version.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
@@ -27,22 +28,37 @@ ModuleAgent::ModuleAgent(const std::string& threadName) :
     SocketPoll(threadName)
 {
     purge();
-
     startThread();
 }
 
 void ModuleAgent::handleRequest(OxOOL::Module::Ptr module,
-                                const Poco::Net::HTTPRequest request,
+                                const Poco::Net::HTTPRequest& request,
                                 SocketDisposition& disposition)
 {
-    mbBusy = true; // 設定忙碌狀態
+    setBusy(true); // 設定忙碌狀態
 
-    mpModule = module;
+    mpSavedModule = module;
+    mpSavedSocket = std::static_pointer_cast<StreamSocket>(disposition.getSocket());
+// Poco 版本小於 1.10，mRequest 必須 parse 才能產生
+#if POCO_VERSION < 0x01100000
+    {
+        (void)request;
+        StreamSocket::MessageMap map;
+        Poco::MemoryInputStream message(&mpSavedSocket->getInBuffer()[0],
+                                        mpSavedSocket->getInBuffer().size());
+        if (!mpSavedSocket->parseHeader("Client", message, mRequest, &map))
+        {
+            LOG_ERR("Create HTTPRequest fail! stop running");
+            stopRunning();
+            return;
+        }
+    }
+#else // 否則直接複製
     mRequest = request;
+#endif
 
     disposition.setMove([=](const std::shared_ptr<Socket>& moveSocket)
     {
-        mpSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
         insertNewSocket(moveSocket);
         startRunning();
     });
@@ -53,19 +69,20 @@ void ModuleAgent::pollingThread()
     while (SocketPoll::continuePolling() && !SigUtil::getTerminationFlag())
     {
         // 正在處理請求
-        if (mbBusy)
+        if (isBusy())
         {
-            if ((mpSocket != nullptr && mpSocket->isClosed()) && !mbModuleRunning)
+            if ((mpSavedSocket != nullptr && mpSavedSocket->isClosed()) && !isModuleRunning())
             {
                 purge(); // 清理資料，恢復閒置狀態
             }
         }
         int rc = poll(AgentTimeoutMicroS);
-        if (rc == 0)
+        if (rc == 0) // polling timeout.
         {
             // 現在時間
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
             int durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime).count();
+            // 閒置超過預設時間，就脫離迴圈
             if (durationTime >= AgentTimeoutMicroS)
             {
                 break;
@@ -73,6 +90,7 @@ void ModuleAgent::pollingThread()
         }
         else if (rc > 0) // Number of Events signalled.
         {
+            // 被 wakeup，紀錄目前時間
             mpLastIdleTime = std::chrono::steady_clock::now();
         }
         else // error
@@ -80,17 +98,22 @@ void ModuleAgent::pollingThread()
             // do nothing.
         }
     }
+
+    // 執行緒已經結束，觸發清理程序
     OxOOL::ModuleManager::instance().cleanupDeadAgents();
 }
 
 void ModuleAgent::startRunning()
 {
+    // 讓 thread 執行，流程交還給 Main thread.
+    // 凡是加進 Callback 執行的 function 都是在 thread 排隊執行
     addCallback([this]()
     {
+        setModuleRunning(true);
         // 指派給模組處理
-        if (!mpModule->needAdminAuthenticate(mRequest, mpSocket))
+        if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket))
         {
-            mpModule->handleRequest(mRequest, mpSocket);
+            mpSavedModule->handleRequest(mRequest, mpSavedSocket);
         }
         stopRunning();
     });
@@ -98,20 +121,22 @@ void ModuleAgent::startRunning()
 
 void ModuleAgent::stopRunning()
 {
-    if (!mpSocket->isClosed())
+    // 防止模組沒有執行 socket->shutdown()
+    // TODO: 應該要在 net/Socket.hpp 增加 isShutdown() 比較合理
+    if (!mpSavedSocket->isClosed())
     {
-        mpSocket->shutdown();
+        mpSavedSocket->shutdown();
     }
-    mbModuleRunning = false; // 模組已經結束
-    wakeup();  // 喚醒 main thread.(就是 ModuleAgent::pollingThread() loop)
+    setModuleRunning(false); // 模組已經結束
+    wakeup();  // 喚醒 thread.(就是 ModuleAgent::pollingThread() loop)
 }
 
 void ModuleAgent::purge()
 {
-    mpModule = nullptr;
-    mpSocket = nullptr;
-    mbModuleRunning = false;
-    mbBusy = false;
+    mpSavedModule = nullptr;
+    mpSavedSocket = nullptr;
+    setModuleRunning(false);
+    setBusy(false);
     mpLastIdleTime = std::chrono::steady_clock::now(); // 紀錄最近閒置時間
 }
 
@@ -287,7 +312,7 @@ bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
     return mpModules.find(moduleFile) != mpModules.end() ? true : false;
 }
 
-bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest request,
+bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
                                   SocketDisposition& disposition)
 {
     // 取得處理該 request 的模組

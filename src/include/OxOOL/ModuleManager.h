@@ -34,12 +34,12 @@ public:
     static int AgentTimeoutMicroS;
 
     void handleRequest(OxOOL::Module::Ptr module,
-                       const Poco::Net::HTTPRequest request,
+                       const Poco::Net::HTTPRequest& request,
                        SocketDisposition& disposition);
 
     void pollingThread() override;
 
-    bool isIdle() const { return isAlive() && !mbBusy; }
+    bool isIdle() const { return isAlive() && !isBusy(); }
 
 private:
     /// @brief 從執行緒代理請求
@@ -48,16 +48,33 @@ private:
     /// @brief 代理請求結束
     void stopRunning();
 
+    /// @brief 設定是否忙碌旗標
+    /// @param onOff
+    void setBusy(bool onOff) { mbBusy = onOff; }
+
+    /// @brief 是否忙碌
+    /// @return true: 是
+    bool isBusy() const { return mbBusy; }
+
+    /// @brief 設定模組是否執行中
+    /// @param onOff
+    void setModuleRunning(bool onOff) { mbModuleRunning = onOff; }
+
+    /// @brief 模組是否正在執行
+    /// @return true: 是
+    bool isModuleRunning() const { return mbModuleRunning; }
+
     /// @brief 清除最近代理的資料，並恢復閒置狀態
     void purge();
 
+    /// @brief 最近閒置時間
     std::chrono::steady_clock::time_point mpLastIdleTime;
 
     /// @brief 與 Client 的 socket
-    std::shared_ptr<StreamSocket> mpSocket;
+    std::shared_ptr<StreamSocket> mpSavedSocket;
 
     /// @brief 要代理的模組
-    OxOOL::Module::Ptr mpModule;
+    OxOOL::Module::Ptr mpSavedModule;
     /// @brief HTTP Request
     Poco::Net::HTTPRequest mRequest;
 
@@ -111,7 +128,7 @@ public:
     /// @param message
     /// @param socket
     /// @return true: request 已被某個模組處理
-    bool handleRequest(const Poco::Net::HTTPRequest request,
+    bool handleRequest(const Poco::Net::HTTPRequest& request,
                        SocketDisposition& disposition);
 
     /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
