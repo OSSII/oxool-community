@@ -191,9 +191,6 @@ bool ClientSession::staleWaitDisconnect(const std::chrono::steady_clock::time_po
 
 void ClientSession::rotateClipboardKey(bool notifyClient)
 {
-    if (_wopiFileInfo && _wopiFileInfo->getDisableCopy())
-        return;
-
     if (_state == SessionState::WAIT_DISCONNECT)
         return;
 
@@ -287,6 +284,22 @@ void ClientSession::handleClipboardRequest(DocumentBroker::ClipboardRequest     
 
     if (type != DocumentBroker::CLIP_REQUEST_SET)
     {
+        if (_wopiFileInfo && _wopiFileInfo->getDisableCopy())
+        {
+            // Unsupported clipboard request.
+            LOG_ERR("Unsupported Clipboard Request from socket #" << socket->getFD()
+                                                                  << ". Terminating connection.");
+            std::ostringstream oss;
+            oss << "HTTP/1.1 403 Forbidden\r\n"
+                << "Date: " << Util::getHttpTimeNow() << "\r\n"
+                << "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
+                << "Content-Length: 0\r\n"
+                << "\r\n";
+            socket->send(oss.str());
+            socket->shutdown();
+            return;
+        }
+
         LOG_TRC("Session [" << getId() << "] sending getclipboard" + specific);
         docBroker->forwardToChild(getId(), "getclipboard" + specific);
         _clipSockets.push_back(socket);
