@@ -7,6 +7,7 @@
 #pragma once
 
 #include <OxOOL/OxOOL.h>
+#include <OxOOL/ConvertBroker.h>
 #include <OxOOL/Module/Base.h>
 
 #include <string>
@@ -117,6 +118,11 @@ public:
     /// @return true: 已存在, false: 不存在
     bool hasModule(const std::string& moduleName);
 
+    /// @brief 取得指定名稱的模組
+    /// @param moduleName - 模組名稱
+    /// @return nullptr: 不存在，否則爲模組 class
+    OxOOL::Module::Ptr getModuleByName(const std::string& moduleName);
+
     /// @brief 模組檔案是否已載入過
     /// @param moduleFile - 檔案完整路徑
     /// @return true: 載入過
@@ -130,6 +136,17 @@ public:
     /// @return true: request 已被某個模組處理
     bool handleRequest(const Poco::Net::HTTPRequest& request,
                        SocketDisposition& disposition);
+
+    // 建立 Convert broker
+    std::shared_ptr<ConvertBroker>
+    createConvertBroker(const std::string& uri,
+                        const Poco::URI& uriPublic,
+                        const std::string& docKey,
+                        const std::string& format,
+                        const std::string& saveAsOptions);
+
+    /// @brief 清理用完的 Document Brokers
+    void cleanupDocBrokers();
 
     /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
     void cleanupDeadAgents();
@@ -162,6 +179,9 @@ private:
 
     std::mutex mAgentsMutex;
     std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
+
+    std::mutex mBrokersMutex;
+    std::map<std::string, std::shared_ptr<DocumentBroker>> mpDocBrokers;
 };
 
 } // namespace OxOOL

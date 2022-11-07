@@ -73,7 +73,7 @@ void ModuleAgent::pollingThread()
         {
             if ((mpSavedSocket != nullptr && mpSavedSocket->isClosed()) && !isModuleRunning())
             {
-                purge(); // 清理資料，恢復閒置狀態
+                purge(); // 清理資料，恢復閒置狀態，可以再利用
             }
         }
         int rc = poll(AgentTimeoutMicroS);
@@ -100,13 +100,16 @@ void ModuleAgent::pollingThread()
     }
 
     // 執行緒已經結束，觸發清理程序
-    OxOOL::ModuleManager::instance().cleanupDeadAgents();
+    OxOOL::ModuleManager &manager = OxOOL::ModuleManager::instance();
+    manager.cleanupDeadAgents();
+    // 觸發 ModuleManager 清理用完的 DocumentBroker
+    manager.cleanupDocBrokers();
 }
 
 void ModuleAgent::startRunning()
 {
     // 讓 thread 執行，流程交還給 Main thread.
-    // 凡是加進 Callback 執行的 function 都是在 thread 排隊執行
+    // 凡是加進 Callback 執行的 function 都是在 agent thread 排隊執行
     addCallback([this]()
     {
         setModuleRunning(true);
@@ -121,18 +124,15 @@ void ModuleAgent::startRunning()
 
 void ModuleAgent::stopRunning()
 {
-    // 防止模組沒有執行 socket->shutdown()
-    // TODO: 應該要在 net/Socket.hpp 增加 isShutdown() 比較合理
-    if (!mpSavedSocket->isClosed())
-    {
-        mpSavedSocket->shutdown();
-    }
     setModuleRunning(false); // 模組已經結束
     wakeup();  // 喚醒 thread.(就是 ModuleAgent::pollingThread() loop)
 }
 
 void ModuleAgent::purge()
 {
+    // 觸發 ModuleManager 清理用完的 DocumentBroker
+    OxOOL::ModuleManager::instance().cleanupDocBrokers();
+
     mpSavedModule = nullptr;
     mpSavedSocket = nullptr;
     setModuleRunning(false);
@@ -307,6 +307,19 @@ bool ModuleManager::hasModule(const std::string& moduleName)
     return false;
 }
 
+OxOOL::Module::Ptr ModuleManager::getModuleByName(const std::string& moduleName)
+{
+    // 逐筆過濾
+    for (auto& it : mpModules)
+    {
+        if (it.second->getDetail().name == moduleName)
+        {
+            return it.second;
+        }
+    }
+    return nullptr;
+}
+
 bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
 {
     return mpModules.find(moduleFile) != mpModules.end() ? true : false;
@@ -343,34 +356,73 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
     return false;
 }
 
-void ModuleManager::cleanupDeadAgents()
+std::shared_ptr<ConvertBroker>
+ModuleManager::createConvertBroker(const std::string& uri,
+                                   const Poco::URI& uriPublic,
+                                   const std::string& docKey,
+                                   const std::string& format,
+                                   const std::string& saveAsOptions)
 {
-    // 交給 thread 執行清理工作，避免搶走 main thread
+    std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
+    auto docBroker = std::make_shared<OxOOL::ConvertBroker>(uri, uriPublic, docKey, format, saveAsOptions);
+    mpDocBrokers[docKey] = docBroker;
+
+    return docBroker;
+}
+
+void ModuleManager::cleanupDocBrokers()
+{
+    // 交給 module manager thread 執行清理工作，避免搶走 main thread
     addCallback([this]()
     {
-        int beforeClean = mpAgentsPool.size();
+        std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
         // 有 agents 才進行清理工作
-        if (beforeClean > 0)
+        if (const int beforeClean = mpDocBrokers.size(); beforeClean > 0)
         {
-            std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
-
-            for (auto it = mpAgentsPool.begin(); it != mpAgentsPool.end(); )
+            for (auto it = mpDocBrokers.begin(); it != mpDocBrokers.end();)
+            {
+                std::shared_ptr<DocumentBroker> docBroker = it->second;
+                if (!docBroker->isAlive())
                 {
+                    it = mpDocBrokers.erase(it);
+                    continue;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+            const int afterClean = mpDocBrokers.size();
+            LOG_DBG("Clean " << beforeClean - afterClean << " Document Broker, leaving " << afterClean << ".");
+        }
+    });
+}
+
+void ModuleManager::cleanupDeadAgents()
+{
+    // 交給 module manager thread 執行清理工作，避免搶走 main thread
+    addCallback([this]()
+    {
+        std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
+        // 有 agents 才進行清理工作
+        if (const int beforeClean = mpAgentsPool.size(); beforeClean > 0)
+        {
+            for (auto it = mpAgentsPool.begin(); it != mpAgentsPool.end();)
+            {
                 if (!it->get()->isAlive())
-                    {
+                {
                     mpAgentsPool.erase(it);
                     continue;
-                    }
+                }
                 else
-                    {
+                {
                     ++it;
-                    }
                 }
-            int afterClean = mpAgentsPool.size();
+            }
+            const int afterClean = mpAgentsPool.size();
             LOG_DBG("Clean " << beforeClean - afterClean << " dead agents, leaving " << afterClean << ".");
-            agentsLock.unlock();
-                }
-            });
+        }
+    });
 }
 
 std::string ModuleManager::handleAdminMessage(const std::string& moduleName,

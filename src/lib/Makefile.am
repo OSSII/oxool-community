@@ -5,6 +5,7 @@ include_paths = -I$(abs_top_builddir) \
 		-I$(abs_top_builddir)/src/include \
 		-I${abs_top_builddir}/common \
 		-I${abs_top_builddir}/net \
+		-I${abs_top_builddir}/wsd \
 		-DLOOLWSD_MODULE_CONFIG_DIR='"@LOOLWSD_MODULE_CONFIG_DIR@"' \
                 -DLOOLWSD_MODULE_DIR='"@LOOLWSD_MODULE_DIR@"' \
                 -DLOOLWSD_MODULE_DATA_DIR='"@LOOLWSD_MODULE_DATA_DIR@"'
@@ -22,4 +23,5 @@ libOxOOL_la_SOURCES = \
 	OxOOL/ModuleManager.cpp \
 	OxOOL/HttpHelper.cpp \
 	OxOOL/XMLConfig.cpp \
+	OxOOL/ConvertBroker.cpp \
 	OxOOL/Module/Base.cpp

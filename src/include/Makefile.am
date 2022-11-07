@@ -6,7 +6,8 @@ OxOOL_include_HEADERS = \
 	OxOOL/ENV.h \
 	OxOOL/ModuleManager.h \
 	OxOOL/HttpHelper.h \
-	OxOOL/XMLConfig.h
+	OxOOL/XMLConfig.h \
+	OxOOL/ConvertBroker.h
 
 OxOOL_Module_includedir = $(includedir)/OxOOL/Module
 OxOOL_Module_include_HEADERS = \
