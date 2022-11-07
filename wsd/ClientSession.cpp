@@ -1406,6 +1406,28 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                     return false;
                 }
             }
+            else if (errorCommand == "saveas")
+            {
+                if (isConvertTo)
+                {
+                    Poco::Net::HTTPResponse response;
+                    response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NO_CONTENT);
+                    response.set("X-ERROR-KIND", errorKind);
+                    _saveAsSocket->send(response);
+
+                    // Conversion failed, cleanup fake session.
+                    LOG_TRC("Removing save-as ClientSession after conversion error.");
+                    // Remove us.
+                    docBroker->removeSession(getId());
+                    // Now terminate.
+                    docBroker->stop("Aborting saveas handler.");
+                }
+                else
+                {
+                    forwardToClient(payload);
+                }
+                return false;
+            }
             else
             {
                 LOG_WRN(errorCommand << " error failure: " << errorKind);
