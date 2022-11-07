@@ -13,10 +13,16 @@
 #include <zlib.h>
 
 #include <Poco/Net/HTTPResponse.h>
+#include <Poco/Net/NameValueCollection.h>
+#include <Poco/Path.h>
+#include <Poco/File.h>
+#include <Poco/TemporaryFile.h>
+#include <Poco/StreamCopier.h>
 
 #include <common/Common.hpp>
 #include <common/FileUtil.hpp>
 #include <common/Util.hpp>
+#include <common/Log.hpp>
 #include <net/Socket.hpp>
 
 namespace OxOOL
@@ -336,6 +342,103 @@ std::string getMimeType(const std::string& fileName)
         return it->second;
 
     return "";
+}
+
+PartHandler::PartHandler(const std::string& pathPrefix) :
+    maPathPrefix(pathPrefix)
+{
+}
+
+void PartHandler::handlePart(const Poco::Net::MessageHeader& header,
+                             std::istream& inputStream)
+{
+    // Extract filename and put it to a temporary directory.
+    std::string disp;
+    Poco::Net::NameValueCollection params;
+    if (header.has("Content-Disposition"))
+    {
+        std::string cd = header.get("Content-Disposition");
+        header.splitParameters(cd, disp, params);
+    }
+
+    if (!params.has("name") || !params.has("filename"))
+        return;
+
+    Poco::Path tempPath = Poco::Path::forDirectory(Poco::TemporaryFile::tempName(!maPathPrefix.empty() ? "/tmp/" + maPathPrefix : "") + '/');
+    Poco::File(tempPath).createDirectories();
+    chmod(tempPath.toString().c_str(), S_IXUSR | S_IWUSR | S_IRUSR);
+
+    const Poco::Path filenameParam(params.get("filename"));
+    tempPath.setFileName(filenameParam.getFileName());
+    const std::string tempFile = tempPath.toString();
+    mpReceivedFiles[params.get("name")] = tempFile;
+
+    // Copy the stream to tempPath
+    std::ofstream fileStream;
+    fileStream.open(tempFile);
+    Poco::StreamCopier::copyStream(inputStream, fileStream);
+    fileStream.close();
+}
+
+PartHandler::~PartHandler()
+{
+    // do nothing
+}
+
+std::string PartHandler::getFilename(const std::string& name) const
+{
+    // 沒有帶名稱的話，傳回第一個
+    if (!empty() && name.empty())
+        return mpReceivedFiles.begin()->second;
+    // 指定名稱的檔案
+    else if (auto it = mpReceivedFiles.find(name); it != mpReceivedFiles.end())
+    {
+        return it->second;
+    }
+    return ""; // 空字串
+}
+
+void PartHandler::removeFiles()
+{
+    for (auto it : mpReceivedFiles)
+    {
+        try
+        {
+            // 移除暫存檔案及目錄
+            Poco::Path path = it.second;
+            Poco::File(path).remove();
+            Poco::File(path.makeParent()).remove();
+        } catch (const std::exception &ex) {
+            LOG_ERR("Error while removing upload temporary: '" << it.second << "' - " << ex.what());
+        }
+    }
+    mpReceivedFiles.clear(); // 清空
+}
+
+std::vector<std::string> PartHandler::getReceivedFiles() const
+{
+    std::vector<std::string> files;
+    for (auto it : mpReceivedFiles)
+    {
+        files.push_back(it.second);
+    }
+    return files;
+}
+
+void PartHandler::dumpReceivedFiles()
+{
+    if (mpReceivedFiles.size() == 0)
+    {
+        std::cout << "No files received!" << std::endl;
+        return;
+    }
+
+    std::cout << "Received files:" << std::endl
+              << "===============" << std::endl;
+    for (auto it : mpReceivedFiles)
+    {
+        std::cout << it.first << "\t" << it.second << std::endl;
+    }
 }
 
 } // namespace HttpHelper

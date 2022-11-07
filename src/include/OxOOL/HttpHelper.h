@@ -14,6 +14,7 @@
 #include <map>
 
 #include <Poco/Net/HTTPResponse.h>
+#include <Poco/Net/PartHandler.h>
 
 class StreamSocket;
 
@@ -65,6 +66,43 @@ void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std:
 /// @param fileName
 /// @return
 std::string getMimeType(const std::string& fileName);
+
+class PartHandler : public Poco::Net::PartHandler
+{
+public:
+    PartHandler(const std::string& pathPrefix = std::string());
+    virtual ~PartHandler();
+
+    void handlePart(const Poco::Net::MessageHeader& header,std::istream& inputStream) override;
+
+    /// @brief 從列表中取得指定名稱的檔案
+    /// @param name 檔案所代表的名稱，空字串表示取第一個收到的檔案
+    /// @return 檔案所在位置
+    std::string getFilename(const std::string& name = std::string()) const;
+
+    /// @brief 取得所有檔案列表
+    /// @return 所有檔案位置
+    std::vector<std::string> getReceivedFiles() const;
+
+    /// @brief 把接收的檔案從儲存設備刪除
+    void removeFiles();
+
+    /// @brief 收到的檔案總數
+    /// @return 總數
+    size_t size() const { return mpReceivedFiles.size(); }
+
+    /// @brief 檔案列表是空的?
+    /// @return true - 是, false - 否
+    bool empty() const { return mpReceivedFiles.empty(); }
+
+    /// @brief 顯示所有接收到的檔案 (for debug)
+    void dumpReceivedFiles();
+
+private:
+    std::string maPathPrefix;
+    // TODO: 紀錄所有上傳過來的檔案
+    std::map<std::string, std::string> mpReceivedFiles;
+};
 
 } // namespace HttpHelper
 } // namespace OxOOL
