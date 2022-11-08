@@ -1,2 +1,2 @@
 
-SUBDIRS = alive
+SUBDIRS = Alive

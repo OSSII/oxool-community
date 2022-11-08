@@ -6,7 +6,7 @@ class Alive : public OxOOL::Module::Base
 {
 public:
     void handleRequest(const Poco::Net::HTTPRequest& request,
-                       const std::shared_ptr<StreamSocket> socket) override
+                       const std::shared_ptr<StreamSocket>& socket) override
     {
         // Avoid -Werror=unused-parameter
         (void)request;

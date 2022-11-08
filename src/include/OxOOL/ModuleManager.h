@@ -139,11 +139,9 @@ public:
 
     // 建立 Convert broker
     std::shared_ptr<ConvertBroker>
-    createConvertBroker(const std::string& uri,
-                        const Poco::URI& uriPublic,
-                        const std::string& docKey,
-                        const std::string& format,
-                        const std::string& saveAsOptions);
+    createConvertBroker(const std::string& fromFile,
+                        const std::string& toFormat,
+                        const std::string& saveAsOptions = std::string());
 
     /// @brief 清理用完的 Document Brokers
     void cleanupDocBrokers();

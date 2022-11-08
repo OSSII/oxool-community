@@ -15,52 +15,86 @@ namespace OxOOL
 ConvertBroker::ConvertBroker(const std::string& uri,
                              const Poco::URI& uriPublic,
                              const std::string& docKey,
-                             const std::string& format,
+                             const std::string& toFormat,
                              const std::string& saveAsOptions) :
     DocumentBroker(ChildType::Batch, uri, uriPublic, docKey),
-    maFormat(format),
-    maSaveAsOptions(saveAsOptions)
+    maFormat(toFormat),
+    maSaveAsOptions(saveAsOptions),
+    mpCallback(nullptr)
 {
     static const int limit_convert_secs = LOOLWSD::getConfigValue<int>("per_document.limit_convert_secs", 100);
     _limitLifeSeconds = limit_convert_secs;
 }
 
-bool ConvertBroker::startConversion(std::shared_ptr<StreamSocket> socket, const std::string &id)
+bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, const bool isReadOnly)
 {
-    std::shared_ptr<ConvertBroker> docBroker = std::static_pointer_cast<ConvertBroker>(shared_from_this());
+    std::shared_ptr<ConvertBroker> docBroker =
+        std::static_pointer_cast<ConvertBroker>(shared_from_this());
 
-    // Create a session to load the document.
-    const bool isReadOnly = true;
+    std::string id("ConvertBroker-" + std::to_string(socket->getFD()));
     // FIXME: associate this with moveSocket (?)
     std::shared_ptr<ProtocolHandlerInterface> nullPtr;
     RequestDetails requestDetails("convert-broker");
-    mpClientSession = std::make_shared<ClientSession>(nullPtr, id, docBroker, getPublicUri(), isReadOnly, requestDetails);
+    mpClientSession = std::make_shared<ClientSession>(nullPtr, id, docBroker,
+        getPublicUri(), isReadOnly, requestDetails);
     mpClientSession->construct();
 
     if (!mpClientSession)
         return false;
 
-    // Make sure the thread is running before adding callback.
-    docBroker->startThread();
+    // addCallback 前，要先進入執行緒
+    startThread();
 
-    docBroker->addCallback([docBroker, socket]()
+    addCallback([this, socket]()
     {
-        docBroker->mpClientSession->setSaveAsSocket(socket);
+        mpClientSession->setSaveAsSocket(socket);
 
         // First add and load the session.
-        docBroker->addSession(docBroker->mpClientSession);
+        addSession(mpClientSession);
 
         // Load the document manually and request saving in the target format.
         std::string encodedFrom;
-        Poco::URI::encode(docBroker->getPublicUri().getPath(), "", encodedFrom);
+        Poco::URI::encode(getPublicUri().getPath(), "", encodedFrom);
         const std::string loadCommand = "load url=" + encodedFrom;
         std::vector<char> loadRequest(loadCommand.begin(), loadCommand.end());
-        docBroker->mpClientSession->handleMessage(loadRequest);
-
-        // Save is done in the setLoaded
+        mpClientSession->handleMessage(loadRequest);
+        // 載入完畢後會觸發 setLoaded()
     });
 
     return true;
+}
+
+void ConvertBroker::setLoaded()
+{
+    DocumentBroker::setLoaded();
+
+    // 若有指定 callback，必須自己處理載入完畢後的所有工作，包括另存新檔
+    if (mpCallback != nullptr)
+        mpCallback();
+    // 否則直接另存新檔
+    else
+        saveAsDocument();
+}
+
+void ConvertBroker::saveAsDocument()
+{
+    // FIXME: Check for security violations.
+    Poco::Path toPath(getPublicUri().getPath());
+    toPath.setExtension(maFormat);
+
+    // file:///user/docs/filename.ext normally, file:///<jail-root>/user/docs/filename.ext in the nocaps case
+    const std::string toJailURL = "file://" +
+        (LOOLWSD::NoCapsForKit? getJailRoot(): "") +
+        std::string(JAILED_DOCUMENT_ROOT) + toPath.getFileName();
+
+    std::string encodedTo;
+    Poco::URI::encode(toJailURL, "", encodedTo);
+
+    // Convert it to the requested format.
+    const std::string saveAsCmd = "saveas url=" + encodedTo + " format=" + maFormat + " options=" + maSaveAsOptions;
+    // Send the save request ...
+    std::vector<char> saveasRequest(saveAsCmd.begin(), saveAsCmd.end());
+    mpClientSession->handleMessage(saveasRequest);
 }
 
 void ConvertBroker::dispose()
@@ -93,31 +127,6 @@ void ConvertBroker::removeFile(const std::string &uriOrig)
             LOG_ERR("Error while removing conversion temporary: '" << uriOrig << "' - " << ex.what());
         }
     }
-}
-
-void ConvertBroker::setLoaded()
-{
-    DocumentBroker::setLoaded();
-
-    // FIXME: Check for security violations.
-    Poco::Path toPath(getPublicUri().getPath());
-    toPath.setExtension(maFormat);
-
-    // file:///user/docs/filename.ext normally, file:///<jail-root>/user/docs/filename.ext in the nocaps case
-    const std::string toJailURL = "file://" +
-        (LOOLWSD::NoCapsForKit? getJailRoot(): "") +
-        std::string(JAILED_DOCUMENT_ROOT) + toPath.getFileName();
-
-    std::string encodedTo;
-    Poco::URI::encode(toJailURL, "", encodedTo);
-
-    // Convert it to the requested format.
-    const std::string saveAsCmd = "saveas url=" + encodedTo + " format=" + maFormat + " options=" + maSaveAsOptions;
-
-    // Send the save request ...
-    std::vector<char> saveasRequest(saveAsCmd.begin(), saveAsCmd.end());
-
-    mpClientSession->handleMessage(saveasRequest);
 }
 
 } // namespace OxOOL

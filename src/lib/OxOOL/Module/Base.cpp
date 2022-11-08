@@ -14,7 +14,7 @@ namespace Module
 {
 
 bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
-                           const std::shared_ptr<StreamSocket> socket)
+                                 const std::shared_ptr<StreamSocket>& socket)
 {
     bool needAuthenticate = false;
     // 該 Service URI 需要有管理者權限
@@ -42,7 +42,7 @@ bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
 }
 
 void Base::handleRequest(const Poco::Net::HTTPRequest& request,
-                         const std::shared_ptr<StreamSocket> socket)
+                         const std::shared_ptr<StreamSocket>& socket)
 {
     const std::string realURI = parseRealURI(request);
 

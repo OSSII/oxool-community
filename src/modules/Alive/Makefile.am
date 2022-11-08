@@ -5,7 +5,7 @@ include_paths = -I$(abs_top_builddir)/src/include \
 		-I$(abs_top_builddir)/wsd
 
 configdir = @LOOLWSD_MODULE_CONFIG_DIR@
-dist_config_DATA = alive.xml
+dist_config_DATA = Alive.xml
 
 # Module install path
 moduledir = @LOOLWSD_MODULE_DIR@

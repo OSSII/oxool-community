@@ -357,14 +357,15 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
 }
 
 std::shared_ptr<ConvertBroker>
-ModuleManager::createConvertBroker(const std::string& uri,
-                                   const Poco::URI& uriPublic,
-                                   const std::string& docKey,
-                                   const std::string& format,
+ModuleManager::createConvertBroker(const std::string& fromFile,
+                                   const std::string& toFormat,
                                    const std::string& saveAsOptions)
 {
     std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
-    auto docBroker = std::make_shared<OxOOL::ConvertBroker>(uri, uriPublic, docKey, format, saveAsOptions);
+    Poco::URI uriPublic = DocumentBroker::sanitizeURI(fromFile);
+    const std::string docKey = DocumentBroker::getDocKey(uriPublic);
+    auto docBroker = std::make_shared<ConvertBroker>(fromFile, uriPublic, docKey,
+                                                     toFormat, saveAsOptions);
     mpDocBrokers[docKey] = docBroker;
 
     return docBroker;

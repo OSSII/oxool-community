@@ -55,11 +55,14 @@ public:
     /// @param socket
     /// @return true: 是， false:不需要或已驗證通過
     bool needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
-                               const std::shared_ptr<StreamSocket> socket);
+                               const std::shared_ptr<StreamSocket>& socket);
+    /// @brief 回傳 "[module name]" 字串，方便給模組 LOG 用
+    /// @return "[XXXXXXX]"
+    std::string logTitle() const { return "[" + detail.name + "] "; }
 
 public:
     virtual void handleRequest(const Poco::Net::HTTPRequest& request,
-                               const std::shared_ptr<StreamSocket> socket);
+                               const std::shared_ptr<StreamSocket>& socket);
 
     virtual std::string handleAdminMessage(const std::string& message);
 
