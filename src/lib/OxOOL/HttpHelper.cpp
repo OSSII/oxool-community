@@ -12,6 +12,7 @@
 #include <string>
 #include <zlib.h>
 
+#include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/Net/NameValueCollection.h>
 #include <Poco/Path.h>
@@ -29,6 +30,17 @@ namespace OxOOL
 {
 namespace HttpHelper
 {
+
+bool isHEAD(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD;
+}
+
+bool isPOST(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST;
+}
+
 void sendResponse(const std::shared_ptr<StreamSocket>& socket,
                   const std::string& body,
                   Poco::Net::HTTPResponse::HTTPStatus statusCode,

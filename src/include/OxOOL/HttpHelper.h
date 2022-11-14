@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 
+#include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/Net/PartHandler.h>
 
@@ -25,6 +26,16 @@ namespace HttpHelper
 {
 
 typedef std::map<std::string, std::string> KeyValueMap;
+
+/// @brief 檢查 request 方法是否爲 GET
+/// @param request
+/// @return true - 是
+bool isHEAD(const Poco::Net::HTTPRequest& request);
+
+/// @brief 檢查 request 方法是否爲 POST
+/// @param request
+/// @return true - 是
+bool isPOST(const Poco::Net::HTTPRequest& request);
 
 /// Write headers and body for a response.
 void sendResponse(const std::shared_ptr<StreamSocket>& socket,
