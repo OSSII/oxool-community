@@ -47,8 +47,12 @@ public:
     /// 文件載入完成，觸發這個函數
     void setLoaded() override;
 
-    /// @brief 另存新檔
+    /// @brief 另存新檔，並傳送給 client
     void saveAsDocument();
+
+    /// @brief  傳送指令到 kit
+    /// @param command
+    void sendMessageToKit(const std::string& command);
 
     /// Called when removed from the DocBrokers list
     void dispose() override;

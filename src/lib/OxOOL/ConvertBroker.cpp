@@ -55,9 +55,8 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
         // Load the document manually and request saving in the target format.
         std::string encodedFrom;
         Poco::URI::encode(getPublicUri().getPath(), "", encodedFrom);
-        const std::string loadCommand = "load url=" + encodedFrom;
-        std::vector<char> loadRequest(loadCommand.begin(), loadCommand.end());
-        mpClientSession->handleMessage(loadRequest);
+        sendMessageToKit("load url=" + encodedFrom);
+
         // 載入完畢後會觸發 setLoaded()
     });
 
@@ -92,9 +91,13 @@ void ConvertBroker::saveAsDocument()
 
     // Convert it to the requested format.
     const std::string saveAsCmd = "saveas url=" + encodedTo + " format=" + maFormat + " options=" + maSaveAsOptions;
-    // Send the save request ...
-    std::vector<char> saveasRequest(saveAsCmd.begin(), saveAsCmd.end());
-    mpClientSession->handleMessage(saveasRequest);
+    sendMessageToKit(saveAsCmd);
+}
+
+void ConvertBroker::sendMessageToKit(const std::string& command)
+{
+    std::vector<char> message(command.begin(), command.end());
+    mpClientSession->handleMessage(message);
 }
 
 void ConvertBroker::dispose()
