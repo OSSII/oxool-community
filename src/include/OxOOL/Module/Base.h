@@ -18,6 +18,7 @@
 #include <Poco/MemoryStream.h>
 
 #include <net/Socket.hpp>
+#include <common/StringVector.hpp>
 
 #define MODULE_METHOD_IS_ABSTRACT "@OxOOL::Module::Base"
 
@@ -56,17 +57,16 @@ public:
     /// @return true: 是， false:不需要或已驗證通過
     bool needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
                                const std::shared_ptr<StreamSocket>& socket);
-    /// @brief 回傳 "[module name]" 字串，方便給模組 LOG 用
-    /// @return "[XXXXXXX]"
-    std::string logTitle() const { return "[" + detail.name + "] "; }
-
 public:
     virtual void handleRequest(const Poco::Net::HTTPRequest& request,
                                const std::shared_ptr<StreamSocket>& socket);
 
-    virtual std::string handleAdminMessage(const std::string& message);
+    virtual std::string handleAdminMessage(const StringVector& tokens);
 
-    virtual std::string handleClientMessage(const std::string& message);
+protected:
+    /// @brief 回傳 "[module name]" 字串，方便給模組 LOG 用
+    /// @return "[XXXXXXX]"
+    std::string logTitle() const { return "[" + detail.name + "] "; }
 
 protected:
 

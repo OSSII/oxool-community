@@ -69,15 +69,9 @@ void Base::handleRequest(const Poco::Net::HTTPRequest& request,
     }
 }
 
-std::string Base::handleAdminMessage(const std::string& message)
+std::string Base::handleAdminMessage(const StringVector& tokens)
 {
-    (void)message; // avoid -Werror=unused-parameter
-    return MODULE_METHOD_IS_ABSTRACT;
-}
-
-std::string Base::handleClientMessage(const std::string& message)
-{
-    (void)message; // avoid -Werror=unused-parameter
+    (void)tokens; // avoid -Werror=unused-parameter
     return MODULE_METHOD_IS_ABSTRACT;
 }
 

@@ -22,6 +22,152 @@
 
 namespace OxOOL
 {
+
+void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
+{
+    // FIXME: check fin, code etc.
+    const std::string firstLine = LOOLProtocol::getFirstLine(payload.data(), payload.size());
+
+    const StringVector tokens(Util::tokenize(firstLine, ' '));
+    LOG_DBG("Module:[" << mpModule->getDetail().name << "] Recv: " << firstLine << " tokens " << tokens.size());
+
+    // 一定要有資料
+    if (tokens.empty())
+    {
+        LOG_TRC("too few tokens");
+        return;
+    }
+
+    if (tokens.equals(0, "auth"))
+    {
+        if (tokens.size() < 2)
+        {
+            LOG_DBG("Auth command without any token");
+            sendMessage("InvalidAuthToken");
+            shutdown();
+            return;
+        }
+        std::string jwtToken;
+        LOOLProtocol::getTokenString(tokens[1], "jwt", jwtToken);
+
+        LOG_INF("Verifying JWT token: " << jwtToken);
+        JWTAuth authAgent("admin", "admin", "admin");
+        if (authAgent.verify(jwtToken))
+        {
+            LOG_TRC("JWT token is valid");
+            mbIsAuthenticated = true;
+            return;
+        }
+        else
+        {
+            LOG_DBG("Invalid auth token");
+            sendMessage("InvalidAuthToken");
+            shutdown();
+            return;
+        }
+    }
+
+    // 未認證過就擋掉
+    if (!mbIsAuthenticated)
+    {
+        LOG_DBG("Not authenticated - message is '" << firstLine << "' " <<
+                tokens.size() << " first: '" << tokens[0] << '\'');
+        sendMessage("NotAuthenticated");
+        shutdown();
+        return;
+    }
+
+    // 取得模組詳細資訊
+    if (tokens.equals(0, "getModuleInfo"))
+    {
+        sendTextFrame("moduleInfo " + getModuleInfoJson());
+    }
+    else // 交給模組處理
+    {
+        sendTextFrame(mpModule->handleAdminMessage(tokens));
+    }
+}
+
+ModuleAdminSocketHandler::ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
+                                                   const std::weak_ptr<StreamSocket>& socket,
+                                                   const Poco::Net::HTTPRequest& request)
+    : WebSocketHandler(socket, request),
+      mpModule(module),
+      mbIsAuthenticated(false)
+{
+}
+
+bool ModuleAdminSocketHandler::handleInitialRequest(const std::string& moduleName,
+                                                    const std::weak_ptr<StreamSocket> &socketWeak,
+                                                    const Poco::Net::HTTPRequest& request)
+{
+    // 禁用後臺管理
+    if (!LOOLWSD::AdminEnabled)
+    {
+        LOG_ERR("Request for disabled admin console");
+        return false;
+    }
+
+    // Socket 不存在
+    std::shared_ptr<StreamSocket> socket = socketWeak.lock();
+    if (!socket)
+    {
+        LOG_ERR("Invalid socket while reading initial request.");
+        return false;
+    }
+
+    // 沒有指定名稱的模組
+    OxOOL::Module::Ptr module = OxOOL::ModuleManager::instance().getModuleByName(moduleName);
+    if (module == nullptr)
+    {
+        LOG_ERR("No module named '" << moduleName << "'");
+        return false;
+    }
+
+    const std::string& requestURI = request.getURI();
+    StringVector pathTokens(Util::tokenize(requestURI, '/'));
+    // 要升級連線爲 Web socket
+    if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
+    {
+        auto handler = std::make_shared<ModuleAdminSocketHandler>(module, socketWeak, request);
+        socket->setHandler(handler);
+        return true;
+    }
+
+    // 回應錯誤 http status code.
+    OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
+    return false;
+}
+
+void ModuleAdminSocketHandler::sendTextFrame(const std::string& message, bool flush)
+{
+    if (mbIsAuthenticated)
+    {
+        LOG_DBG("Send admin module text frame '" << message << '\'');
+        sendMessage(message.c_str(), message.size(), WSOpCode::Text, flush);
+    }
+    else
+        LOG_WRN("Skip sending message to non-authenticated admin module client: '" << message << '\'');
+}
+
+std::string ModuleAdminSocketHandler::getModuleInfoJson()
+{
+    const OxOOL::Module::Detail detail = mpModule->getDetail();
+
+    Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+    json->set("name", detail.name);
+    json->set("serviceURI", detail.serviceURI);
+    json->set("version", detail.version);
+    json->set("summary", detail.summary);
+    json->set("author", detail.author);
+    json->set("license", detail.license);
+    json->set("description", detail.description);
+
+    std::ostringstream oss;
+    json->stringify(oss);
+    return oss.str();
+}
+
 int ModuleAgent::AgentTimeoutMicroS = 60 * 1000 * 1000; // 1 分鐘
 
 ModuleAgent::ModuleAgent(const std::string& threadName) :
@@ -326,10 +472,33 @@ bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
 }
 
 bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
+                                  const RequestDetails& requestDetails,
                                   SocketDisposition& disposition)
 {
+    if (requestDetails.size() == 3 &&
+        requestDetails.equals(RequestDetails::Field::Type, "lool") &&
+        requestDetails.equals(1, "adminws"))
+    {
+        LOG_INF("Admin module request: " << request.getURI());
+
+        // 轉成 std::weak_ptr
+        const std::weak_ptr<StreamSocket> socketWeak =
+              std::static_pointer_cast<StreamSocket>(disposition.getSocket());
+        const std::string& moduleName = requestDetails[2];
+        if (OxOOL::ModuleAdminSocketHandler::handleInitialRequest(moduleName, socketWeak, request))
+        {
+            disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
+            {
+                // Hand the socket over to self poll.
+                insertNewSocket(moveSocket);
+            });
+            return true;
+        }
+        return false;
+    }
+
     // 取得處理該 request 的模組
-    if (OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
+    if (OxOOL::Module::Ptr module = handleByModule(requestDetails); module != nullptr)
     {
         std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
         // 尋找可用的模組代理
@@ -426,20 +595,6 @@ void ModuleManager::cleanupDeadAgents()
     });
 }
 
-std::string ModuleManager::handleAdminMessage(const std::string& moduleName,
-                                              const std::string& message)
-{
-    // 要送給那個模組
-    for (auto& it : mpModules)
-    {
-        if (it.second->getDetail().name == moduleName)
-        {
-            return it.second->handleAdminMessage(message);
-        }
-    }
-    return "";
-}
-
 const std::vector<OxOOL::Module::Detail> ModuleManager::getAllModuleDetails() const
 {
     std::vector<OxOOL::Module::Detail> detials;
@@ -450,10 +605,13 @@ const std::vector<OxOOL::Module::Detail> ModuleManager::getAllModuleDetails() co
     return detials;
 }
 
-/// @brief 列出所有的模組
-void ModuleManager::dump() {}
+void ModuleManager::dump()
+{
+    // TODO: Do we need to implement this?
+}
 
 //------------------ Private mtehods ----------------------------------
+
 std::string ModuleManager::findModule(const std::string& path, const std::string& name)
 {
     std::string returnPath;
@@ -531,10 +689,10 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
     return nullptr;
 }
 
-OxOOL::Module::Ptr ModuleManager::handleByModule(const Poco::Net::HTTPRequest& request)
+OxOOL::Module::Ptr ModuleManager::handleByModule(const RequestDetails& requestDetails)
 {
     // 實際請求位址
-    std::string requestURI = request.getURI();
+    std::string requestURI = requestDetails.getURI();
     // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
     if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
         requestURI.resize(queryPos);

@@ -19,10 +19,52 @@
 #include <mutex>
 
 #include <Poco/Net/HTTPRequest.h>
+#include <Poco/Net/HTTPResponse.h>
 #include <net/Socket.hpp>
+#include <net/WebSocketHandler.hpp>
+#include <wsd/RequestDetails.hpp>
+#include <wsd/Admin.hpp>
 
 namespace OxOOL
 {
+
+/// @brief 處理模組 client 的 Websocket 請求和回覆
+class ModuleAdminSocketHandler : public WebSocketHandler
+{
+public:
+    ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
+                             const std::weak_ptr<StreamSocket>& socket,
+                             const Poco::Net::HTTPRequest& request);
+
+    /// @brief 處理模組後臺管理 Web socket 請求
+    /// @param moduleName 模組名稱
+    /// @param socket
+    /// @param request
+    /// @return true if we should give this socket to the Module manager poll.
+    static bool handleInitialRequest(const std::string& moduleName,
+                                     const std::weak_ptr<StreamSocket> &socket,
+                                     const Poco::Net::HTTPRequest& request);
+
+    /// @brief 處理收到的 web socket 訊息，並傳送給模組處理
+    /// @param data
+    void handleMessage(const std::vector<char> &data) override;
+
+private:
+    /// @brief 送出文字給已認證過的 client.
+    /// @param message 文字訊息
+    /// @param flush The data will be sent out immediately, the default is false.
+    void sendTextFrame(const std::string& message, bool flush = false);
+
+    /// @brief  取得模組詳細資訊
+    /// @return JSON 字串
+    std::string getModuleInfoJson();
+
+private:
+    /// @brief 模組 Class
+    OxOOL::Module::Ptr mpModule;
+    /// @brief 是否已認證過
+    bool mbIsAuthenticated;
+};
 
 class ModuleAgent : public SocketPoll
 {
@@ -129,12 +171,12 @@ public:
     bool alreadyLoaded(const std::string& moduleFile);
 
     /// @brief 傳遞 request 給相應的模組處理
-    /// @param requestDetails
     /// @param request
-    /// @param message
-    /// @param socket
+    /// @param RequestDetails
+    /// @param disposition
     /// @return true: request 已被某個模組處理
     bool handleRequest(const Poco::Net::HTTPRequest& request,
+                       const RequestDetails& requestDetails,
                        SocketDisposition& disposition);
 
     // 建立 Convert broker
@@ -149,19 +191,26 @@ public:
     /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
     void cleanupDeadAgents();
 
-    std::string handleAdminMessage(const std::string& moduleName, const std::string& message);
-
     /// @brief 取得所有模組詳細資訊
     /// @return
     const std::vector<OxOOL::Module::Detail> getAllModuleDetails() const;
 
+    /// @brief 是否有載入任何模組
+    /// @return
     bool empty() const { return mpModules.empty(); }
 
+    /// @brief 載入模組的數量
+    /// @return
     std::size_t size() const { return mpModules.size(); }
 
+    /// @brief 列出所有的模組
     void dump();
 
 private:
+    /// @brief 遞迴尋找指定檔名的模組
+    /// @param path 指定的目錄
+    /// @param name 模組名稱
+    /// @return 該檔案所在的完整路徑含檔名
     std::string findModule(const std::string& path, const std::string& name);
 
     /// @brief 載入模組
@@ -169,7 +218,7 @@ private:
     /// @return nullptr - fail
     OxOOL::Module::Ptr loadModule(const std::string& moduleFile);
 
-    OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
+    OxOOL::Module::Ptr handleByModule(const RequestDetails& requestDetails);
 
 private:
     /// @brief key: module file, value: module class

@@ -2563,7 +2563,7 @@ private:
                 // Unit testing, nothing to do here
             }
             // 優先讓模組處理
-            if (OxOOL::ModuleManager::instance().handleRequest(request, disposition))
+            if (OxOOL::ModuleManager::instance().handleRequest(request, requestDetails, disposition))
             {
                 // Do nothing.
             }
