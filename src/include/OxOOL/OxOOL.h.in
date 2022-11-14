@@ -3,6 +3,8 @@
 
 #include <string>
 
+#define MULTILINE_STRING(...) #__VA_ARGS__
+
 namespace OxOOL
 {
 const std::string Version = "@VERSION@";
