@@ -36,6 +36,11 @@ bool isHEAD(const Poco::Net::HTTPRequest& request)
     return request.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD;
 }
 
+bool isGET(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET;
+}
+
 bool isPOST(const Poco::Net::HTTPRequest& request)
 {
     return request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST;

@@ -27,10 +27,15 @@ namespace HttpHelper
 
 typedef std::map<std::string, std::string> KeyValueMap;
 
-/// @brief 檢查 request 方法是否爲 GET
+/// @brief 檢查 request 方法是否爲 HEAD
 /// @param request
 /// @return true - 是
 bool isHEAD(const Poco::Net::HTTPRequest& request);
+
+/// @brief 檢查 request 方法是否爲 GET
+/// @param request
+/// @return true - 是
+bool isGET(const Poco::Net::HTTPRequest& request);
 
 /// @brief 檢查 request 方法是否爲 POST
 /// @param request
