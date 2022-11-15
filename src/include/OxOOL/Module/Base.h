@@ -16,7 +16,9 @@
 
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/MemoryStream.h>
+#include <Poco/JSON/Object.h>
 
+#include <wsd/RequestDetails.hpp>
 #include <net/Socket.hpp>
 #include <common/StringVector.hpp>
 
@@ -37,48 +39,84 @@ struct Detail
     std::string license;
     std::string description;
     bool adminPrivilege = false;
+    std::string adminServiceURI; // 後臺管理位址
+    std::string adminIcon; // 顯示在後臺的選項 icon(名稱請參閱 https://icons.getbootstrap.com/)
+    std::string adminItem; // 顯示在後臺的選項名稱
 };
 
 class Base
 {
 public:
-    Base(){};
-    virtual ~Base(){};
+    Base() {}
 
-    const Detail& getDetail() const { return detail; }
-    void setDetail(const Detail& newDetial) { detail = newDetial; }
+    virtual ~Base() {}
 
-    const std::string& getDocumentRoot() const { return rootPath; }
-    void setDocumentRoot(const std::string& documentRoot) { rootPath = documentRoot; }
+    void setDetail(const Detail& newDetial) { mDetail = newDetial; }
+    const Detail& getDetail() const { return mDetail; }
+
+    /// @brief 以 JSON 格式傳回模組詳細資訊
+    /// @return Poco::JSON::Object
+    Poco::JSON::Object getDetailJson();
+
+    void setDocumentRoot(const std::string& documentRoot) { maRootPath = documentRoot; }
+    const std::string& getDocumentRoot() const { return maRootPath; }
+
+    /// @brief 請求是否是本模組處理
+    /// @param requestDetails
+    /// @return true 該要求屬於這個模組處理
+    bool isService(const RequestDetails& requestDetails) const;
+
+    /// @brief 請求是否是本模組的管理介面處理
+    /// @param requestDetails
+    /// @return true 該要求屬於這個模組的管理介面處理
+    bool isAdminService(const RequestDetails& requestDetails) const;
 
     /// @brief 需要管理員身份驗證
     /// @param request
     /// @param socket
+    /// @param callByAdmin true 一定要檢查，預設 false，
     /// @return true: 是， false:不需要或已驗證通過
     bool needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
-                               const std::shared_ptr<StreamSocket>& socket);
+                               const std::shared_ptr<StreamSocket>& socket,
+                               const bool callByAdmin = false);
 public:
     virtual void handleRequest(const Poco::Net::HTTPRequest& request,
+                               const RequestDetails& requestDetails,
                                const std::shared_ptr<StreamSocket>& socket);
+
+    virtual void handleAdminRequest(const Poco::Net::HTTPRequest& request,
+                                    const RequestDetails& requestDetails,
+                                    const std::shared_ptr<StreamSocket>& socket);
 
     virtual std::string handleAdminMessage(const StringVector& tokens);
 
 protected:
     /// @brief 回傳 "[module name]" 字串，方便給模組 LOG 用
     /// @return "[XXXXXXX]"
-    std::string logTitle() const { return "[" + detail.name + "] "; }
-
-protected:
+    std::string logTitle() const { return "[" + mDetail.name + "] "; }
 
     /// @brief 解析模組實際請求位址
     /// @param requestDetails
     /// @return 實際的請求位址
-    std::string parseRealURI(const Poco::Net::HTTPRequest& request) const;
+    std::string parseRealURI(const RequestDetails& requestDetails) const;
 
-protected:
-    Detail detail;
+    /// @brief 傳送檔案
+    /// @param requestFile
+    /// @param request
+    /// @param socket
+    void sendFile(const std::string& requestFile,
+                  const Poco::Net::HTTPRequest& request,
+                  const std::shared_ptr<StreamSocket>& socket,
+                  const bool callByAdmin = false);
 
-    std::string rootPath; // 模組文件位置
+    void preprocessAdminFile(const std::string& adminFile,
+                             const Poco::Net::HTTPRequest& request,
+                             const RequestDetails &requestDetails,
+                             const std::shared_ptr<StreamSocket>& socket);
+
+private:
+    Detail mDetail;
+    std::string maRootPath; // 模組文件位置
 };
 
 typedef std::shared_ptr<Base> Ptr;

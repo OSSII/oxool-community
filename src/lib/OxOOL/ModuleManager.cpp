@@ -152,19 +152,8 @@ void ModuleAdminSocketHandler::sendTextFrame(const std::string& message, bool fl
 
 std::string ModuleAdminSocketHandler::getModuleInfoJson()
 {
-    const OxOOL::Module::Detail detail = mpModule->getDetail();
-
-    Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
-    json->set("name", detail.name);
-    json->set("serviceURI", detail.serviceURI);
-    json->set("version", detail.version);
-    json->set("summary", detail.summary);
-    json->set("author", detail.author);
-    json->set("license", detail.license);
-    json->set("description", detail.description);
-
     std::ostringstream oss;
-    json->stringify(oss);
+    mpModule->getDetailJson().stringify(oss);
     return oss.str();
 }
 
@@ -259,10 +248,21 @@ void ModuleAgent::startRunning()
     addCallback([this]()
     {
         setModuleRunning(true);
-        // 指派給模組處理
-        if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket))
+
+        // 製作 requestDetails，這裡不用 ModuleManager 的 requestDetails 的原因，是因為進入 thread 後，
+        // ModuleManager 的 requestDetails 會被 destroy，在 thread 之後的結果就不正確
+        RequestDetails requestDetails(mRequest, LOOLWSD::ServiceRoot);
+        // 是否為 admin service
+        const bool isAdminService = mpSavedModule->isAdminService(requestDetails);
+
+        // 不需要認證或已認證通過
+        if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket, isAdminService))
         {
-            mpSavedModule->handleRequest(mRequest, mpSavedSocket);
+            // 依據 service uri 決定要給哪個 reauest 處理
+            if (isAdminService)
+                mpSavedModule->handleAdminRequest(mRequest, requestDetails, mpSavedSocket); // 管理介面
+            else
+                mpSavedModule->handleRequest(mRequest, requestDetails, mpSavedSocket); // Restful API
         }
         stopRunning();
     });
@@ -357,6 +357,8 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
         detail.license = config.getString("module.detail.license", "");
         detail.description = config.getString("module.detail.description", "");
         detail.adminPrivilege = config.getBool("module.detail.adminPrivilege", false);
+        detail.adminIcon = config.getString("module.detail.adminIcon", "");
+        detail.adminItem = config.getString("module.detail.adminItem", "");
 
         // 模組其他檔案存放路徑
         // 該路徑下的 html 目錄存放呈現給外部閱覽的檔案，admin 目錄下，存放後臺管理相關檔案
@@ -412,9 +414,22 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
                     if (origDetail.adminPrivilege != detail.adminPrivilege)
                         origDetail.adminPrivilege = detail.adminPrivilege;
 
-                    module->setDetail(origDetail); // 重新複寫設定
+                    if (!detail.adminIcon.empty())
+                        origDetail.adminIcon = detail.adminIcon;
+
+                    if (!detail.adminItem.empty())
+                        origDetail.adminItem = detail.adminItem;
 
                     module->setDocumentRoot(documentRoot); // 設定模組文件絕對路徑
+
+                    // 檢查是否有後臺管理(需在模組目錄下有 admin 目錄，且 admin 目錄下還有 admin.html 及 admin.js)
+                    if (Poco::File(documentRoot + "/admin/admin.html").exists() &&
+                        Poco::File(documentRoot + "/admin/admin.js").exists())
+                    {
+                        origDetail.adminServiceURI = "/loleaflet/dist/admin/module/" + origDetail.name + "/";
+                    }
+
+                    module->setDetail(origDetail); // 重新複寫設定
                 }
                 else
                 {
@@ -475,6 +490,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
                                   const RequestDetails& requestDetails,
                                   SocketDisposition& disposition)
 {
+    // 是否爲後臺模組管理要求升級 Websocket
     if (requestDetails.size() == 3 &&
         requestDetails.equals(RequestDetails::Field::Type, "lool") &&
         requestDetails.equals(1, "adminws"))
@@ -484,6 +500,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
         // 轉成 std::weak_ptr
         const std::weak_ptr<StreamSocket> socketWeak =
               std::static_pointer_cast<StreamSocket>(disposition.getSocket());
+        // URL: /lool/adminws/<模組名稱>
         const std::string& moduleName = requestDetails[2];
         if (OxOOL::ModuleAdminSocketHandler::handleInitialRequest(moduleName, socketWeak, request))
         {
@@ -497,7 +514,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
         return false;
     }
 
-    // 取得處理該 request 的模組
+    // 取得處理該 request 的模組，可能是 serverURI 或 adminServerURI(如果有的話)
     if (OxOOL::Module::Ptr module = handleByModule(requestDetails); module != nullptr)
     {
         std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
@@ -605,6 +622,18 @@ const std::vector<OxOOL::Module::Detail> ModuleManager::getAllModuleDetails() co
     return detials;
 }
 
+const std::vector<Poco::JSON::Object> ModuleManager::getAdminModuleDetailsJson() const
+{
+    std::vector<Poco::JSON::Object> detials;
+    for (auto it : mpModules)
+    {
+        // 只取有後臺管理的模組
+        if (!it.second->getDetail().adminServiceURI.empty())
+            detials.push_back(it.second->getDetailJson());
+    }
+    return detials;
+}
+
 void ModuleManager::dump()
 {
     // TODO: Do we need to implement this?
@@ -691,42 +720,12 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
 
 OxOOL::Module::Ptr ModuleManager::handleByModule(const RequestDetails& requestDetails)
 {
-    // 實際請求位址
-    std::string requestURI = requestDetails.getURI();
-    // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
-    if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
-        requestURI.resize(queryPos);
-
     // 找出是哪個 module 要處理這個請求
     for (auto& it : mpModules)
     {
         OxOOL::Module::Ptr module = it.second;
-        // 取得該模組指定的 service uri, uri 長度至少 2 個字元
-        if (std::string serviceURI = it.second->getDetail().serviceURI; serviceURI.length() > 1)
-        {
-            bool correct = false;
-
-            // service uri 是否為 End point?(最後字元不是 '/')
-            bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
-
-            // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
-            if (isEndPoint)
-            {
-                correct = (serviceURI == requestURI);
-            }
-            else
-            {
-                // 該位址可以為 "/endpoint" or "/endpoint/"
-                std::string endpoint(serviceURI);
-                endpoint.pop_back(); // 移除最後的 '/' 字元，轉成 /endpoint
-
-                // 位址列開始爲 "/endpoint/" 或等於 "/endpoint"，視為正確位址
-                correct = (requestURI.find(serviceURI) == 0 || requestURI == endpoint);
-            }
-
-            if (correct)
-                return module;
-        }
+        if (module->isService(requestDetails) || module->isAdminService(requestDetails))
+            return module;
     }
     return nullptr;
 }

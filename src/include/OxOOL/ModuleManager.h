@@ -20,6 +20,8 @@
 
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
+#include <Poco/JSON/Object.h>
+
 #include <net/Socket.hpp>
 #include <net/WebSocketHandler.hpp>
 #include <wsd/RequestDetails.hpp>
@@ -191,9 +193,13 @@ public:
     /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
     void cleanupDeadAgents();
 
-    /// @brief 取得所有模組詳細資訊
+    /// @brief 取得所有模組詳細資訊列表
     /// @return
     const std::vector<OxOOL::Module::Detail> getAllModuleDetails() const;
+
+    /// @brief 取得有後臺管理的模組資訊列表
+    /// @return
+    const std::vector<Poco::JSON::Object> getAdminModuleDetailsJson() const;
 
     /// @brief 是否有載入任何模組
     /// @return
