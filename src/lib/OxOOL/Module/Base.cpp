@@ -227,6 +227,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
                                const RequestDetails &requestDetails,
                                const std::shared_ptr<StreamSocket>& socket)
 {
+    (void)request; // Avoid unused parameter.
 
     // 取得 admintemplate.html
     const std::string templatePath = "/loleaflet/dist/admin/admintemplate.html";
@@ -241,8 +242,6 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     // 製作完整 HTML 頁面
     Poco::replaceInPlace(templateFile, std::string("<!--%MAIN_CONTENT%-->"), mainContent.str()); // Now template has the main content..
 
-    Poco::Net::HTTPResponse response;
-
     ServerURL cnxDetails(requestDetails);
     std::string responseRoot = cnxDetails.getResponseRoot();
 
@@ -253,9 +252,6 @@ void Base::preprocessAdminFile(const std::string& adminFile,
 
     static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::VersionHash + "/%s.js\"></script>");
 
-    /* std::string brandJS(Poco::format(scriptJS, responseRoot, std::string(BRANDING)));
-
-    Poco::replaceInPlace(templateFile, std::string("<!--%BRANDING_JS%-->"), brandJS); */
     Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::VersionHash);
     Poco::replaceInPlace(templateFile, std::string("%SERVICE_ROOT%"), responseRoot);
 
@@ -263,7 +259,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     std::string adminModulesStr("[");
     const std::vector<Poco::JSON::Object> adminModuleDetials =
             OxOOL::ModuleManager::instance().getAdminModuleDetailsJson();
-    const auto moduleSize = adminModuleDetials.size();
+
     std::size_t count = 0;
     for (auto it : adminModuleDetials)
     {
@@ -277,6 +273,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     adminModulesStr.append("]");
     Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"), adminModulesStr);
 
+    Poco::Net::HTTPResponse response;
     // Ask UAs to block if they detect any XSS attempt
     response.add("X-XSS-Protection", "1; mode=block");
     // No referrer-policy
