@@ -1075,7 +1075,7 @@ void FileServerRequestHandler::preprocessAdminFile(const HTTPRequest& request,
     std::string adminModulesStr("[");
     const std::vector<Poco::JSON::Object> adminModuleDetials =
             OxOOL::ModuleManager::instance().getAdminModuleDetailsJson();
-    const auto moduleSize = adminModuleDetials.size();
+
     std::size_t count = 0;
     for (auto it : adminModuleDetials)
     {
