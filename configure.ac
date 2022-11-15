@@ -459,6 +459,8 @@ AC_SUBST(VEREIGN_URL)
 
 # Test for build environment
 
+CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow"
+
 CFLAGS="$CFLAGS -Wall -Wextra"
 
 AC_MSG_CHECKING([whether to turn warnings to errors])
