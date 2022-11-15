@@ -128,10 +128,8 @@
     "vec": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/vec.json",
     "vi": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/vi.json",
     "xh": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/xh.json",
-    "zh-cn": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-CN.json",
     "zh-CN": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-CN.json",
     "zh-Hans": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-CN.json",
-    "zh-tw": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-TW.json",
     "zh-TW": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-TW.json",
     "zh-Hant": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zh-TW.json",
     "zu": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno/zu.json"

@@ -76,10 +76,8 @@
     "uz": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-uz.json",
     "vec": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-vec.json",
     "vi": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-vi.json",
-    "zh-cn": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_CN.json",
     "zh-CN": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_CN.json",
     "zh-Hans": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_CN.json",
-    "zh-tw": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_TW.json",
     "zh-TW": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_TW.json",
     "zh-Hant": "%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/ui-zh_TW.json"
 }
