@@ -6,13 +6,15 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="generator" content="">
-    <link rel="localizations" href="%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/admin-localizations.json" type="application/vnd.oftn.l10n+json"/>
+    <link rel="localizations" href="%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/localizations.json" type="application/vnd.oftn.l10n+json"/>
     <link rel="localizations" href="%SERVICE_ROOT%/loleaflet/%VERSION%/l10n/uno-localizations.json" type="application/vnd.oftn.l10n+json"/>
-    <title>OxOffice Online - Admin console</title>
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
-    <link href="./css/bootstrap-icons.css" rel="stylesheet">
-    <link href="./css/dashboard.css" rel="stylesheet">
+    <!--%MODULE_L10N%-->
+    <title>MODA ODF WEB - Admin console</title>
+    <link href="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/css/dashboard.css" rel="stylesheet">
     <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin-bundle.js"></script>
+    <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/js/admin.menu.js"></script>
 </head>
 <body>
     <!--%BRANDING_JS%-->
@@ -20,8 +22,9 @@
     if (typeof brandProductName !== 'undefined') {
         l10nstrings.productName = brandProductName
     }
+    var SERVICE_ROOT ='%SERVICE_ROOT%';
     window.loleafletPath = '%SERVICE_ROOT%/loleaflet/%VERSION%';
-    document.title = l10nstrings.productName + ' - ' + _('Admin console');
+    var adminModules = JSON.parse('%ADMIN_MODULES%');
     var host = (window.location.protocol === 'https:' ? 'wss://': 'ws://') + window.location.host + '%SERVICE_ROOT%/lool/adminws/';
     Admin.GlobalFunction(host);
     </script>
@@ -49,10 +52,6 @@
             <div class="list-group-item list-group-item-primary text-center">
                 <span class="fs-5 fw-bold" _="Admin console"></span>
             </div>
-            <a class="list-group-item list-group-item-action" id="admin" href="admin.html"><i class="bi bi-info-circle">&nbsp;&nbsp;</i><span _="Overview"></span></a>
-            <a class="list-group-item list-group-item-action" id="adminAnalytics" href="adminAnalytics.html"><i class="bi bi-graph-up">&nbsp;&nbsp;</i><span _="Analytics"></span></a>
-            <a class="list-group-item list-group-item-action" id="adminLog" href="adminLog.html"><i class="bi bi-journal-text">&nbsp;&nbsp;</i><span _="Log"></span></a>
-            <a class="list-group-item list-group-item-action" id="adminFontManager" href="adminFontManager.html"><i class="bi bi-file-earmark-font">&nbsp;&nbsp;</i><span _="Font manager"></span></a>
         </div>
         <div class="text-center mt-2">
             <span class="badge bg-secondary" id="version"></span>
@@ -64,8 +63,10 @@
         </main>
     </div>
     </div>
-    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/js/bootstrap.bundle.min.js"></script>
     <script>
+        l10nstrings.buildMainMenu(mainMenus);
+        l10nstrings.buildModuleMenu(adminModules);
         // 翻譯整頁(只要 element 有 _="xxxx", _UNO="xxxx", title and placeholder 的，都翻)
         l10nstrings.fullPageTranslation();
 
