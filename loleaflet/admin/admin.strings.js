@@ -51,6 +51,58 @@ var l10nstrings = {
 		}.bind(this));
 	},
 
+	/**
+	 * 建立主選單
+	 * @param {array} mainMenuArray
+	 */
+	buildMainMenu: function(mainMenuArray) {
+		// 選單 DOM
+		var mainMenu = document.getElementById('mainMenu');
+
+		mainMenuArray.forEach(function(item) {
+            var menuItem = document.createElement('a');
+            menuItem.classList.add('list-group-item', 'list-group-item-action');
+            menuItem.id = 'admin-' + item.file;
+            menuItem.href = SERVICE_ROOT + '/loleaflet/dist/admin/' + item.file
+
+            var menuIcon = document.createElement('i');
+            menuIcon.classList.add('bi');
+            if (item.icon !== undefined && item.icon !== '') {
+                menuIcon.classList.add('bi-' + item.icon);
+                menuIcon.innerHTML = '&nbsp;&nbsp;'
+            }
+            menuItem.appendChild(menuIcon);
+            menuItem.appendChild(document.createTextNode(item.name));
+            mainMenu.appendChild(menuItem);
+        }.bind(this));
+	},
+
+	/**
+	 * 建立模組選單
+	 * @param {array} moduleMenuArray
+	 */
+	 buildModuleMenu: function(moduleMenuArray) {
+		// 選單 DOM
+		var mainMenu = document.getElementById('mainMenu');
+
+		moduleMenuArray.forEach(function(item) {
+            var menuItem = document.createElement('a');
+            menuItem.classList.add('list-group-item', 'list-group-item-action');
+            menuItem.id = 'admin-' + item.name;
+            menuItem.href = item.adminServiceURI;
+
+            var menuIcon = document.createElement('i');
+            menuIcon.classList.add('bi');
+            if (item.adminIcon !== undefined && item.adminIcon !== '') {
+                menuIcon.classList.add('bi-' + item.adminIcon);
+                menuIcon.innerHTML = '&nbsp;&nbsp;'
+            }
+            menuItem.appendChild(menuIcon);
+            menuItem.appendChild(document.createTextNode(_(item.adminItem)));
+            mainMenu.appendChild(menuItem);
+        }.bind(this));
+	},
+
 	// 內部翻譯的字串陣列
 	strings: [
 		_('Admin console'), // 管理主控臺
