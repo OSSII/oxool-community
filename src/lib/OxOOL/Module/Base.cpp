@@ -250,10 +250,16 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     std::string moduleL10NJSON(Poco::format(l10nJSON, responseRoot, mDetail.name));
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_L10N%-->"), moduleL10NJSON);
 
-    static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::VersionHash + "/%s.js\"></script>");
+    // 帶入模組的 admin.js
+    static const std::string moduleAdminJS("<script src=\"%s" + mDetail.adminServiceURI + "admin.js\"></script>");
+    std::string moduleScriptJS(Poco::format(moduleAdminJS, responseRoot));
+    Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_ADMIN_JS%-->"), moduleScriptJS);
+
+    //static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::VersionHash + "/%s.js\"></script>");
 
     Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::VersionHash);
     Poco::replaceInPlace(templateFile, std::string("%SERVICE_ROOT%"), responseRoot);
+    Poco::replaceInPlace(templateFile, std::string("%MODULE_NAME%"), mDetail.name);
 
     // 傳入有管理界面的模組列表
     std::string adminModulesStr("[");

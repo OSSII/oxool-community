@@ -1,6 +1,6 @@
 /* -*- js-indent-level: 8 -*- */
 /* Stringtable for Admin Console User Interface */
-/* global _ _UNO */
+/* global _ _UNO SERVICE_ROOT */
 var l10nstrings = {
 	productName: 'OxOffice Online Community',
 	/**
@@ -89,7 +89,7 @@ var l10nstrings = {
             var menuItem = document.createElement('a');
             menuItem.classList.add('list-group-item', 'list-group-item-action');
             menuItem.id = 'admin-' + item.name;
-            menuItem.href = item.adminServiceURI;
+            menuItem.href = SERVICE_ROOT + item.adminServiceURI;
 
             var menuIcon = document.createElement('i');
             menuIcon.classList.add('bi');

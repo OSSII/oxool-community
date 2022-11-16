@@ -2,60 +2,52 @@
 /*
 	Admin socket broker.
 */
-/* global Admin AdminSocketBase */
+/* global Admin AdminSocketBase host MODULE_NAME */
 var AdminSocketBroker = AdminSocketBase.extend({
 	constructor: function(host, methods) {
-		if (typeof methods == 'object')
-		{
+		if (typeof methods === 'object') {
 			this._methods = methods;
-		}
-		else
-		{
-			console.log('methods not found.');
+		} else {
+			console.error('There must be an object method.');
 		}
 		this.base(host);
 	},
 
 	_methods : null,
 
-	send: function(cmd) {
-		this.socket.send(cmd);
-	},
-
 	onSocketOpen: function() {
 		// Base class' onSocketOpen handles authentication
 		this.base.call(this);
-		if (typeof this._methods == 'object' && typeof this._methods.onOpen == 'function')
-		{
-			this._methods.onOpen();
-		}
-		else
-		{
-			console.log('onOpen function no set yet.');
+		if (typeof this._methods === 'object' &&
+			typeof this._methods.onSocketOpen === 'function') {
+			this._methods.socket = this.socket;
+			this._methods.onSocketOpen();
+		} else {
+			console.warn('onOpen function no set yet.');
 		}
 	},
 
 	onSocketMessage: function(e) {
-		if (typeof this._methods == 'object' && typeof this._methods.onMessage == 'function') {
-			this._methods.onMessage(e);
-		}
-		else
-		{
-			console.log('onMessage function no set yet.');
+		if (typeof this._methods === 'object' &&
+			typeof this._methods.onSocketMessage === 'function') {
+			this._methods.onSocketMessage(e);
+		} else {
+			console.error('onMessage function no set yet.');
 		}
 	},
 
 	onSocketClose: function() {
-		if (typeof this._methods == 'object' && typeof this._methods.onClose == 'function') {
-			this._methods.onClose();
-		}
-		else
-		{
-			console.log('onClose function no set yet.');
+		this.base.call(this);
+		if (typeof this._methods === 'object' &&
+			typeof this._methods.onSocketClose === 'function') {
+			this._methods.onSocketClose();
+		} else {
+			console.warn('onClose function no set yet.');
 		}
 	}
 });
 
-Admin.SocketBroker = function(host, methods) {
-	return new AdminSocketBroker(host, methods);
+Admin.SocketBroker = function(methods) {
+	var moduleName = (MODULE_NAME === '%MODULE_NAME%' ? '' : MODULE_NAME);
+	return new AdminSocketBroker(host + moduleName, methods);
 };

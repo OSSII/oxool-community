@@ -22,7 +22,8 @@
     if (typeof brandProductName !== 'undefined') {
         l10nstrings.productName = brandProductName
     }
-    var SERVICE_ROOT ='%SERVICE_ROOT%';
+    var SERVICE_ROOT = '%SERVICE_ROOT%';
+    var MODULE_NAME = '%MODULE_NAME%';
     window.loleafletPath = '%SERVICE_ROOT%/loleaflet/%VERSION%';
     var adminModules = JSON.parse('%ADMIN_MODULES%');
     var host = (window.location.protocol === 'https:' ? 'wss://': 'ws://') + window.location.host + '%SERVICE_ROOT%/lool/adminws/';
@@ -64,6 +65,7 @@
     </div>
     </div>
     <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/js/bootstrap.bundle.min.js"></script>
+    <!--%MODULE_ADMIN_JS%-->
     <script>
         l10nstrings.buildMainMenu(mainMenus);
         l10nstrings.buildModuleMenu(adminModules);
