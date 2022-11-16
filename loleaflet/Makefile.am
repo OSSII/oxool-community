@@ -39,7 +39,7 @@ OXOOL_HTML_DST = $(patsubst $(srcdir)/html/%.html,$(DIST_FOLDER)/%.html,$(OXOOL_
 OXOOL_WELCOME_SRC = $(shell find $(srcdir)/welcome -name '*')
 OXOOL_WELCOME_DST = $(patsubst $(srcdir)/welcome/%,$(DIST_FOLDER)/welcome/%,$(OXOOL_WELCOME_SRC))
 
-OXOOL_ADMIN_SRC = $(shell find $(srcdir)/admin -name '*.html' -or -name '*.css' -or -name '*.ttf' -or -name '*.woff*' -or -name 'OFL.txt' -or -name '*.svg' -or -name '*.png' -or -name '*.min.js')
+OXOOL_ADMIN_SRC = $(shell find $(srcdir)/admin -name '*.html' -or -name '*.css' -or -name '*.ttf' -or -name '*.woff*' -or -name 'OFL.txt' -or -name '*.svg' -or -name '*.png' -or -name '*.min.js' -or -name 'admin.menu.js')
 OXOOL_ADMIN_ALL = $(shell find $(srcdir)/admin -name '*')
 OXOOL_ADMIN_DST = $(patsubst $(srcdir)/admin/%,$(DIST_FOLDER)/admin/%,$(OXOOL_ADMIN_SRC))
 
@@ -621,6 +621,7 @@ libs:
 pot:
 	xgettext --from-code=UTF-8 --language=JavaScript --keyword=_ --output=po/templates/loleaflet-ui.pot \
 		admin/admin.strings.js \
+		admin/js/admin.menu.js \
 		admin/src/*.js \
 		js/w2ui-1.5.rc1.js \
 		src/control/ColorPicker.js \
