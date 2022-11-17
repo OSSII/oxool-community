@@ -35,5 +35,7 @@ L.OtherMessages = {
 		_('Customize'), // 自訂
 		_('Hand-drawn diagram'), // 手繪圖表
 		_('Tabbed view'), // 分頁式界面
+		_('Share link QR Code'), // 分享連結 QR 碼
+		_('Create a QR code for hyperlinks (if any) in the document.'), // 替文件中的連結(如果有的話)，製作 QR 碼
 	],
 };
