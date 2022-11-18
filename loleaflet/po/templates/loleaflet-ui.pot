@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-19 14:45+0800\n"
+"POT-Creation-Date: 2022-11-17 17:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 
-#: admin/admin.strings.js:56
+#: admin/admin.strings.js:108
 msgid "Admin console"
 msgstr ""
 
-#: admin/admin.strings.js:57
+#: admin/admin.strings.js:109 admin/js/admin.menu.js:5
 msgid "Overview"
 msgstr ""
 
-#: admin/admin.strings.js:58
+#: admin/admin.strings.js:110 admin/js/admin.menu.js:10
 msgid "Analytics"
 msgstr ""
 
-#: admin/admin.strings.js:59
+#: admin/admin.strings.js:111 admin/js/admin.menu.js:15
 msgid "Log"
 msgstr ""
 
-#: admin/admin.strings.js:60
+#: admin/admin.strings.js:112 admin/js/admin.menu.js:20
 msgid "SSL certificate manager"
 msgstr ""
 
-#: admin/admin.strings.js:61
+#: admin/admin.strings.js:113 admin/js/admin.menu.js:25
 msgid "System configuration"
 msgstr ""
 
-#: admin/admin.strings.js:62
+#: admin/admin.strings.js:114 admin/js/admin.menu.js:30
 msgid "Software upgrade"
 msgstr ""
 
-#: admin/admin.strings.js:63
+#: admin/admin.strings.js:115 admin/js/admin.menu.js:35
 msgid "Font manager"
 msgstr ""
 
-#: admin/admin.strings.js:64
+#: admin/admin.strings.js:116
 msgid "Table conversion"
 msgstr ""
 
-#: admin/admin.strings.js:65
+#: admin/admin.strings.js:117
 msgid "Template Repo"
 msgstr ""
 
-#: admin/admin.strings.js:66
+#: admin/admin.strings.js:118
 msgid "ODF report template"
+msgstr ""
+
+#: admin/admin.strings.js:119
+msgid "Module list"
+msgstr ""
+
+#: admin/js/admin.menu.js:40 admin/src/AdminSocketMenuEditor.js:15
+msgid "Menu editor"
 msgstr ""
 
 #: admin/src/AdminSocketAnalytics.js:14
@@ -814,10 +822,6 @@ msgstr ""
 msgid "Disabled item"
 msgstr ""
 
-#: admin/src/AdminSocketMenuEditor.js:15
-msgid "Menu editor"
-msgstr ""
-
 #: admin/src/AdminSocketMenuEditor.js:16
 msgid "Writer menu"
 msgstr ""
@@ -1462,7 +1466,7 @@ msgid "Insert Shape"
 msgstr ""
 
 #: src/control/Control.Menubar.js:907
-#: src/control/Control.AlternativeCommand.js:350
+#: src/control/Control.AlternativeCommand.js:362
 msgid "Are you sure you want to delete this slide?"
 msgstr ""
 
@@ -2087,16 +2091,16 @@ msgstr ""
 msgid "When co-editing, the file is automatically saved."
 msgstr ""
 
-#: src/control/Control.AlternativeCommand.js:263
+#: src/control/Control.AlternativeCommand.js:275
 msgid "Are you sure you want to delete sheet, %sheet% ?"
 msgstr ""
 
-#: src/control/Control.AlternativeCommand.js:285
+#: src/control/Control.AlternativeCommand.js:297
 #: uiconfig/dialogs/AddTableAtEnd.js:20
 msgid "Enter new sheet name"
 msgstr ""
 
-#: src/control/Control.AlternativeCommand.js:295
+#: src/control/Control.AlternativeCommand.js:307
 #: uiconfig/dialogs/AddTableAtEnd.js:60 uiconfig/dialogs/InsertTable.js:92
 msgid ""
 "Invalid sheet name.\n"
@@ -2716,6 +2720,14 @@ msgstr ""
 msgid "Tabbed view"
 msgstr ""
 
+#: src/othermessages.js:38
+msgid "Share link QR Code"
+msgstr ""
+
+#: src/othermessages.js:39
+msgid "Create a QR code for hyperlinks (if any) in the document."
+msgstr ""
+
 #: src/layer/tile/CanvasTileLayer.js:1838
 msgid "Functions"
 msgstr ""
@@ -2798,11 +2810,11 @@ msgstr ""
 msgid "Failed to download clipboard, please re-copy"
 msgstr ""
 
-#: src/map/Clipboard.js:850
+#: src/map/Clipboard.js:854
 msgid "<p>Please use the copy/paste buttons on your on-screen keyboard.</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:852
+#: src/map/Clipboard.js:856
 msgid ""
 "<p>Your browser has very limited access to the clipboard, so use these "
 "keyboard shortcuts:</p><table class=\"warn-copy-paste\"><tr><td><kbd>Ctrl</"
@@ -2812,7 +2824,7 @@ msgid ""
 "td><td>Cut</td><td>Paste</td></tr></table>"
 msgstr ""
 
-#: src/map/Clipboard.js:873
+#: src/map/Clipboard.js:877
 msgid ""
 "<p>If you would like to share larger elements of your document with other "
 "applications it is necessary to first download them onto your device. To do "
@@ -2821,14 +2833,14 @@ msgid ""
 "documents inside %productName, there is no need to download.</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:889
+#: src/map/Clipboard.js:893
 msgid ""
 "<p>A download due to a large copy/paste operation has already started. "
 "Please, wait for the current download or cancel it before starting a new "
 "one</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:899
+#: src/map/Clipboard.js:904
 msgid ""
 "<p>Your browser has very limited access to the clipboard</p><p>Please press "
 "now: <kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> to see "
