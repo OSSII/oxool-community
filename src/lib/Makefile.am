@@ -22,6 +22,7 @@ libOxOOL_la_SOURCES = \
 	OxOOL/ENV.cpp \
 	OxOOL/ModuleManager.cpp \
 	OxOOL/HttpHelper.cpp \
+	OxOOL/L10NTranslator.cpp \
 	OxOOL/XMLConfig.cpp \
 	OxOOL/ConvertBroker.cpp \
 	OxOOL/Module/Base.cpp
