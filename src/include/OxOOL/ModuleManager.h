@@ -9,6 +9,7 @@
 #include <OxOOL/OxOOL.h>
 #include <OxOOL/ConvertBroker.h>
 #include <OxOOL/Module/Base.h>
+#include <OxOOL/HttpHelper.h>
 
 #include <string>
 #include <map>
@@ -37,15 +38,6 @@ public:
     ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
                              const std::weak_ptr<StreamSocket>& socket,
                              const Poco::Net::HTTPRequest& request);
-
-    /// @brief 處理模組後臺管理 Web socket 請求
-    /// @param moduleName 模組名稱
-    /// @param socket
-    /// @param request
-    /// @return true if we should give this socket to the Module manager poll.
-    static bool handleInitialRequest(const std::string& moduleName,
-                                     const std::weak_ptr<StreamSocket> &socket,
-                                     const Poco::Net::HTTPRequest& request);
 
     /// @brief 處理收到的 web socket 訊息，並傳送給模組處理
     /// @param data
@@ -181,6 +173,15 @@ public:
                        const RequestDetails& requestDetails,
                        SocketDisposition& disposition);
 
+    /// @brief 處理模組後臺管理 Web socket 請求
+    /// @param moduleName 模組名稱
+    /// @param socket
+    /// @param request
+    /// @return true if we should give this socket to the Module manager poll.
+    bool handleAdminWebsocketRequest(const std::string& moduleName,
+                                     const std::weak_ptr<StreamSocket> &socket,
+                                     const Poco::Net::HTTPRequest& request);
+
     // 建立 Convert broker
     std::shared_ptr<ConvertBroker>
     createConvertBroker(const std::string& fromFile,
@@ -198,8 +199,7 @@ public:
     const std::vector<OxOOL::Module::Detail> getAllModuleDetails() const;
 
     /// @brief 取得有後臺管理的模組資訊列表
-    /// @return
-    const std::vector<Poco::JSON::Object> getAdminModuleDetailsJson() const;
+    std::string getAdminModuleDetailsJsonString(const std::string& langTag) const;
 
     /// @brief 是否有載入任何模組
     /// @return

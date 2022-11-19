@@ -1072,22 +1072,9 @@ void FileServerRequestHandler::preprocessAdminFile(const HTTPRequest& request,
     Poco::replaceInPlace(templateFile, std::string("%SERVICE_ROOT%"), responseRoot);
 
     // 傳入有管理界面的模組列表
-    std::string adminModulesStr("[");
-    const std::vector<Poco::JSON::Object> adminModuleDetials =
-            OxOOL::ModuleManager::instance().getAdminModuleDetailsJson();
-
-    std::size_t count = 0;
-    for (auto it : adminModuleDetials)
-    {
-        std::ostringstream oss;
-        it.stringify(oss);
-        adminModulesStr.append(oss.str());
-        count ++;
-        if (count < adminModuleDetials.size())
-            adminModulesStr.append(",");
-    }
-    adminModulesStr.append("]");
-    Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"), adminModulesStr);
+    std::string langTag = OxOOL::HttpHelper::getAcceptLanguage(request);
+    Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"),
+        OxOOL::ModuleManager::instance().getAdminModuleDetailsJsonString(langTag));
 
     // Ask UAs to block if they detect any XSS attempt
     response.add("X-XSS-Protection", "1; mode=block");

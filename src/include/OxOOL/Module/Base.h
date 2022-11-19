@@ -55,8 +55,8 @@ public:
     const Detail& getDetail() const { return mDetail; }
 
     /// @brief 以 JSON 格式傳回模組詳細資訊
-    /// @return Poco::JSON::Object
-    Poco::JSON::Object getDetailJson();
+    /// @return Poco::JSON::Object::Ptr
+    Poco::JSON::Object::Ptr getAdminDetailJson(const std::string& langTag = std::string());
 
     void setDocumentRoot(const std::string& documentRoot) { maRootPath = documentRoot; }
     const std::string& getDocumentRoot() const { return maRootPath; }

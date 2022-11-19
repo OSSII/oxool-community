@@ -2,10 +2,13 @@
 #include <memory>
 
 #include <Poco/Net/NetException.h>
+#include <Poco/Path.h>
+#include <Poco/File.h>
 
-#include <OxOOL/ModuleManager.h>
 #include <OxOOL/Module/Base.h>
 #include <OxOOL/HttpHelper.h>
+#include <OxOOL/L10NTranslator.h>
+#include <OxOOL/ModuleManager.h>
 
 #include <wsd/ServerURL.hpp>
 #include <wsd/FileServer.hpp>
@@ -15,20 +18,37 @@ namespace OxOOL
 namespace Module
 {
 
-Poco::JSON::Object Base::getDetailJson()
+Poco::JSON::Object::Ptr Base::getAdminDetailJson(const std::string& langTag)
 {
-    Poco::JSON::Object json;
-    json.set("name", mDetail.name);
-    json.set("serviceURI", mDetail.serviceURI);
-    json.set("version", mDetail.version);
-    json.set("summary", mDetail.summary);
-    json.set("author", mDetail.author);
-    json.set("license", mDetail.license);
-    json.set("description", mDetail.description);
-    json.set("adminPrivilege", mDetail.adminPrivilege);
-    json.set("adminServiceURI", mDetail.adminServiceURI);
-    json.set("adminIcon", mDetail.adminIcon);
-    json.set("adminItem", mDetail.adminItem);
+
+    OxOOL::Module::Detail detail = mDetail;
+
+    // 若有指定語系，嘗試翻譯
+    if (!langTag.empty())
+    {
+        std::unique_ptr<OxOOL::L10NTranslator> translator =
+            std::make_unique<OxOOL::L10NTranslator>(langTag, mDetail.name, true);
+
+        detail.version = translator->getTranslation(mDetail.version);
+        detail.summary = translator->getTranslation(mDetail.summary);
+        detail.author = translator->getTranslation(mDetail.author);
+        detail.license = translator->getTranslation(mDetail.license);
+        detail.description = translator->getTranslation(mDetail.description);
+        detail.adminItem = translator->getTranslation(mDetail.adminItem);
+    }
+
+    Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+    json->set("name", detail.name);
+    json->set("serviceURI", detail.serviceURI);
+    json->set("version", detail.version);
+    json->set("summary", detail.summary);
+    json->set("author", detail.author);
+    json->set("license", detail.license);
+    json->set("description", detail.description);
+    json->set("adminPrivilege", detail.adminPrivilege);
+    json->set("adminServiceURI", detail.adminServiceURI);
+    json->set("adminIcon", detail.adminIcon);
+    json->set("adminItem", detail.adminItem);
 
     return json;
 }
@@ -139,18 +159,19 @@ void Base::handleAdminRequest(const Poco::Net::HTTPRequest& request,
 {
 
     std::string requestURI = requestDetails.getURI();
-
-    std::cout << "got admin request : " << requestURI << std::endl;
-
     size_t stripLength = mDetail.adminServiceURI.length();
     // 去掉 request 前導的 adminServiceURI
     std::string realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
-
-    std::cout << "Real URI = " << realURI << std::endl;
-
     Poco::Path requestFile(maRootPath + "/admin" + realURI);
+    // 如果要求的是目錄(不帶檔名)
     if (requestFile.isDirectory())
-        requestFile.append("admin.html");
+    {
+        // 模組根目錄，預設檔名是 admin.html
+        if (realURI == "/")
+            requestFile.append("admin.html");
+        else // 其他目錄，預設檔名是 index.html
+            requestFile.append("index.html");
+    }
 
     // GET html 格式的檔案，需要內嵌到 admintemplate.html 中
     if (OxOOL::HttpHelper::isGET(request) && requestFile.getExtension() == "html")
@@ -227,8 +248,6 @@ void Base::preprocessAdminFile(const std::string& adminFile,
                                const RequestDetails &requestDetails,
                                const std::shared_ptr<StreamSocket>& socket)
 {
-    (void)request; // Avoid unused parameter.
-
     // 取得 admintemplate.html
     const std::string templatePath = "/loleaflet/dist/admin/admintemplate.html";
     std::string templateFile = *FileServerRequestHandler::getUncompressedFile(templatePath);
@@ -262,22 +281,9 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     Poco::replaceInPlace(templateFile, std::string("%MODULE_NAME%"), mDetail.name);
 
     // 傳入有管理界面的模組列表
-    std::string adminModulesStr("[");
-    const std::vector<Poco::JSON::Object> adminModuleDetials =
-            OxOOL::ModuleManager::instance().getAdminModuleDetailsJson();
-
-    std::size_t count = 0;
-    for (auto it : adminModuleDetials)
-    {
-        std::ostringstream oss;
-        it.stringify(oss);
-        adminModulesStr.append(oss.str());
-        count ++;
-        if (count < adminModuleDetials.size())
-            adminModulesStr.append(",");
-    }
-    adminModulesStr.append("]");
-    Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"), adminModulesStr);
+    std::string langTag = OxOOL::HttpHelper::getAcceptLanguage(request);
+    Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"),
+        OxOOL::ModuleManager::instance().getAdminModuleDetailsJsonString(langTag));
 
     Poco::Net::HTTPResponse response;
     // Ask UAs to block if they detect any XSS attempt

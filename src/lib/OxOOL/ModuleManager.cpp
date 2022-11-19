@@ -97,48 +97,6 @@ ModuleAdminSocketHandler::ModuleAdminSocketHandler(const OxOOL::Module::Ptr& mod
 {
 }
 
-bool ModuleAdminSocketHandler::handleInitialRequest(const std::string& moduleName,
-                                                    const std::weak_ptr<StreamSocket> &socketWeak,
-                                                    const Poco::Net::HTTPRequest& request)
-{
-    // 禁用後臺管理
-    if (!LOOLWSD::AdminEnabled)
-    {
-        LOG_ERR("Request for disabled admin console");
-        return false;
-    }
-
-    // Socket 不存在
-    std::shared_ptr<StreamSocket> socket = socketWeak.lock();
-    if (!socket)
-    {
-        LOG_ERR("Invalid socket while reading initial request.");
-        return false;
-    }
-
-    // 沒有指定名稱的模組
-    OxOOL::Module::Ptr module = OxOOL::ModuleManager::instance().getModuleByName(moduleName);
-    if (module == nullptr)
-    {
-        LOG_ERR("No module named '" << moduleName << "'");
-        return false;
-    }
-
-    const std::string& requestURI = request.getURI();
-    StringVector pathTokens(Util::tokenize(requestURI, '/'));
-    // 要升級連線爲 Web socket
-    if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
-    {
-        auto handler = std::make_shared<ModuleAdminSocketHandler>(module, socketWeak, request);
-        socket->setHandler(handler);
-        return true;
-    }
-
-    // 回應錯誤 http status code.
-    OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
-    return false;
-}
-
 void ModuleAdminSocketHandler::sendTextFrame(const std::string& message, bool flush)
 {
     if (mbIsAuthenticated)
@@ -153,7 +111,7 @@ void ModuleAdminSocketHandler::sendTextFrame(const std::string& message, bool fl
 std::string ModuleAdminSocketHandler::getModuleInfoJson()
 {
     std::ostringstream oss;
-    mpModule->getDetailJson().stringify(oss);
+    mpModule->getAdminDetailJson()->stringify(oss);
     return oss.str();
 }
 
@@ -502,7 +460,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
               std::static_pointer_cast<StreamSocket>(disposition.getSocket());
         // URL: /lool/adminws/<模組名稱>
         const std::string& moduleName = requestDetails[2];
-        if (OxOOL::ModuleAdminSocketHandler::handleInitialRequest(moduleName, socketWeak, request))
+        if (handleAdminWebsocketRequest(moduleName, socketWeak, request))
         {
             disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
             {
@@ -539,6 +497,48 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
 
         return true;
     }
+    return false;
+}
+
+bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
+                                                const std::weak_ptr<StreamSocket> &socketWeak,
+                                                const Poco::Net::HTTPRequest& request)
+{
+    // 禁用後臺管理
+    if (!LOOLWSD::AdminEnabled)
+    {
+        LOG_ERR("Request for disabled admin console");
+        return false;
+    }
+
+    // Socket 不存在
+    std::shared_ptr<StreamSocket> socket = socketWeak.lock();
+    if (!socket)
+    {
+        LOG_ERR("Invalid socket while reading initial request.");
+        return false;
+    }
+
+    // 沒有指定名稱的模組
+    OxOOL::Module::Ptr module = getModuleByName(moduleName);
+    if (module == nullptr)
+    {
+        LOG_ERR("No module named '" << moduleName << "'");
+        return false;
+    }
+
+    const std::string& requestURI = request.getURI();
+    StringVector pathTokens(Util::tokenize(requestURI, '/'));
+    // 要升級連線爲 Web socket
+    if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
+    {
+        auto handler = std::make_shared<ModuleAdminSocketHandler>(module, socketWeak, request);
+        socket->setHandler(handler);
+        return true;
+    }
+
+    // 回應錯誤 http status code.
+    OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
     return false;
 }
 
@@ -622,16 +622,29 @@ const std::vector<OxOOL::Module::Detail> ModuleManager::getAllModuleDetails() co
     return detials;
 }
 
-const std::vector<Poco::JSON::Object> ModuleManager::getAdminModuleDetailsJson() const
+std::string ModuleManager::getAdminModuleDetailsJsonString(const std::string& langTag) const
 {
-    std::vector<Poco::JSON::Object> detials;
+    std::string jsonString("[");
+    std::size_t count = 0;
     for (auto it : mpModules)
     {
+        OxOOL::Module::Ptr module = it.second;
         // 只取有後臺管理的模組
-        if (!it.second->getDetail().adminServiceURI.empty())
-            detials.push_back(it.second->getDetailJson());
+        if (!module->getDetail().adminServiceURI.empty())
+        {
+            auto detialJson = module->getAdminDetailJson(langTag);
+            std::ostringstream oss;
+            detialJson->stringify(oss);
+            jsonString.append(oss.str() + ",");
+            count ++;
+        }
     }
-    return detials;
+    // 有找到任何管理模組，去掉最後一個 ',' 字元
+    if (count > 0)
+        jsonString.pop_back();
+
+    jsonString.append("]");
+    return jsonString;
 }
 
 void ModuleManager::dump()
