@@ -212,6 +212,22 @@ void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std:
     socket->shutdown();
 }
 
+std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
+{
+    // header 是否有帶 Accept-Language
+    if (request.has("Accept-Language"))
+    {
+        const std::string &acceptLanguage = request.get("Accept-Language");
+        std::vector<std::string> elements;
+        request.splitElements(acceptLanguage, elements);
+        // 語系有資料，取得第一個語系
+        if (!elements.empty())
+            return elements.at(0);
+    }
+
+    return "";
+}
+
 std::string getMimeType(const std::string& fileName)
 {
     static std::unordered_map<std::string, std::string> aMimeTypes {

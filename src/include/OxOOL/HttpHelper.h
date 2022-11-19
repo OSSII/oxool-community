@@ -78,6 +78,11 @@ void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std:
                          Poco::Net::HTTPResponse* optResponse = nullptr, bool noCache = false,
                          bool deflate = false, const bool headerOnly = false);
 
+/// @brief 取得 Client 端的語系
+/// @param request
+/// @return std::string 語系，如 zh-TW, en 等，空字串表示未知
+std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request);
+
 /// @brief 取得檔案的 Mime type
 /// @param fileName
 /// @return
