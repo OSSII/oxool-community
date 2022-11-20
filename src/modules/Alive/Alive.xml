@@ -11,7 +11,5 @@
             <description>Normal operation should return an "OK" string.</description>
             <adminPrivilege desc="Requires admin authentication." type="bool" default="false">false</adminPrivilege>
         </detail>
-        <!--documentRoot type="path" relative="true">alive</documentRoot-->
-        <!--adminItemName></adminItemName-->
     </module>
 </config>

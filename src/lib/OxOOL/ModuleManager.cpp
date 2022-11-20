@@ -84,7 +84,14 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
     }
     else // 交給模組處理
     {
-        sendTextFrame(mpModule->handleAdminMessage(tokens));
+        std::string result = mpModule->handleAdminMessage(tokens);
+        // 傳回結果
+        if (!result.empty())
+            sendTextFrame(result);
+        else // 紀錄收到未知指令
+            LOG_WRN("Admin Module [" << mpModule->getDetail().name
+                                     << "] received an unknown command: '"
+                                     << firstLine);
     }
 }
 
@@ -247,7 +254,7 @@ void ModuleAgent::purge()
 ModuleManager::ModuleManager() :
     SocketPoll("ModuleManager")
 {
-    loadModulesFromDirectory(LOOLWSD_MODULE_CONFIG_DIR);
+    loadModulesFromDirectory(OxOOL::ENV::ModuleConfigDir);
 }
 
 void ModuleManager::pollingThread()
@@ -318,28 +325,14 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
         detail.adminIcon = config.getString("module.detail.adminIcon", "");
         detail.adminItem = config.getString("module.detail.adminItem", "");
 
-        // 模組其他檔案存放路徑
+        // 模組相關檔案存放的絕對路徑
         // 該路徑下的 html 目錄存放呈現給外部閱覽的檔案，admin 目錄下，存放後臺管理相關檔案
-        std::string documentRoot = config.getString("module.documentRoot", "");
-        // 有指定模組文件路徑
-        if (!documentRoot.empty())
-        {
-            // 若模組路徑不是絕對路徑，而且有指定相對路徑的話
-            if (!Poco::Path(documentRoot).isAbsolute()
-                && config.has("module.documentRoot[@relative]")
-                && config.getBool("module.documentRoot[@relative]"))
-            {
-                // 轉換爲絕對路徑，位於 LOOLWSD_MODULE_DATA_DIR 之下，再加上指定路徑
-                documentRoot = std::string(LOOLWSD_MODULE_DATA_DIR) + "/" + documentRoot;
-            }
-            LOG_DBG("The absolute path to the file of the module '"
-                    << detail.name << "' is located in " << documentRoot);
-        }
+        const std::string documentRoot = OxOOL::ENV::ModuleDataDir + "/" + detail.name;
 
         // 有指定載入模組檔案
         if (const std::string loadFile = config.getString("module.load", ""); !loadFile.empty())
         {
-            std::string foundPath = findModule(LOOLWSD_MODULE_DIR, loadFile);
+            std::string foundPath = findModule(OxOOL::ENV::ModuleDir, loadFile);
             if (!foundPath.empty())
             {
                 // 載入模組
@@ -396,7 +389,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
             }
             else
             {
-                LOG_ERR("In the " << LOOLWSD_MODULE_DIR << " directory, " << loadFile
+                LOG_ERR("In the " << OxOOL::ENV::ModuleDir << " directory, " << loadFile
                                   << " is not found.");
             }
         }
@@ -571,6 +564,7 @@ void ModuleManager::cleanupDocBrokers()
                 std::shared_ptr<DocumentBroker> docBroker = it->second;
                 if (!docBroker->isAlive())
                 {
+                    docBroker->dispose();
                     it = mpDocBrokers.erase(it);
                     continue;
                 }

@@ -4,10 +4,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <Poco/Exception.h>
 #include <OxOOL/L10NTranslator.h>
 #include <OxOOL/HttpHelper.h>
 #include <OxOOL/ModuleManager.h>
 
+#include <common/Log.hpp>
 
 namespace OxOOL
 {
@@ -65,25 +67,39 @@ void L10NTranslator::makeTranslator(const bool isAdmin)
             Poco::JSON::Parser parser;
             auto result = parser.parse(localizationsJsonStr.str());
 
-            Poco::JSON::Object::Ptr L10NJSON = result.extract<Poco::JSON::Object::Ptr>();
-            // 有包含該語系
-            if (L10NJSON->has(maLanguage))
+            try
             {
-                // 該語系檔案所在位置
-                Poco::File langFile(rootPath + "/" + L10NJSON->getValue<std::string>(maLanguage));
-
-                // 語系檔案存在，就讀入內容
-                if (langFile.exists())
+                Poco::JSON::Object::Ptr L10NJSON = result.extract<Poco::JSON::Object::Ptr>();
+                // 有包含該語系
+                if (L10NJSON->has(maLanguage))
                 {
-                    Poco::FileInputStream langFileStrem(langFile.path(), std::ios::binary);
-                    std::stringstream translateStr;
-                    Poco::StreamCopier::copyStream(langFileStrem, translateStr);
-                    langFileStrem.close();
+                    // 該語系檔案所在位置
+                    Poco::File langFile(rootPath + "/" + L10NJSON->getValue<std::string>(maLanguage));
 
-                    parser.reset();
-                    auto langResult = parser.parse(translateStr.str());
-                    mpTranslator = langResult.extract<Poco::JSON::Object::Ptr>();
+                    // 語系檔案存在，就讀入內容
+                    if (langFile.exists())
+                    {
+                        Poco::FileInputStream langFileStrem(langFile.path(), std::ios::binary);
+                        std::stringstream translateStr;
+                        Poco::StreamCopier::copyStream(langFileStrem, translateStr);
+                        langFileStrem.close();
+
+                        parser.reset();
+                        auto langResult = parser.parse(translateStr.str());
+                        try
+                        {
+                            mpTranslator = langResult.extract<Poco::JSON::Object::Ptr>();
+                        }
+                        catch(const Poco::Exception& exc)
+                        {
+                            LOG_ERR("Admin module [" << mpModule->getDetail().name << "]:" << exc.displayText());
+                        }
+                    }
                 }
+            }
+            catch(const Poco::Exception& exc)
+            {
+                LOG_ERR("Admin module [" << mpModule->getDetail().name << "]:" << exc.displayText());
             }
         }
     }

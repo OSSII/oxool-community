@@ -274,9 +274,9 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     std::string moduleScriptJS(Poco::format(moduleAdminJS, responseRoot));
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_ADMIN_JS%-->"), moduleScriptJS);
 
-    //static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::VersionHash + "/%s.js\"></script>");
+    //static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::ENV::VersionHash + "/%s.js\"></script>");
 
-    Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::VersionHash);
+    Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::ENV::VersionHash);
     Poco::replaceInPlace(templateFile, std::string("%SERVICE_ROOT%"), responseRoot);
     Poco::replaceInPlace(templateFile, std::string("%MODULE_NAME%"), mDetail.name);
 
@@ -291,7 +291,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     // No referrer-policy
     response.add("Referrer-Policy", "no-referrer");
     response.add("X-Content-Type-Options", "nosniff");
-    response.set("User-Agent", OxOOL::HttpAgentString);
+    response.set("User-Agent", OxOOL::ENV::HttpAgentString);
     response.set("Date", Util::getHttpTimeNow());
 
     response.setContentType("text/html");
