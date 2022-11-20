@@ -19,7 +19,6 @@ endif
 AM_LDFLAGS = -pthread -Wl,-E
 
 libOxOOL_la_SOURCES = \
-	OxOOL/ENV.cpp \
 	OxOOL/ModuleManager.cpp \
 	OxOOL/HttpHelper.cpp \
 	OxOOL/L10NTranslator.cpp \

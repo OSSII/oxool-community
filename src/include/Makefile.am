@@ -3,7 +3,6 @@
 OxOOL_includedir = $(includedir)/OxOOL
 OxOOL_include_HEADERS = \
 	OxOOL/OxOOL.h \
-	OxOOL/ENV.h \
 	OxOOL/ModuleManager.h \
 	OxOOL/HttpHelper.h \
 	OxOOL/L10NTranslator.h \
