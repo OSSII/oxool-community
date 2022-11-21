@@ -87,7 +87,7 @@ var AdminSocketBase = Base.extend({
 			// get "/" 位址，若傳回 OK 表示正常
 			$.ajax({
 				type: 'GET',
-				url: '/',
+				url: '/alive',
 				timeout: 100, // 0.1 秒
 				success: function(data/*, textStatus*/) {
 					if (data === 'OK') {
