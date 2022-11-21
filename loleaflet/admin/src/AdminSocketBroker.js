@@ -23,7 +23,7 @@ var AdminSocketBroker = AdminSocketBase.extend({
 			this._methods.socket = this.socket;
 			this._methods.onSocketOpen();
 		} else {
-			console.warn('onOpen function no set yet.');
+			console.warn('onSocketOpen function no set yet.');
 		}
 	},
 
@@ -32,7 +32,7 @@ var AdminSocketBroker = AdminSocketBase.extend({
 			typeof this._methods.onSocketMessage === 'function') {
 			this._methods.onSocketMessage(e);
 		} else {
-			console.error('onMessage function no set yet.');
+			console.error('onSocketMessage function no set yet.');
 		}
 	},
 
@@ -42,7 +42,7 @@ var AdminSocketBroker = AdminSocketBase.extend({
 			typeof this._methods.onSocketClose === 'function') {
 			this._methods.onSocketClose();
 		} else {
-			console.warn('onClose function no set yet.');
+			console.warn('onSocketClose function no set yet.');
 		}
 	}
 });
