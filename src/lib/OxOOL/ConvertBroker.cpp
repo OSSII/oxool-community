@@ -20,7 +20,8 @@ ConvertBroker::ConvertBroker(const std::string& uri,
     DocumentBroker(ChildType::Batch, uri, uriPublic, docKey),
     maFormat(toFormat),
     maSaveAsOptions(saveAsOptions),
-    mpCallback(nullptr)
+    mpCallback(nullptr),
+    mbCallbackIsCalled(false)
 {
     static const int limit_convert_secs = LOOLWSD::getConfigValue<int>("per_document.limit_convert_secs", 100);
     _limitLifeSeconds = limit_convert_secs;
@@ -69,7 +70,14 @@ void ConvertBroker::setLoaded()
 
     // 若有指定 callback，必須自己處理載入完畢後的所有工作，包括另存新檔
     if (mpCallback != nullptr)
-        mpCallback();
+    {
+        // 避免 Callback function 被呼叫兩次以上
+        if (!mbCallbackIsCalled)
+        {
+            mbCallbackIsCalled = true;
+            mpCallback();
+        }
+    }
     // 否則直接另存新檔
     else
         saveAsDocument();

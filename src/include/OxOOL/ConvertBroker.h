@@ -27,7 +27,7 @@ public:
     typedef std::function<void()> CallbackFn;
     /// @brief 文件載入完畢後，可介入後續處理，若未自訂 callback，則會自動執行 saveAsDocument()
     /// @param fn - 自訂的 callback 函數
-    void loadedCallback(const CallbackFn& fn) { mpCallback = fn; }
+    void loadedCallback(const CallbackFn& fn) { mpCallback = fn; mbCallbackIsCalled = false; }
 
     /// @brief 取得 Client seccion
     /// @return Client seccion
@@ -65,6 +65,7 @@ private:
     const std::string maSaveAsOptions;
 
     CallbackFn mpCallback;
+    bool mbCallbackIsCalled;
     std::shared_ptr<ClientSession> mpClientSession;
 };
 
