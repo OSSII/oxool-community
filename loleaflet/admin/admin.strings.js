@@ -103,6 +103,21 @@ var l10nstrings = {
         }.bind(this));
 	},
 
+	setActiveItem: function() {
+		var menuList = $('#mainMenu .list-group-item');
+        // 找出與本頁相符的 item
+        for (var i=0 ; i < menuList.length ; i++) {
+            var element = menuList[i];
+            if (element.href === window.location.href)
+            {
+                document.title = this.productName + ' - ' + _('Admin console') + ' / ' + element.innerText;
+                $('#functionTitle').html(element.innerHTML); // 更新導行列標題
+                element.classList.add('active'); // 設定這個 item 是 active
+                break;
+            }
+        }
+	},
+
 	// 內部翻譯的字串陣列
 	strings: [
 		_('Admin console'), // 管理主控臺
@@ -113,9 +128,6 @@ var l10nstrings = {
 		_('System configuration'), // 系統配置設定
 		_('Software upgrade'), // 軟體升級
 		_('Font manager'), // 字型管理
-		_('Table conversion'), // 表格轉試算表
-		_('Template Repo'), // 範本中心
-		_('ODF report template'), // ODF 報表管理
 	],
 };
 

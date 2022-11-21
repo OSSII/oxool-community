@@ -31,7 +31,7 @@
     </script>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <div class="container-fluid">
-        <span class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fw-bold" href="#"><script>document.write(l10nstrings.productName);</script></span>
+        <span id="productName" class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fw-bold" href="#"></span>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
@@ -67,23 +67,14 @@
     <script src="%SERVICE_ROOT%/loleaflet/%VERSION%/admin/js/bootstrap.bundle.min.js"></script>
     <!--%MODULE_ADMIN_JS%-->
     <script>
+        document.getElementById('productName').innerText = l10nstrings.productName;
         l10nstrings.buildMainMenu(mainMenus);
         l10nstrings.buildModuleMenu(adminModules);
         // 翻譯整頁(只要 element 有 _="xxxx", _UNO="xxxx", title and placeholder 的，都翻)
         l10nstrings.fullPageTranslation();
 
-        var menuList = $('#mainMenu .list-group-item');
-        // 找出與本頁相符的 item
-        for (var i=0 ; i < menuList.length ; i++) {
-            var element = menuList[i];
-            if (element.href === window.location.href)
-            {
-                document.title = l10nstrings.productName + ' - ' + _('Admin console') + ' / ' + element.innerText;
-                $('#functionTitle').html(element.innerHTML); // 更新導行列標題
-                element.classList.add('active'); // 設定這個 item 是 active
-                break;
-            }
-        }
+        l10nstrings.setActiveItem();
+
     </script>
 </body>
 </html>
