@@ -381,6 +381,8 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
                     }
 
                     module->setDetail(origDetail); // 重新複寫設定
+
+                    module->initialize();
                 }
                 else
                 {
@@ -400,6 +402,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
             module->setDetail(detail); // 重新複寫設定
             module->setDocumentRoot(documentRoot); // 設定模組文件絕對路徑
             mpModules[configFile] = module;
+            module->initialize();
         }
     }
 

@@ -80,6 +80,10 @@ public:
                                const std::shared_ptr<StreamSocket>& socket,
                                const bool callByAdmin = false);
 public:
+
+    /// @brief 模組載入完畢後，初始化工作，只會在載入完畢後呼叫一次
+    virtual void initialize() {}
+
     /// @brief 處理前端 Client 的請求
     ///        Handle requests from the front-end Client.
     /// @param request
