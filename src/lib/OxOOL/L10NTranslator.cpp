@@ -34,9 +34,9 @@ L10NTranslator::L10NTranslator(const Poco::Net::HTTPRequest& request,
 
 const std::string L10NTranslator::getTranslation(std::string& message) const
 {
-    if (mpTranslator != nullptr && mpTranslator->has(message))
+    if (mTranslator.has(message))
     {
-        return mpTranslator->getValue<std::string>(message);
+        return mTranslator.getValue<std::string>(message);
     }
 
     return message;
@@ -44,8 +44,6 @@ const std::string L10NTranslator::getTranslation(std::string& message) const
 
 void L10NTranslator::makeTranslator(const bool isAdmin)
 {
-    mpTranslator = nullptr;
-
     if (mpModule == nullptr)
         return;
 
@@ -88,7 +86,7 @@ void L10NTranslator::makeTranslator(const bool isAdmin)
                         auto langResult = parser.parse(translateStr.str());
                         try
                         {
-                            mpTranslator = langResult.extract<Poco::JSON::Object::Ptr>();
+                            mTranslator = langResult.extract<Poco::JSON::Object>();
                         }
                         catch(const Poco::Exception& exc)
                         {

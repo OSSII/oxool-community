@@ -46,12 +46,14 @@ private:
     void makeTranslator(const bool isAdmin = false);
 
 private:
+    /// @brief 所屬模組
     OxOOL::Module::Ptr mpModule;
 
     /// @brief 翻譯的語言
     std::string maLanguage;
 
-    Poco::JSON::Object::Ptr mpTranslator = nullptr;
+    // 該語系的翻譯 JSON 物件
+    Poco::JSON::Object mTranslator;
 };
 
 } // namespace OxOOL
