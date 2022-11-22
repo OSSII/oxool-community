@@ -53,7 +53,7 @@ private:
     std::string maLanguage;
 
     // 該語系的翻譯 JSON 物件
-    Poco::JSON::Object mTranslator;
+    Poco::JSON::Object::Ptr mpTranslator;
 };
 
 } // namespace OxOOL
