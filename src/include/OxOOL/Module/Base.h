@@ -26,6 +26,9 @@
 
 namespace OxOOL
 {
+
+class ModuleManager;
+
 namespace Module
 {
 
@@ -48,17 +51,16 @@ class Base
 {
 public:
     Base() {}
-
     virtual ~Base() {}
 
-    void setDetail(const Detail& newDetial) { mDetail = newDetial; }
+    friend class OxOOL::ModuleManager;
+
     const Detail& getDetail() const { return mDetail; }
 
     /// @brief 以 JSON 格式傳回模組詳細資訊
     /// @return Poco::JSON::Object::Ptr
     Poco::JSON::Object::Ptr getAdminDetailJson(const std::string& langTag = std::string());
 
-    void setDocumentRoot(const std::string& documentRoot) { maRootPath = documentRoot; }
     const std::string& getDocumentRoot() const { return maRootPath; }
 
     /// @brief 請求是否是本模組處理
@@ -132,7 +134,7 @@ protected:
 
 private:
     Detail mDetail;
-    std::string maRootPath; // 模組文件位置
+    std::string maRootPath; // 模組文件絕對路徑
 };
 
 typedef std::shared_ptr<Base> Ptr;

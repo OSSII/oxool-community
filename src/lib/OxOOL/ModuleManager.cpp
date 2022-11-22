@@ -371,7 +371,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
                     if (!detail.adminItem.empty())
                         origDetail.adminItem = detail.adminItem;
 
-                    module->setDocumentRoot(documentRoot); // 設定模組文件絕對路徑
+                    module->maRootPath = documentRoot; // 設定模組文件絕對路徑
 
                     // 檢查是否有後臺管理(需在模組目錄下有 admin 目錄，且 admin 目錄下還有 admin.html 及 admin.js)
                     if (Poco::File(documentRoot + "/admin/admin.html").exists() &&
@@ -380,7 +380,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
                         origDetail.adminServiceURI = "/loleaflet/dist/admin/module/" + origDetail.name + "/";
                     }
 
-                    module->setDetail(origDetail); // 重新複寫設定
+                    module->mDetail = origDetail; // 重新複寫設定
 
                     module->initialize();
                 }
@@ -399,8 +399,8 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
         {
             // 沒有載入模組，就用基本模組
             OxOOL::Module::Ptr module = std::make_shared<OxOOL::Module::Base>();
-            module->setDetail(detail); // 重新複寫設定
-            module->setDocumentRoot(documentRoot); // 設定模組文件絕對路徑
+            module->mDetail = detail; // 重新複寫設定
+            module->maRootPath = documentRoot; // 設定模組文件絕對路徑
             mpModules[configFile] = module;
             module->initialize();
         }
