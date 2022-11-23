@@ -654,7 +654,11 @@ L.Clipboard = L.Class.extend({
 		} else if (cmd === '.uno:Cut') {
 			this._execCopyCutPaste('cut', cmd);
 		} else if (cmd === '.uno:Paste') {
-			this._execCopyCutPaste('paste', cmd);
+			if (L.dialog.AsyncClipboard.canBePaste()) {
+				L.dialog.AsyncClipboard.paste();
+			} else {
+				this._execCopyCutPaste('paste', cmd);
+			}
 		} else if (cmd === '.uno:PasteSpecial' || cmd === '.uno:PasteUnformatted') {
 			this._openPasteSpecialPopup(cmd);
 		} else {
@@ -899,6 +903,11 @@ L.Clipboard = L.Class.extend({
 	},
 
 	_openPasteSpecialPopup: function (cmd) {
+		if (L.dialog.AsyncClipboard.canBePaste() && this._map.isUnoCommand(cmd)) {
+			this._map.focus();
+			L.dialog.AsyncClipboard.paste(cmd);
+			return;
+		}
 		var self = this;
 		var title = (cmd === undefined ? '' : '<h3>' + _UNO(cmd, this._map.getDocType()) + '</h3>');
 		var msg = title + _('<p>Your browser has very limited access to the clipboard</p><p>Please press now: <kbd>Ctrl</kbd><span class="kbd--plus">+</span><kbd>V</kbd> to see more options</p><p class="vex-footnote">Close popup to ignore paste special</p>');
