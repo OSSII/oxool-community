@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-17 17:29+0800\n"
+"POT-Creation-Date: 2022-11-24 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,52 +17,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 
-#: admin/admin.strings.js:108
+#: admin/admin.strings.js:113 admin/admin.strings.js:123
 msgid "Admin console"
 msgstr ""
 
-#: admin/admin.strings.js:109 admin/js/admin.menu.js:5
+#: admin/admin.strings.js:124 admin/js/admin.menu.js:5
 msgid "Overview"
 msgstr ""
 
-#: admin/admin.strings.js:110 admin/js/admin.menu.js:10
+#: admin/admin.strings.js:125 admin/js/admin.menu.js:10
 msgid "Analytics"
 msgstr ""
 
-#: admin/admin.strings.js:111 admin/js/admin.menu.js:15
+#: admin/admin.strings.js:126 admin/js/admin.menu.js:15
 msgid "Log"
 msgstr ""
 
-#: admin/admin.strings.js:112 admin/js/admin.menu.js:20
+#: admin/admin.strings.js:127 admin/js/admin.menu.js:20
 msgid "SSL certificate manager"
 msgstr ""
 
-#: admin/admin.strings.js:113 admin/js/admin.menu.js:25
+#: admin/admin.strings.js:128 admin/js/admin.menu.js:25
 msgid "System configuration"
 msgstr ""
 
-#: admin/admin.strings.js:114 admin/js/admin.menu.js:30
+#: admin/admin.strings.js:129 admin/js/admin.menu.js:30
 msgid "Software upgrade"
 msgstr ""
 
-#: admin/admin.strings.js:115 admin/js/admin.menu.js:35
+#: admin/admin.strings.js:130 admin/js/admin.menu.js:35
 msgid "Font manager"
-msgstr ""
-
-#: admin/admin.strings.js:116
-msgid "Table conversion"
-msgstr ""
-
-#: admin/admin.strings.js:117
-msgid "Template Repo"
-msgstr ""
-
-#: admin/admin.strings.js:118
-msgid "ODF report template"
-msgstr ""
-
-#: admin/admin.strings.js:119
-msgid "Module list"
 msgstr ""
 
 #: admin/js/admin.menu.js:40 admin/src/AdminSocketMenuEditor.js:15
@@ -2303,7 +2287,7 @@ msgstr ""
 msgid "Downloading..."
 msgstr ""
 
-#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:746
+#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:748
 msgid "Saving..."
 msgstr ""
 
@@ -2340,7 +2324,7 @@ msgstr ""
 msgid "CSV (.csv)"
 msgstr ""
 
-#: src/control/Toolbar.Extensions.js:241
+#: src/control/Toolbar.Extensions.js:243
 msgid "noname"
 msgstr ""
 
@@ -2810,11 +2794,11 @@ msgstr ""
 msgid "Failed to download clipboard, please re-copy"
 msgstr ""
 
-#: src/map/Clipboard.js:854
+#: src/map/Clipboard.js:858
 msgid "<p>Please use the copy/paste buttons on your on-screen keyboard.</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:856
+#: src/map/Clipboard.js:860
 msgid ""
 "<p>Your browser has very limited access to the clipboard, so use these "
 "keyboard shortcuts:</p><table class=\"warn-copy-paste\"><tr><td><kbd>Ctrl</"
@@ -2824,7 +2808,7 @@ msgid ""
 "td><td>Cut</td><td>Paste</td></tr></table>"
 msgstr ""
 
-#: src/map/Clipboard.js:877
+#: src/map/Clipboard.js:881
 msgid ""
 "<p>If you would like to share larger elements of your document with other "
 "applications it is necessary to first download them onto your device. To do "
@@ -2833,14 +2817,14 @@ msgid ""
 "documents inside %productName, there is no need to download.</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:893
+#: src/map/Clipboard.js:897
 msgid ""
 "<p>A download due to a large copy/paste operation has already started. "
 "Please, wait for the current download or cancel it before starting a new "
 "one</p>"
 msgstr ""
 
-#: src/map/Clipboard.js:904
+#: src/map/Clipboard.js:913
 msgid ""
 "<p>Your browser has very limited access to the clipboard</p><p>Please press "
 "now: <kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> to see "
@@ -2894,6 +2878,22 @@ msgstr ""
 
 #: uiconfig/dialogs/AddTableAtEnd.js:21 uiconfig/dialogs/InsertTable.js:29
 msgid "Automatic naming"
+msgstr ""
+
+#: uiconfig/dialogs/AsyncClipboard.js:19
+msgid "Paste which one?"
+msgstr ""
+
+#: uiconfig/dialogs/AsyncClipboard.js:20
+msgid "Paste the device's clipboard contents."
+msgstr ""
+
+#: uiconfig/dialogs/AsyncClipboard.js:21
+msgid "or"
+msgstr ""
+
+#: uiconfig/dialogs/AsyncClipboard.js:22
+msgid "Paste the internally copied data."
 msgstr ""
 
 #: uiconfig/dialogs/AutoFilter.js:13 uiconfig/dialogs/AutoFilter.js:160

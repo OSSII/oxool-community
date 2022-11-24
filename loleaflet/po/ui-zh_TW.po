@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-17 17:29+0800\n"
+"POT-Creation-Date: 2022-11-24 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,53 +18,37 @@ msgstr ""
 "X-Pootle-Revision: 3609394\n"
 "X-Pootle-Path: /zh_TW/libo_online/loleaflet-ui-zh_TW.po\n"
 
-#: admin/admin.strings.js:108
+#: admin/admin.strings.js:113 admin/admin.strings.js:123
 msgid "Admin console"
 msgstr "管理主控臺"
 
-#: admin/admin.strings.js:109 admin/js/admin.menu.js:5
+#: admin/admin.strings.js:124 admin/js/admin.menu.js:5
 msgid "Overview"
 msgstr "概覽"
 
-#: admin/admin.strings.js:110 admin/js/admin.menu.js:10
+#: admin/admin.strings.js:125 admin/js/admin.menu.js:10
 msgid "Analytics"
 msgstr "分析"
 
-#: admin/admin.strings.js:111 admin/js/admin.menu.js:15
+#: admin/admin.strings.js:126 admin/js/admin.menu.js:15
 msgid "Log"
 msgstr "日誌"
 
-#: admin/admin.strings.js:112 admin/js/admin.menu.js:20
+#: admin/admin.strings.js:127 admin/js/admin.menu.js:20
 msgid "SSL certificate manager"
 msgstr "SSL 設定管理"
 
-#: admin/admin.strings.js:113 admin/js/admin.menu.js:25
+#: admin/admin.strings.js:128 admin/js/admin.menu.js:25
 msgid "System configuration"
 msgstr "系統配置設定"
 
-#: admin/admin.strings.js:114 admin/js/admin.menu.js:30
+#: admin/admin.strings.js:129 admin/js/admin.menu.js:30
 msgid "Software upgrade"
 msgstr "軟體升級"
 
-#: admin/admin.strings.js:115 admin/js/admin.menu.js:35
+#: admin/admin.strings.js:130 admin/js/admin.menu.js:35
 msgid "Font manager"
 msgstr "字型管理"
-
-#: admin/admin.strings.js:116
-msgid "Table conversion"
-msgstr "表格轉試算表"
-
-#: admin/admin.strings.js:117
-msgid "Template Repo"
-msgstr "範本中心"
-
-#: admin/admin.strings.js:118
-msgid "ODF report template"
-msgstr "ODF 報表管理"
-
-#: admin/admin.strings.js:119
-msgid "Module list"
-msgstr "模組列表"
 
 #: admin/js/admin.menu.js:40 admin/src/AdminSocketMenuEditor.js:15
 msgid "Menu editor"
@@ -2308,7 +2292,7 @@ msgstr ""
 msgid "Downloading..."
 msgstr "下載中..."
 
-#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:746
+#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:748
 msgid "Saving..."
 msgstr "儲存中..."
 
@@ -2345,7 +2329,7 @@ msgstr "HTML 文件(.html)"
 msgid "CSV (.csv)"
 msgstr "CSV 檔案 (.csv)"
 
-#: src/control/Toolbar.Extensions.js:241
+#: src/control/Toolbar.Extensions.js:243
 msgid "noname"
 msgstr "未命名"
 
@@ -2817,11 +2801,11 @@ msgstr "禁止從文件內複製"
 msgid "Failed to download clipboard, please re-copy"
 msgstr "無法下載剪貼簿，請重新複製"
 
-#: src/map/Clipboard.js:854
+#: src/map/Clipboard.js:858
 msgid "<p>Please use the copy/paste buttons on your on-screen keyboard.</p>"
 msgstr "<p>請使用螢幕鍵盤上的複製/貼上按鈕。</p>"
 
-#: src/map/Clipboard.js:856
+#: src/map/Clipboard.js:860
 msgid ""
 "<p>Your browser has very limited access to the clipboard, so use these "
 "keyboard shortcuts:</p><table class=\"warn-copy-paste\"><tr><td><kbd>Ctrl</"
@@ -2836,7 +2820,7 @@ msgstr ""
 ">+</span><kbd>X</kbd></td><td><kbd>Ctrl</kbd><span class=\"kbd--plus\">+</spa"
 "n><kbd>V</kbd></td></tr><tr><td>複製</td><td>剪下</td><td>貼上</td></tr></table>"
 
-#: src/map/Clipboard.js:877
+#: src/map/Clipboard.js:881
 msgid ""
 "<p>If you would like to share larger elements of your document with other "
 "applications it is necessary to first download them onto your device. To do "
@@ -2847,14 +2831,14 @@ msgstr ""
 "<p>如果您希望和其他應用程式分享您文件裡的大型元素，則需要先將內容下載至您的裝置中。如果要這麼做，請按下方的「開始下載」，完成後請按「確認複製到剪貼簿」"
 "。</p><p>如果您是打算在 %productName 下的文件間交叉複製貼上，則無需下載。</p>"
 
-#: src/map/Clipboard.js:893
+#: src/map/Clipboard.js:897
 msgid ""
 "<p>A download due to a large copy/paste operation has already started. "
 "Please, wait for the current download or cancel it before starting a new "
 "one</p>"
 msgstr "<p>因為有大量複製/貼上操作而已經啟動下載。請先等候目前下載完成，或是在開始新的下載前先將它取消</p>"
 
-#: src/map/Clipboard.js:904
+#: src/map/Clipboard.js:913
 msgid ""
 "<p>Your browser has very limited access to the clipboard</p><p>Please press "
 "now: <kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> to see "
@@ -2912,6 +2896,22 @@ msgstr "製作副本中..."
 #: uiconfig/dialogs/AddTableAtEnd.js:21 uiconfig/dialogs/InsertTable.js:29
 msgid "Automatic naming"
 msgstr "自動命名"
+
+#: uiconfig/dialogs/AsyncClipboard.js:19
+msgid "Paste which one?"
+msgstr "貼上哪個來源？"
+
+#: uiconfig/dialogs/AsyncClipboard.js:20
+msgid "Paste the device's clipboard contents."
+msgstr "貼上剪貼簿的內容"
+
+#: uiconfig/dialogs/AsyncClipboard.js:21
+msgid "or"
+msgstr "或是"
+
+#: uiconfig/dialogs/AsyncClipboard.js:22
+msgid "Paste the internally copied data."
+msgstr "貼上內部複製的資料"
 
 #: uiconfig/dialogs/AutoFilter.js:13 uiconfig/dialogs/AutoFilter.js:160
 msgid "Top 10"
@@ -3153,6 +3153,18 @@ msgid ""
 "\">filing a bug report</a> with all the essential steps on how to reproduce "
 "it."
 msgstr ""
+
+#~ msgid "Table conversion"
+#~ msgstr "表格轉試算表"
+
+#~ msgid "Template Repo"
+#~ msgstr "範本中心"
+
+#~ msgid "ODF report template"
+#~ msgstr "ODF 報表管理"
+
+#~ msgid "Module list"
+#~ msgstr "模組列表"
 
 #~ msgid "Local Image..."
 #~ msgstr "電腦圖片"
