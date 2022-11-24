@@ -15,6 +15,13 @@ L.dialog.AsyncClipboard = {
 		//{ name: "clipboard-write", allowWithoutGesture: true  }
 	],
 
+	_l10n: [
+		_('Paste which one?'),
+		_('Paste the device\'s clipboard contents.'),
+		_('or'),
+		_('Paste the internally copied data.'),
+	],
+
 	// 選擇貼上來源的對話框
 	_pasteSelectDialog: null,
 
@@ -36,22 +43,18 @@ L.dialog.AsyncClipboard = {
 	 */
 	makePasteSelectDialog: function() {
 		this._pasteSelectDialog = L.DomUtil.createWithId('div', '', document.body);
-
-		let l10nOutside = _('Paste the device\'s clipboard contents.');
-		let l10nInside = _('Paste the internally copied data.');
-
 		this._pasteSelectDialog.innerHTML = `
 		<div>
 			<label>
 				<input type="radio" name="pasteWhichOne" value="outside">
-				<span _="${l10nOutside}"></span>
+				<span _="Paste the device's clipboard contents."></span>
 			</label>
 		</div>
-		<div style="width:100%;text-align:center;" _="or"></div>
+		<div _="or"></div>
 		<div>
 			<label>
 				<input type="radio" name="pasteWhichOne" value="inside">
-				<span _="${l10nInside}"></span>
+				<span _="Paste the internally copied data."></span>
 			</label>
 		</div>
 		`;
