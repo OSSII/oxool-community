@@ -903,8 +903,7 @@ L.Clipboard = L.Class.extend({
 	},
 
 	_openPasteSpecialPopup: function (cmd) {
-		if (L.dialog.AsyncClipboard.canBePaste() && this._map.isUnoCommand(cmd)) {
-			this._map.focus();
+		if (L.dialog.AsyncClipboard.canBePaste()) {
 			L.dialog.AsyncClipboard.paste(cmd);
 			return;
 		}

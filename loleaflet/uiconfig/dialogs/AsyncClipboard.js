@@ -7,39 +7,48 @@
 /* global app */
 L.dialog.AsyncClipboard = {
 	PERMISSIONS : [
+		{ name: "clipboard-write" },
 		{ name: "clipboard-read" },
-		{ name: "clipboard-write" }
 		//{ name: "clipboard-read",  allowWithoutGesture: false },
 		//{ name: "clipboard-read",  allowWithoutGesture: true  },
 		//{ name: "clipboard-write", allowWithoutGesture: false },
 		//{ name: "clipboard-write", allowWithoutGesture: true  }
 	],
 
+	_clipboardState: {
+		write: '', // 寫入剪貼簿權限
+		read: '', // 讀取剪貼簿權限
+	},
+
 	_l10n: [
+		// 貼上哪個來源
 		_('Paste which one?'),
+		// 貼上剪貼簿內容
 		_('Paste the device\'s clipboard contents.'),
+		// 或是
 		_('or'),
+		// 貼上內部複製資料
 		_('Paste the internally copied data.'),
+		// 無法貼上剪貼簿內容
+		_('Unable to paste clipboard contents'),
+		// 瀏覽器不支援讀取剪貼簿內容
+		_('The browser does not support reading clipboard content.'),
+		// 僅能貼上文件內部所複製的資料
+		_('Only data copied inside the document can be pasted.'),
+		// 知道了
+		_('Understood'),
+		// 解決這個問題
+		_('Solve the problem'),
 	],
 
 	// 選擇貼上來源的對話框
 	_pasteSelectDialog: null,
 
-	/// 可貼上權限
-	_pasteState: '',
-
-	toBlob: function(text, mimeType) {
-		let content = [];
-		let data = new Blob([text]);
-		content.push(mimeType + '\n');
-		content.push(data.size.toString(16) + '\n');
-		content.push(data);
-		content.push('\n');
-		return new Blob(content);
-	},
-
 	/**
 	 * 建立貼上來源選取對話框
+	 *
+	 * 當 wopi.DisableCopy === true 時，內部複製/剪下的資料，不會存入系統剪貼簿內
+	 * 而使用者要執行貼上行為時，必須詢問使用者要貼上哪個來源
 	 */
 	makePasteSelectDialog: function() {
 		this._pasteSelectDialog = L.DomUtil.createWithId('div', '', document.body);
@@ -100,6 +109,56 @@ L.dialog.AsyncClipboard = {
 		});
 	},
 
+	// 僅能貼上文件內部所複製的資料對話框
+	_pasteInternalDialog: null,
+	// 已經通知過只能貼上內部資料
+	_pasteInternalUnderstood: false,
+
+	/**
+	 * 建立僅能貼上文件內部所複製的資料對話框
+	 *
+	 * 當 wopi.DisableCopy === true 時，內部複製/剪下的資料，不會存入系統剪貼簿內
+	 * 且瀏覽器剪貼簿 API 又不支援讀取時，需要通知使用者，此時僅能貼上文件內部所複製的資料
+	 */
+	makePasteInternalDialog: function() {
+		this._pasteInternalDialog = L.DomUtil.createWithId('div', '', document.body);
+		this._pasteInternalDialog.innerHTML = `
+		<div _="The browser does not support reading clipboard conten."></div>
+		<div _="Only data copied inside the document can be pasted."></div>
+		`;
+		this._map.translationElement(this._pasteInternalDialog);
+
+		let that = this;
+		$(this._pasteInternalDialog).dialog({
+			title: _('Unable to paste clipboard contents'),
+			position: {my: 'center', at: 'center', of: window},
+			minWidth: 200,
+			autoOpen: false, // 不自動顯示對話框
+			modal: true,
+			resizable: false,
+			draggable: true,
+			closeOnEscape: true,
+			buttons: [
+				{
+					text: _('Understood'),
+					click: function() {
+						let specialPasteCmd = $(this).attr('pastecommand');
+						that.pasteFromInside(specialPasteCmd);
+						$(this).dialog('close');
+						that._pasteInternalUnderstood = true;
+					}
+				}/* , TODO: 按下這個按鈕後，顯示解決貼上剪貼簿的解說網頁
+				{
+					text: _('Solve the problem'),
+					click: function() {
+						$(this).dialog('close');
+					}
+				} */
+			]
+		});
+
+	},
+
 	/**
  	 * 查詢是否可讀取剪貼簿貼上
 	 * @returns
@@ -108,7 +167,7 @@ L.dialog.AsyncClipboard = {
 		// prompt - 詢問使用者是否允許
 		// granted - 已由使用者授權
 		// denied - 被使用者封鎖
-		return this._pasteState !== 'denied';
+		return this._clipboardState.read !== 'denied';
 	},
 
 	/**
@@ -116,10 +175,21 @@ L.dialog.AsyncClipboard = {
 	 * 會出現文件剪貼簿和系統剪貼簿不一樣的情況，此時若使用者執行貼上動作，需詢問使用者要貼上哪個剪貼簿
 	 */
 	pasteWhichOne: function(specialPasteCmd) {
-		$(this._pasteSelectDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+		// 剪貼簿讀取權限不是未知狀態，就詢問使用者貼上哪個來源
+		if (this._clipboardState.read !== 'unknown') {
+			$(this._pasteSelectDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+		} else { // 否則通知使用者，只能貼上文件內部所複製的資料
+			// 沒通知過就顯示對話框通知使用者
+			if (!this._pasteInternalUnderstood) {
+				$(this._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+			} else { // 直接執行內部貼上
+				this.pasteFromInside(specialPasteCmd);
+			}
+		}
 	},
 
-	paste: async function(specialPasteCmd = '.uno:Paste') {
+	paste: function(specialPasteCmd = '.uno:Paste') {
+		console.debug('clipboardState:', this._clipboardState);
 		// 如果禁用複製到外部功能，則系統剪貼簿是沒有內部所複製的資料
 		// 所以需詢問使用者，要貼上內部或外部資料
 		if (this._map['wopi'].DisableCopy === true) {
@@ -196,29 +266,67 @@ L.dialog.AsyncClipboard = {
 			} else {
 				console.debug('Clipboard does not have required data type.("text/html" or "text/plain")');
 			}
-		} catch(e) {
+		} catch(e) { // 貼上剪貼簿內容發生錯誤
 			console.debug('Failed to read clipboard :', e);
+			// 一開始就無法查詢權限
+			if (that._clipboardState.read === 'unknown') {
+				// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
+				if (window.mode.isMobile() || window.mode.isTablet()) {
+					// 沒通知過就顯示對話框通知使用者
+					if (!that._pasteInternalUnderstood) {
+						$(that._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+					} else { // 直接執行內部貼上
+						that.pasteFromInside(specialPasteCmd);
+					}
+				} else { // 電腦，通知使用者改用 Ctrl + v
+					that._map._clip._warnCopyPaste();
+				}
+			} else { // 通知使用者改用 Ctrl + v
+				that._map._clip._warnCopyPaste();
+			}
 		}
 	},
 
+	/**
+	 * 初始化非同步剪貼簿 API 功能
+	 */
 	initialize: function() {
 		let that = this;
-		Promise.all(
-			that.PERMISSIONS.map( descriptor => navigator.permissions.query(descriptor) )
-		).then( permissions => {
-			permissions.forEach( (status, index) => {
-				// 監視讀取剪貼簿權限
-				if (status.name === 'clipboard_read') {
-					status.onchange = () => {
-						that._pasteState = status.state;
-						console.debug('clipboard_read status = ' + status.state);
-					};
-					status.onchange();
+		// 查詢剪貼簿寫入及讀取權限
+		for (let perm of this.PERMISSIONS) {
+			navigator.permissions.query(perm).then(function(status) {
+				switch (perm.name) {
+					case 'clipboard-write': // 寫入剪貼簿權限
+						that._clipboardState.write = status.state;
+						status.onchange = function(e) {
+							that._clipboardState.write = e.target.state;
+						};
+						break;
+					case 'clipboard-read': // 讀取剪貼簿權限
+						that._clipboardState.read = status.state;
+						status.onchange = function(e) {
+							that._clipboardState.read = e.target.state;
+						};
+						break;
+					default:
+						// nothing to do.
+						break;
+				}
+			// 查詢失敗就將權限設爲 'unknown'
+			}).catch(function(e) {
+				console.debug('Permission query fail:', e);
+				if (perm.name === 'clipboard-write') {
+					that._clipboardState.write = 'unknown';
+				} else if (perm.name === 'clipboard-read') {
+					that._clipboardState.read = 'unknown';
 				}
 			});
-		});
+		}
 
+		// 製作貼上來源選擇的 Dialog，只有在 wopi.DisableCopy === true 時需要用
 		this.makePasteSelectDialog();
+
+		this.makePasteInternalDialog();
 	},
 
 	run: function(/*parameter*/) {
