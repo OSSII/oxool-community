@@ -31,14 +31,16 @@ L.dialog.AsyncClipboard = {
 		_('Paste the internally copied data.'),
 		// 無法貼上剪貼簿內容
 		_('Unable to paste clipboard contents'),
-		// 瀏覽器不支援讀取剪貼簿內容
-		_('The browser does not support reading clipboard content.'),
+		// 您的瀏覽器不支援讀取剪貼簿內容
+		_('Your browser does not support the ability to paste clipboard content.'),
 		// 僅能貼上文件內部所複製的資料
 		_('Only data copied inside the document can be pasted.'),
 		// 知道了
 		_('Understood'),
 		// 解決這個問題
 		_('Solve the problem'),
+		// 不再提醒
+		_('Do not remind.'),
 	],
 
 	// 選擇貼上來源的對話框
@@ -122,9 +124,11 @@ L.dialog.AsyncClipboard = {
 	 */
 	makePasteInternalDialog: function() {
 		this._pasteInternalDialog = L.DomUtil.createWithId('div', '', document.body);
-		this._pasteInternalDialog.innerHTML = `
-		<div _="The browser does not support reading clipboard conten."></div>
-		<div _="Only data copied inside the document can be pasted."></div>
+		this._pasteInternalDialog.innerHTML = `<p>
+		<span _="Your browser does not support the ability to paste clipboard content."></span>
+		<span _="Only data copied inside the document can be pasted."></span>
+		</p>
+		<p><label><input type="checkbox" name="noNotification"><span _="Do not remind."></span></label></p>
 		`;
 		this._map.translationElement(this._pasteInternalDialog);
 
@@ -145,7 +149,10 @@ L.dialog.AsyncClipboard = {
 						let specialPasteCmd = $(this).attr('pastecommand');
 						that.pasteFromInside(specialPasteCmd);
 						$(this).dialog('close');
-						that._pasteInternalUnderstood = true;
+						let noNotification = this.querySelector('input[type=checkbox]:checked');
+						console.debug('noNotification:', noNotification);
+						if (noNotification !== null)
+							that._pasteInternalUnderstood = true;
 					}
 				}/* , TODO: 按下這個按鈕後，顯示解決貼上剪貼簿的解說網頁
 				{
@@ -167,7 +174,8 @@ L.dialog.AsyncClipboard = {
 		// prompt - 詢問使用者是否允許
 		// granted - 已由使用者授權
 		// denied - 被使用者封鎖
-		return this._clipboardState.read !== 'denied';
+		//return this._clipboardState.read !== 'denied';
+		return true;
 	},
 
 	/**
@@ -291,6 +299,11 @@ L.dialog.AsyncClipboard = {
 	 * 初始化非同步剪貼簿 API 功能
 	 */
 	initialize: function() {
+		// 製作貼上來源選擇的 Dialog，只有在 wopi.DisableCopy === true 時需要用
+		this.makePasteSelectDialog();
+		// 製作通知只能內部貼上的 Dialog
+		this.makePasteInternalDialog();
+
 		let that = this;
 		// 查詢剪貼簿寫入及讀取權限
 		for (let perm of this.PERMISSIONS) {
@@ -323,10 +336,8 @@ L.dialog.AsyncClipboard = {
 			});
 		}
 
-		// 製作貼上來源選擇的 Dialog，只有在 wopi.DisableCopy === true 時需要用
-		this.makePasteSelectDialog();
+		console.debug("async clipboard initialize:", this._clipboardState);
 
-		this.makePasteInternalDialog();
 	},
 
 	run: function(/*parameter*/) {
