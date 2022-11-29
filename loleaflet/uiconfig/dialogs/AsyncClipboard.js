@@ -228,10 +228,10 @@ L.dialog.AsyncClipboard = {
 		let that = this;
 		try {
 			const clipboardItems = await navigator.clipboard.read();
-			this.screenLog('clipboardItems', clipboardItems);
+			that.screenLog('clipboardItems', clipboardItems);
 			const clipboardItem = clipboardItems[0];
 			const clipboardTypes = clipboardItem.types;
-			this.screenLog('clipboardItems.types', clipboardTypes);
+			that.screenLog('clipboardItems.types', clipboardTypes);
 
 			let content = [];
 			for (let i = 0 ; i < clipboardTypes.length ; ++i) {
@@ -242,7 +242,7 @@ L.dialog.AsyncClipboard = {
 					continue;
 
 				let data = new Blob([dataStr]);
-				this.screenLog('type ' + type + ' length ' + data.size +
+				that.screenLog('type ' + type + ' length ' + data.size +
 				    ' -> 0x' + data.size.toString(16) + '\n');
 				content.push(type + '\n');
 				content.push(data.size.toString(16) + '\n');
@@ -259,7 +259,7 @@ L.dialog.AsyncClipboard = {
 
 				clip._doAsyncDownload('POST', clip.getMetaURL(), formData, false,
 					function() {
-						this.screenLog('Posted ' + contentBlob.size + ' bytes successfully');
+						that.screenLog('Posted ' + contentBlob.size + ' bytes successfully');
 						// do internal paste.
 						// 執行內部貼上，前面只是把剪貼簿內容傳到 OxOffice，變成 OxOffice 的剪貼簿內容，
 						// 所以要執行 OxOffice 真正的貼上指令，才會把OxOffice 的剪貼簿內容貼上文件。
@@ -267,15 +267,15 @@ L.dialog.AsyncClipboard = {
 					},
 
 					function(progress) {
-						this.screenLog('progress : ', progress);
+						that.screenLog('progress : ', progress);
 						return progress;
 					}
 				);
 			} else {
-				this.screenLog('Clipboard does not have required data type.("text/html" or "text/plain")');
+				that.screenLog('Clipboard does not have required data type.("text/html" or "text/plain")');
 			}
 		} catch(e) { // 貼上剪貼簿內容發生錯誤
-			this.screenLog('Failed to read clipboard :', e);
+			that.screenLog('Failed to read clipboard :', e);
 			// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
 			if (window.mode.isMobile() || window.mode.isTablet()) {
 				// 沒通知過就顯示對話框通知使用者
