@@ -15,6 +15,8 @@ L.dialog.AsyncClipboard = {
 		//{ name: "clipboard-write", allowWithoutGesture: true  }
 	],
 
+	_debug: true,
+
 	_clipboardState: {
 		write: '', // 寫入剪貼簿權限
 		read: '', // 讀取剪貼簿權限
@@ -53,7 +55,7 @@ L.dialog.AsyncClipboard = {
 	 * 而使用者要執行貼上行為時，必須詢問使用者要貼上哪個來源
 	 */
 	makePasteSelectDialog: function() {
-		this._pasteSelectDialog = L.DomUtil.createWithId('div', '', document.body);
+		this._pasteSelectDialog = L.DomUtil.create('div', '', document.body);
 		this._pasteSelectDialog.innerHTML = `
 		<div>
 			<label>
@@ -91,7 +93,6 @@ L.dialog.AsyncClipboard = {
 						if (which !== null) {
 							let pasteFrom = which.value;
 							let specialPasteCmd = $(this).attr('pastecommand');
-							console.debug('Paste which one = ', pasteFrom, specialPasteCmd);
 							if (pasteFrom === 'outside') {
 								that.pasteFromOutside(specialPasteCmd);
 							} else {
@@ -123,7 +124,7 @@ L.dialog.AsyncClipboard = {
 	 * 且瀏覽器剪貼簿 API 又不支援讀取時，需要通知使用者，此時僅能貼上文件內部所複製的資料
 	 */
 	makePasteInternalDialog: function() {
-		this._pasteInternalDialog = L.DomUtil.createWithId('div', '', document.body);
+		this._pasteInternalDialog = L.DomUtil.create('div', '', document.body);
 		this._pasteInternalDialog.innerHTML = `<p>
 		<span _="Your browser does not support the ability to paste clipboard content."></span>
 		<span _="Only data copied inside the document can be pasted."></span>
@@ -150,7 +151,6 @@ L.dialog.AsyncClipboard = {
 						that.pasteFromInside(specialPasteCmd);
 						$(this).dialog('close');
 						let noNotification = this.querySelector('input[type=checkbox]:checked');
-						console.debug('noNotification:', noNotification);
 						if (noNotification !== null)
 							that._pasteInternalUnderstood = true;
 					}
@@ -197,7 +197,7 @@ L.dialog.AsyncClipboard = {
 	},
 
 	paste: function(specialPasteCmd = '.uno:Paste') {
-		console.debug('clipboardState:', this._clipboardState);
+		this.screenLog('clipboardState:', this._clipboardState);
 		// 如果禁用複製到外部功能，則系統剪貼簿是沒有內部所複製的資料
 		// 所以需詢問使用者，要貼上內部或外部資料
 		if (this._map['wopi'].DisableCopy === true) {
@@ -228,10 +228,10 @@ L.dialog.AsyncClipboard = {
 		let that = this;
 		try {
 			const clipboardItems = await navigator.clipboard.read();
-			console.debug('clipboardItems', clipboardItems);
+			this.screenLog('clipboardItems', clipboardItems);
 			const clipboardItem = clipboardItems[0];
 			const clipboardTypes = clipboardItem.types;
-			console.debug('clipboardItems.types', clipboardTypes);
+			this.screenLog('clipboardItems.types', clipboardTypes);
 
 			let content = [];
 			for (let i = 0 ; i < clipboardTypes.length ; ++i) {
@@ -242,7 +242,7 @@ L.dialog.AsyncClipboard = {
 					continue;
 
 				let data = new Blob([dataStr]);
-				console.debug('type ' + type + ' length ' + data.size +
+				this.screenLog('type ' + type + ' length ' + data.size +
 				    ' -> 0x' + data.size.toString(16) + '\n');
 				content.push(type + '\n');
 				content.push(data.size.toString(16) + '\n');
@@ -259,7 +259,7 @@ L.dialog.AsyncClipboard = {
 
 				clip._doAsyncDownload('POST', clip.getMetaURL(), formData, false,
 					function() {
-						console.debug('Posted ' + contentBlob.size + ' bytes successfully');
+						this.screenLog('Posted ' + contentBlob.size + ' bytes successfully');
 						// do internal paste.
 						// 執行內部貼上，前面只是把剪貼簿內容傳到 OxOffice，變成 OxOffice 的剪貼簿內容，
 						// 所以要執行 OxOffice 真正的貼上指令，才會把OxOffice 的剪貼簿內容貼上文件。
@@ -267,29 +267,24 @@ L.dialog.AsyncClipboard = {
 					},
 
 					function(progress) {
-						console.debug('progress : ', progress);
+						this.screenLog('progress : ', progress);
 						return progress;
 					}
 				);
 			} else {
-				console.debug('Clipboard does not have required data type.("text/html" or "text/plain")');
+				this.screenLog('Clipboard does not have required data type.("text/html" or "text/plain")');
 			}
 		} catch(e) { // 貼上剪貼簿內容發生錯誤
-			console.debug('Failed to read clipboard :', e);
-			// 一開始就無法查詢權限
-			if (that._clipboardState.read === 'unknown') {
-				// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
-				if (window.mode.isMobile() || window.mode.isTablet()) {
-					// 沒通知過就顯示對話框通知使用者
-					if (!that._pasteInternalUnderstood) {
-						$(that._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
-					} else { // 直接執行內部貼上
-						that.pasteFromInside(specialPasteCmd);
-					}
-				} else { // 電腦，通知使用者改用 Ctrl + v
-					that._map._clip._warnCopyPaste();
+			this.screenLog('Failed to read clipboard :', e);
+			// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
+			if (window.mode.isMobile() || window.mode.isTablet()) {
+				// 沒通知過就顯示對話框通知使用者
+				if (!that._pasteInternalUnderstood) {
+					$(that._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+				} else { // 直接執行內部貼上
+					that.pasteFromInside(specialPasteCmd);
 				}
-			} else { // 通知使用者改用 Ctrl + v
+			} else { // 電腦，通知使用者改用 Ctrl + v
 				that._map._clip._warnCopyPaste();
 			}
 		}
@@ -327,7 +322,7 @@ L.dialog.AsyncClipboard = {
 				}
 			// 查詢失敗就將權限設爲 'unknown'
 			}).catch(function(e) {
-				console.debug('Permission query fail:', e);
+				this.screenLog('Permission query fail:', e);
 				if (perm.name === 'clipboard-write') {
 					that._clipboardState.write = 'unknown';
 				} else if (perm.name === 'clipboard-read') {
@@ -336,8 +331,34 @@ L.dialog.AsyncClipboard = {
 			});
 		}
 
-		console.debug("async clipboard initialize:", this._clipboardState);
+		this.screenLog("async clipboard initialize:", this._clipboardState);
 
+	},
+
+	screenLog: function(msg, data) {
+		// 桌面環境直接顯示在 console.debug()
+		if (window.mode.isDesktop() || this._debug === false) {
+			console.debug(msg, data);
+			return;
+		}
+
+		// 建立一個螢幕區塊
+		const consoleId = 'console-debug';
+		let screenConsole = document.getElementById(consoleId);
+
+		if (screenConsole === null) {
+			screenConsole = L.DomUtil.createWithId('div', consoleId, document.body);
+			screenConsole.style.width  = '100%';
+			screenConsole.style.height = "50px";
+			screenConsole.style.overflow = 'auto';
+			screenConsole.style.position = 'absolute';
+			screenConsole.style.left = '0px';
+			screenConsole.style.bottom = '50px';
+			screenConsole.style.backgroundColor = "#ffffff";
+			screenConsole.style.color = 'blue';
+		}
+
+		screenConsole.innerHTML += '<br>' + msg + (typeof(data) === 'object' ? JSON.stringify(data) : data);
 	},
 
 	run: function(/*parameter*/) {
