@@ -15,7 +15,7 @@ L.dialog.AsyncClipboard = {
 		//{ name: "clipboard-write", allowWithoutGesture: true  }
 	],
 
-	_debug: true,
+	_debug: false,
 
 	_clipboardState: {
 		write: '', // 寫入剪貼簿權限
