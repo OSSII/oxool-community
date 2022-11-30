@@ -647,6 +647,12 @@ AS_IF([test `uname -s` = Linux],
 
 AM_CONDITIONAL([ENABLE_DEBUG], [test "$ENABLE_DEBUG" = "true"])
 
+ENABLE_MOBILEAPP=false
+MOBILEAPP=0
+AC_DEFINE_UNQUOTED([MOBILEAPP],[$MOBILEAPP],[Define to 1 if this is a mobileapp (eg. Android) build.])
+AC_SUBST(ENABLE_MOBILEAPP)
+AM_CONDITIONAL([ENABLE_MOBILEAPP], [test "$ENABLE_MOBILEAPP" = "true"])
+
 ENABLE_SSL=true
 if test "$enable_ssl" != "no" ; then
    ssl_msg="ssl enabled"
