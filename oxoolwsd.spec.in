@@ -95,7 +95,6 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 /usr/share/%{name}/discovery.xml
 /usr/share/%{name}/favicon.ico
 /usr/share/%{name}/extensions
-/usr/share/%{name}/modules
 /usr/share/doc/%{name}/*
 /usr/share/man/man1/*
 /etc/fonts/conf.d/*.conf
@@ -116,6 +115,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %files modules
 %{_libdir}/@PACKAGE_NAME@/*.so
 /etc/%{name}/conf.d/*
+/usr/share/%{name}/modules
 
 %files devel
 %{_includedir}/*
