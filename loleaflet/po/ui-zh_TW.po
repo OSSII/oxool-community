@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-24 22:08+0800\n"
+"POT-Creation-Date: 2022-11-29 17:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2838,7 +2838,7 @@ msgid ""
 "one</p>"
 msgstr "<p>因為有大量複製/貼上操作而已經啟動下載。請先等候目前下載完成，或是在開始新的下載前先將它取消</p>"
 
-#: src/map/Clipboard.js:913
+#: src/map/Clipboard.js:912
 msgid ""
 "<p>Your browser has very limited access to the clipboard</p><p>Please press "
 "now: <kbd>Ctrl</kbd><span class=\"kbd--plus\">+</span><kbd>V</kbd> to see "
@@ -2897,21 +2897,47 @@ msgstr "製作副本中..."
 msgid "Automatic naming"
 msgstr "自動命名"
 
-#: uiconfig/dialogs/AsyncClipboard.js:19
+#: uiconfig/dialogs/AsyncClipboard.js:27
 msgid "Paste which one?"
 msgstr "貼上哪個來源？"
 
-#: uiconfig/dialogs/AsyncClipboard.js:20
+#: uiconfig/dialogs/AsyncClipboard.js:29
 msgid "Paste the device's clipboard contents."
 msgstr "貼上剪貼簿的內容"
 
-#: uiconfig/dialogs/AsyncClipboard.js:21
+#: uiconfig/dialogs/AsyncClipboard.js:31
 msgid "or"
 msgstr "或是"
 
-#: uiconfig/dialogs/AsyncClipboard.js:22
+#: uiconfig/dialogs/AsyncClipboard.js:33
 msgid "Paste the internally copied data."
 msgstr "貼上內部複製的資料"
+
+#: uiconfig/dialogs/AsyncClipboard.js:35
+#: uiconfig/dialogs/AsyncClipboard.js:138
+msgid "Unable to paste clipboard contents"
+msgstr "無法貼上剪貼簿內容"
+
+#: uiconfig/dialogs/AsyncClipboard.js:37
+msgid "Your browser does not support the ability to paste clipboard content."
+msgstr "您的瀏覽器不支援貼上剪貼簿的功能。"
+
+#: uiconfig/dialogs/AsyncClipboard.js:39
+msgid "Only data copied inside the document can be pasted."
+msgstr "僅能貼上文件內部複製的資料。"
+
+#: uiconfig/dialogs/AsyncClipboard.js:41
+#: uiconfig/dialogs/AsyncClipboard.js:148
+msgid "Understood"
+msgstr "知道了"
+
+#: uiconfig/dialogs/AsyncClipboard.js:43
+msgid "Solve the problem"
+msgstr "解決這個問題"
+
+#: uiconfig/dialogs/AsyncClipboard.js:45
+msgid "Do not remind."
+msgstr "不再提醒"
 
 #: uiconfig/dialogs/AutoFilter.js:13 uiconfig/dialogs/AutoFilter.js:160
 msgid "Top 10"
