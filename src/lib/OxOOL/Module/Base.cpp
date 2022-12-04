@@ -270,11 +270,9 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_L10N%-->"), moduleL10NJSON);
 
     // 帶入模組的 admin.js
-    static const std::string moduleAdminJS("<script src=\"%s" + mDetail.adminServiceURI + "admin.js\"></script>");
+    const std::string moduleAdminJS("<script src=\"%s" + mDetail.adminServiceURI + "admin.js\"></script>");
     std::string moduleScriptJS(Poco::format(moduleAdminJS, responseRoot));
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_ADMIN_JS%-->"), moduleScriptJS);
-
-    //static const std::string scriptJS("<script src=\"%s/loleaflet/" + OxOOL::ENV::VersionHash + "/%s.js\"></script>");
 
     Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::ENV::VersionHash);
     Poco::replaceInPlace(templateFile, std::string("%SERVICE_ROOT%"), responseRoot);
