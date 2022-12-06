@@ -60,7 +60,7 @@ void sendResponse(const std::shared_ptr<StreamSocket>& socket,
     // 有要回應的內容，才設定 Content-Type
     if (body.size())
     {
-        response.setContentType(mimeType.empty() ? "text/plain" : mimeType);
+        response.setContentType(mimeType.empty() ? "text/plain; charset=utf-8" : mimeType);
     }
 
     // 需增加額外標頭
