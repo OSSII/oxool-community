@@ -648,12 +648,11 @@ L.Control.MobileBottomBar = L.Control.extend({
 		}
 
 		var map = this.map;
-		var toolItems = this.getToolItems(this.options.docType);
 
 		var toolbar = $('#toolbar-down');
 		this._bar = toolbar.w2toolbar({
 			name: 'editbar',
-			items: toolItems,
+			items: this.getToolItems(this.options.docType),
 			onClick: function (e) {
 				// In the iOS app we don't want clicking on the toolbar to pop up the keyboard.
 				if (!window.ThisIsTheiOSApp) {
@@ -682,30 +681,11 @@ L.Control.MobileBottomBar = L.Control.extend({
 			}
 		});
 
-		if (this.map.isRestrictedUser()) {
-			for (var i = 0; i < toolItems.length; i++) {
-				var it = toolItems[i];
-				this.map.hideRestrictedItems(it, $('#tb_editbar_item_'+ it.id)[0], $('#tb_editbar_item_'+ it.id)[0]);
-			}
-		}
-
-		if (this.map.isLockedUser()) {
-			for (var i = 0; i < toolItems.length; i++) {
-				var it = toolItems[i];
-				this.map.disableLockedItem(it, $('#tb_editbar_item_'+ it.id)[0], $('#tb_editbar_item_'+ it.id)[0]);
-			}
-		}
-
-		this._updateToolbarsVisibility();
 		this.map.setupStateChangesForToolbar({toolbar: this._bar});
 	},
 
-	_updateToolbarsVisibility: function(context) {
-		window.updateVisibilityForToolbar(this._bar, context);
-	},
-
-	onContextChange: function(event) {
-		this._updateToolbarsVisibility(event.context);
+	onContextChange: function(/*event*/) {
+		// do nothing.
 	},
 });
 

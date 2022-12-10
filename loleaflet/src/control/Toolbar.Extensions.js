@@ -601,6 +601,8 @@ L.Map.include({
 		var map = this;
 		var toolbar = options.toolbar;
 		var isRemove = options.remove === true ? true : false;
+		// 是否運作在手機上？
+		var isMobile = window.mode.isMobile();
 
 		var rewrite = function(toolbar, items, remove) {
 			items.forEach(function(item) {
@@ -618,7 +620,10 @@ L.Map.include({
 					} else { // 新增指令狀態回報
 						map.stateChangeHandler.on(commandName, item.stateChange, item);
 						// 加入白名單
-						map._allowedCommands.toolbarHolding.push({id: commandName});
+						if (isMobile)
+							map.addAllowCommand({id: commandName});
+						else
+							map._allowedCommands.toolbarHolding.push({id: commandName});
 					}
 				// stateChange 是 object 的話，必須含有 commandName 及 callback 兩個結構
 				// commandName 要監控的指令，若有多個，用空白分隔
@@ -635,7 +640,10 @@ L.Map.include({
 						} else { // 新增指令狀態回報
 							map.stateChangeHandler.on(commands[i], item.stateChange.callback, item);
 							// 加入白名單
-							map._allowedCommands.toolbarHolding.push({id: commands[i]});
+							if (isMobile)
+								map.addAllowCommand({id: commands[i]});
+							else
+								map._allowedCommands.toolbarHolding.push({id: commands[i]});
 						}
 					}
 				// stateChange 是 string 的話，表示該字串就是 command
@@ -646,7 +654,10 @@ L.Map.include({
 					} else { // 新增指令狀態回報
 						map.stateChangeHandler.on(item.stateChange, map.simpleStateChangeChecker, item);
 						// 加入白名單
-						map._allowedCommands.toolbarHolding.push({id: item.stateChange});
+						if (isMobile)
+							map.addAllowCommand({id: item.stateChange});
+						else
+							map._allowedCommands.toolbarHolding.push({id: item.stateChange});
 					}
 				// stateChange 是 true，而且有 uno
 				} else if (item.stateChange === true && item.uno) {
@@ -657,7 +668,10 @@ L.Map.include({
 						// 直接賦予 onStateChange
 						map.stateChangeHandler.on(item.uno, map.simpleStateChangeChecker, item);
 						// 加入白名單
-						map._allowedCommands.toolbarHolding.push({id: item.uno});
+						if (isMobile)
+							map.addAllowCommand({id: item.uno});
+						else
+							map._allowedCommands.toolbarHolding.push({id: item.uno});
 					}
 				}
 

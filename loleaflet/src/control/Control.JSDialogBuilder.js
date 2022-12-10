@@ -2810,7 +2810,7 @@ L.Control.JSDialogBuilder = L.Control.extend({
 
 		var buttonId = 'border-' + i;
 		button = L.DomUtil.create('img', 'ui-content borderbutton', div);
-		button.src = L.LOUtil.getImageURL('fr0' + i + '.svg');
+		button.src = builder.map.getIconURL('res:fr0' + i);
 		button.id = buttonId;
 
 		if (selected)
