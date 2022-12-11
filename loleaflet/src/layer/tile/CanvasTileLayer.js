@@ -391,6 +391,10 @@ L.TileSectionManager = L.Class.extend({
 	},
 
 	shouldDrawCalcGrid: function () {
+		// Grids should not be drawn if the worksheet has been configured not to view grids.
+		if (!this._map.stateChangeHandler.getItemProperty('.uno:ToggleSheetGrid').checked())
+			return false;
+
 		var defaultBG = 'ffffff';
 		if (this._layer.coreDocBGColor)
 			return (this._layer.coreDocBGColor === defaultBG);
