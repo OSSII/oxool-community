@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 17:36+0800\n"
+"POT-Creation-Date: 2022-12-13 13:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1160,8 +1160,8 @@ msgstr ""
 
 #: src/control/Control.DocumentRepair.js:48
 #: src/control/Control.JSDialogBuilder.js:2277
-#: src/layer/tile/CanvasTileLayer.js:5081
-#: src/layer/tile/CanvasTileLayer.js:5091
+#: src/layer/tile/CanvasTileLayer.js:5122
+#: src/layer/tile/CanvasTileLayer.js:5132
 #: src/layer/tile/CommentListSection.ts:857
 msgid "Comment"
 msgstr ""
@@ -2287,7 +2287,7 @@ msgstr ""
 msgid "Downloading..."
 msgstr ""
 
-#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:748
+#: src/control/Toolbar.js:292 src/control/Toolbar.Extensions.js:762
 msgid "Saving..."
 msgstr ""
 
@@ -2712,19 +2712,23 @@ msgstr ""
 msgid "Create a QR code for hyperlinks (if any) in the document."
 msgstr ""
 
-#: src/layer/tile/CanvasTileLayer.js:1838
+#: src/layer/tile/CanvasTileLayer.js:1847
 msgid "Functions"
 msgstr ""
 
-#: src/layer/tile/CanvasTileLayer.js:2064
+#: src/layer/tile/CanvasTileLayer.js:2024
+msgid "Status code:"
+msgstr ""
+
+#: src/layer/tile/CanvasTileLayer.js:2105
 msgid "This type of picture editing is not yet supported."
 msgstr ""
 
-#: src/layer/tile/CanvasTileLayer.js:2082
+#: src/layer/tile/CanvasTileLayer.js:2123
 msgid "unnamed"
 msgstr ""
 
-#: src/layer/tile/CanvasTileLayer.js:5108
+#: src/layer/tile/CanvasTileLayer.js:5149
 msgid "No Comments"
 msgstr ""
 
@@ -2880,45 +2884,45 @@ msgstr ""
 msgid "Automatic naming"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:27
+#: uiconfig/dialogs/AsyncClipboard.js:25
 msgid "Paste which one?"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:29
+#: uiconfig/dialogs/AsyncClipboard.js:27
 msgid "Paste the device's clipboard contents."
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:31
+#: uiconfig/dialogs/AsyncClipboard.js:29
 msgid "or"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:33
+#: uiconfig/dialogs/AsyncClipboard.js:31
 msgid "Paste the internally copied data."
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:35
-#: uiconfig/dialogs/AsyncClipboard.js:138
+#: uiconfig/dialogs/AsyncClipboard.js:33
+#: uiconfig/dialogs/AsyncClipboard.js:136
 msgid "Unable to paste clipboard contents"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:37
+#: uiconfig/dialogs/AsyncClipboard.js:35
 msgid "Your browser does not support the ability to paste clipboard content."
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:39
+#: uiconfig/dialogs/AsyncClipboard.js:37
 msgid "Only data copied inside the document can be pasted."
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:41
-#: uiconfig/dialogs/AsyncClipboard.js:148
+#: uiconfig/dialogs/AsyncClipboard.js:39
+#: uiconfig/dialogs/AsyncClipboard.js:146
 msgid "Understood"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:43
+#: uiconfig/dialogs/AsyncClipboard.js:41
 msgid "Solve the problem"
 msgstr ""
 
-#: uiconfig/dialogs/AsyncClipboard.js:45
+#: uiconfig/dialogs/AsyncClipboard.js:43
 msgid "Do not remind."
 msgstr ""
 
