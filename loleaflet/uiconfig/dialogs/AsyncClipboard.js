@@ -15,8 +15,6 @@ L.dialog.AsyncClipboard = {
 		//{ name: "clipboard-write", allowWithoutGesture: true  }
 	],
 
-	_debug: false,
-
 	_clipboardState: {
 		write: '', // 寫入剪貼簿權限
 		read: '', // 讀取剪貼簿權限
@@ -174,8 +172,11 @@ L.dialog.AsyncClipboard = {
 		// prompt - 詢問使用者是否允許
 		// granted - 已由使用者授權
 		// denied - 被使用者封鎖
-		//return this._clipboardState.read !== 'denied';
-		return true;
+		const isThatTrue = (this._clipboardState.read === 'granted' ||
+							this._clipboardState.read === 'prompt');
+		console.debug('clipboardState:', this._clipboardState, "canBePaste:", isThatTrue);
+
+		return isThatTrue;
 	},
 
 	/**
@@ -197,7 +198,6 @@ L.dialog.AsyncClipboard = {
 	},
 
 	paste: function(specialPasteCmd = '.uno:Paste') {
-		this.screenLog('clipboardState:', this._clipboardState);
 		// 如果禁用複製到外部功能，則系統剪貼簿是沒有內部所複製的資料
 		// 所以需詢問使用者，要貼上內部或外部資料
 		if (this._map['wopi'].DisableCopy === true) {
@@ -228,10 +228,10 @@ L.dialog.AsyncClipboard = {
 		let that = this;
 		try {
 			const clipboardItems = await navigator.clipboard.read();
-			that.screenLog('clipboardItems', clipboardItems);
+			console.debug('clipboardItems', clipboardItems);
 			const clipboardItem = clipboardItems[0];
 			const clipboardTypes = clipboardItem.types;
-			that.screenLog('clipboardItems.types', clipboardTypes);
+			console.debug('clipboardItems.types', clipboardTypes);
 
 			let content = [];
 			for (let i = 0 ; i < clipboardTypes.length ; ++i) {
@@ -242,7 +242,7 @@ L.dialog.AsyncClipboard = {
 					continue;
 
 				let data = new Blob([dataStr]);
-				that.screenLog('type ' + type + ' length ' + data.size +
+				console.debug('type ' + type + ' length ' + data.size +
 				    ' -> 0x' + data.size.toString(16) + '\n');
 				content.push(type + '\n');
 				content.push(data.size.toString(16) + '\n');
@@ -259,7 +259,7 @@ L.dialog.AsyncClipboard = {
 
 				clip._doAsyncDownload('POST', clip.getMetaURL(), formData, false,
 					function() {
-						that.screenLog('Posted ' + contentBlob.size + ' bytes successfully');
+						console.debug('Posted ' + contentBlob.size + ' bytes successfully');
 						// do internal paste.
 						// 執行內部貼上，前面只是把剪貼簿內容傳到 OxOffice，變成 OxOffice 的剪貼簿內容，
 						// 所以要執行 OxOffice 真正的貼上指令，才會把OxOffice 的剪貼簿內容貼上文件。
@@ -267,15 +267,15 @@ L.dialog.AsyncClipboard = {
 					},
 
 					function(progress) {
-						that.screenLog('progress : ', progress);
+						console.debug('progress : ', progress);
 						return progress;
 					}
 				);
 			} else {
-				that.screenLog('Clipboard does not have required data type.("text/html" or "text/plain")');
+				console.debug('Clipboard does not have required data type.("text/html" or "text/plain")');
 			}
 		} catch(e) { // 貼上剪貼簿內容發生錯誤
-			that.screenLog('Failed to read clipboard :', e);
+			console.debug('Failed to read clipboard :', e);
 			// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
 			if (window.mode.isMobile() || window.mode.isTablet()) {
 				// 沒通知過就顯示對話框通知使用者
@@ -322,7 +322,7 @@ L.dialog.AsyncClipboard = {
 				}
 			// 查詢失敗就將權限設爲 'unknown'
 			}).catch(function(e) {
-				this.screenLog('Permission query fail:', e);
+				console.debug('Permission query fail:', e);
 				if (perm.name === 'clipboard-write') {
 					that._clipboardState.write = 'unknown';
 				} else if (perm.name === 'clipboard-read') {
@@ -330,35 +330,6 @@ L.dialog.AsyncClipboard = {
 				}
 			});
 		}
-
-		this.screenLog("async clipboard initialize:", this._clipboardState);
-
-	},
-
-	screenLog: function(msg, data) {
-		// 桌面環境直接顯示在 console.debug()
-		if (window.mode.isDesktop() || this._debug === false) {
-			console.debug(msg, data);
-			return;
-		}
-
-		// 建立一個螢幕區塊
-		const consoleId = 'console-debug';
-		let screenConsole = document.getElementById(consoleId);
-
-		if (screenConsole === null) {
-			screenConsole = L.DomUtil.createWithId('div', consoleId, document.body);
-			screenConsole.style.width  = '100%';
-			screenConsole.style.height = "50px";
-			screenConsole.style.overflow = 'auto';
-			screenConsole.style.position = 'absolute';
-			screenConsole.style.left = '0px';
-			screenConsole.style.bottom = '50px';
-			screenConsole.style.backgroundColor = "#ffffff";
-			screenConsole.style.color = 'blue';
-		}
-
-		screenConsole.innerHTML += '<br>' + msg + (typeof(data) === 'object' ? JSON.stringify(data) : data);
 	},
 
 	run: function(/*parameter*/) {
