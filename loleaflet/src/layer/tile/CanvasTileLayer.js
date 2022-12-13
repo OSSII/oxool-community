@@ -1530,6 +1530,11 @@ L.CanvasTileLayer = L.Layer.extend({
 		else if (textMsg.startsWith('error:')) {
 			this._onErrorMsg(textMsg);
 		}
+		// Add by Firefly <firefly@ossii.com.tw>
+		// 顯示警示訊息
+		else if (textMsg.startsWith('warning:')) {
+			this._onWarningMsg(textMsg);
+		}
 		else if (textMsg.startsWith('getchildid:')) {
 			this._onGetChildIdMsg(textMsg);
 		}
@@ -2004,6 +2009,38 @@ L.CanvasTileLayer = L.Layer.extend({
 		}
 
 		this._map.fire('error', {cmd: command.errorCmd, kind: command.errorKind, id: errorId, code: errorCode});
+	},
+
+	// Add by Firefly <firefly@ossii.com.tw>
+	// 顯示警示訊息
+	_onWarningMsg: function (textMsg) {
+		textMsg = textMsg.substring('warning:'.length + 1).trim();
+		this._map.hideBusy();
+		try {
+			var json = JSON.parse(textMsg);
+			var msg = '';
+			// 顯示狀態碼
+			if (json.status) {
+				msg += _('Status code:') + json.status + '<br/>';
+			}
+
+			// 顯示訊息
+			if (json.message) {
+				msg += _(json.message) + '<br/>';
+			}
+
+			// 沒有要顯示的內容，就顯示原 json 字串
+			if (msg === '') {
+				msg = textMsg;
+			}
+
+			L.dialog.alert({
+				icon: 'warning',
+				message: msg
+			});
+		} catch (e) {
+			this._map.fire('warn', {msg: _(textMsg)});
+		}
 	},
 
 	_onGetChildIdMsg: function (textMsg) {

@@ -1302,9 +1302,9 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
     // 把錯誤訊息轉給 client
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::CONFLICT)
     {
-        LOG_ERR("Conflict: docKey [" << _docKey << "] to URI [" << uriAnonym << "]. (Message:\"" << storageSaveResult.getResponseString() << "\")");
+        LOG_ERR("Conflict: docKey [" << _docKey << "] to URI [" << uriAnonym << "]. (Message:\"" << storageSaveResult.getErrorMsg() << "\")");
         std::ostringstream oss;
-        oss << "warning: " << storageSaveResult.getResponseString();
+        oss << "warning: " << storageSaveResult.getErrorMsg();
         it->second->sendTextFrame(oss.str());
     }
     // Add by Firefly <firefly@ossii.com.tw>
@@ -1312,10 +1312,8 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
     // 把錯誤訊息轉給 client
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::STATUS_CODE_499)
     {
-        LOG_ERR("499: docKey [" << _docKey << "] to URI [" << uriAnonym << "]. (Message:\"" << storageSaveResult.getResponseString() << "\")");
-        std::ostringstream oss;
-        oss << "warning: " << storageSaveResult.getResponseString();
-        it->second->sendTextFrame(oss.str());
+        LOG_ERR("499: docKey [" << _docKey << "] to URI [" << uriAnonym << "]. (Message:\"" << storageSaveResult.getErrorMsg() << "\")");
+        it->second->sendTextFrame("warning: " + storageSaveResult.getErrorMsg());
     }
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::DOC_CHANGED
              || storageSaveResult.getResult() == StorageBase::SaveResult::CONFLICT)
@@ -1353,8 +1351,13 @@ bool DocumentBroker::saveToStorageInternal(const std::string& sessionId, bool su
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::NOT_IMPLEMENTED)
     {
         LOG_ERR("PutFile return code 501!");
-        it->second->sendTextFrame("error: cmd=storage kind=code501");
-        broadcastSaveResult(false, "This operation is not supported.");
+        const std::string errMsg = storageSaveResult.getErrorMsg();
+        if (errMsg.empty())
+            it->second->sendTextFrame("error: cmd=storage kind=code501");
+        else
+            it->second->sendTextFrame("warning: " + errMsg);
+
+        broadcastSaveResult(false, "This operation is not supported.", errMsg);
     }
     // Add by Firefly <firefly@ossii.com.tw>
     else if (storageSaveResult.getResult() == StorageBase::SaveResult::STATUS_CODE_551)

@@ -162,20 +162,6 @@ public:
             return _errorMsg;
         }
 
-        // Add by Firefly <firefly@ossii.com.tw>
-        // 紀錄回應訊息
-        void setResponseString(const std::string& message)
-        {
-            _saveResponseString = message;
-        }
-
-        // Add by Firefly <firefly@ossii.com.tw>/
-        // 取得回應訊息
-        const std::string& getResponseString() const
-        {
-            return _saveResponseString;
-        }
-
     private:
         Result _result;
         std::string _saveAsName;
