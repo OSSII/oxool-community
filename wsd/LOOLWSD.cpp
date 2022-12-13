@@ -3727,6 +3727,8 @@ private:
         Poco::JSON::Object::Ptr convert_to = new Poco::JSON::Object;
         Poco::Dynamic::Var available = allowConvertTo(socket->clientAddress(), request) && LOOLWSD::getConfigValue<bool>("convert_to", false);
         convert_to->set("available", available);
+        if (available)
+            convert_to->set("endpoint", "/lool/convert-to");
 
         Poco::JSON::Object::Ptr capabilities = new Poco::JSON::Object;
         capabilities->set("convert-to", convert_to);
@@ -3745,8 +3747,12 @@ private:
         // Set the product name
         capabilities->set("productName", APP_NAME);
 
+        // Set the Server ID
+        capabilities->set("serverId", Util::getProcessIdentifier());
+
         // Set the product version
-        capabilities->set("productVersion", LOOLWSD_VERSION);
+        //capabilities->set("productVersion", LOOLWSD_VERSION);
+        capabilities->set("productVersion", "8.7.8.7");
 
         // Set the product version hash
         capabilities->set("productVersionHash", LOOLWSD_VERSION_HASH);
