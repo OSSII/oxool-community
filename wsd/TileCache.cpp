@@ -26,6 +26,7 @@
 #include "ClientSession.hpp"
 #include <Common.hpp>
 #include <Protocol.hpp>
+#include <StringVector.hpp>
 #include <Unit.hpp>
 #include <Util.hpp>
 #include <common/FileUtil.hpp>
@@ -78,11 +79,18 @@ struct TileCache::TileBeingRendered
     void setVersion(int version) { _tile.setVersion(version); }
 
     std::chrono::steady_clock::time_point getStartTime() const { return _startTime; }
-    double getElapsedTimeMs(const std::chrono::steady_clock::time_point *now = nullptr) const
-        { return std::chrono::duration_cast<std::chrono::milliseconds>
-                ((now ? *now : std::chrono::steady_clock::now()) - _startTime).count(); }
-    bool isStale(const std::chrono::steady_clock::time_point *now = nullptr) const
-        { return getElapsedTimeMs(now) > COMMAND_TIMEOUT_MS; }
+    std::chrono::milliseconds getElapsedTimeMs(const std::chrono::steady_clock::time_point* now
+                                               = nullptr) const
+    {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+            (now ? *now : std::chrono::steady_clock::now()) - _startTime);
+    }
+
+    bool isStale(const std::chrono::steady_clock::time_point* now = nullptr) const
+    {
+        return getElapsedTimeMs(now) > std::chrono::milliseconds(COMMAND_TIMEOUT_MS);
+    }
+
     std::vector<std::weak_ptr<ClientSession>>& getSubscribers() { return _subscribers; }
 
     void dumpState(std::ostream& os);
@@ -138,17 +146,6 @@ void TileCache::forgetTileBeingRendered(const std::shared_ptr<TileCache::TileBei
 
     LOG_TRC("Removing all subscribers for " << tileBeingRendered->getTile().serialize());
     _tilesBeingRendered.erase(tileBeingRendered->getTile());
-}
-
-double TileCache::getTileBeingRenderedElapsedTimeMs(const TileDesc &tileDesc) const
-{
-    auto it = _tilesBeingRendered.find(tileDesc);
-    if (it == _tilesBeingRendered.end())
-    {
-        return -1.0; // Negative value means that we did not find tileBeingRendered object
-    }
-
-    return it->second->getElapsedTimeMs();
 }
 
 int TileCache::getTileBeingRenderedVersion(const TileDesc& tile)
@@ -241,8 +238,8 @@ void TileCache::saveTileAndNotify(const TileDesc& tile, const char *data, const 
         // Remove subscriptions.
         if (tileBeingRendered->getVersion() <= tile.getVersion())
         {
-            LOG_DBG("STATISTICS: tile " << tile.getVersion() << " internal roundtrip " <<
-                    tileBeingRendered->getElapsedTimeMs() << " ms.");
+            /* LOG_DBG("STATISTICS: tile " << tile.getVersion() << " internal roundtrip " <<
+                    tileBeingRendered->getElapsedTimeMs()); */
             forgetTileBeingRendered(tileBeingRendered);
         }
     }
@@ -255,6 +252,8 @@ bool TileCache::getTextStream(StreamType type, const std::string& fileName, std:
     Tile textStream = lookupCachedStream(type, fileName);
     if (!textStream)
     {
+        // This is not an error because the first time
+        // we lookup a file, it won't be in the cache.
         LOG_INF("Could not open " << fileName);
         return false;
     }
@@ -331,7 +330,7 @@ void TileCache::invalidateTiles(const std::string& tiles, int normalizedViewId)
 
 std::pair<int, Util::Rectangle> TileCache::parseInvalidateMsg(const std::string& tiles)
 {
-    StringVector tokens = Util::tokenize(tiles);
+    StringVector tokens = StringVector::tokenize(tiles);
 
     assert(!tokens.empty() && tokens.equals(0, "invalidatetiles:"));
 
@@ -348,17 +347,17 @@ std::pair<int, Util::Rectangle> TileCache::parseInvalidateMsg(const std::string&
     }
     else
     {
-        int part;
-        int x;
-        int y;
-        int width;
-        int height;
+        int part = 0;
+        int x = 0;
+        int y = 0;
+        int width = 0;
+        int height = 0;
         if (tokens.size() == 6 &&
             getTokenInteger(tokens[1], "part", part) &&
-            getTokenInteger(tokens[2], "x", x) &&
-            getTokenInteger(tokens[3], "y", y) &&
-            getTokenInteger(tokens[4], "width", width) &&
-            getTokenInteger(tokens[5], "height", height))
+            getNonNegTokenInteger(tokens[2], "x", x) &&
+            getNonNegTokenInteger(tokens[3], "y", y) &&
+            getNonNegTokenInteger(tokens[4], "width", width) &&
+            getNonNegTokenInteger(tokens[5], "height", height))
         {
             return std::pair<int, Util::Rectangle>(part, Util::Rectangle(x, y, width, height));
         }
@@ -429,7 +428,7 @@ void TileCache::subscribeToTileRendering(const TileDesc& tile, const std::shared
         {
             if (s.lock().get() == subscriber.get())
             {
-                LOG_DBG("Redundant request to subscribe on tile " << tile.debugName());
+                LOG_TRC("Redundant request to subscribe on tile " << tile.debugName());
                 tileBeingRendered->setVersion(tile.getVersion());
                 return;
             }
@@ -568,7 +567,7 @@ size_t TileCache::itemCacheSize(const Tile &tile)
 
 void TileCache::assertCacheSize()
 {
-#ifdef ENABLE_DEBUG
+#if ENABLE_DEBUG
     size_t recalcSize = 0;
     for (const auto& it : _cache)
     {
@@ -661,7 +660,8 @@ void TileCache::saveDataToStreamCache(StreamType type, const std::string &fileNa
 
 void TileCache::TileBeingRendered::dumpState(std::ostream& os)
 {
-    os << "    " << _tile.serialize() << ' ' << std::setw(4) << getElapsedTimeMs() << "ms " << _subscribers.size() << " subscribers\n";
+    os << "    " << _tile.serialize() << ' ' << std::setw(4) << getElapsedTimeMs()
+       << _subscribers.size() << " subscribers\n";
     for (const auto& it : _subscribers)
     {
         std::shared_ptr<ClientSession> session = it.lock();
@@ -675,7 +675,8 @@ void TileCache::TileBeingRendered::dumpState(std::ostream& os)
 
 void TileCache::dumpState(std::ostream& os)
 {
-    os << "  tile cache: num: " << _cache.size() << " size: " << _cacheSize << " bytes\n";
+    os << "\n  TileCache:";
+    os << "\n    num: " << _cache.size() << " size: " << _cacheSize << " bytes\n";
     for (const auto& it : _cache)
     {
         os << "    " << std::setw(4) << it.first.getWireId()
@@ -694,7 +695,7 @@ void TileCache::dumpState(std::ostream& os)
             size += it.second->size();
         }
 
-        os << "  stream cache: " << type++ << " num: " << num << " size: " << size << " bytes\n";
+        os << "    stream cache: " << type++ << " num: " << num << " size: " << size << " bytes\n";
         for (const auto& it : i)
         {
             os << "    " << it.first
@@ -702,7 +703,7 @@ void TileCache::dumpState(std::ostream& os)
         }
     }
 
-    os << "  tiles being rendered " << _tilesBeingRendered.size() << '\n';
+    os << "    tiles being rendered " << _tilesBeingRendered.size() << '\n';
     for (const auto& it : _tilesBeingRendered)
         it.second->dumpState(os);
 }

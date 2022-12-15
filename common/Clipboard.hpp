@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <Log.hpp>
 #include <Exceptions.hpp>
-#include <Poco/MemoryStream.h>
 
 struct ClipboardData
 {
@@ -53,7 +52,7 @@ struct ClipboardData
         }
     }
 
-    size_t size()
+    std::size_t size() const
     {
         assert(_mimeTypes.size() == _content.size());
         return _mimeTypes.size();
@@ -61,15 +60,15 @@ struct ClipboardData
 
     void dumpState(std::ostream& os)
     {
-        os << "Clipboard with " << size() << " entries\n";
-        for (size_t i = 0; i < size(); ++i)
+        os << "Clipboard with " << size() << " entries:\n";
+        for (std::size_t i = 0; i < size(); ++i)
             os << "\t[" << i << "] - size " << _content[i].size() <<
                 " type: '" << _mimeTypes[i] << "'\n";
     }
 
     bool findType(const std::string &mime, std::string &value)
     {
-        for (size_t i = 0; i < _mimeTypes.size(); ++i)
+        for (std::size_t i = 0; i < _mimeTypes.size(); ++i)
         {
             if (_mimeTypes[i] == mime)
             {
@@ -77,7 +76,7 @@ struct ClipboardData
                 return true;
             }
         }
-        value = "";
+        value.clear();
         return false;
     }
 };
@@ -98,7 +97,7 @@ public:
     }
 
     void insertClipboard(const std::string key[2],
-                         const char *data, size_t size)
+                         const char *data, std::size_t size)
     {
         if (size == 0)
         {
@@ -108,7 +107,7 @@ public:
         Entry ent;
         ent._inserted = std::chrono::steady_clock::now();
         ent._rawData = std::make_shared<std::string>(data, size);
-        LOG_TRC("insert cached clipboard: " + key[0] + " and " + key[1]);
+        LOG_TRC("Insert cached clipboard: " << key[0] << " and " << key[1]);
         std::lock_guard<std::mutex> lock(_mutex);
         _cache[key[0]] = ent;
         _cache[key[1]] = ent;

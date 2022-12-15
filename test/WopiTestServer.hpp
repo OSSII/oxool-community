@@ -122,7 +122,7 @@ protected:
                 logger << '\t' << pair.first << ": " << pair.second << " / ";
             }
 
-            LOG_END(logger, true);
+            LOG_END(logger);
         }
 
         // CheckFileInfo

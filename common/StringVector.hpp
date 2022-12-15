@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,6 +7,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,6 +46,115 @@ public:
         : _string(std::move(string))
         , _tokens(std::move(tokens))
     {
+    }
+
+    /// Tokenize delimited values until we hit new-line or the end.
+    static void tokenize(const char* data, const std::size_t size, const char delimiter,
+                         std::vector<StringToken>& tokens)
+    {
+        if (size == 0 || data == nullptr || *data == '\0')
+            return;
+
+        tokens.reserve(16);
+
+        const char* start = data;
+        const char* end = data;
+        for (std::size_t i = 0; i < size && data[i] != '\n'; ++i, ++end)
+        {
+            if (data[i] == delimiter)
+            {
+                if (start != end && *start != delimiter)
+                    tokens.emplace_back(start - data, end - start);
+
+                start = end;
+            }
+            else if (*start == delimiter)
+                ++start;
+        }
+
+        if (start != end && *start != delimiter && *start != '\n')
+            tokens.emplace_back(start - data, end - start);
+    }
+
+    /// Tokenize single-char delimited values until we hit new-line or the end.
+    static StringVector tokenize(const char* data, const std::size_t size,
+                                 const char delimiter = ' ')
+    {
+        if (size == 0 || data == nullptr || *data == '\0')
+            return StringVector();
+
+        std::vector<StringToken> tokens;
+        tokenize(data, size, delimiter, tokens);
+        return StringVector(std::string(data, size), std::move(tokens));
+    }
+
+    /// Tokenize single-char delimited values until we hit new-line or the end.
+    static StringVector tokenize(const std::string& s, const char delimiter = ' ')
+    {
+        if (s.empty())
+            return StringVector();
+
+        std::vector<StringToken> tokens;
+        tokenize(s.data(), s.size(), delimiter, tokens);
+        return StringVector(s, std::move(tokens));
+    }
+
+    /// Tokenize by the delimiter string.
+    static StringVector tokenize(const std::string& s, const char* delimiter, int len = -1)
+    {
+        if (s.empty() || len == 0 || delimiter == nullptr || *delimiter == '\0')
+            return StringVector();
+
+        if (len < 0)
+            len = std::strlen(delimiter);
+
+        std::size_t start = 0;
+        std::size_t end = s.find(delimiter, start);
+
+        std::vector<StringToken> tokens;
+        tokens.reserve(16);
+
+        tokens.emplace_back(start, end - start);
+        start = end + len;
+
+        while (end != std::string::npos)
+        {
+            end = s.find(delimiter, start);
+            tokens.emplace_back(start, end - start);
+            start = end + len;
+        }
+
+        return StringVector(s, std::move(tokens));
+    }
+
+    template <std::size_t N>
+    static StringVector tokenize(const std::string& s, const char (&delimiter)[N])
+    {
+        return tokenize(s, delimiter, N - 1);
+    }
+
+    static StringVector tokenize(const std::string& s, const std::string& delimiter)
+    {
+        return tokenize(s, delimiter.data(), delimiter.size());
+    }
+
+    /** Tokenize based on any of the characters in 'delimiters'.
+
+        Ie. when there is '\n\r' in there, any of them means a delimiter.
+        In addition, trim the values so there are no leadiding or trailing spaces.
+    */
+    static StringVector tokenizeAnyOf(const std::string& s, const char* delimiters,
+                                      const std::size_t delimitersLength);
+
+    template <std::size_t N>
+    static StringVector tokenizeAnyOf(const std::string& s, const char (&delimiters)[N])
+    {
+        return tokenizeAnyOf(s, delimiters, N - 1); // Exclude the null terminator.
+    }
+
+    static StringVector tokenizeAnyOf(const std::string& s, const char* delimiters)
+    {
+        return tokenizeAnyOf(s, delimiters, std::strlen(delimiters));
     }
 
     /// Unlike std::vector, gives an empty string if index is unexpected.
@@ -114,7 +222,7 @@ public:
     }
 
     /// Compares the nth token with string.
-    bool equals(std::size_t index, const char* string) const
+    template <typename T> bool equals(std::size_t index, const T& string) const
     {
         if (index >= _tokens.size())
         {
@@ -126,8 +234,7 @@ public:
     }
 
     /// Compares the nth token with string.
-    template <std::size_t N>
-    bool equals(std::size_t index, const char (&string)[N]) const
+    template <std::size_t N> bool equals(std::size_t index, const char (&string)[N]) const
     {
         if (index >= _tokens.size())
         {
@@ -135,7 +242,7 @@ public:
         }
 
         const StringToken& token = _tokens[index];
-        return _string.compare(token._index, token._length, string, N) == 0;
+        return _string.compare(token._index, token._length, string, N - 1) == 0;
     }
 
     // Checks if the token text at index starts with the given string
@@ -148,7 +255,7 @@ public:
         }
 
         const StringToken& token = _tokens[index];
-        const auto len = N - 1; // we don't want to compare the '\0'
+        constexpr auto len = N - 1; // we don't want to compare the '\0'
         return token._length >= len && _string.compare(token._index, len, string) == 0;
     }
 
@@ -161,12 +268,15 @@ public:
             return false;
         }
 
-        const auto len = N - 1; // we don't want to compare the '\0'
+        constexpr auto len = N - 1; // we don't want to compare the '\0'
         return token._length >= len && _string.compare(token._index, len, string) == 0;
     }
 
-    /// Compares the nth token with the mth token from an other StringVector.
+    /// Compares the nth token with the mth token from another StringVector.
     bool equals(std::size_t index, const StringVector& other, std::size_t otherIndex);
+
+    bool getUInt32(std::size_t index, const std::string& key, uint32_t& value) const;
+    bool getNameIntegerPair(std::size_t index, std::string& name, int& value) const;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -43,6 +43,27 @@
 
 #include <StringVector.hpp>
 
+/// Format seconds with the units suffix until we migrate to C++20.
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::seconds& s)
+{
+    os << s.count() << 's';
+    return os;
+}
+
+/// Format milliseconds with the units suffix until we migrate to C++20.
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+{
+    os << ms.count() << "ms";
+    return os;
+}
+
+/// Format microseconds with the units suffix until we migrate to C++20.
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::microseconds& ms)
+{
+    os << ms.count() << "us";
+    return os;
+}
+
 namespace Util
 {
     namespace rng
@@ -1249,6 +1270,35 @@ int main(int argc, char**argv)
         return std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
     }
 
+    /**
+     * Constructs an object of type T and wraps it in a std::unique_ptr.
+     *
+     * Can be replaced by std::make_unique when we allow C++14.
+     */
+    template<typename T, typename... Args>
+    typename std::unique_ptr<T> make_unique(Args&& ... args)
+    {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+
+    /**
+     * Similar to std::atoi() but does not require p to be null-terminated.
+     *
+     * Returns std::numeric_limits<int>::min/max() if the result would overflow.
+     */
+    int safe_atoi(const char* p, int len);
+
+    /// Close logs and forcefully exit with the given exit code.
+    /// This calls std::_Exit, which terminates the program without cleaning up
+    /// static instances (i.e. anything registered with `atexit' or `on_exit').
+    void forcedExit(int code) __attribute__ ((__noreturn__));
+
 } // end namespace Util
+
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::system_clock::time_point& ts) 
+{
+    os << Util::getIso8601FracformatTime(ts);
+    return os;
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

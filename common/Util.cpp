@@ -919,7 +919,7 @@ namespace Util
         oss << std::setfill('0')
             << time_modified
             << std::setw(6)
-            << (time - lastModified_s).count() / 1000
+            << (time - lastModified_s).count() / (std::chrono::system_clock::period::den / std::chrono::system_clock::period::num / 1000000)
             << 'Z';
 
         return oss.str();
@@ -1045,7 +1045,30 @@ namespace Util
             auto it = releaseInfo.find("PRETTY_NAME");
             if (it != releaseInfo.end())
             {
-                return it->second;
+                std::string name = it->second;
+
+                // See os-release(5). It says that the lines are "environment-like shell-compatible
+                // variable assignments". What that means, *exactly*, is up for debate, but probably
+                // of mainly academic interest. (It does say that variable expansion at least is not
+                // supported, that is a relief.)
+
+                // The value of PRETTY_NAME might be quoted with double-quotes or
+                // single-quotes.
+
+                // FIXME: In addition, it might contain backslash-escaped special
+                // characters, but we ignore that possibility for now.
+
+                // FIXME: In addition, if it really does support shell syntax (except variable
+                // expansion), it could for instance consist of multiple concatenated quoted strings (with no
+                // whitespace inbetween), as in:
+                // PRETTY_NAME="Foo "'bar'" mumble"
+                // But I guess that is a pretty remote possibility and surely no other code that
+                // reads /etc/os-release handles that like a proper shell, either.
+
+                if (name.length() >= 2 && ((name[0] == '"' && name[name.length()-1] == '"') ||
+                                           (name[0] == '\'' && name[name.length()-1] == '\'')))
+                    name = name.substr(1, name.length()-2);
+                return name;
             }
             else
             {
@@ -1098,6 +1121,62 @@ namespace Util
         }
 
         return StringVector(s, std::move(tokens));
+    }
+
+    int safe_atoi(const char* p, int len)
+    {
+        long ret{};
+        if (!p || !len)
+        {
+            return ret;
+        }
+
+        int multiplier = 1;
+        int offset = 0;
+        while (isspace(p[offset]))
+        {
+            ++offset;
+            if (offset >= len)
+            {
+                return ret;
+            }
+        }
+
+        switch (p[offset])
+        {
+            case '-':
+                multiplier = -1;
+                ++offset;
+                break;
+            case '+':
+                ++offset;
+                break;
+        }
+        if (offset >= len)
+        {
+            return ret;
+        }
+
+        while (isdigit(p[offset]))
+        {
+            std::int64_t next = ret * 10 + (p[offset] - '0');
+            if (next >= std::numeric_limits<int>::max())
+                return multiplier * std::numeric_limits<int>::max();
+            ret = next;
+            ++offset;
+            if (offset >= len)
+            {
+                return multiplier * ret;
+            }
+        }
+
+        return multiplier * ret;
+    }
+
+    void forcedExit(int code)
+    {
+        Log::shutdown();
+        std::_Exit(code);
     }
 }
 

@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,7 +7,7 @@
 
 #include <config.h>
 
-#ifdef __linux
+#ifdef __linux__
 #include <sys/prctl.h>
 #include <sys/syscall.h>
 #endif
@@ -26,12 +24,10 @@
 
 #include <Poco/AutoPtr.h>
 #include <Poco/ConsoleChannel.h>
-#include <Poco/DateTimeFormatter.h>
 #include <Poco/FileChannel.h>
 #include <Poco/FormattingChannel.h>
 #include <Poco/PatternFormatter.h>
 #include <Poco/SplitterChannel.h>
-#include <Poco/Timestamp.h>
 
 #include "Log.hpp"
 #include "Util.hpp"
@@ -41,20 +37,22 @@ namespace Log
     using namespace Poco;
 
     /// Helper to avoid destruction ordering issues.
-    struct StaticNameHelper
+    static struct StaticHelper
     {
     private:
         Poco::Logger* _logger;
+        static thread_local Poco::Logger* _threadLocalLogger;
         std::string _name;
+        std::string _logLevel;
         std::string _id;
         std::atomic<bool> _inited;
     public:
-        StaticNameHelper() :
+        StaticHelper() :
             _logger(nullptr),
             _inited(true)
         {
         }
-        ~StaticNameHelper()
+        ~StaticHelper()
         {
             _inited = false;
         }
@@ -69,10 +67,28 @@ namespace Log
 
         const std::string& getName() const { return _name; }
 
+        void setLevel(const std::string& logLevel) { _logLevel = logLevel; }
+
+        const std::string& getLevel() const { return _logLevel; }
+
         void setLogger(Poco::Logger* logger) { _logger = logger; };
+
+        void setThreadLocalLogger(Poco::Logger* logger)
+        {
+            // FIXME: What to do with the previous thread-local logger, if any? Will deleting it
+            // destroy also its channel? That won't be good as we use the same channel for all
+            // loggers. Best to just leak it?
+            _threadLocalLogger = logger;
+        }
+
         Poco::Logger* getLogger() const { return _logger; }
-    };
-    static StaticNameHelper Source;
+
+        Poco::Logger* getThreadLocalLogger() const { return _threadLocalLogger; }
+
+    } Static;
+
+    thread_local Poco::Logger* StaticHelper::_threadLocalLogger = nullptr;
+
     bool IsShutdown = false;
 
     // We need a signal safe means of writing messages
@@ -99,21 +115,28 @@ namespace Log
 
     // We need a signal safe means of writing messages
     //   $ man 7 signal
-    void signalLogNumber(std::size_t num)
+    void signalLogNumber(std::size_t num, int base)
     {
         int i;
         char buf[22];
+        if (num == 0)
+        {
+            signalLog("0");
+            return;
+        }
         buf[21] = '\0';
+        assert (base == 10 || base == 16);
         for (i = 20; i > 0 && num > 0; --i)
         {
-            buf[i] = '0' + num % 10;
-            num /= 10;
+            int d = num % base;
+            buf[i] = (d < 10) ? ('0' + d) : ('a' + d - 10);
+            num /= base;
         }
         signalLog(buf + i + 1);
     }
 
     /// Convert an unsigned number to ascii with 0 padding.
-    template <int Width> void to_ascii_fixed(char* buf, size_t num)
+    template <int Width> void to_ascii_fixed(char* buf, std::size_t num)
     {
         buf[Width - 1] = '0' + num % 10; // Units.
 
@@ -163,7 +186,7 @@ namespace Log
 
     /// Convert unsigned long num to base-10 ascii in place.
     /// Returns the *end* position.
-    char* to_ascii(char* buf, size_t num)
+    char* to_ascii(char* buf, std::size_t num)
     {
         int i = 0;
         do
@@ -185,7 +208,7 @@ namespace Log
 
     char* prefix(const Poco::LocalDateTime& time, char* buffer, const char* level)
     {
-#ifdef IOS
+#if defined(IOS) || defined(__FreeBSD__)
         // Don't bother with the "Source" which would be just "Mobile" always and non-informative as
         // there is just one process in the app anyway.
         char *pos = buffer;
@@ -194,11 +217,13 @@ namespace Log
         // more useful anyway.
 #else
         // Note that snprintf is deemed signal-safe in most common implementations.
-        char* pos = strcopy((Source.getInited() ? Source.getId().c_str() : "<shutdown>"), buffer);
+        char* pos = strcopy((Static.getInited() ? Static.getId().c_str() : "<shutdown>"), buffer);
         *pos++ = '-';
 
         // Thread ID.
-        const long osTid = Util::getThreadId();
+        const auto osTid = Util::getThreadId();
+#if defined(__linux__)
+        // On Linux osTid is pid_t.
         if (osTid > 99999)
         {
             if (osTid > 999999)
@@ -214,6 +239,13 @@ namespace Log
             to_ascii_fixed<5>(pos, osTid);
             pos += 5;
         }
+#else
+        // On all other systems osTid is std::thread::id.
+        std::stringstream ss;
+        ss << osTid;
+        pos = strcopy(ss.str().c_str(), pos);
+#endif
+
         *pos++ = ' ';
 #endif
 
@@ -240,10 +272,29 @@ namespace Log
         pos += 3;
         to_ascii_fixed<6>(pos, time.millisecond() * 1000 + time.microsecond());
         pos[6] = ' ';
-        pos[7] = '[';
-        pos[8] = ' ';
-        pos += 9;
+        pos += 7;
 
+        // Time zone differential
+        int tzd = time.tzd();
+        if (tzd < 0)
+        {
+            pos[0] = '-';
+            tzd = -tzd;
+        }
+        else
+        {
+            pos[0] = '+';
+        }
+        pos += 1;
+        tzd = (tzd / 36) - (tzd / 36) % 100 + ((tzd / 36) % 100) * 60 / 100;  // seconds to HHMM format
+        to_ascii_fixed<4>(pos, tzd);
+        pos[4] = ' ';
+        pos += 5;
+
+        // Thread name and log level
+        pos[0] = '[';
+        pos[1] = ' ';
+        pos += 2;
         pos = strcopy(Util::getThreadName(), pos);
         pos[0] = ' ';
         pos[1] = ']';
@@ -270,14 +321,14 @@ namespace Log
                     const bool logToFile,
                     const std::map<std::string, std::string>& config)
     {
-        Source.setName(name);
+        Static.setName(name);
         std::ostringstream oss;
-        oss << Source.getName();
+        oss << Static.getName();
 #if !MOBILEAPP // Just one process in a mobile app, the pid is uninteresting.
         oss << '-'
             << std::setw(5) << std::setfill('0') << getpid();
 #endif
-        Source.setId(oss.str());
+        Static.setId(oss.str());
 
         // Configure the logger.
         AutoPtr<Channel> channel;
@@ -305,10 +356,23 @@ namespace Log
          * after chroot can cause file creation inside the jail instead of outside
          * */
         channel->open();
-        auto& logger = Poco::Logger::create(Source.getName(), channel, Poco::Message::PRIO_TRACE);
-        Source.setLogger(&logger);
 
-        logger.setLevel(logLevel.empty() ? std::string("trace") : logLevel);
+        try
+        {
+            auto& logger = Poco::Logger::create(Static.getName(), channel, Poco::Message::PRIO_TRACE);
+            Static.setLogger(&logger);
+        }
+        catch (ExistsException&)
+        {
+            auto& logger = Poco::Logger::get(Static.getName());
+            Static.setLogger(&logger);
+        }
+
+        auto logger = Static.getLogger();
+
+        const std::string level = logLevel.empty() ? std::string("trace") : logLevel;
+        logger->setLevel(level);
+        Static.setLevel(level);
 
         const std::time_t t = std::time(nullptr);
         oss.str("");
@@ -323,15 +387,19 @@ namespace Log
             oss << " Local time: " << buf << '.';
         }
 
-        oss <<  " Log level is [" << logger.getLevel() << "].";
+        oss <<  " Log level is [" << logger->getLevel() << "].";
         LOG_INF(oss.str());
     }
 
     Poco::Logger& logger()
     {
-        Poco::Logger* pLogger = Source.getLogger();
+        Poco::Logger* pLogger = Static.getThreadLocalLogger();
+        if (pLogger != nullptr)
+            return *pLogger;
+
+        pLogger = Static.getLogger();
         return pLogger ? *pLogger
-                       : Poco::Logger::get(Source.getInited() ? Source.getName() : std::string());
+                       : Poco::Logger::get(Static.getInited() ? Static.getName() : std::string());
     }
 
     void shutdown()
@@ -347,6 +415,30 @@ namespace Log
         std::flush(std::cerr);
         fflush(stderr);
 #endif
+    }
+
+    void setThreadLocalLogLevel(const std::string& logLevel)
+    {
+        if (!Static.getLogger())
+        {
+            return;
+        }
+
+        // Use the same channel for all Poco loggers.
+        auto channel = Static.getLogger()->getChannel();
+
+        // The Poco loggers have to have names that are unique, but those aren't displayed anywhere.
+        // So just use the name of the default logger for this process plus a counter.
+        static int counter = 1;
+        auto& logger = Poco::Logger::create(Static.getName() + "." + std::to_string(counter++),
+                                            channel,
+                                            Poco::Logger::parseLevel(logLevel));
+        Static.setThreadLocalLogger(&logger);
+    }
+
+    const std::string& getLevel()
+    {
+        return Static.getLevel();
     }
 }
 

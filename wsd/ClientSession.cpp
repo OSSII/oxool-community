@@ -71,7 +71,7 @@ ClientSession::ClientSession(
     _serverURL(requestDetails),
     _isTextDocument(false)
 {
-    const size_t curConnections = ++LOOLWSD::NumConnections;
+    const std::size_t curConnections = ++LOOLWSD::NumConnections;
     LOG_INF("ClientSession ctor [" << getName() << "] for URI: [" << _uriPublic.toString()
                                    << "], current number of connections: " << curConnections);
 
@@ -104,7 +104,7 @@ void ClientSession::construct()
 
 ClientSession::~ClientSession()
 {
-    const size_t curConnections = --LOOLWSD::NumConnections;
+    const std::size_t curConnections = --LOOLWSD::NumConnections;
     LOG_INF("~ClientSession dtor [" << getName() << "], current number of connections: " << curConnections);
 
     std::unique_lock<std::mutex> lock(GlobalSessionMapMutex);
@@ -626,7 +626,7 @@ bool ClientSession::_handleInput(const char *buffer, int length)
     }
     else if (tokens.equals(0, "status") || tokens.equals(0, "statusupdate"))
     {
-        assert(firstLine.size() == static_cast<size_t>(length));
+        assert(firstLine.size() == static_cast<std::size_t>(length));
         return forwardToChild(firstLine, docBroker);
     }
     else if (tokens.equals(0, "tile"))
@@ -815,7 +815,7 @@ bool ClientSession::_handleInput(const char *buffer, int length)
         if(iter != _tilesOnFly.end())
             _tilesOnFly.erase(iter);
         else
-            LOG_INF("Tileprocessed message with an unknown tile ID");
+            LOG_INF("Tileprocessed message with an unknown tile ID '" << tileID << "' from session " << getId());
 
         docBroker->sendRequestedTiles(client_from_this());
         return true;
@@ -844,7 +844,9 @@ bool ClientSession::_handleInput(const char *buffer, int length)
         docBroker->saveAsToStorage(getId(), "", wopiFilename, true);
         return true;
     }
-    else if (tokens.equals(0, "dialogevent") || tokens.equals(0, "formfieldevent"))
+    else if (tokens.equals(0, "dialogevent") ||
+             tokens.equals(0, "formfieldevent") ||
+             tokens.equals(0, "sallogoverride"))
     {
         return forwardToChild(firstLine, docBroker);
     }
@@ -852,49 +854,56 @@ bool ClientSession::_handleInput(const char *buffer, int length)
     {
         return forwardToChild(std::string(buffer, length), docBroker);
     }
-    // 設定文件為已修改狀態
-    else if (tokens[0] == "setmodified")
+    else if (tokens.equals(0, "resetaccesstoken"))
     {
-        docBroker->setModified(true);
+        if (tokens.size() != 2)
+        {
+            LOG_ERR("Bad syntax for: " << tokens[0]);
+            sendTextFrameAndLogError("error: cmd=resetaccesstoken kind=syntax");
+            return false;
+        }
+
+        _auth.resetAccessToken(tokens[1]);
         return true;
     }
-    else if (tokens[0] == "outlinestate" ||
-             tokens[0] == "downloadas" ||
-             tokens[0] == "getchildid" ||
-             tokens[0] == "gettextselection" ||
-             tokens[0] == "paste" ||
-             tokens[0] == "insertfile" ||
-             tokens[0] == "insertpicture" ||
-             tokens[0] == "changepicture" ||
-             tokens[0] == "key" ||
-             tokens[0] == "textinput" ||
-             tokens[0] == "windowkey" ||
-             tokens[0] == "mouse" ||
-             tokens[0] == "windowmouse" ||
-             tokens[0] == "windowgesture" ||
-             tokens[0] == "requestloksession" ||
-             tokens[0] == "resetselection" ||
-             tokens[0] == "saveas" ||
-             tokens[0] == "selectgraphic" ||
-             tokens[0] == "selecttext" ||
-             tokens[0] == "windowselecttext" ||
-             tokens[0] == "setpage" ||
-             tokens[0] == "uno" ||
-             tokens[0] == "useractive" ||
-             tokens[0] == "userinactive" ||
-             tokens[0] == "paintwindow" ||
-             tokens[0] == "windowcommand" ||
-             tokens[0] == "signdocument" ||
-             tokens[0] == "asksignaturestatus" ||
-             tokens[0] == "uploadsigneddocument" ||
-             tokens[0] == "exportsignanduploaddocument" ||
-             tokens[0] == "rendershapeselection" ||
-             tokens[0] == "getgraphicselection" ||
-             tokens[0] == "resizewindow" ||
+    else if (tokens.equals(0, "outlinestate") ||
+             tokens.equals(0, "downloadas") ||
+             tokens.equals(0, "getchildid") ||
+             tokens.equals(0, "gettextselection") ||
+             tokens.equals(0, "paste") ||
+             tokens.equals(0, "insertfile") ||
+             tokens.equals(0, "insertpicture") ||
+             tokens.equals(0, "changepicture") ||
+             tokens.equals(0, "key") ||
+             tokens.equals(0, "textinput") ||
+             tokens.equals(0, "windowkey") ||
+             tokens.equals(0, "mouse") ||
+             tokens.equals(0, "windowmouse") ||
+             tokens.equals(0, "windowgesture") ||
+             tokens.equals(0, "requestloksession") ||
+             tokens.equals(0, "resetselection") ||
+             tokens.equals(0, "saveas") ||
+             tokens.equals(0, "selectgraphic") ||
+             tokens.equals(0, "selecttext") ||
+             tokens.equals(0, "windowselecttext") ||
+             tokens.equals(0, "setpage") ||
+             tokens.equals(0, "uno") ||
+             tokens.equals(0, "useractive") ||
+             tokens.equals(0, "userinactive") ||
+             tokens.equals(0, "paintwindow") ||
+             tokens.equals(0, "windowcommand") ||
+             tokens.equals(0, "signdocument") ||
+             tokens.equals(0, "asksignaturestatus") ||
+             tokens.equals(0, "uploadsigneddocument") ||
+             tokens.equals(0, "exportsignanduploaddocument") ||
+             tokens.equals(0, "rendershapeselection") ||
+             tokens.equals(0, "getgraphicselection") ||
+             tokens.equals(0, "resizewindow") ||
              // Added by Firefly<firefly@ossii.com.tw>
-             tokens[0] == "initunostatus" ||
+             tokens.equals(0, "initunostatus") ||
              //---------------------------------------
-             tokens[0] == "removetextcontext")
+             tokens.equals(0, "removetextcontext") ||
+             tokens.equals(0, "rendersearchresult"))
     {
         if (tokens.equals(0, "key"))
             _keyEvents++;
@@ -947,8 +956,7 @@ bool ClientSession::loadDocument(const char* /*buffer*/, int /*length*/,
         parseDocOptions(tokens, loadPart, timestamp, doctemplate);
 
         std::ostringstream oss;
-        oss << "load";
-        oss << " url=" << docBroker->getPublicUri().toString();;
+        oss << "load url=" << docBroker->getPublicUri().toString();
 
         if (!getUserId().empty() && !getUserName().empty())
         {
@@ -1099,9 +1107,7 @@ bool ClientSession::sendTile(const char * /*buffer*/, int /*length*/, const Stri
 {
     try
     {
-        TileDesc tileDesc = TileDesc::parse(tokens);
-        tileDesc.setNormalizedViewId(getCanonicalViewId());
-        docBroker->handleTileRequest(tileDesc, client_from_this());
+        docBroker->handleTileRequest(tokens, client_from_this());
     }
     catch (const std::exception& exc)
     {
@@ -1140,7 +1146,7 @@ bool ClientSession::forwardToChild(const std::string& message,
 bool ClientSession::filterMessage(const std::string& message) const
 {
     bool allowed = true;
-    StringVector tokens(Util::tokenize(message, ' '));
+    StringVector tokens(StringVector::tokenize(message, ' '));
 
     // Set allowed flag to false depending on if particular WOPI properties are set
     if (tokens.equals(0, "downloadas"))
@@ -1177,13 +1183,13 @@ bool ClientSession::filterMessage(const std::string& message) const
     {
         // By default, don't allow anything
         allowed = false;
-        if (tokens.equals(0, "userinactive") || tokens.equals(0, "useractive") || tokens.equals(0, "saveas"))
+        if (tokens.equals(0, "userinactive") || tokens.equals(0, "useractive") || tokens.equals(0, "saveas") || tokens.equals(0, "rendersearchresult"))
         {
             allowed = true;
         }
         else if (tokens.equals(0, "uno"))
         {
-            if (tokens.size() > 1 && (tokens.equals(1, ".uno:ExecuteSearch")))
+            if (tokens.size() > 1 && (tokens.equals(1, ".uno:ExecuteSearch") || tokens.equals(1, ".uno:Signature")))
             {
                 allowed = true;
             }
@@ -1198,7 +1204,7 @@ bool ClientSession::filterMessage(const std::string& message) const
             }
         }
         // Readonly 允許執行 setpage
-        else if (tokens.size() > 1 && tokens[0] == "setpage")
+        else if (tokens.size() > 1 && tokens.equals(0, "setpage"))
         {
             allowed = true;
         }
@@ -1224,7 +1230,6 @@ void ClientSession::sendFileMode(const bool readOnly, const bool editComments)
     result += "}";
     sendTextFrame(result);
 }
-
 
 void ClientSession::setLockFailed(const std::string& sReason)
 {
@@ -1291,7 +1296,7 @@ void ClientSession::postProcessCopyPayload(const std::shared_ptr<Message>& paylo
 {
     // Insert our meta origin if we can
     payload->rewriteDataBody([=](std::vector<char>& data) {
-            size_t pos = Util::findInVector(data, "<meta name=\"generator\" content=\"");
+            std::size_t pos = Util::findInVector(data, "<meta name=\"generator\" content=\"");
 
             if (pos == std::string::npos)
                 pos = Util::findInVector(data, "<meta http-equiv=\"content-type\" content=\"text/html;");
@@ -1334,36 +1339,43 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 #endif
 
     const auto& tokens = payload->tokens();
-    if (tokens[0] == "unocommandresult:")
+    if (tokens.equals(0, "unocommandresult:"))
     {
         const std::string stringMsg(buffer, length);
         LOG_INF(getName() << ": Command: " << stringMsg);
-        const size_t index = stringMsg.find_first_of('{');
+        const std::size_t index = stringMsg.find_first_of('{');
         if (index != std::string::npos)
         {
-            const std::string stringJSON = stringMsg.substr(index);
-            Poco::JSON::Parser parser;
-            const Poco::Dynamic::Var parsedJSON = parser.parse(stringJSON);
-            const auto& object = parsedJSON.extract<Poco::JSON::Object::Ptr>();
-            if (object->get("commandName").toString() == ".uno:Save")
+            try
             {
-                const bool success = object->get("success").toString() == "true";
-                std::string result;
-                if (object->has("result"))
+                const std::string stringJSON = stringMsg.substr(index);
+                Poco::JSON::Parser parser;
+                const Poco::Dynamic::Var parsedJSON = parser.parse(stringJSON);
+                const auto& object = parsedJSON.extract<Poco::JSON::Object::Ptr>();
+                if (object->get("commandName").toString() == ".uno:Save")
                 {
-                    const Poco::Dynamic::Var parsedResultJSON = object->get("result");
-                    const auto& resultObj = parsedResultJSON.extract<Poco::JSON::Object::Ptr>();
-                    if (resultObj->get("type").toString() == "string")
-                        result = resultObj->get("value").toString();
+                    const bool success = object->get("success").toString() == "true";
+                    std::string result;
+                    if (object->has("result"))
+                    {
+                        const Poco::Dynamic::Var parsedResultJSON = object->get("result");
+                        const auto& resultObj = parsedResultJSON.extract<Poco::JSON::Object::Ptr>();
+                        if (resultObj->get("type").toString() == "string")
+                            result = resultObj->get("value").toString();
+                    }
+
+                    // Save to Storage and log result.
+                    docBroker->saveToStorage(getId(), success, result);
+
+                    if (!isCloseFrame())
+                        forwardToClient(payload);
+
+                    return true;
                 }
-
-                // Save to Storage and log result.
-                docBroker->saveToStorage(getId(), success, result);
-
-                if (!isCloseFrame())
-                    forwardToClient(payload);
-
-                return true;
+            }
+            catch(const std::exception& exception)
+            {
+                LOG_ERR("unocommandresult parsing failure: " << exception.what());
             }
         }
         else
@@ -1371,7 +1383,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             LOG_WRN("Expected json unocommandresult. Ignoring: " << stringMsg);
         }
     }
-    else if (tokens[0] == "error:")
+    else if (tokens.equals(0, "error:"))
     {
         std::string errorCommand;
         std::string errorKind;
@@ -1434,13 +1446,13 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             }
         }
     }
-    else if (tokens[0] == "curpart:" && tokens.size() == 2)
+    else if (tokens.equals(0, "curpart:") && tokens.size() == 2)
     {
         //TODO: Should forward to client?
         int curPart;
         return getTokenInteger(tokens[1], "part", curPart);
     }
-    else if (tokens[0] == "setpart:" && tokens.size() == 2)
+    else if (tokens.equals(0, "setpart:") && tokens.size() == 2)
     {
         if(!_isTextDocument)
         {
@@ -1460,7 +1472,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
          }
     }
 #if !MOBILEAPP
-    else if (tokens.size() == 3 && tokens[0] == "saveas:")
+    else if (tokens.size() == 3 && tokens.equals(0, "saveas:"))
     {
 
         std::string encodedURL;
@@ -1564,15 +1576,11 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 #endif
     else if (tokens.size() == 2 && tokens.equals(0, "statechanged:"))
     {
-        StringVector stateTokens(Util::tokenize(tokens[1], '='));
+        StringVector stateTokens(StringVector::tokenize(tokens[1], '='));
         if (stateTokens.size() == 2 && stateTokens.equals(0, ".uno:ModifiedStatus"))
         {
-            // When the document is saved internally, but saving to storage failed,
-            // don't update the client's modified status
-            // (otherwise client thinks document is unmodified b/c saving was successful)
-            if (!docBroker->isLastStorageSaveSuccessful())
-                return false;
-
+            // Always update the modified flag in the DocBroker faithfully.
+            // Let it deal with the upload failure scenario and the admin console.
             docBroker->setModified(stateTokens.equals(1, "true"));
         }
         else
@@ -1609,12 +1617,12 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                 }
             }
         }
-    } else if (tokens[0] == "textselectioncontent:") {
+    } else if (tokens.equals(0, "textselectioncontent:")) {
 
         postProcessCopyPayload(payload);
         return forwardToClient(payload);
 
-    } else if (tokens[0] == "clipboardcontent:") {
+    } else if (tokens.equals(0, "clipboardcontent:")) {
 
 #if !MOBILEAPP // Most likely nothing of this makes sense in a mobile app
 
@@ -1628,7 +1636,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 
         postProcessCopyPayload(payload);
 
-        size_t header;
+        std::size_t header;
         for (header = 0; header < payload->size();)
             if (payload->data()[header++] == '\n')
                 break;
@@ -1642,6 +1650,10 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 
         for (const auto& it : _clipSockets)
         {
+            auto socket = it.lock();
+            if (!socket)
+                continue;
+
             std::ostringstream oss;
             oss << "HTTP/1.1 200 OK\r\n"
                 << "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
@@ -1650,15 +1662,12 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                 << "Content-Type: application/octet-stream\r\n"
                 << "X-Content-Type-Options: nosniff\r\n"
                 << "\r\n";
-            auto socket = it.lock();
-            if (!socket)
-                continue;
 
             if (!empty)
             {
                 oss.write(&payload->data()[header], payload->size() - header);
-                socket->setSocketBufferSize(std::min(payload->size() + 256,
-                                                     size_t(Socket::MaximumSendBufferSize)));
+                socket->setSocketBufferSize(
+                    std::min(payload->size() + 256, std::size_t(Socket::MaximumSendBufferSize)));
             }
 
             socket->send(oss.str());
@@ -1668,7 +1677,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 #endif
         _clipSockets.clear();
         return true;
-    } else if (tokens[0] == "disconnected:") {
+    } else if (tokens.equals(0, "disconnected:")) {
 
         LOG_INF("End of disconnection handshake for " << getId());
         docBroker->finalRemoveSession(getId());
@@ -1677,11 +1686,11 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
 
     if (!isDocPasswordProtected())
     {
-        if (tokens[0] == "tile:")
+        if (tokens.equals(0, "tile:"))
         {
             assert(false && "Tile traffic should go through the DocumentBroker-LoKit WS.");
         }
-        else if (tokens[0] == "status:")
+        else if (tokens.equals(0, "status:"))
         {
             setState(ClientSession::SessionState::LIVE);
             docBroker->setLoaded();
@@ -1724,26 +1733,33 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             // Forward the status response to the client.
             return forwardToClient(payload);
         }
-        else if (tokens[0] == "commandvalues:")
+        else if (tokens.equals(0, "commandvalues:"))
         {
             const std::string stringMsg(buffer, length);
-            const size_t index = stringMsg.find_first_of('{');
+            const std::size_t index = stringMsg.find_first_of('{');
             if (index != std::string::npos)
             {
-                const std::string stringJSON = stringMsg.substr(index);
-                Poco::JSON::Parser parser;
-                const Poco::Dynamic::Var result = parser.parse(stringJSON);
-                const auto& object = result.extract<Poco::JSON::Object::Ptr>();
-                const std::string commandName = object->has("commandName") ? object->get("commandName").toString() : "";
-                if (commandName == ".uno:CharFontName" ||
-                    commandName == ".uno:StyleApply")
+                try
                 {
-                    // other commands should not be cached
-                    docBroker->tileCache().saveTextStream(TileCache::StreamType::CmdValues, stringMsg, commandName);
+                    const std::string stringJSON = stringMsg.substr(index);
+                    Poco::JSON::Parser parser;
+                    const Poco::Dynamic::Var result = parser.parse(stringJSON);
+                    const auto& object = result.extract<Poco::JSON::Object::Ptr>();
+                    const std::string commandName = object->has("commandName") ? object->get("commandName").toString() : "";
+                    if (commandName == ".uno:CharFontName" ||
+                        commandName == ".uno:StyleApply")
+                    {
+                        // other commands should not be cached
+                        docBroker->tileCache().saveTextStream(TileCache::StreamType::CmdValues, stringMsg, commandName);
+                    }
+                }
+                catch (const std::exception& exception)
+                {
+                    LOG_ERR("commandvalues parsing failure: " << exception.what());
                 }
             }
         }
-        else if (tokens[0] == "invalidatetiles:")
+        else if (tokens.equals(0, "invalidatetiles:"))
         {
             assert(firstLine.size() == static_cast<std::string::size_type>(length));
 
@@ -1753,36 +1769,43 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             handleTileInvalidation(firstLine, docBroker);
             return ret;
         }
-        else if (tokens[0] == "invalidatecursor:")
+        else if (tokens.equals(0, "invalidatecursor:"))
         {
             assert(firstLine.size() == static_cast<std::string::size_type>(length));
 
-            const size_t index = firstLine.find_first_of('{');
+            const std::size_t index = firstLine.find_first_of('{');
             const std::string stringJSON = firstLine.substr(index);
             Poco::JSON::Parser parser;
-            const Poco::Dynamic::Var result = parser.parse(stringJSON);
-            const auto& object = result.extract<Poco::JSON::Object::Ptr>();
-            const std::string rectangle = object->get("rectangle").toString();
-            StringVector rectangleTokens(Util::tokenize(rectangle, ','));
-            int x = 0, y = 0, w = 0, h = 0;
-            if (rectangleTokens.size() > 2 &&
-                stringToInteger(rectangleTokens[0], x) &&
-                stringToInteger(rectangleTokens[1], y))
+            try
             {
-                if (rectangleTokens.size() > 3)
+                const Poco::Dynamic::Var result = parser.parse(stringJSON);
+                const auto& object = result.extract<Poco::JSON::Object::Ptr>();
+                const std::string rectangle = object->get("rectangle").toString();
+                StringVector rectangleTokens(StringVector::tokenize(rectangle, ','));
+                int x = 0, y = 0, w = 0, h = 0;
+                if (rectangleTokens.size() > 2 &&
+                    stringToInteger(rectangleTokens[0], x) &&
+                    stringToInteger(rectangleTokens[1], y))
                 {
-                    stringToInteger(rectangleTokens[2], w);
-                    stringToInteger(rectangleTokens[3], h);
-                }
+                    if (rectangleTokens.size() > 3)
+                    {
+                        stringToInteger(rectangleTokens[2], w);
+                        stringToInteger(rectangleTokens[3], h);
+                    }
 
-                docBroker->invalidateCursor(x, y, w, h);
+                    docBroker->invalidateCursor(x, y, w, h);
+                }
+                else
+                {
+                    LOG_ERR("Unable to parse " << firstLine);
+                }
             }
-            else
+            catch (const std::exception& exception)
             {
-                LOG_ERR("Unable to parse " << firstLine);
+                LOG_ERR("invalidatecursor parsing failure: " << exception.what());
             }
         }
-        else if (tokens[0] == "renderfont:")
+        else if (tokens.equals(0, "renderfont:"))
         {
             std::string font, text;
             if (tokens.size() < 3 ||
@@ -1822,6 +1845,12 @@ bool ClientSession::forwardToClient(const std::shared_ptr<Message>& payload)
 
 void ClientSession::enqueueSendMessage(const std::shared_ptr<Message>& data)
 {
+    if (isCloseFrame())
+    {
+        LOG_TRC(getName() << ": Connection closed, dropping message " << data->id());
+        return;
+    }
+
     const std::shared_ptr<DocumentBroker> docBroker = _docBroker.lock();
     LOG_CHECK_RET(docBroker && "Null DocumentBroker instance", );
     docBroker->assertCorrectThread();
@@ -1831,18 +1860,19 @@ void ClientSession::enqueueSendMessage(const std::shared_ptr<Message>& data)
     if (command == "tile:")
     {
         // Avoid sending tile if it has the same wireID as the previously sent tile
-        tile.reset(new TileDesc(TileDesc::parse(data->firstLine())));
+        tile = Util::make_unique<TileDesc>(TileDesc::parse(data->firstLine()));
         auto iter = _oldWireIds.find(tile->generateID());
         if(iter != _oldWireIds.end() && tile->getWireId() != 0 && tile->getWireId() == iter->second)
         {
-            LOG_INF("WSD filters out a tile with the same wireID: " <<  tile->serialize("tile:"));
+            LOG_INF(getName() << ": WSD filters out a tile with the same wireID: "
+                              << tile->serialize("tile:"));
             return;
         }
     }
 
-    LOG_TRC(getName() << " enqueueing client message " << data->id());
-    size_t sizeBefore = _senderQueue.size();
-    size_t newSize = _senderQueue.enqueue(data);
+    LOG_TRC(getName() << ": Enqueueing client message " << data->id());
+    std::size_t sizeBefore = _senderQueue.size();
+    std::size_t newSize = _senderQueue.enqueue(data);
 
     // Track sent tile
     if (tile)
@@ -1881,9 +1911,9 @@ void ClientSession::removeOutdatedTilesOnFly()
     }
 }
 
-size_t ClientSession::countIdenticalTilesOnFly(const TileDesc& tile) const
+std::size_t ClientSession::countIdenticalTilesOnFly(const TileDesc& tile) const
 {
-    size_t count = 0;
+    std::size_t count = 0;
     const std::string tileID = tile.generateID();
     for (const auto& tileItem : _tilesOnFly)
     {

@@ -586,7 +586,7 @@ std::unique_ptr<WopiStorage::WOPIFileInfo> WopiStorage::getWOPIFileInfo(const Au
                 logger << '\t' << pair.first << ": " << pair.second << " / ";
             }
 
-            LOG_END(logger, true);
+            LOG_END(logger);
         }
 
         psession->sendRequest(request);
@@ -605,7 +605,7 @@ std::unique_ptr<WopiStorage::WOPIFileInfo> WopiStorage::getWOPIFileInfo(const Au
                 logRes << '\t' << pair.first << ": " << pair.second << " / ";
             }
 
-            LOG_END(logRes, true);
+            LOG_END(logRes);
         }
 
         if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK)
@@ -953,7 +953,7 @@ std::string WopiStorage::downloadDocument(const Poco::URI& uriObject, const std:
                 logger << '\t' << pair.first << ": " << pair.second << " / ";
             }
 
-            LOG_END(logger, true);
+            LOG_END(logger);
         }
 
         if (response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK)

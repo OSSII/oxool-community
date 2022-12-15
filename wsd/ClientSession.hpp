@@ -250,7 +250,7 @@ private:
     const Poco::URI _uriPublic;
 
     /// Authorization data - either access_token or access_header.
-    const Authorization _auth;
+    Authorization _auth;
 
     /// The cookies we should pass on to the storage on saving.
     std::string _cookies;

@@ -17,6 +17,7 @@
 
 #include "Exceptions.hpp"
 #include <Protocol.hpp>
+#include <StringVector.hpp>
 
 #define TILE_WIRE_ID
 using TileWireId = uint32_t;
@@ -215,17 +216,17 @@ public:
 
         TileWireId oldWireId = 0;
         TileWireId wireId = 0;
-        for (size_t i = 0; i < tokens.size(); ++i)
+        for (std::size_t i = 0; i < tokens.size(); ++i)
         {
-            if (LOOLProtocol::getTokenUInt32(tokens[i], "oldwid", oldWireId))
+            if (tokens.getUInt32(i, "oldwid", oldWireId))
                 ;
-            else if (LOOLProtocol::getTokenUInt32(tokens[i], "wid", wireId))
+            else if (tokens.getUInt32(i, "wid", wireId))
                 ;
             else
             {
                 std::string name;
                 int value = -1;
-                if (LOOLProtocol::parseNameIntegerPair(tokens[i], name, value))
+                if (tokens.getNameIntegerPair(i, name, value))
                 {
                     pairs[name] = value;
                 }
@@ -250,7 +251,7 @@ public:
     /// Deserialize a TileDesc from a string format.
     static TileDesc parse(const std::string& message)
     {
-        return parse(Util::tokenize(message.data(), message.size()));
+        return parse(StringVector::tokenize(message.data(), message.size()));
     }
 
     std::string generateID() const
@@ -306,14 +307,14 @@ private:
             throw BadArgumentException("Invalid tilecombine descriptor.");
         }
 
-        StringVector positionXtokens(Util::tokenize(tilePositionsX, ','));
-        StringVector positionYtokens(Util::tokenize(tilePositionsY, ','));
-        StringVector imgSizeTokens(Util::tokenize(imgSizes, ','));
-        StringVector verTokens(Util::tokenize(vers, ','));
-        StringVector oldWireIdTokens(Util::tokenize(oldWireIds, ','));
-        StringVector wireIdTokens(Util::tokenize(wireIds, ','));
+        StringVector positionXtokens(StringVector::tokenize(tilePositionsX, ','));
+        StringVector positionYtokens(StringVector::tokenize(tilePositionsY, ','));
+        StringVector imgSizeTokens(StringVector::tokenize(imgSizes, ','));
+        StringVector verTokens(StringVector::tokenize(vers, ','));
+        StringVector oldWireIdTokens(StringVector::tokenize(oldWireIds, ','));
+        StringVector wireIdTokens(StringVector::tokenize(wireIds, ','));
 
-        const size_t numberOfPositions = positionXtokens.size();
+        const std::size_t numberOfPositions = positionXtokens.size();
 
         // check that the comma-separated strings have the same number of elements
         if (numberOfPositions != positionYtokens.size() ||
@@ -325,7 +326,7 @@ private:
             throw BadArgumentException("Invalid tilecombine descriptor. Unequal number of tiles in parameters.");
         }
 
-        for (size_t i = 0; i < numberOfPositions; ++i)
+        for (std::size_t i = 0; i < numberOfPositions; ++i)
         {
             int x = 0;
             if (!LOOLProtocol::stringToInteger(positionXtokens[i], x))
@@ -524,7 +525,7 @@ public:
     /// Deserialize a TileDesc from a string format.
     static TileCombined parse(const std::string& message)
     {
-        return parse(Util::tokenize(message.data(), message.size()));
+        return parse(StringVector::tokenize(message.data(), message.size()));
     }
 
     static TileCombined create(const std::vector<TileDesc>& tiles)

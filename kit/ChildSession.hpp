@@ -295,6 +295,7 @@ private:
 
     void rememberEventsForInactiveUser(const int type, const std::string& payload);
     bool formFieldEvent(const char* buffer, int length, const StringVector& tokens);
+    bool renderSearchResult(const char* buffer, int length, const StringVector& tokens);
     bool initUnoStatus(const char* buffer, int length, const StringVector& tokens);
 
     virtual void disconnect() override;

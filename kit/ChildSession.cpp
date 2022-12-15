@@ -307,9 +307,11 @@ bool ChildSession::_handleInput(const char *buffer, int length)
                tokens.equals(0, "getgraphicselection") ||
                tokens.equals(0, "removetextcontext") ||
                tokens.equals(0, "dialogevent") ||
-               tokens.equals(0, "completefunction")||
-               tokens.equals(0, "initunostatus")||
-               tokens.equals(0, "formfieldevent"));
+               tokens.equals(0, "completefunction") ||
+               tokens.equals(0, "initunostatus") ||
+               tokens.equals(0, "formfieldevent") ||
+               tokens.equals(0, "sallogoverride") ||
+               tokens.equals(0, "rendersearchresult"));
 
         if (tokens.equals(0, "clientzoom"))
         {
@@ -480,6 +482,25 @@ bool ChildSession::_handleInput(const char *buffer, int length)
         else if (tokens.equals(0, "initunostatus"))
         {
             return initUnoStatus(buffer, length, tokens);
+        }
+        else if (tokens.equals(0, "sallogoverride"))
+        {
+            if (tokens.size() == 0 || tokens.equals(1, "default"))
+            {
+                _docManager->getLOKit()->setOption("sallogoverride", nullptr);
+            }
+            else if (tokens.size() > 0 && tokens.equals(1, "off"))
+            {
+                _docManager->getLOKit()->setOption("sallogoverride", "-WARN-INFO");
+            }
+            else if (tokens.size() > 0)
+            {
+                _docManager->getLOKit()->setOption("sallogoverride", tokens[1].c_str());
+            }
+        }
+        else if (tokens.equals(0, "rendersearchresult"))
+        {
+            return renderSearchResult(buffer, length, tokens);
         }
         else
         {
@@ -1565,6 +1586,60 @@ bool ChildSession::formFieldEvent(const char* buffer, int length, const StringVe
 
     getLOKitDocument()->setView(_viewId);
     getLOKitDocument()->sendFormFieldEvent(sArguments.c_str());
+
+    return true;
+}
+
+bool ChildSession::renderSearchResult(const char* buffer, int length, const StringVector& /*tokens*/)
+{
+    std::string sContent(buffer, length);
+    std::string sCommand("rendersearchresult ");
+    std::string sArguments = sContent.substr(sCommand.size());
+
+    if (sArguments.empty())
+    {
+        sendTextFrameAndLogError("error: cmd=rendersearchresult kind=syntax");
+        return false;
+    }
+
+    getLOKitDocument()->setView(_viewId);
+
+    const auto eTileMode = static_cast<LibreOfficeKitTileMode>(getLOKitDocument()->getTileMode());
+
+    unsigned char* pBitmapBuffer = nullptr;
+
+    int nWidth = 0;
+    int nHeight = 0;
+    size_t nByteSize = 0;
+
+    bool bSuccess = getLOKitDocument()->renderSearchResult(sArguments.c_str(), &pBitmapBuffer, &nWidth, &nHeight, &nByteSize);
+
+    if (bSuccess && nByteSize > 0)
+    {
+        std::vector<char> aOutput;
+        aOutput.reserve(nByteSize * 3 / 4); // reserve 75% of original size
+
+        if (Png::encodeBufferToPNG(pBitmapBuffer, nWidth, nHeight, aOutput, eTileMode))
+        {
+            static const std::string aHeader = "rendersearchresult:";
+            size_t nResponseSize = aHeader.size() + aOutput.size();
+            std::vector<char> aResponse(nResponseSize);
+            std::copy(aHeader.begin(), aHeader.end(), aResponse.begin());
+            std::copy(aOutput.begin(), aOutput.end(), aResponse.begin() + aHeader.size());
+            sendBinaryFrame(aResponse.data(), aResponse.size());
+        }
+        else
+        {
+            sendTextFrameAndLogError("error: cmd=rendersearchresult kind=failure");
+        }
+    }
+    else
+    {
+        sendTextFrameAndLogError("error: cmd=rendersearchresult kind=failure");
+    }
+
+    if (pBitmapBuffer)
+        free(pBitmapBuffer);
 
     return true;
 }

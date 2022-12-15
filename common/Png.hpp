@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -53,6 +51,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <iomanip>
 
 #ifdef IOS
 #include <Foundation/Foundation.h>
@@ -94,20 +93,28 @@ unpremultiply_data (png_structp /*png*/, png_row_infop row_info, png_bytep data)
     for (i = 0; i < row_info->rowbytes; i += 4)
     {
         uint8_t *b = &data[i];
-        uint32_t pixel;
+        uint32_t pix;
         uint8_t  alpha;
 
-        std::memcpy (&pixel, b, sizeof (uint32_t));
-        alpha = (pixel & 0xff000000) >> 24;
-        if (alpha == 0)
+        std::memcpy (&pix, b, sizeof (uint32_t));
+
+        alpha = (pix & 0xff000000) >> 24;
+        if (alpha == 255)
+        {
+            b[0] = ((pix & 0xff0000) >> 16);
+            b[1] = ((pix & 0x00ff00) >>  8);
+            b[2] = ((pix & 0x0000ff) >>  0);
+            b[3] = 255;
+        }
+        else if (alpha == 0)
         {
             b[0] = b[1] = b[2] = b[3] = 0;
         }
         else
         {
-            b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
-            b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
-            b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
+            b[0] = (((pix & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
+            b[1] = (((pix & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
+            b[2] = (((pix & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
             b[3] = alpha;
         }
     }
@@ -204,17 +211,26 @@ inline bool encodeSubBufferToPNG(unsigned char* pixmap, size_t startX, size_t st
     {
         const auto end = std::chrono::steady_clock::now();
 
-        std::chrono::milliseconds::rep duration
-            = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::chrono::milliseconds duration
+            = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-        static std::chrono::milliseconds::rep totalDuration = 0;
+        static std::chrono::milliseconds totalDuration;
         static int nCalls = 0;
 
         totalDuration += duration;
         ++nCalls;
+
+        static uint64_t totalPixelBytes = 0;
+        static uint64_t totalOutputBytes = 0;
+
+        totalPixelBytes += (width * height * 4);
+        totalOutputBytes += output.size();
+
         LOG_TRC("PNG compression took "
-                << duration << " ms (" << output.size() << " bytes). Average after " << nCalls
-                << " calls: " << (totalDuration / static_cast<double>(nCalls)) << " ms.");
+                << duration << " (" << output.size() << " bytes from " << (width * height * 4) << "). Average after " << nCalls
+                << " calls: " << (totalDuration.count() / static_cast<double>(nCalls)) << "ms, "
+                << (totalOutputBytes / static_cast<double>(nCalls)) << " bytes, "
+                << std::setprecision(2) << (100. * totalOutputBytes / totalPixelBytes) << "% compression.");
     }
 
     return res;
@@ -225,12 +241,6 @@ bool encodeBufferToPNG(unsigned char* pixmap, int width, int height,
                        std::vector<char>& output, LibreOfficeKitTileMode mode)
 {
     return encodeSubBufferToPNG(pixmap, 0, 0, width, height, width, height, output, mode);
-}
-
-inline
-uint64_t hashBuffer(unsigned char* pixmap, long width, long height)
-{
-    return SpookyHash::Hash64(pixmap, width * height * 4, 1073741789);
 }
 
 inline

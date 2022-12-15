@@ -9,9 +9,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <cerrno>
 #include <string>
 #include <sys/stat.h>
+#include <vector>
 
 #include <Poco/Path.h>
 
