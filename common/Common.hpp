@@ -64,4 +64,7 @@ constexpr const char CAPABILITIES_END_POINT[] = "/hosting/capabilities";
 extern int ClientPortNumber;
 extern std::string MasterLocation;
 
+/// Controls whether experimental features/behavior is enabled or not.
+extern bool EnableExperimental;
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

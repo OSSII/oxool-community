@@ -240,6 +240,10 @@ AC_ARG_ENABLE([vereign],
             AS_HELP_STRING([--enable-vereign],
                           [Set Vereign document_signing_url configuration key to the default app.vereign.com.]))
 
+AC_ARG_ENABLE([experimental],
+              AS_HELP_STRING([--enable-experimental],
+                             [Enable experimental features and behavior]))
+
 # Handle options
 AS_IF([test "$enable_debug" = yes -a -n "$with_poco_libs"],
       [POCO_DEBUG_SUFFIX=d],
@@ -256,6 +260,8 @@ LOOLWSD_ANONYMIZE_USER_DATA=false
 LOLEAFLET_LOGGING="false"
 debug_msg="secure mode: product build"
 anonym_msg=""
+ENABLE_EXPERIMENTAL=false
+experimental_msg="disabled by default"
 if test "$enable_debug" = "yes"; then
    AC_DEFINE([ENABLE_DEBUG],1,[Whether to compile in some extra debugging support code and disable some security pieces])
    ENABLE_DEBUG=true
@@ -336,6 +342,13 @@ if test "$enable_anonymization" = "yes" ; then
    LOOLWSD_ANONYMIZE_USER_DATA=true
    anonym_msg="anonymization of user-data is enabled"
 fi
+
+if test "$enable_experimental" = "yes" ; then
+  ENABLE_EXPERIMENTAL=true
+  experimental_msg="enabled by default"
+fi
+AC_SUBST(ENABLE_EXPERIMENTAL)
+
 AC_DEFINE_UNQUOTED([LOOLWSD_ANONYMIZE_USER_DATA],[$LOOLWSD_ANONYMIZE_USER_DATA],[Enable permanent anonymization in logs])
 AC_SUBST(LOOLWSD_ANONYMIZE_USER_DATA)
 
@@ -873,6 +886,7 @@ Configuration:
     LO integration tests    ${lo_msg}
     SSL support             $ssl_msg
     Debug & low security    $debug_msg
+    Experimental features   $experimental_msg
     Anonymization           $anonym_msg
     Set capabilities        $setcap_msg
     Browsersync             $browsersync_msg
