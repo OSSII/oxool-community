@@ -28,7 +28,7 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
     // FIXME: check fin, code etc.
     const std::string firstLine = LOOLProtocol::getFirstLine(payload.data(), payload.size());
 
-    const StringVector tokens(Util::tokenize(firstLine, ' '));
+    const StringVector tokens(StringVector::tokenize(firstLine, ' '));
     LOG_DBG("Module:[" << mpModule->getDetail().name << "] Recv: " << firstLine << " tokens " << tokens.size());
 
     // 一定要有資料
@@ -524,7 +524,7 @@ bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
     }
 
     const std::string& requestURI = request.getURI();
-    StringVector pathTokens(Util::tokenize(requestURI, '/'));
+    StringVector pathTokens(StringVector::tokenize(requestURI, '/'));
     // 要升級連線爲 Web socket
     if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
     {

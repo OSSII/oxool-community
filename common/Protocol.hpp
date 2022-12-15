@@ -171,7 +171,7 @@ namespace LOOLProtocol
 
     inline bool getTokenIntegerFromMessage(const std::string& message, const std::string& name, int& value)
     {
-        return getTokenInteger(Util::tokenize(message), name, value);
+        return getTokenInteger(StringVector::tokenize(message), name, value);
     }
 
     /// Returns the first token of a message.

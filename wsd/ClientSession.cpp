@@ -340,7 +340,7 @@ bool ClientSession::_handleInput(const char *buffer, int length)
 {
     LOG_TRC(getName() << ": handling incoming [" << getAbbreviatedMessage(buffer, length) << "].");
     const std::string firstLine = getFirstLine(buffer, length);
-    const StringVector tokens = Util::tokenize(firstLine.data(), firstLine.size());
+    const StringVector tokens = StringVector::tokenize(firstLine.data(), firstLine.size());
 
     std::shared_ptr<DocumentBroker> docBroker = getDocumentBroker();
     if (!docBroker || docBroker->isMarkedToDestroy())

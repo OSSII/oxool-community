@@ -30,7 +30,7 @@ void TileQueue::put_impl(const Payload& value)
     {
         LOG_TRC("Processing [" << LOOLProtocol::getAbbreviatedMessage(msg) << "]. Before canceltiles have " << getQueue().size() << " in queue.");
         const std::string seqs = msg.substr(12);
-        StringVector tokens(Util::tokenize(seqs, ','));
+        StringVector tokens(StringVector::tokenize(seqs, ','));
         getQueue().erase(std::remove_if(getQueue().begin(), getQueue().end(),
                 [&tokens](const Payload& v)
                 {
@@ -186,7 +186,7 @@ std::string TileQueue::removeCallbackDuplicate(const std::string& callbackMsg)
 {
     assert(LOOLProtocol::matchPrefix("callback", callbackMsg, /*ignoreWhitespace*/ true));
 
-    StringVector tokens = Util::tokenize(callbackMsg);
+    StringVector tokens = StringVector::tokenize(callbackMsg);
 
     if (tokens.size() < 3)
         return std::string();
@@ -215,7 +215,7 @@ std::string TileQueue::removeCallbackDuplicate(const std::string& callbackMsg)
             {
                 auto& it = getQueue()[i];
 
-                StringVector queuedTokens = Util::tokenize(it.data(), it.size());
+                StringVector queuedTokens = StringVector::tokenize(it.data(), it.size());
                 if (queuedTokens.size() < 3)
                 {
                     ++i;
@@ -334,7 +334,7 @@ std::string TileQueue::removeCallbackDuplicate(const std::string& callbackMsg)
             {
                 auto& it = getQueue()[i];
 
-                StringVector queuedTokens = Util::tokenize(it.data(), it.size());
+                StringVector queuedTokens = StringVector::tokenize(it.data(), it.size());
                 if (queuedTokens.size() < 4)
                     continue;
 
@@ -384,7 +384,7 @@ std::string TileQueue::removeCallbackDuplicate(const std::string& callbackMsg)
                 if (!LOOLProtocol::matchPrefix("callback", it))
                     continue;
 
-                StringVector queuedTokens = Util::tokenize(it.data(), it.size());
+                StringVector queuedTokens = StringVector::tokenize(it.data(), it.size());
                 if (queuedTokens.size() < 3)
                     continue;
 

@@ -495,69 +495,6 @@ namespace Util
             tokens.emplace_back(start - data, end - start);
     }
 
-    /// Tokenize single-char delimited values until we hit new-line or the end.
-    inline StringVector tokenize(const char* data, const std::size_t size,
-                                 const char delimiter = ' ')
-    {
-        if (size == 0 || data == nullptr || *data == '\0')
-            return StringVector();
-
-        std::vector<StringToken> tokens;
-        tokenize(data, size, delimiter, tokens);
-        return StringVector(std::string(data, size), std::move(tokens));
-    }
-
-    /// Tokenize single-char delimited values until we hit new-line or the end.
-    inline StringVector tokenize(const std::string& s, const char delimiter = ' ')
-    {
-        if (s.empty())
-            return StringVector();
-
-        std::vector<StringToken> tokens;
-        tokenize(s.data(), s.size(), delimiter, tokens);
-        return StringVector(s, std::move(tokens));
-    }
-
-    /// Tokenize by the delimiter string.
-    inline StringVector tokenize(const std::string& s, const char* delimiter, int len = -1)
-    {
-        if (s.empty() || len == 0 || delimiter == nullptr || *delimiter == '\0')
-            return StringVector();
-
-        if (len < 0)
-            len = std::strlen(delimiter);
-
-        std::size_t start = 0;
-        std::size_t end = s.find(delimiter, start);
-
-        std::vector<StringToken> tokens;
-        tokens.reserve(16);
-
-        tokens.emplace_back(start, end - start);
-        start = end + len;
-
-        while (end != std::string::npos)
-        {
-            end = s.find(delimiter, start);
-            tokens.emplace_back(start, end - start);
-            start = end + len;
-        }
-
-        return StringVector(s, std::move(tokens));
-    }
-
-    inline StringVector tokenize(const std::string& s, const std::string& delimiter)
-    {
-        return tokenize(s, delimiter.data(), delimiter.size());
-    }
-
-    /** Tokenize based on any of the characters in 'delimiters'.
-
-        Ie. when there is '\n\r' in there, any of them means a delimiter.
-        In addition, trim the values so there are no leadiding or trailing spaces.
-    */
-    StringVector tokenizeAnyOf(const std::string& s, const char* delimiters);
-
 #ifdef IOS
 
     inline void *memrchr(const void *s, int c, size_t n)

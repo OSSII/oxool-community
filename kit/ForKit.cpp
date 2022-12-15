@@ -117,7 +117,7 @@ protected:
         if (UnitKit::get().filterKitMessage(this, message))
             return;
 #endif
-        StringVector tokens = Util::tokenize(message);
+        StringVector tokens = StringVector::tokenize(message);
         Log::StreamLogger logger = Log::debug();
         if (logger.enabled())
         {
@@ -532,7 +532,7 @@ int main(int argc, char** argv)
         {
             eq = std::strchr(cmd, '=');
             const std::string rlimits = std::string(eq+1);
-            StringVector tokens = Util::tokenize(rlimits, ';');
+            StringVector tokens = StringVector::tokenize(rlimits, ';');
             for (const auto& cmdLimit : tokens)
             {
                 const std::pair<std::string, std::string> pair = Util::split(tokens.getParam(cmdLimit), ':');

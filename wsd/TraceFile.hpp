@@ -198,7 +198,7 @@ public:
             // Remap the URL to the snapshot.
             if (LOOLProtocol::matchPrefix("load", data))
             {
-                StringVector tokens = Util::tokenize(data);
+                StringVector tokens = StringVector::tokenize(data);
                 if (tokens.size() >= 2)
                 {
                     std::string url;

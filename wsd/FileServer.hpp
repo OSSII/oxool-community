@@ -13,6 +13,7 @@
 #include "Socket.hpp"
 
 #include <Poco/MemoryStream.h>
+#include <Poco/Util/LayeredConfiguration.h>
 
 class RequestDetails;
 /// Handles file requests over HTTP(S).
@@ -33,9 +34,16 @@ class FileServerRequestHandler
     /// Construct a JSON to be accepted by the loleflet.html from a list like
     /// UIMode=classic;TextRuler=true;PresentationStatusbar=false
     /// that is passed as "ui_defaults" hidden input during the iframe setup.
+    /// Also returns the UIMode from uiDefaults in uiMode output param
     static std::string uiDefaultsToJSON(const std::string& uiDefaults, std::string& uiMode);
 
+    static std::string checkFileInfoToJSON(const std::string& checkfileFileInfo);
+
     static std::string cssVarsToStyle(const std::string& cssVars);
+
+    static std::string stringifyBoolFromConfig(const Poco::Util::LayeredConfiguration& config,
+                                               std::string propertyName,
+                                               bool defaultValue);
 
 public:
     /// Evaluate if the cookie exists, and if not, ask for the credentials.

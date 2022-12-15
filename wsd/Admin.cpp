@@ -349,7 +349,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
         return;
     }
 
-    StringVector tokens(Util::tokenize(firstLine, ' '));
+    StringVector tokens(StringVector::tokenize(firstLine, ' '));
     LOG_TRC("Recv: " << firstLine << " tokens " << tokens.size());
 
     if (tokens.empty())
@@ -512,7 +512,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
     {
         for (size_t i = 1; i < tokens.size(); i++)
         {
-            StringVector setting(Util::tokenize(tokens[i], '='));
+            StringVector setting(StringVector::tokenize(tokens[i], '='));
             int settingVal = 0;
             try
             {
@@ -581,7 +581,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
     {
         for (size_t i = 1; i < tokens.size(); i++)
         {
-            StringVector _channel(Util::tokenize(tokens[i], '='));
+            StringVector _channel(StringVector::tokenize(tokens[i], '='));
             if (_channel.size() == 2)
             {
                 _admin->setChannelLogLevel((_channel[0] != "?" ? _channel[0]: ""), _channel[1]);
@@ -1270,7 +1270,7 @@ bool AdminSocketHandler::handleInitialRequest(
     }
 
     const std::string& requestURI = request.getURI();
-    StringVector pathTokens(Util::tokenize(requestURI, '/'));
+    StringVector pathTokens(StringVector::tokenize(requestURI, '/'));
 
     if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
     {
