@@ -45,6 +45,7 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
             LOG_DBG("Auth command without any token");
             sendMessage("InvalidAuthToken");
             shutdown();
+            ignoreInput();
             return;
         }
         std::string jwtToken;
@@ -63,6 +64,7 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
             LOG_DBG("Invalid auth token");
             sendMessage("InvalidAuthToken");
             shutdown();
+            ignoreInput();
             return;
         }
     }
@@ -74,6 +76,7 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
                 tokens.size() << " first: '" << tokens[0] << '\'');
         sendMessage("NotAuthenticated");
         shutdown();
+        ignoreInput();
         return;
     }
 

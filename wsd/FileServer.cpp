@@ -50,6 +50,8 @@
 #include <Protocol.hpp>
 #include <Util.hpp>
 
+#include <OxOOL/HttpHelper.h>
+
 using Poco::Net::HTMLForm;
 using Poco::Net::HTTPBasicCredentials;
 using Poco::Net::HTTPRequest;
@@ -466,7 +468,7 @@ void FileServerRequestHandler::handleRequest(const HTTPRequest& request,
                 // Useful to not serve from memory sometimes especially during loleaflet development
                 // Avoids having to restart oxoolwsd everytime you make a change in loleaflet
                 const std::string filePath = Poco::Path(LOOLWSD::FileServerRoot, relPath).absolute().toString();
-                HttpHelper::sendFileAndShutdown(socket, filePath, mimeType, &response, noCache);
+                OxOOL::HttpHelper::sendFileAndShutdown(socket, filePath, mimeType, &response, noCache);
                 return;
             }
 #endif

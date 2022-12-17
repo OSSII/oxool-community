@@ -12,6 +12,7 @@
 #include "MessageQueue.hpp"
 #include <climits>
 #include <algorithm>
+#include <iostream>
 
 #include <Poco/JSON/JSON.h>
 #include <Poco/JSON/Object.h>
@@ -23,12 +24,14 @@
 
 void TileQueue::put_impl(const Payload& value)
 {
-    const std::string msg = std::string(value.data(), value.size());
     const std::string firstToken = LOOLProtocol::getFirstToken(value);
 
     if (firstToken == "canceltiles")
     {
-        LOG_TRC("Processing [" << LOOLProtocol::getAbbreviatedMessage(msg) << "]. Before canceltiles have " << getQueue().size() << " in queue.");
+        const std::string msg = std::string(value.data(), value.size());
+        LOG_TRC("Processing [" << LOOLProtocol::getAbbreviatedMessage(msg)
+                               << "]. Before canceltiles have " << getQueue().size()
+                               << " in queue.");
         const std::string seqs = msg.substr(12);
         StringVector tokens(StringVector::tokenize(seqs, ','));
         getQueue().erase(std::remove_if(getQueue().begin(), getQueue().end(),
@@ -59,8 +62,9 @@ void TileQueue::put_impl(const Payload& value)
     {
         // Breakup tilecombine and deduplicate (we are re-combining the tiles
         // in the get_impl() again)
+        const std::string msg = std::string(value.data(), value.size());
         const TileCombined tileCombined = TileCombined::parse(msg);
-        for (auto& tile : tileCombined.getTiles())
+        for (const auto& tile : tileCombined.getTiles())
         {
             const std::string newMsg = tile.serialize("tile");
 
@@ -72,14 +76,14 @@ void TileQueue::put_impl(const Payload& value)
     }
     else if (firstToken == "tile")
     {
-        removeTileDuplicate(msg);
+        removeTileDuplicate(std::string(value.data(), value.size()));
 
         MessageQueue::put_impl(value);
         return;
     }
     else if (firstToken == "callback")
     {
-        const std::string newMsg = removeCallbackDuplicate(msg);
+        const std::string newMsg = removeCallbackDuplicate(std::string(value.data(), value.size()));
 
         if (newMsg.empty())
         {
@@ -591,6 +595,31 @@ TileQueue::Payload TileQueue::get_impl()
     std::string tileCombined = TileCombined::create(tiles).serialize("tilecombine");
     LOG_TRC("MessageQueue res: " << LOOLProtocol::getAbbreviatedMessage(tileCombined));
     return Payload(tileCombined.data(), tileCombined.data() + tileCombined.size());
+}
+
+void TileQueue::dumpState(std::ostream& oss)
+{
+    oss << "\ttileQueue:"
+        << "\n\t\tcursorPositions:";
+    for (const auto &it : _cursorPositions)
+    {
+        oss << "\n\t\t\tviewId: "
+            << it.first
+            << " part: " << it.second.getPart()
+            << " x: " << it.second.getX()
+            << " y: " << it.second.getY()
+            << " width: " << it.second.getWidth()
+            << " height: " << it.second.getHeight();
+    }
+
+    oss << "\n\t\tviewOrder: [";
+    std::string separator;
+    for (const auto& viewId : _viewOrder)
+    {
+        oss << separator << viewId;
+        separator = ", ";
+    }
+    oss << "]\n";
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

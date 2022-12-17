@@ -106,6 +106,7 @@ using Poco::Net::PartHandler;
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/Util/XMLConfiguration.h>
 
+#include <OxOOL/HttpHelper.h>
 #include <OxOOL/ModuleManager.h>
 
 #include "Admin.hpp"
@@ -2601,22 +2602,22 @@ private:
                 if (!LOOLWSD::AdminEnabled)
                     throw Poco::FileAccessDeniedException("Admin console disabled");
 
-                try{
+                try
+                {
                     if (!FileServerRequestHandler::isAdminLoggedIn(request, *response))
                         throw Poco::Net::NotAuthenticatedException("Invalid admin login");
                 }
                 catch (const Poco::Net::NotAuthenticatedException& exc)
                 {
                     //LOG_ERR("FileServerRequestHandler::NotAuthenticated: " << exc.displayText());
-                    std::ostringstream oss;
-                    oss << "HTTP/1.1 401 \r\n"
-                        << "Content-Type: text/html charset=UTF-8\r\n"
-                        << "Date: " << Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT) << "\r\n"
-                        << "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
-                        << "WWW-authenticate: Basic realm=\"online\"\r\n"
-                        << "\r\n";
-                    socket->send(oss.str());
-                    socket->shutdown();
+                    Poco::Net::HTTPResponse httpResponse;
+                    Poco::Net::HTTPResponse::HTTPStatus statusCode = Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED;
+                    httpResponse.setStatus(statusCode);
+                    httpResponse.setReason(Poco::Net::HTTPResponse::getReasonForStatus(statusCode));
+                    httpResponse.set("Content-Type", "text/html charset=UTF-8");
+                    httpResponse.set("WWW-authenticate", "Basic realm=\"online\"");
+                    socket->sendAndShutdown(httpResponse);
+                    socket->ignoreInput();
                     return;
                 }
 
@@ -2677,14 +2678,8 @@ private:
                 LOG_ERR("Unknown resource: " << requestDetails.toString());
 
                 // Bad request.
-                std::ostringstream oss;
-                oss << "HTTP/1.1 400\r\n"
-                    "Date: " << Util::getHttpTimeNow() << "\r\n"
-                    "User-Agent: " WOPI_AGENT_STRING "\r\n"
-                    "Content-Length: 0\r\n"
-                    "\r\n";
-                socket->send(oss.str());
-                socket->shutdown();
+                OxOOL::HttpHelper::sendErrorAndShutdown(
+                    Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
                 return;
             }
         }
@@ -2695,14 +2690,13 @@ private:
 
             // Bad request.
             // NOTE: Check _wsState to choose between HTTP response or WebSocket (app-level) error.
-            std::ostringstream oss;
-            oss << "HTTP/1.1 400\r\n"
-                << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                << "User-Agent: LOOLWSD WOPI Agent\r\n"
-                << "Content-Length: 0\r\n"
-                << "\r\n";
-            socket->send(oss.str());
-            socket->shutdown();
+            Poco::Net::HTTPResponse httpResponse;
+            Poco::Net::HTTPResponse::HTTPStatus statusCode = Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
+            httpResponse.setStatus(statusCode);
+            httpResponse.setReason(Poco::Net::HTTPResponse::getReasonForStatus(statusCode));
+            httpResponse.set("Content-Length", "0");
+            socket->sendAndShutdown(httpResponse);
+            socket->ignoreInput();
             return;
         }
 
@@ -2792,7 +2786,7 @@ private:
         if (!File(faviconPath).exists())
             faviconPath = LOOLWSD::FileServerRoot + "/favicon.ico";
 
-        HttpHelper::sendFileAndShutdown(socket, faviconPath, mimeType);
+        OxOOL::HttpHelper::sendFileAndShutdown(socket, faviconPath, mimeType);
     }
 
     // Added by Firefly <firefly@ossii.com.tw>
@@ -2849,19 +2843,13 @@ private:
             srvUrl = requestDetails.getProxyPrefix();
         Poco::replaceInPlace(xml, std::string("%SRV_URI%"), srvUrl);
 
-        // TODO: Refactor this to some common handler.
-        std::ostringstream oss;
-        oss << "HTTP/1.1 200 OK\r\n"
-            "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-            "User-Agent: " WOPI_AGENT_STRING "\r\n"
-            "Content-Length: " << xml.size() << "\r\n"
-            "Content-Type: text/xml\r\n"
-            "X-Content-Type-Options: nosniff\r\n"
-            "\r\n"
-            << xml;
+        OxOOL::HttpHelper::KeyValueMap keyValue;
+        keyValue["Last-Modified"] = Util::getHttpTimeNow();
+        keyValue["X-Content-Type-Options"] = "nosniff";
+        keyValue["Connection"] = "close";
+        OxOOL::HttpHelper::sendResponseAndShutdown(socket, xml,
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK, "text/xml", keyValue);
 
-        socket->send(oss.str());
-        socket->shutdown();
         LOG_INF("Sent discovery.xml successfully.");
     }
 
@@ -2874,18 +2862,12 @@ private:
 
         const std::string capabilities = getCapabilitiesJson(request, socket);
 
-        std::ostringstream oss;
-        oss << "HTTP/1.1 200 OK\r\n"
-            "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-            "User-Agent: " WOPI_AGENT_STRING "\r\n"
-            "Content-Length: " << capabilities.size() << "\r\n"
-            "Content-Type: application/json\r\n"
-            "X-Content-Type-Options: nosniff\r\n"
-            "\r\n"
-            << capabilities;
-
-        socket->send(oss.str());
-        socket->shutdown();
+        OxOOL::HttpHelper::KeyValueMap keyValue;
+        keyValue["Last-Modified"] = Util::getHttpTimeNow();
+        keyValue["X-Content-Type-Options"] = "nosniff";
+        keyValue["Connection"] = "close";
+        OxOOL::HttpHelper::sendResponseAndShutdown(socket, capabilities,
+            Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK, "application/json", keyValue);
         LOG_INF("Sent capabilities.json successfully.");
     }
 
@@ -2917,6 +2899,22 @@ private:
         }
         LOG_TRC("Clipboard request for us: " << serverId << " with tag " << tag);
 
+        if (serverId != Util::getProcessIdentifier())
+        {
+            const std::string errMsg = "Cluster configuration error: mis-matching "
+                                       "serverid "
+                                       + serverId + " vs. " + Util::getProcessIdentifier()
+                                       + "on request to URL: " + request.getURI();
+            LOG_ERR(errMsg);
+
+            // we got the wrong request.
+            OxOOL::HttpHelper::KeyValueMap keyValue;
+            keyValue["Connection"] = "close";
+            OxOOL::HttpHelper::sendErrorAndShutdown(
+                Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket, "", "", keyValue);
+            return;
+        }
+
         const auto docKey = DocumentBroker::getDocKey(DocumentBroker::sanitizeURI(WOPISrc));
 
         std::shared_ptr<DocumentBroker> docBroker;
@@ -2926,7 +2924,14 @@ private:
             if (it != DocBrokers.end())
                 docBroker = it->second;
         }
-        if (docBroker && serverId == Util::getProcessIdentifier())
+
+        // If we have a valid docBroker, use it.
+        // Note: there is a race here as DocBroker may
+        // have already exited its SocketPoll, but we
+        // haven't cleaned up the DocBrokers container.
+        // Since we don't care about creating a new one,
+        // we simply go to the fallback below.
+        if (docBroker && docBroker->isAlive())
         {
             std::shared_ptr<std::string> data;
             DocumentBroker::ClipboardRequest type;
@@ -2969,22 +2974,11 @@ private:
             LOG_ERR("Invalid clipboard request: " << serverId << " with tag " << tag <<
                     " and broker: " << (docBroker ? "" : "not ") << "found");
 
-            std::string errMsg;
-            if (serverId != Util::getProcessIdentifier())
-                errMsg = "Cluster configuration error: mis-matching serverid " + serverId + " vs. " + Util::getProcessIdentifier();
-            else
-                errMsg = "Empty clipboard item / session tag " + tag;
+            std::string errMsg = "Empty clipboard item / session tag " + tag;
 
             // Bad request.
-            std::ostringstream oss;
-            oss << "HTTP/1.1 400\r\n"
-                << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                << "User-Agent: LOOLWSD WOPI Agent\r\n"
-                << "Content-Length: 0\r\n"
-                << "\r\n"
-                << errMsg;
-            socket->send(oss.str());
-            socket->shutdown();
+            OxOOL::HttpHelper::sendErrorAndShutdown(
+                Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket, errMsg);
         }
     }
 
@@ -2994,173 +2988,17 @@ private:
         assert(socket && "Must have a valid socket");
 
         LOG_DBG("HTTP request: " << request.getURI());
-        const std::string mimeType = "text/plain";
-        const std::string responseString = "User-agent: *\nDisallow: /\n";
+        std::string responseString = "";
+        if (OxOOL::HttpHelper::isGET(request))
+            responseString = "User-agent: *\nDisallow: /\n";
 
-        std::ostringstream oss;
-        oss << "HTTP/1.1 200 OK\r\n"
-            "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-            "User-Agent: " WOPI_AGENT_STRING "\r\n"
-            "Content-Length: " << responseString.size() << "\r\n"
-            "Content-Type: " << mimeType << "\r\n"
-            "\r\n";
-
-        if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET)
-        {
-            oss << responseString;
-        }
-
-        socket->send(oss.str());
-        socket->shutdown();
+        OxOOL::HttpHelper::sendResponseAndShutdown(socket, responseString);
         LOG_INF("Sent robots.txt response successfully.");
-    }
-
-    static std::string getContentType(const std::string& fileName)
-    {
-        static std::unordered_map<std::string, std::string> aContentTypes{
-            { "svg", "image/svg+xml" },
-            { "pot", "application/vnd.ms-powerpoint" },
-            { "xla", "application/vnd.ms-excel" },
-
-            // Writer documents
-            { "sxw", "application/vnd.sun.xml.writer" },
-            { "odt", "application/vnd.oasis.opendocument.text" },
-            { "fodt", "application/vnd.oasis.opendocument.text-flat-xml" },
-
-            // Calc documents
-            { "sxc", "application/vnd.sun.xml.calc" },
-            { "ods", "application/vnd.oasis.opendocument.spreadsheet" },
-            { "fods", "application/vnd.oasis.opendocument.spreadsheet-flat-xml" },
-
-            // Impress documents
-            { "sxi", "application/vnd.sun.xml.impress" },
-            { "odp", "application/vnd.oasis.opendocument.presentation" },
-            { "fodp", "application/vnd.oasis.opendocument.presentation-flat-xml" },
-
-            // Draw documents
-            { "sxd", "application/vnd.sun.xml.draw" },
-            { "odg", "application/vnd.oasis.opendocument.graphics" },
-            { "fodg", "application/vnd.oasis.opendocument.graphics-flat-xml" },
-
-            // Chart documents
-            { "odc", "application/vnd.oasis.opendocument.chart" },
-
-            // Text master documents
-            { "sxg", "application/vnd.sun.xml.writer.global" },
-            { "odm", "application/vnd.oasis.opendocument.text-master" },
-
-            // Math documents
-            // In fact Math documents are not supported at all.
-            // See: https://bugs.documentfoundation.org/show_bug.cgi?id=97006
-            { "sxm", "application/vnd.sun.xml.math" },
-            { "odf", "application/vnd.oasis.opendocument.formula" },
-
-            // Text template documents
-            { "stw", "application/vnd.sun.xml.writer.template" },
-            { "ott", "application/vnd.oasis.opendocument.text-template" },
-
-            // Writer master document templates
-            { "otm", "application/vnd.oasis.opendocument.text-master-template" },
-
-            // Spreadsheet template documents
-            { "stc", "application/vnd.sun.xml.calc.template" },
-            { "ots", "application/vnd.oasis.opendocument.spreadsheet-template" },
-
-            // Presentation template documents
-            { "sti", "application/vnd.sun.xml.impress.template" },
-            { "otp", "application/vnd.oasis.opendocument.presentation-template" },
-
-            // Drawing template documents
-            { "std", "application/vnd.sun.xml.draw.template" },
-            { "otg", "application/vnd.oasis.opendocument.graphics-template" },
-
-            // MS Word
-            { "doc", "application/msword" },
-            { "dot", "application/msword" },
-
-            // MS Excel
-            { "xls", "application/vnd.ms-excel" },
-
-            // MS PowerPoint
-            { "ppt", "application/vnd.ms-powerpoint" },
-
-            // OOXML wordprocessing
-            { "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
-            { "docm", "application/vnd.ms-word.document.macroEnabled.12" },
-            { "dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template" },
-            { "dotm", "application/vnd.ms-word.template.macroEnabled.12" },
-
-            // OOXML spreadsheet
-            { "xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template" },
-            { "xltm", "application/vnd.ms-excel.template.macroEnabled.12" },
-            { "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
-            { "xlsb", "application/vnd.ms-excel.sheet.binary.macroEnabled.12" },
-            { "xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12" },
-
-            // OOXML presentation
-            { "pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
-            { "pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12" },
-            { "potx", "application/vnd.openxmlformats-officedocument.presentationml.template" },
-            { "potm", "application/vnd.ms-powerpoint.template.macroEnabled.12" },
-
-            // Others
-            { "wpd", "application/vnd.wordperfect" },
-            { "pdb", "application/x-aportisdoc" },
-            { "hwp", "application/x-hwp" },
-            { "wps", "application/vnd.ms-works" },
-            { "wri", "application/x-mswrite" },
-            { "dif", "application/x-dif-document" },
-            { "slk", "text/spreadsheet" },
-            { "csv", "text/csv" },
-            { "dbf", "application/x-dbase" },
-            { "wk1", "application/vnd.lotus-1-2-3" },
-            { "cgm", "image/cgm" },
-            { "dxf", "image/vnd.dxf" },
-            { "emf", "image/x-emf" },
-            { "wmf", "image/x-wmf" },
-            { "cdr", "application/coreldraw" },
-            { "vsd", "application/vnd.visio2013" },
-            { "vss", "application/vnd.visio" },
-            { "pub", "application/x-mspublisher" },
-            { "lrf", "application/x-sony-bbeb" },
-            { "gnumeric", "application/x-gnumeric" },
-            { "mw", "application/macwriteii" },
-            { "numbers", "application/x-iwork-numbers-sffnumbers" },
-            { "oth", "application/vnd.oasis.opendocument.text-web" },
-            { "p65", "application/x-pagemaker" },
-            { "rtf", "text/rtf" },
-            { "txt", "text/plain" },
-            { "fb2", "application/x-fictionbook+xml" },
-            { "cwk", "application/clarisworks" },
-            { "wpg", "image/x-wpg" },
-            { "pages", "application/x-iwork-pages-sffpages" },
-            { "ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow" },
-            { "key", "application/x-iwork-keynote-sffkey" },
-            { "abw", "application/x-abiword" },
-            { "fh", "image/x-freehand" },
-            { "sxs", "application/vnd.sun.xml.chart" },
-            { "602", "application/x-t602" },
-            { "bmp", "image/bmp" },
-            { "png", "image/png" },
-            { "gif", "image/gif" },
-            { "tiff", "image/tiff" },
-            { "jpg", "image/jpg" },
-            { "jpeg", "image/jpeg" },
-            { "pdf", "application/pdf" },
-        };
-
-        const std::string sExt = Poco::Path(fileName).getExtension();
-
-        const auto it = aContentTypes.find(sExt);
-        if (it != aContentTypes.end())
-            return it->second;
-
-        return "application/octet-stream";
     }
 
     static bool isSpreadsheet(const std::string& fileName)
     {
-        const std::string sContentType = getContentType(fileName);
+        const std::string sContentType = OxOOL::HttpHelper::getMimeType(fileName);
 
         return sContentType == "application/vnd.oasis.opendocument.spreadsheet"
                || sContentType
@@ -3178,22 +3016,13 @@ private:
 
         LOG_INF("Post request: [" << LOOLWSD::anonymizeUrl(requestDetails.getURI()) << ']');
 
-        Poco::Net::HTTPResponse response;
-
         if (requestDetails.equals(1, "convert-to") && LOOLWSD::getConfigValue<bool>("convert_to", false))
         {
             // Validate sender - FIXME: should do this even earlier.
             if (!allowConvertTo(socket->clientAddress(), request, true))
             {
                 LOG_WRN("Conversion requests not allowed from this address: " << socket->clientAddress());
-                std::ostringstream oss;
-                oss << "HTTP/1.1 403\r\n"
-                    "Date: " << Util::getHttpTimeNow() << "\r\n"
-                    "User-Agent: " HTTP_AGENT_STRING "\r\n"
-                    "Content-Length: 0\r\n"
-                    "\r\n";
-                socket->send(oss.str());
-                socket->shutdown();
+                OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_FORBIDDEN, socket);
                 return;
             }
 
@@ -3220,6 +3049,19 @@ private:
                     //FIXME: We shouldn't have "true" as having the option already implies that
                     // we want it enabled (i.e. we shouldn't set the option if we don't want it).
                     options = ",FullSheetPreview=trueFULLSHEETPREVEND";
+                }
+                const std::string pdfVer = (form.has("PDFVer") ? form.get("PDFVer") : "");
+                if (!pdfVer.empty())
+                {
+                    if (strcasecmp(pdfVer.c_str(), "PDF/A-1b") && strcasecmp(pdfVer.c_str(), "PDF/A-2b") && strcasecmp(pdfVer.c_str(), "PDF/A-3b")
+                        && strcasecmp(pdfVer.c_str(), "PDF-1.5") && strcasecmp(pdfVer.c_str(), "PDF-1.6"))
+                    {
+                        LOG_ERR("Wrong PDF type: " << pdfVer << ". Conversion aborted.");
+                        OxOOL::HttpHelper::sendErrorAndShutdown(
+                            Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
+                        return;
+                    }
+                   options += ",PDFVer=" + pdfVer + "PDFVEREND";
                 }
 
                 // This lock could become a bottleneck.
@@ -3279,10 +3121,16 @@ private:
                     LOG_INF("Perform insertfile: " << formChildid << ", " << formName << ", filename: " << fileName);
                     File(dirPath).createDirectories();
                     File(handler.getFilename()).moveTo(fileName);
+
+                    // Cleanup the directory after moving.
+                    const std::string dir = Poco::Path(handler.getFilename()).parent().toString();
+                    if (FileUtil::isEmptyDirectory(dir))
+                        FileUtil::removeFile(dir);
+
                     handler.takeFile();
-                    response.setContentLength(0);
-                    socket->send(response);
-                    socket->shutdown();
+
+                    OxOOL::HttpHelper::sendResponseAndShutdown(socket);
+                    socket->ignoreInput();
                     return;
                 }
             }
@@ -3335,16 +3183,22 @@ private:
                 if (attachmentIt != postRequestQueryParams.end())
                     serveAsAttachment = attachmentIt->second != "0";
 
+                Poco::Net::HTTPResponse response;
+
                 // Instruct browsers to download the file, not display it
                 // with the exception of SVG where we need the browser to
                 // actually show it.
-                std::string contentType = getContentType(fileName);
+                std::string contentType = OxOOL::HttpHelper::getMimeType(fileName);
                 if (serveAsAttachment && contentType != "image/svg+xml")
                     response.set("Content-Disposition", "attachment; filename=\"" + fileName + '"');
 
+                if (contentType.empty())
+                    contentType = "application/octet-stream";
+
                 try
                 {
-                    HttpHelper::sendFileAndShutdown(socket, filePath.toString(), contentType, &response);
+                    OxOOL::HttpHelper::sendFileAndShutdown(
+                        socket, filePath.toString(), contentType, &response);
                 }
                 catch (const Exception& exc)
                 {
@@ -3361,14 +3215,8 @@ private:
                 else
                     LOG_ERR("Download with id [" << downloadId << "] not found.");
 
-                std::ostringstream oss;
-                oss << "HTTP/1.1 404 Not Found\r\n"
-                    << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                    << "User-Agent: " << HTTP_AGENT_STRING << "\r\n"
-                    << "Content-Length: 0\r\n"
-                    << "\r\n";
-                socket->send(oss.str());
-                socket->shutdown();
+                OxOOL::HttpHelper::sendErrorAndShutdown(
+                    Poco::Net::HTTPResponse::HTTP_NOT_FOUND, socket);
             }
             return;
         }
@@ -4095,14 +3943,14 @@ std::string LOOLWSD::getServerURL()
 
 int LOOLWSD::innerMain()
 {
-#if !defined FUZZER && !MOBILEAPP
+#if !MOBILEAPP
     SigUtil::setUserSignals();
-    SigUtil::setFatalSignals();
+    SigUtil::setFatalSignals("wsd " LOOLWSD_VERSION " " LOOLWSD_VERSION_HASH);
     SigUtil::setTerminationSignals();
 #endif
 
 #if !MOBILEAPP
-#  ifdef __linux
+#  ifdef __linux__
     // down-pay all the forkit linking cost once & early.
     setenv("LD_BIND_NOW", "1", 1);
 #  endif

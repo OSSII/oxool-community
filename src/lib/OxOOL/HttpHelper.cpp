@@ -106,6 +106,7 @@ void sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTPStatus errorCode,
 {
     sendResponse(socket, body, errorCode, mimeType, extraHeader);
     socket->shutdown();
+    socket->ignoreInput();
 }
 
 void sendUncompressedFileContent(const std::shared_ptr<StreamSocket>& socket,

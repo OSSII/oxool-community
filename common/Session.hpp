@@ -235,12 +235,28 @@ public:
     const std::string& getJailedFilePathAnonym() const { return _jailedFilePathAnonym; }
 
     int  getCanonicalViewId() { return _canonicalViewId; }
+    // Only called by kit.
+    void setCanonicalViewId(int viewId) { _canonicalViewId = viewId; }
+    // Only called by wsd.
+    template<class T> void createCanonicalViewId(SessionMap<T> &map)
+    {
+        _canonicalViewId = map.createCanonicalId(_watermarkText);
+    }
+
     template<class T> void recalcCanonicalViewId(SessionMap<T> &map)
     {
         _canonicalViewId = map.getCanonicalId(_watermarkText);
     }
 
     const std::string& getDeviceFormFactor() const { return _deviceFormFactor; }
+
+    const std::string& getSpellOnline() const { return _spellOnline; }
+
+    const std::string& getBatchMode() const { return _batch; }
+
+    const std::string& getEnableMacrosExecution() const { return _enableMacrosExecution; }
+
+    const std::string& getMacroSecurityLevel() const { return _macroSecurityLevel; }
 
 protected:
     Session(const std::shared_ptr<ProtocolHandlerInterface> &handler,
@@ -359,6 +375,18 @@ private:
 
     /// The form factor of the device where the client is running: desktop, tablet, mobile.
     std::string _deviceFormFactor;
+
+    /// The start value of Auto Spell Checking wheter it is enabled or disabled on start.
+    std::string _spellOnline;
+
+    /// Disable dialogs interactivity.
+    std::string _batch;
+
+    /// Specifies whether the macro execution is enabled in general.
+    std::string _enableMacrosExecution;
+
+    /// Level of Macro security.
+    std::string _macroSecurityLevel;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

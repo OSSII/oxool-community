@@ -150,6 +150,9 @@ private:
         const double sin = std::sin(RADIAN);
         const double cos = std::cos(RADIAN);
 
+        const double x0 = width / 2.0;
+        const double y0 = height / 2.0;
+
         std::vector<unsigned char> _rotatedText(pixel_count);
 
         const int r = 2;
@@ -158,8 +161,6 @@ private:
         {
             for (int x = 0; x < width; ++x)
             {
-                const double x0 = width / 2.0;
-                const double y0 = height / 2.0;
                 // move origin to the center
                 const double fx = x - x0;
                 const double fy = y - y0;
@@ -220,9 +221,9 @@ private:
     }
 
 private:
-    std::shared_ptr<lok::Document> _loKitDoc;
-    std::string _text;
-    double _alphaLevel;
+    const std::shared_ptr<lok::Document> _loKitDoc;
+    const std::string _text;
+    const double _alphaLevel;
     int _angle;
     std::ostringstream _font;
     std::unordered_map<size_t, std::vector<unsigned char>> _pixmaps;

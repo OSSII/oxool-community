@@ -220,6 +220,37 @@ namespace Util
     // Extract all json entries into a map.
     std::map<std::string, std::string> JsonToMap(const std::string& jsonString);
 
+    inline unsigned short hexFromByte(unsigned char byte)
+    {
+        constexpr auto hex = "0123456789ABCDEF";
+        return (hex[byte >> 4] << 8) | hex[byte & 0xf];
+    }
+
+    inline std::string bytesToHexString(const uint8_t* data, size_t size)
+    {
+        std::string s;
+        s.resize(size * 2); // Each byte is two hex digits.
+        for (size_t i = 0; i < size; ++i)
+        {
+            const unsigned short hex = hexFromByte(data[i]);
+            const size_t off = i * 2;
+            s[off] = hex >> 8;
+            s[off + 1] = hex & 0xff;
+        }
+
+        return s;
+    }
+
+    inline std::string bytesToHexString(const char* data, size_t size)
+    {
+        return bytesToHexString(reinterpret_cast<const uint8_t*>(data), size);
+    }
+
+    inline std::string bytesToHexString(const std::string& s)
+    {
+        return bytesToHexString(s.c_str(), s.size());
+    }
+
     inline int hexDigitFromChar(char c)
     {
         if (c >= '0' && c <= '9')
@@ -232,52 +263,111 @@ namespace Util
             return -1;
     }
 
-    /// Dump a lineof data as hex
-    inline std::string stringifyHexLine(
-                            const std::vector<char> &buffer,
-                            unsigned int offset,
-                            const unsigned int width = 32)
+    inline std::string hexStringToBytes(const uint8_t* data, size_t size)
     {
-        char scratch[64];
-        std::stringstream os;
+        assert(data && (size % 2 == 0) && "Invalid hex digits to convert.");
+
+        std::string s;
+        s.resize(size / 2); // Each pair of hex digits is a single byte.
+        for (size_t i = 0; i < size; i += 2)
+        {
+            const int high = hexDigitFromChar(data[i]);
+            assert(high >= 0 && high <= 16);
+            const int low = hexDigitFromChar(data[i + 1]);
+            assert(low >= 0 && low <= 16);
+            const size_t off = i / 2;
+            s[off] = ((high << 4) | low) & 0xff;
+        }
+
+        return s;
+    }
+
+    inline std::string hexStringToBytes(const char* data, size_t size)
+    {
+        return hexStringToBytes(reinterpret_cast<const uint8_t*>(data), size);
+    }
+
+    inline std::string hexStringToBytes(const std::string& s)
+    {
+        return hexStringToBytes(s.c_str(), s.size());
+    }
+
+    /// Dump a line of data as hex.
+    /// @buffer can be either std::vector<char> or std::string.
+    /// @offset, the offset within the buffer to start from.
+    /// @width is the number of bytes to dump.
+    template <typename T>
+    inline std::string stringifyHexLine(const T& buffer, std::size_t offset,
+                                        const std::size_t width = 32)
+    {
+        std::string str;
+        str.reserve(width * 4 + width / 8 + 3 + 1);
 
         for (unsigned int i = 0; i < width; i++)
         {
             if (i && (i % 8) == 0)
-                os << ' ';
+                str.push_back(' ');
             if ((offset + i) < buffer.size())
-                sprintf (scratch, "%.2x ", (unsigned char)buffer[offset+i]);
+            {
+                const unsigned short hex = hexFromByte(buffer[offset+i]);
+                str.push_back(hex >> 8);
+                str.push_back(hex & 0xff);
+                str.push_back(' ');
+            }
             else
-                sprintf (scratch, "   ");
-            os << scratch;
+                str.append(3, ' ');
         }
-        os << " | ";
+        str.append(" | ");
 
         for (unsigned int i = 0; i < width; i++)
         {
-            if ((offset + i) < buffer.size() && ::isprint(buffer[offset+i]))
-                sprintf (scratch, "%c", buffer[offset+i]);
+            if ((offset + i) < buffer.size())
+                str.push_back(::isprint(buffer[offset + i]) ? buffer[offset + i] : '.');
             else
-                sprintf (scratch, ".");
-            os << scratch;
+                str.push_back(' '); // Leave blank if we are out of data.
         }
 
-        return os.str();
+        return str;
     }
 
-    /// Dump a string as hex by splitting on multiple lines per width.
-    /// Useful for debugging and logging data that contain non-printables.
-    inline std::string stringifyHexLine(const std::string& s, const std::size_t width = 16)
+    /// Dump data as hex and chars to stream.
+    /// @buffer can be either std::vector<char> or std::string.
+    /// @legend is streamed into @os before the hex data once.
+    /// @prefix is streamed into @os for each line.
+    /// @skipDup, when true,  will avoid writing identical lines.
+    /// @width is the number of bytes to dump per line.
+    template <typename T>
+    inline void dumpHex(std::ostream& os, const T& buffer, const char* legend = "",
+                        const char* prefix = "", bool skipDup = true, const unsigned int width = 32)
     {
-        std::ostringstream oss;
-        for (std::size_t i = 0; i < s.size(); i += width)
-        {
-            const std::size_t rem = std::min(width, s.size() - i);
-            oss << stringifyHexLine(std::vector<char>(s.data(), s.data() + s.size()), i, rem);
-            oss << '\n';
-        }
+        unsigned int j;
+        char scratch[64];
+        int skip = 0;
+        std::string lastLine;
 
-        return oss.str();
+        os << legend;
+        for (j = 0; j < buffer.size() + width - 1; j += width)
+        {
+            sprintf (scratch, "%s0x%.4x  ", prefix, j);
+            os << scratch;
+
+            std::string line = stringifyHexLine(buffer, j, width);
+            if (skipDup && lastLine == line)
+                skip++;
+            else {
+                if (skip > 0)
+                {
+                    os << "... dup " << skip - 1 << "...";
+                    skip = 0;
+                }
+                else
+                    os << line;
+            }
+            lastLine.swap(line);
+
+            os << '\n';
+        }
+        os.flush();
     }
 
     /// Dump data as hex and chars to stream
@@ -1201,10 +1291,62 @@ int main(int argc, char**argv)
         return pair.second ? pair : std::make_pair(def, false);
     }
 
+    /// Converts and returns the argument to lower-case.
+    inline std::string toLower(std::string s)
+    {
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        return s;
+    }
+
+    /// Case insensitive comparison of two strings.
+    /// Returns true iff the two strings are equal, regardless of case.
+    inline bool iequal(const char* lhs, std::size_t lhs_len, const char* rhs, std::size_t rhs_len)
+    {
+        return ((lhs_len == rhs_len)
+                && std::equal(lhs, lhs + lhs_len, rhs, [](const char lch, const char rch) {
+                       return std::tolower(lch) == std::tolower(rch);
+                   }));
+    }
+
+    /// Case insensitive comparison of two strings.
+    template <std::size_t N> inline bool iequal(const std::string& lhs, const char (&rhs)[N])
+    {
+        return iequal(lhs.c_str(), lhs.size(), rhs, N - 1); // Minus null termination.
+    }
+
+    /// Case insensitive comparison of two strings.
+    inline bool iequal(const std::string& lhs, const std::string& rhs)
+    {
+        return iequal(lhs.c_str(), lhs.size(), rhs.c_str(), rhs.size());
+    }
+
     /// Get system_clock now in miliseconds.
     inline int64_t getNowInMS()
     {
         return std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
+    }
+
+    /// Convert a vector to a string. Useful for conversion in templates.
+    template <typename T> inline std::string toString(const T& x)
+    {
+        std::ostringstream oss;
+        oss << x;
+        return oss.str();
+    }
+
+    /// Convert a vector to a string. Useful for conversion in templates.
+    inline std::string toString(const std::vector<char>& x)
+    {
+        return std::string(x.data(), x.size());
+    }
+
+    /// No-op string conversion. Useful for conversion in templates.
+    inline std::string toString(const std::string& s) { return s; }
+
+    /// Create a string from a literal. Useful for conversion in templates.
+    template <std::size_t N> inline std::string toString(const char (&s)[N])
+    {
+        return std::string(s);
     }
 
     /**
@@ -1232,7 +1374,7 @@ int main(int argc, char**argv)
 
 } // end namespace Util
 
-inline std::ostream& operator<<(std::ostream& os, const std::chrono::system_clock::time_point& ts) 
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::system_clock::time_point& ts)
 {
     os << Util::getIso8601FracformatTime(ts);
     return os;

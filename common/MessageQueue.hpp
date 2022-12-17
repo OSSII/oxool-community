@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,32 +7,33 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <algorithm>
-#include <condition_variable>
 #include <functional>
 #include <map>
-#include <mutex>
 #include <string>
 #include <vector>
 
+#include "Log.hpp"
+#include "Protocol.hpp"
+
 /// Thread-safe message queue (FIFO).
-template <typename T>
-class MessageQueueBase
+class MessageQueue
 {
 public:
-    typedef T Payload;
+    typedef std::vector<char> Payload;
 
-    MessageQueueBase()
+    MessageQueue()
     {
     }
 
-    virtual ~MessageQueueBase()
+    virtual ~MessageQueue()
     {
         clear();
     }
 
-    MessageQueueBase(const MessageQueueBase&) = delete;
-    MessageQueueBase& operator=(const MessageQueueBase&) = delete;
+    MessageQueue(const MessageQueue&) = delete;
+    MessageQueue& operator=(const MessageQueue&) = delete;
 
     /// Thread safe insert the message.
     void put(const Payload& value)
@@ -44,10 +43,7 @@ public:
             throw std::runtime_error("Cannot queue empty item.");
         }
 
-        std::unique_lock<std::mutex> lock(_mutex);
         put_impl(value);
-        lock.unlock();
-        _cv.notify_one();
     }
 
     void put(const std::string& value)
@@ -58,30 +54,14 @@ public:
     /// Thread safe obtaining of the message.
     /// timeoutMs can be 0 to signify infinity.
     /// Returns an empty payload on timeout.
-    Payload get(const unsigned timeoutMs = 0)
+    Payload get()
     {
-        std::unique_lock<std::mutex> lock(_mutex);
-
-        if (timeoutMs > 0)
-        {
-            if (!_cv.wait_for(lock, std::chrono::milliseconds(timeoutMs),
-                              [this] { return wait_impl(); }))
-            {
-                return Payload();
-            }
-        }
-        else
-        {
-            _cv.wait(lock, [this] { return wait_impl(); });
-        }
-
         return get_impl();
     }
 
     /// Get a message without waiting
     Payload pop()
     {
-        std::unique_lock<std::mutex> lock(_mutex);
         if (_queue.empty())
             return Payload();
         return get_impl();
@@ -90,33 +70,45 @@ public:
     /// Anything in the queue ?
     bool isEmpty()
     {
-        std::unique_lock<std::mutex> lock(_mutex);
         return _queue.empty();
     }
 
     /// Thread safe removal of all the pending messages.
     void clear()
     {
-        std::unique_lock<std::mutex> lock(_mutex);
         clear_impl();
     }
 
     /// Thread safe remove_if.
     void remove_if(const std::function<bool(const Payload&)>& pred)
     {
-        std::unique_lock<std::mutex> lock(_mutex);
         std::remove_if(_queue.begin(), _queue.end(), pred);
     }
 
 protected:
     virtual void put_impl(const Payload& value)
     {
-        _queue.push_back(value);
-    }
+        StringVector tokens = StringVector::tokenize(value.data(), value.size());
+        if (tokens.equals(1, "textinput"))
+        {
+            const std::string newMsg = combineTextInput(tokens);
+            if (!newMsg.empty())
+            {
+                _queue.push_back(Payload(newMsg.data(), newMsg.data() + newMsg.size()));
+                return;
+            }
+        }
+        else if (tokens.equals(1, "removetextcontext"))
+        {
+            const std::string newMsg = combineRemoveText(tokens);
+            if (!newMsg.empty())
+            {
+                _queue.push_back(Payload(newMsg.data(), newMsg.data() + newMsg.size()));
+                return;
+            }
+        }
 
-    bool wait_impl() const
-    {
-        return _queue.size() > 0;
+        _queue.emplace_back(value);
     }
 
     virtual Payload get_impl()
@@ -131,18 +123,129 @@ protected:
         _queue.clear();
     }
 
-    /// Get the queue lock when accessing members of derived classes.
-    std::unique_lock<std::mutex> getLock() { return std::unique_lock<std::mutex>(_mutex); }
-
     std::vector<Payload>& getQueue() { return _queue; }
+
+    /// Search the queue for a previous textinput message and if found, remove it and combine its
+    /// input with that in the current textinput message. We check that there aren't any interesting
+    /// messages inbetween that would make it wrong to merge the textinput messages.
+    ///
+    /// @return New message to put into the queue. If empty, use what we got.
+    std::string combineTextInput(const StringVector& tokens)
+    {
+        std::string id;
+        std::string text;
+        if (!LOOLProtocol::getTokenString(tokens, "id", id) ||
+            !LOOLProtocol::getTokenString(tokens, "text", text))
+            return std::string();
+
+        int i = getQueue().size() - 1;
+        while (i >= 0)
+        {
+            auto& it = getQueue()[i];
+
+            const std::string queuedMessage(it.data(), it.size());
+            StringVector queuedTokens = StringVector::tokenize(it.data(), it.size());
+
+            // If any messages of these types are present before the current ("textinput") message,
+            // no combination is possible.
+            if (queuedTokens.size() == 1 ||
+                (queuedTokens.equals(0, tokens, 0) &&
+                 (queuedTokens.equals(1, "key") ||
+                  queuedTokens.equals(1, "mouse") ||
+                  queuedTokens.equals(1, "removetextcontext") ||
+                  queuedTokens.equals(1, "windowkey"))))
+                return std::string();
+
+            std::string queuedId;
+            std::string queuedText;
+            if (queuedTokens.equals(0, tokens, 0) &&
+                queuedTokens.equals(1, "textinput") &&
+                LOOLProtocol::getTokenString(queuedTokens, "id", queuedId) &&
+                queuedId == id &&
+                LOOLProtocol::getTokenString(queuedTokens, "text", queuedText))
+            {
+                // Remove the queued textinput message and combine it with the current one
+                getQueue().erase(getQueue().begin() + i);
+
+                std::string newMsg = queuedTokens[0] + " textinput id=" + id + " text=" + queuedText + text;
+
+                LOG_TRC("Combined [" << queuedMessage << "] with current message to [" << newMsg << "]");
+
+                return newMsg;
+            }
+
+            --i;
+        }
+
+        return std::string();
+    }
+
+    /// Search the queue for a previous removetextcontext message (which actually means "remove text
+    /// content", the word "context" is becaue of some misunderstanding lost in history) and if
+    /// found, remove it and combine its input with that in the current removetextcontext message.
+    /// We check that there aren't any interesting messages inbetween that would make it wrong to
+    /// merge the removetextcontext messages.
+    ///
+    /// @return New message to put into the queue. If empty, use what we got.
+    std::string combineRemoveText(const StringVector& tokens)
+    {
+        std::string id;
+        int before = 0;
+        int after = 0;
+        if (!LOOLProtocol::getTokenString(tokens, "id", id) ||
+            !LOOLProtocol::getTokenInteger(tokens, "before", before) ||
+            !LOOLProtocol::getTokenInteger(tokens, "after", after))
+            return std::string();
+
+        int i = getQueue().size() - 1;
+        while (i >= 0)
+        {
+            auto& it = getQueue()[i];
+
+            const std::string queuedMessage(it.data(), it.size());
+            StringVector queuedTokens = StringVector::tokenize(it.data(), it.size());
+
+            // If any messages of these types are present before the current (removetextcontext)
+            // message, no combination is possible.
+            if (queuedTokens.size() == 1 ||
+                (queuedTokens.equals(0, tokens, 0) &&
+                 (queuedTokens.equals(1, "key") ||
+                  queuedTokens.equals(1, "mouse") ||
+                  queuedTokens.equals(1, "textinput") ||
+                  queuedTokens.equals(1, "windowkey"))))
+                return std::string();
+
+            std::string queuedId;
+            int queuedBefore = 0;
+            int queuedAfter = 0;
+            if (queuedTokens.equals(0, tokens, 0) &&
+                queuedTokens.equals(1, "removetextcontext") &&
+                LOOLProtocol::getTokenStringFromMessage(queuedMessage, "id", queuedId) &&
+                queuedId == id &&
+                LOOLProtocol::getTokenIntegerFromMessage(queuedMessage, "before", queuedBefore) &&
+                LOOLProtocol::getTokenIntegerFromMessage(queuedMessage, "after", queuedAfter))
+            {
+                // Remove the queued removetextcontext message and combine it with the current one
+                getQueue().erase(getQueue().begin() + i);
+
+                std::string newMsg = queuedTokens[0] + " removetextcontext id=" + id +
+                    " before=" + std::to_string(queuedBefore + before) +
+                    " after=" + std::to_string(queuedAfter + after);
+
+                LOG_TRC("Combined [" << queuedMessage << "] with current message to [" << newMsg << "]");
+
+                return newMsg;
+            }
+
+            --i;
+        }
+
+        return std::string();
+    }
 
 private:
     std::vector<Payload> _queue;
-    mutable std::mutex _mutex;
-    std::condition_variable _cv;
 };
-
-typedef MessageQueueBase<std::vector<char>> MessageQueue;
 
 /// MessageQueue specialized for priority handling of tiles.
 class TileQueue : public MessageQueue
@@ -182,8 +285,6 @@ public:
     {
         const TileQueue::CursorPosition cursorPosition = CursorPosition(part, x, y, width, height);
 
-        std::unique_lock<std::mutex> lock = getLock();
-
         auto it = _cursorPositions.lower_bound(viewId);
         if (it != _cursorPositions.end() && it->first == viewId)
         {
@@ -207,8 +308,6 @@ public:
 
     void removeCursorPosition(int viewId)
     {
-        std::unique_lock<std::mutex> lock = getLock();
-
         const auto view = std::find(_viewOrder.begin(), _viewOrder.end(), viewId);
         if (view != _viewOrder.end())
         {
@@ -217,6 +316,8 @@ public:
 
         _cursorPositions.erase(viewId);
     }
+
+    void dumpState(std::ostream& oss);
 
 protected:
     virtual void put_impl(const Payload& value) override;

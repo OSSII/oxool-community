@@ -36,6 +36,7 @@
 #include "Log.hpp"
 #include "Util.hpp"
 #include "Protocol.hpp"
+#include "Buffer.hpp"
 #include "SigUtil.hpp"
 
 namespace Poco
@@ -163,6 +164,9 @@ public:
     virtual void handlePoll(SocketDisposition &disposition,
                             std::chrono::steady_clock::time_point now,
                             int events) = 0;
+
+    /// Do we have internally queued incoming / outgoing data ?
+    virtual bool hasBuffered() const { return false; }
 
     /// manage latency issues around packet aggregation
     void setNoDelay()
@@ -309,12 +313,18 @@ public:
         // assert(sameThread);
     }
 
-protected:
+    bool ignoringInput() const { return _ignoreInput; }
 
+    // Ensure that no further input is processed from this socket
+    virtual void ignoreInput()
+    {
+        LOG_TRC('#' << _fd << ": ignore further input on socket.");
+        _ignoreInput = true;
+    }
+protected:
     /// Construct based on an existing socket fd.
     /// Used by accept() only.
-    Socket(const int fd) :
-        _fd(fd)
+    Socket(const int fd) : _fd(fd)
     {
         init();
     }
@@ -322,6 +332,7 @@ protected:
     void init()
     {
         setNoDelay();
+        _ignoreInput = false;
         _sendBufferSize = DefaultSendBufferSize;
         _owner = std::this_thread::get_id();
         LOG_DBG('#' << _fd << " Thread affinity set to " << Log::to_string(_owner) << '.');
@@ -342,6 +353,10 @@ protected:
 private:
     std::string _clientAddress;
     const int _fd;
+
+    // If _ignoreInput is true no more input from this socket will be processed.
+    bool _ignoreInput;
+
     int _sendBufferSize;
 
     /// We check the owner even in the release builds, needs to be always correct.
@@ -731,6 +746,20 @@ protected:
         return _stop;
     }
 
+    bool hasCallbacks()
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return _newCallbacks.size() > 0;
+    }
+
+    bool hasBuffered() const
+    {
+        for (const auto& it : _pollSockets)
+            if (it->hasBuffered())
+                return true;
+        return false;
+    }
+
 private:
     /// Generate the request to connect & upgrade this socket to a given path
     /// and sends a file descriptor along request if is != -1.
@@ -853,6 +882,12 @@ public:
         LOG_TRC('#' << getFD() << ": Async shutdown requested.");
     }
 
+    virtual void ignoreInput() override
+    {
+        Socket::ignoreInput();
+        _inBuffer.clear();
+    }
+
     /// Perform the real shutdown.
     virtual void closeConnection()
     {
@@ -870,13 +905,18 @@ public:
         return events;
     }
 
+    virtual bool hasBuffered() const override
+    {
+        return !_outBuffer.empty() || !_inBuffer.empty();
+    }
+
     /// Send data to the socket peer.
     void send(const char* data, const int len, const bool flush = true)
     {
         assertCorrectThread();
         if (data != nullptr && len > 0)
         {
-            _outBuffer.insert(_outBuffer.end(), data, data + len);
+            _outBuffer.append(data, len);
             if (flush)
                 writeOutgoingData();
         }
@@ -891,6 +931,18 @@ public:
     /// Sends HTTP response.
     /// Adds Date and User-Agent.
     void send(Poco::Net::HTTPResponse& response);
+
+    /// Sends HTTP response, flush, and shutdown.
+    /// Will set 'Connection: close' header.
+    /// Will always shutdown the socket.
+    void sendAndShutdown(Poco::Net::HTTPResponse& response);
+
+    /// Safely flush any outgoing data.
+    inline void flush()
+    {
+        if (!_outBuffer.empty())
+            writeOutgoingData();
+    }
 
     /// Sends data with file descriptor as control data.
     /// Can be used only with Unix sockets.
@@ -955,7 +1007,7 @@ public:
             {
                 assert (len <= ssize_t(sizeof(buf)));
                 _bytesRecvd += len;
-                _inBuffer.insert(_inBuffer.end(), &buf[0], &buf[len]);
+                _inBuffer.append(&buf[0], len);
             }
             // else poll will handle errors.
         }
@@ -1050,12 +1102,9 @@ public:
         recv = _bytesRecvd;
     }
 
-    std::vector<char>& getInBuffer()
-    {
-        return _inBuffer;
-    }
+    Buffer& getInBuffer() { return _inBuffer; }
 
-    std::vector<char>& getOutBuffer()
+    Buffer& getOutBuffer()
     {
         return _outBuffer;
     }
@@ -1088,11 +1137,27 @@ protected:
         // FIXME: need to close input, but not output (?)
         bool closed = (events & (POLLHUP | POLLERR | POLLNVAL));
 
-        // Always try to read.
-        closed = !readIncomingData() || closed;
-
-        LOG_TRC('#' << getFD() << ": Incoming data buffer " << _inBuffer.size() <<
-                " bytes, closeSocket? " << closed);
+        if (events & POLLIN)
+        {
+            // readIncomingData returns 0 on closed sockets.
+            // Oddly enough, we don't necessarily get POLLHUP after read(2) returns 0.
+            const int read = readIncomingData();
+            const int last_errno = errno;
+            LOG_TRC('#' << getFD() << " Incoming data buffer " << _inBuffer.size()
+                        << " bytes, read result: " << read << ", events: " << std::hex << events
+                        << std::dec << " (" << (closed ? "closed" : "not closed") << ')');
+            if (read > 0 && closed)
+            {
+                // We might have outstanding data to read, wait until readIncomingData returns closed state.
+                LOG_DBG('#' << getFD() << ": Closed but will drain incoming data per POLLIN");
+                closed = false;
+            }
+            else if (read == 0 || (read < 0 && (last_errno == EPIPE || last_errno == ECONNRESET)))
+            {
+                LOG_DBG('#' << getFD() << ": Closed after reading");
+                closed = true;
+            }
+        }
 
 #ifdef LOG_SOCKET_DATA
         auto& log = Log::logger();
@@ -1142,15 +1207,17 @@ protected:
             // Write if we can and have data to write.
             if ((events & POLLOUT) && !_outBuffer.empty())
             {
-                writeOutgoingData();
-                const int last_errno = errno;
-                if (last_errno == EPIPE || (EnableExperimental && last_errno == ECONNRESET))
+                if (writeOutgoingData() < 0)
                 {
-                    LOG_DBG('#' << getFD() << ": Disconnected while writing ("
-                                << Util::symbolicErrno(last_errno)
-                                << "): " << std::strerror(last_errno) << ')');
-                    closed = true;
-                    break;
+                    const int last_errno = errno;
+                    if (last_errno == EPIPE || last_errno == ECONNRESET)
+                    {
+                        LOG_DBG('#' << getFD() << ": Disconnected while writing ("
+                                    << Util::symbolicErrno(last_errno)
+                                    << "): " << std::strerror(last_errno) << ')');
+                        closed = true;
+                        break;
+                    }
                 }
             }
         }
@@ -1169,37 +1236,48 @@ protected:
 
 public:
     /// Override to write data out to socket.
-    virtual void writeOutgoingData()
+    /// Returns the last return from writeData.
+    virtual int writeOutgoingData()
     {
         assertCorrectThread();
         assert(!_outBuffer.empty());
+        ssize_t len = 0;
+        int last_errno = 0;
         do
         {
-            ssize_t len;
             do
             {
-                // Writing more than we can absorb in the kernel causes SSL wastage.
-                len = writeData(&_outBuffer[0], std::min((int)_outBuffer.size(),
-                                                         getSendBufferSize()));
+                // Writing much more than we can absorb in the kernel causes wastage.
+                const auto size = std::min((int)_outBuffer.getBlockSize(), getSendBufferSize());
+                if (size == 0)
+                    break;
 
-                LOG_TRC('#' << getFD() << ": Wrote outgoing data " << len << " bytes of "
-                            << _outBuffer.size() << " bytes buffered.");
+                len = writeData(_outBuffer.getBlock(), size);
+                if (len < 0)
+                    last_errno = errno; // Save only on error.
 
+                // 0 len is unspecified result, according to man write(2).
+                if (len < 0 && last_errno != EAGAIN && last_errno != EWOULDBLOCK)
+                    LOG_SYS_ERRNO(last_errno, '#' << getFD() << ": Socket write returned " << len);
+                else if (len <= 0) // Trace errno for debugging, even for "unspecified result."
+                    LOG_TRC('#' << getFD() << ": Write failed, have " << _outBuffer.size()
+                                << " buffered bytes (" << Util::symbolicErrno(last_errno) << ": "
+                                << std::strerror(last_errno) << ')');
+                else // Success.
+                    LOG_TRC('#' << getFD() << ": Wrote " << len << " bytes of " << _outBuffer.size()
+                                << " buffered data"
 #ifdef LOG_SOCKET_DATA
-                auto& log = Log::logger();
-                if (log.trace() && len > 0)
-                    log.dump("", &_outBuffer[0], len);
+                                << ":\n"
+                                << Util::dumpHex(std::string(_outBuffer.getBlock(), len))
 #endif
-
-                if (len <= 0 && errno != EAGAIN && errno != EWOULDBLOCK)
-                    LOG_SYS('#' << getFD() << ": Socket write returned " << len);
+                    );
             }
-            while (len < 0 && errno == EINTR);
+            while (len < 0 && last_errno == EINTR);
 
             if (len > 0)
             {
                 _bytesSent += len;
-                _outBuffer.erase(_outBuffer.begin(), _outBuffer.begin() + len);
+                _outBuffer.eraseFirst(len);
             }
             else
             {
@@ -1208,6 +1286,10 @@ public:
             }
         }
         while (!_outBuffer.empty());
+
+        // Restore errno from the write call.
+        errno = last_errno;
+        return len;
     }
 
     /// Does it look like we have some TLS / SSL where we don't expect it ?
@@ -1298,8 +1380,8 @@ protected:
     /// Client handling the actual data.
     std::shared_ptr<ProtocolHandlerInterface> _socketHandler;
 
-    std::vector<char> _inBuffer;
-    std::vector<char> _outBuffer;
+    Buffer _inBuffer;
+    Buffer _outBuffer;
 
     uint64_t _bytesSent;
     uint64_t _bytesRecvd;
@@ -1333,13 +1415,5 @@ enum class WSOpCode : unsigned char {
     Pong         = 0xa
     // ... reserved
 };
-
-namespace HttpHelper
-{
-    /// Sends file as HTTP response and shutdown the socket.
-    void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std::string& path, const std::string& mediaType,
-                             Poco::Net::HTTPResponse *optResponse = nullptr, bool noCache = false, bool deflate = false,
-                             const bool headerOnly = false);
-}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

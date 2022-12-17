@@ -17,20 +17,23 @@
 inline void setupKitEnvironment(const std::string& userInterface)
 {
     // Setup & check environment
-    const std::string layers(
+    std::string layers(
         "xcsxcu:${BRAND_BASE_DIR}/share/registry "
         "res:${BRAND_BASE_DIR}/share/registry "
         "bundledext:${${BRAND_BASE_DIR}/program/lounorc:BUNDLED_EXTENSIONS_USER}/registry/com.sun.star.comp.deployment.configuration.PackageRegistryBackend/configmgr.ini "
         "sharedext:${${BRAND_BASE_DIR}/program/lounorc:SHARED_EXTENSIONS_USER}/registry/com.sun.star.comp.deployment.configuration.PackageRegistryBackend/configmgr.ini "
         "userext:${${BRAND_BASE_DIR}/program/lounorc:UNO_USER_PACKAGES_CACHE}/registry/com.sun.star.comp.deployment.configuration.PackageRegistryBackend/configmgr.ini "
-#ifdef IOS
-        "user:*${BRAND_BASE_DIR}/oxoolkitconfig.xcu "
-#elif ENABLE_DEBUG && !defined(ANDROID) // '*' denotes non-writable.
-        "user:*file://" DEBUG_ABSSRCDIR "/oxoolkitconfig.xcu "
-#else
-        "user:*file://" LOOLWSD_CONFIGDIR "/oxoolkitconfig.xcu "
-#endif
         );
+#ifdef IOS
+    layers += "user:*${BRAND_BASE_DIR}/oxoolkitconfig.xcu ";
+#elif ENABLE_DEBUG && !defined(ANDROID) // '*' denotes non-writable.
+    layers += "user:*file://" DEBUG_ABSSRCDIR "/oxoolkitconfig.xcu ";
+#else
+    if(::getenv("OXOOLKITCONFIG_XCU"))
+        layers += "user:*file://" + std::string(::getenv("OXOOLKITCONFIG_XCU")) + " ";
+    else
+        layers +=  "user:*file://" LOOLWSD_CONFIGDIR "/oxoolkitconfig.xcu ";
+#endif
     ::setenv("CONFIGURATION_LAYERS", layers.c_str(),
              1 /* override */);
 

@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -15,12 +13,6 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
-
-#ifdef IOS
-#import <fcntl.h>
-#import <sys/mman.h>
-#import <unistd.h>
-#endif
 
 #include "Png.hpp"
 #include "Rectangle.hpp"
@@ -178,7 +170,7 @@ public:
             if (it != _cache.end())
             {
                 ++_cacheHits;
-                LOG_DBG("PNG cache with hash " << hash << " hit.");
+                LOG_TRC("PNG cache with hash " << hash << " hit.");
                 output.insert(output.end(),
                               it->second.getData()->begin(),
                               it->second.getData()->end());
@@ -189,7 +181,7 @@ public:
             }
         }
 
-        LOG_DBG("PNG cache with hash " << hash << " missed.");
+        LOG_TRC("PNG cache with hash " << hash << " missed.");
         return false;
     }
 
@@ -228,6 +220,23 @@ public:
             _hashToWireId.emplace(hash, wid);
         }
         return wid;
+    }
+
+    void dumpState(std::ostream& oss)
+    {
+        oss << "\tpngCache:"
+            << "\n\t\tcacheSize: " << _cacheSize
+            << "\n\t\tcacheHits: " << _cacheHits
+            << "\n\t\tcacheTests: " << _cacheTests
+            << "\n\t\tnextId: " << _nextId
+            << "\n\t\tcache entry count: "<< _cache.size();
+        for (const auto &it : _cache)
+        {
+            oss << "\n\t\t\thash: " << it.first
+                << " hitCount: " << it.second.getHitCount()
+                << " wireId: " << it.second.getWireId();
+        }
+        oss << '\n';
     }
 };
 
@@ -274,8 +283,10 @@ public:
         return _work.size();
     }
 
-    void pushWorkUnlocked(const ThreadFn &fn)
+    void pushWork(const ThreadFn &fn)
     {
+        std::unique_lock< std::mutex > lock(_mutex);
+        assert(_working == 0);
         _work.push(fn);
     }
 
@@ -288,7 +299,11 @@ public:
         _working++;
         lock.unlock();
 
-        fn();
+        try {
+            fn();
+        } catch(...) {
+            LOG_ERR("Exception in thread pool execution.");
+        }
 
         lock.lock();
         _working--;
@@ -326,6 +341,16 @@ public:
                 runOne(lock);
         }
     }
+
+    void dumpState(std::ostream& oss)
+    {
+        oss << "\tthreadPool:"
+            << "\n\t\tshutdown: " << _shutdown
+            << "\n\t\tworking: " << _working
+            << "\n\t\twork count: " << count()
+            << "\n\t\tthread count " << _threads.size()
+            << "\n";
+    }
 };
 
 namespace RenderTiles
@@ -354,7 +379,6 @@ namespace RenderTiles
         unsigned char *data() { return _data; }
     };
 
-#ifndef IOS
     static void pushRendered(std::vector<TileDesc> &renderedTiles,
                              const TileDesc &desc, TileWireId wireId, size_t imgSize)
     {
@@ -362,111 +386,6 @@ namespace RenderTiles
         renderedTiles.back().setWireId(wireId);
         renderedTiles.back().setImgSize(imgSize);
     }
-#endif
-
-#ifdef IOS
-
-#pragma pack(push)
-#pragma pack(2)
-    typedef struct
-    {
-        uint16_t bfType;
-        uint32_t bfSize;
-        uint16_t bfReserved1;
-        uint16_t bfReserved2;
-        uint32_t bfOffBits;
-    } BITMAPFILEHEADER;
-#pragma pack(pop)
-
-    typedef uint32_t FXPT2DOT30; // Fixed point 2.30, whatever that means
-
-    typedef struct
-    {
-        FXPT2DOT30 ciexyzX;
-        FXPT2DOT30 ciexyzY;
-        FXPT2DOT30 ciexyzZ;
-    } CIEXYZ;
-
-    typedef struct
-    {
-        CIEXYZ ciexyzRed;
-        CIEXYZ ciexyzGreen;
-        CIEXYZ ciexyzBlue;
-    } CIEXYZTRIPLE;
-
-    // We must use the BITMAPV5HEADER to get proper alpha handling.
-    typedef struct
-    {
-        uint32_t bV5Size;
-        int32_t bV5Width;
-        int32_t bV5Height;
-        uint16_t bV5Planes;
-        uint16_t bV5BitCount;
-        uint32_t bV5Compression;
-        uint32_t bV5SizeImage;
-        int32_t bV5XPelsPerMeter;
-        int32_t bV5YPelsPerMeter;
-        uint32_t bV5ClrUsed;
-        uint32_t bV5ClrImportant;
-        uint32_t bV5RedMask;
-        uint32_t bV5GreenMask;
-        uint32_t bV5BlueMask;
-        uint32_t bV5AlphaMask;
-        uint32_t bV5CSType;
-        CIEXYZTRIPLE bV5Endpoints;
-        uint32_t bV5GammaRed;
-        uint32_t bV5GammaGreen;
-        uint32_t bV5GammaBlue;
-        uint32_t bV5Intent;
-        uint32_t bV5ProfileData;
-        uint32_t bV5ProfileSize;
-        uint32_t bV5Reserved;
-    } BITMAPV5HEADER;
-
-#define BI_BITFIELDS 3
-
-#define LCS_sRGB 0x73524742
-#define LCS_GM_IMAGES 4
-
-    static size_t bmpFileSize(int width, int height)
-    {
-        return sizeof(BITMAPFILEHEADER) + sizeof(BITMAPV5HEADER) + width * height * 4;
-    }
-
-    static void generateBmpHeader(char *buffer, int width, int height)
-    {
-        assert(width%4 == 0);
-
-        BITMAPFILEHEADER *bf = (BITMAPFILEHEADER*)buffer;
-        bf->bfType = ('B' | ('M' << 8));
-        bf->bfSize = bmpFileSize(width, height);
-        bf->bfReserved1 = 0;
-        bf->bfReserved2 = 0;
-        bf->bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPV5HEADER);
-
-        BITMAPV5HEADER *bV5 = (BITMAPV5HEADER*) (buffer + sizeof(BITMAPFILEHEADER));
-        bV5->bV5Size = sizeof(BITMAPV5HEADER);
-        bV5->bV5Width = width;
-        bV5->bV5Height = -height;
-        bV5->bV5Planes = 1;
-        bV5->bV5BitCount = 32;
-        bV5->bV5Compression = BI_BITFIELDS;
-        bV5->bV5SizeImage = 0;
-        bV5->bV5XPelsPerMeter = 1000; // Dummy
-        bV5->bV5YPelsPerMeter = 1000;
-        bV5->bV5ClrUsed = 0;
-        bV5->bV5ClrImportant = 0;
-        bV5->bV5RedMask = 0x00FF0000;
-        bV5->bV5GreenMask = 0x0000FF00;
-        bV5->bV5BlueMask = 0x000000FF;
-        bV5->bV5AlphaMask = 0xFF000000;
-        bV5->bV5CSType = LCS_sRGB;
-        // Leave out fields that are ignored with above settings.
-        bV5->bV5Intent = LCS_GM_IMAGES; // ???
-        bV5->bV5Reserved = 0;
-    }
-
-#endif
 
     bool doRender(std::shared_ptr<lok::Document> document,
                   TileCombined &tileCombined,
@@ -478,16 +397,17 @@ namespace RenderTiles
                                             size_t pixmapWidth, size_t pixmapHeight,
                                             int pixelWidth, int pixelHeight,
                                             LibreOfficeKitTileMode mode)>& blendWatermark,
-                  const std::function<void (const char *buffer, size_t length)>& outputMessage)
+                  const std::function<void (const char *buffer, size_t length)>& outputMessage,
+                  unsigned mobileAppDocId)
     {
-        auto& tiles = tileCombined.getTiles();
+        const auto& tiles = tileCombined.getTiles();
 
         // Calculate the area we cover
         Util::Rectangle renderArea;
         std::vector<Util::Rectangle> tileRecs;
         tileRecs.reserve(tiles.size());
 
-        for (auto& tile : tiles)
+        for (const auto& tile : tiles)
         {
             Util::Rectangle rectangle(tile.getTilePosX(), tile.getTilePosY(),
                                       tileCombined.getTileWidth(), tileCombined.getTileHeight());
@@ -520,85 +440,22 @@ namespace RenderTiles
 
         // Render the whole area
         const double area = pixmapWidth * pixmapHeight;
-        auto start = std::chrono::system_clock::now();
+        const auto start = std::chrono::steady_clock::now();
         LOG_TRC("Calling paintPartTile(" << (void*)pixmap.data() << ')');
         document->paintPartTile(pixmap.data(),
                                 tileCombined.getPart(),
                                 pixmapWidth, pixmapHeight,
                                 renderArea.getLeft(), renderArea.getTop(),
                                 renderArea.getWidth(), renderArea.getHeight());
-        auto duration = std::chrono::system_clock::now() - start;
-        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-        double totalTime = elapsed/1000.;
-        LOG_DBG("paintPartTile at (" << renderArea.getLeft() << ", " << renderArea.getTop() << "), (" <<
-                renderArea.getWidth() << ", " << renderArea.getHeight() << ") " <<
-                " rendered in " << totalTime << " ms (" << area / elapsed << " MP/s).");
+        auto duration = std::chrono::steady_clock::now() - start;
+        const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        const double elapsedMics = elapsedMs.count() * 1000.; // Need MPixels/sec, use Pixels/mics.
+        LOG_DBG("paintPartTile at ("
+                << renderArea.getLeft() << ", " << renderArea.getTop() << "), ("
+                << renderArea.getWidth() << ", " << renderArea.getHeight() << ") "
+                << " rendered in " << elapsedMs << " (" << area / elapsedMics << " MP/s).");
 
-#ifdef IOS
-
-        for (int i = 0; i < tiles.size(); i++)
-        {
-            static int bmpFileCounter = 0;
-            const int bmpId = bmpFileCounter++;
-
-            const size_t positionX = (tileRecs[i].getLeft() - renderArea.getLeft()) / tileCombined.getTileWidth();
-            const size_t positionY = (tileRecs[i].getTop() - renderArea.getTop()) / tileCombined.getTileHeight();
-
-            const int offsetX = positionX * pixelWidth;
-            const int offsetY = positionY * pixelHeight;
-
-            NSString *mmapFileBaseName = [NSString stringWithFormat:@"%d.bmp", bmpId];
-            NSURL *mmapFileURL = [[NSFileManager.defaultManager temporaryDirectory] URLByAppendingPathComponent:mmapFileBaseName];
-
-            int fd = open([[mmapFileURL path] UTF8String], O_RDWR|O_CREAT, 0666);
-            if (fd == -1)
-            {
-                LOG_SYS("Could not create file " << [[mmapFileURL path] UTF8String]);
-                return false;
-            }
-
-            const size_t mmapFileSize = bmpFileSize(pixelWidth, pixelHeight);
-
-            if (lseek(fd, mmapFileSize-1, SEEK_SET) == -1)
-            {
-                LOG_SYS("Could not seek in file " << [[mmapFileURL path] UTF8String]);
-                return false;
-            }
-
-            if (write(fd, "", 1) == -1)
-            {
-                LOG_SYS("Could not write at end of " << [[mmapFileURL path] UTF8String]);
-                return false;
-            }
-
-            char *mmapMemory = (char *)mmap(NULL, mmapFileSize, PROT_READ|PROT_WRITE, MAP_FILE|MAP_SHARED, fd, 0);
-            if (mmapMemory == MAP_FAILED)
-            {
-                LOG_SYS("Could not map in file " << [[mmapFileURL path] UTF8String]);
-                close(fd);
-                return false;
-            }
-
-            close(fd);
-
-            generateBmpHeader(mmapMemory, pixelWidth, pixelHeight);
-
-            for (int y = 0; y < pixelHeight; y++)
-                memcpy(mmapMemory + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPV5HEADER) + y * pixelWidth * 4,
-                       pixmap.data() + (offsetY + y) * pixmapWidth * 4 + offsetX * 4,
-                       pixelWidth * 4);
-
-            if (munmap(mmapMemory, mmapFileSize) == -1)
-            {
-                LOG_SYS("Could not unmap file " << [[mmapFileURL path] UTF8String]);
-                return false;
-            }
-
-            std::string tileMsg = tiles[i].serialize("tile:", ADD_DEBUG_RENDERID) + std::string([[mmapFileURL absoluteString] UTF8String]);
-            outputMessage(tileMsg.c_str(), tileMsg.length());
-        }
-
-#else
+        (void) mobileAppDocId;
 
         const auto mode = static_cast<LibreOfficeKitTileMode>(document->getTileMode());
 
@@ -616,7 +473,7 @@ namespace RenderTiles
 
         std::mutex pngMutex;
 
-        for (Util::Rectangle& tileRect : tileRecs)
+        for (const Util::Rectangle& tileRect : tileRecs)
         {
             const size_t positionX = (tileRect.getLeft() - renderArea.getLeft()) / tileCombined.getTileWidth();
             const size_t positionY = (tileRect.getTop() - renderArea.getTop()) / tileCombined.getTileHeight();
@@ -654,10 +511,10 @@ namespace RenderTiles
             }
             else
             {
-                LOG_DBG("PNG cache with hash " << hash << " missed.");
+                LOG_TRC("PNG cache with hash " << hash << " missed.");
 
                 // Don't re-compress the same thing multiple times.
-                for (auto id : renderingIds)
+                for (const auto& id : renderingIds)
                 {
                     if (wireId == id)
                     {
@@ -676,12 +533,12 @@ namespace RenderTiles
                 renderingIds.push_back(wireId);
 
                 // Queue to be executed later in parallel inside 'run'
-                pngPool.pushWorkUnlocked([=,&output,&pixmap,&tiles,&renderedTiles,&pngCache,&pngMutex](){
+                pngPool.pushWork([=,&output,&pixmap,&tiles,&renderedTiles,&pngCache,&pngMutex](){
 
                         PngCache::CacheData data(new std::vector< char >() );
                         data->reserve(pixmapWidth * pixmapHeight * 1);
 
-                        LOG_DBG("Encode a new png for tile #" << tileIndex);
+                        LOG_TRC("Encode a new png for tile #" << tileIndex);
                         if (!Png::encodeSubBufferToPNG(pixmap.data(), offsetX, offsetY, pixelWidth, pixelHeight,
                                                        pixmapWidth, pixmapHeight, *data, mode))
                         {
@@ -691,7 +548,7 @@ namespace RenderTiles
                             return;
                         }
 
-                        LOG_DBG("Tile " << tileIndex << " is " << data->size() << " bytes.");
+                        LOG_TRC("Tile " << tileIndex << " is " << data->size() << " bytes.");
                         std::unique_lock<std::mutex> pngLock(pngMutex);
                         output.insert(output.end(), data->begin(), data->end());
                         pngCache.addToCache(data, wireId, hash);
@@ -735,12 +592,12 @@ namespace RenderTiles
 
         pngCache.balanceCache();
 
-        duration = std::chrono::system_clock::now() - start;
-        elapsed = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-        totalTime = elapsed/1000.;
-        LOG_DBG("rendering tiles at (" << renderArea.getLeft() << ", " << renderArea.getTop() << "), (" <<
-                renderArea.getWidth() << ", " << renderArea.getHeight() << ") " <<
-                " took " << totalTime << " ms (including the paintPartTile).");
+        duration = std::chrono::steady_clock::now() - start;
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        LOG_DBG("rendering tiles at (" << renderArea.getLeft() << ", " << renderArea.getTop()
+                                       << "), (" << renderArea.getWidth() << ", "
+                                       << renderArea.getHeight() << ") "
+                                       << " took " << elapsed << " (including the paintPartTile).");
 
         if (tileIndex == 0)
             return false;
@@ -774,7 +631,6 @@ namespace RenderTiles
                 outputOffset += i.getImgSize();
             }
         }
-#endif
         return true;
     }
 }

@@ -676,7 +676,7 @@ public:
                                    [&](const char *buffer, size_t length) {
                                        postMessage(buffer, length, WSOpCode::Binary);
                                    }
-                                   ))
+                                   , _mobileAppDocId))
         {
             LOG_DBG("All tiles skipped, not producing empty tilecombine: message");
             return;
@@ -2057,10 +2057,8 @@ void lokit_main(
 {
 #if !MOBILEAPP
 
-#ifndef FUZZER
-    SigUtil::setFatalSignals();
+    SigUtil::setFatalSignals("kit startup of " LOOLWSD_VERSION " " LOOLWSD_VERSION_HASH);
     SigUtil::setTerminationSignals();
-#endif
 
     Util::setThreadName("kit_spare_" + Util::encodeId(numericIdentifier, 3));
 

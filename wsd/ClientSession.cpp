@@ -31,6 +31,8 @@
 #include <common/Unit.hpp>
 #include <common/Util.hpp>
 
+#include <OxOOL/HttpHelper.h>
+
 using namespace LOOLProtocol;
 
 static constexpr int SYNTHETIC_OXOOL_PID_OFFSET = 10000000;
@@ -1558,7 +1560,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                 if (!fileName.empty())
                     response.set("Content-Disposition", "attachment; filename=\"" + fileName + '"');
 
-                HttpHelper::sendFileAndShutdown(_saveAsSocket, encodedFilePath, mimeType, &response);
+                OxOOL::HttpHelper::sendFileAndShutdown(_saveAsSocket, encodedFilePath, mimeType, &response);
             }
 
             // Conversion is done, cleanup this fake session.

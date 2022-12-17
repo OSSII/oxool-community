@@ -108,7 +108,7 @@ void DocumentBroker::handleProxyRequest(
 bool ProxyProtocolHandler::parseEmitIncoming(
     const std::shared_ptr<StreamSocket> &socket)
 {
-    std::vector<char> &in = socket->getInBuffer();
+    Buffer& in = socket->getInBuffer();
 
 #if 0 // protocol debugging.
     std::stringstream oss;

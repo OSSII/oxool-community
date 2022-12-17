@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -17,6 +15,7 @@
 
 #include <dlfcn.h>
 #include <ftw.h>
+#ifdef __linux__
 #include <linux/audit.h>
 #include <linux/filter.h>
 #if DISABLE_SECCOMP == 0
@@ -26,8 +25,9 @@
 #include <signal.h>
 #include <sys/capability.h>
 #include <sys/prctl.h>
-#include <sys/resource.h>
 #include <sys/syscall.h>
+#endif // __linux__
+#include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <utime.h>
@@ -291,21 +291,21 @@ void setRLimit(rlim_t confLim, int resource, const std::string &resourceText, co
 
 bool handleSetrlimitCommand(const StringVector& tokens)
 {
-    if (tokens.size() == 3 && tokens[0] == "setconfig")
+    if (tokens.size() == 3 && tokens.equals(0, "setconfig"))
     {
-        if (tokens[1] == "limit_virt_mem_mb")
+        if (tokens.equals(1, "limit_virt_mem_mb"))
         {
             setRLimit(std::stoi(tokens[2]) * 1024 * 1024, RLIMIT_AS, "RLIMIT_AS", "bytes");
         }
-        else if (tokens[1] == "limit_stack_mem_kb")
+        else if (tokens.equals(1, "limit_stack_mem_kb"))
         {
             setRLimit(std::stoi(tokens[2]) * 1024, RLIMIT_STACK, "RLIMIT_STACK", "bytes");
         }
-        else if (tokens[1] == "limit_file_size_mb")
+        else if (tokens.equals(1, "limit_file_size_mb"))
         {
             setRLimit(std::stoi(tokens[2]) * 1024 * 1024, RLIMIT_FSIZE, "RLIMIT_FSIZE", "bytes");
         }
-        else if (tokens[1] == "limit_num_open_files")
+        else if (tokens.equals(1, "limit_num_open_files"))
         {
             setRLimit(std::stoi(tokens[2]), RLIMIT_NOFILE, "RLIMIT_NOFILE", "files");
         }

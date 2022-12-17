@@ -40,6 +40,11 @@ constexpr const char FORKIT_URI[] = "/loolws/forkit";
 
 constexpr const char CAPABILITIES_END_POINT[] = "/hosting/capabilities";
 
+/// The file suffix used to mark the file slated for uploading.
+constexpr const char TO_UPLOAD_SUFFIX[] = ".upload";
+/// The file suffix used to mark the file being uploaded.
+constexpr const char UPLOADING_SUFFIX[] = "ing";
+
 /// A shared threadname suffix in both the WSD and Kit processes
 /// is highly helpful for filtering the logs for the same document
 /// by simply grepping for this shared suffix+ID. e.g. 'grep "broker_123" oxoolwsd.log'
@@ -59,6 +64,9 @@ constexpr const char CAPABILITIES_END_POINT[] = "/hosting/capabilities";
 
 /// The WOPI User-Agent.
 #define WOPI_AGENT_STRING "LOOLWSD WOPI Agent " LOOLWSD_VERSION
+
+/// The HTTP response Server. Used only in Responses.
+#define HTTP_SERVER_STRING "LOOLWSD HTTP Server " LOOLWSD_VERSION
 
 // The client port number, both oxoolwsd and the kits have this.
 extern int ClientPortNumber;
