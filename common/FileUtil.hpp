@@ -32,6 +32,14 @@ namespace FileUtil
     /// Create a secure, random directory path.
     std::string createRandomDir(const std::string& path);
 
+    /// Returns the system temporary directory.
+    std::string getSysTempDirectoryPath();
+
+    /// Create randomized temporary directory in the root provided
+    /// with S_IRWXU (read, write, and execute by owner) permissions.
+    /// If root is empty, the current system temp directory is used.
+    std::string createRandomTmpDir(std::string root = std::string());
+
     // Save data to a file (overwriting an existing file if necessary) with checks for errors. Write
     // to a temporary file in the same directory that is then atomically renamed to the desired name
     // if everything goes well. In case of any error, both the destination file (if it already

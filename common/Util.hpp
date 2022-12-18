@@ -85,10 +85,6 @@ namespace Util
         std::string getFilename(const size_t length);
     }
 
-    /// Create randomized temporary directory in the root provided.
-    /// If root is empty, the current temp directory is used.
-    std::string createRandomTmpDir(std::string root = std::string());
-
 #if !MOBILEAPP
     /// Get number of threads in this process or -1 on error
     int getProcessThreadCount();
@@ -908,6 +904,27 @@ int main(int argc, char**argv)
     {
         const size_t size = getDelimiterPosition(message, length, delim);
         return std::string(message, size);
+    }
+
+    /// Eliminates the prefix from str(if present) and returns a copy of the modified string
+    inline
+    std::string eliminatePrefix(const std::string& str, const std::string& prefix)
+    {
+        std::string::const_iterator prefix_pos;
+        std::string::const_iterator str_pos;
+
+        std::tie(prefix_pos,str_pos) = std::mismatch(prefix.begin(), prefix.end(), str.begin());
+
+        if (prefix_pos == prefix.end())
+        {
+            // Non-Prefix part
+            return std::string(str_pos, str.end());
+        }
+        else
+        {
+            // Return the original string as it is
+            return str;
+        }
     }
 
     /// Split a string in two at the delimiter, removing it.

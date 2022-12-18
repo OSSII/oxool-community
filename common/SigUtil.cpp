@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -32,6 +30,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <array>
 
 #include <Socket.hpp>
 #include "Common.hpp"
@@ -43,28 +42,47 @@ static std::atomic<bool> DumpGlobalState(false);
 static std::atomic<bool> ShutdownRequestFlag(false);
 #endif
 
+static size_t ActivityStringIndex = 0;
+static std::array<std::string,8> ActivityStrings;
+static bool UnattendedRun = false;
+
 namespace SigUtil
 {
 #ifndef IOS
     bool getShutdownRequestFlag()
     {
+        // ShutdownRequestFlag must be set if TerminationFlag is set.
+        assert(!TerminationFlag || ShutdownRequestFlag);
         return ShutdownRequestFlag;
     }
 
     bool getTerminationFlag()
     {
+        // ShutdownRequestFlag must be set if TerminationFlag is set.
+        assert(!TerminationFlag || ShutdownRequestFlag);
         return TerminationFlag;
     }
 
     void setTerminationFlag()
     {
+#if !MOBILEAPP
+        // Request shutting down first. Otherwise, we can race with
+        // getTerminationFlag, which asserts ShutdownRequestFlag.
+        ShutdownRequestFlag = true;
+#endif
+        // Set the forced-termination flag.
         TerminationFlag = true;
+#if !MOBILEAPP
+        // And wake-up the thread.
+        SocketPoll::wakeupWorld();
+#endif
     }
 
 #if MOBILEAPP
-    void resetTerminationFlag()
+    void resetTerminationFlags()
     {
         TerminationFlag = false;
+        ShutdownRequestFlag = false;
     }
 #endif
 #endif // !IOS
@@ -78,6 +96,16 @@ namespace SigUtil
             DumpGlobalState = false;
         }
 #endif
+    }
+
+    void addActivity(const std::string &message)
+    {
+        ActivityStrings[ActivityStringIndex++ % ActivityStrings.size()] = message;
+    }
+
+    void setUnattended()
+    {
+        UnattendedRun = true;
     }
 
 #if !MOBILEAPP
@@ -231,7 +259,7 @@ namespace SigUtil
     static char FatalGdbString[256] = { '\0' };
 
     static
-    void handleFatalSignal(const int signal)
+    void handleFatalSignal(const int signal, siginfo_t *info, void * /* uctxt */)
     {
         SigHandlerTrap guard;
         bool bReEntered = !guard.isExclusive();
@@ -244,6 +272,27 @@ namespace SigUtil
         else
             Log::signalLog(" Fatal signal received: ");
         Log::signalLog(signalName(signal));
+        if (info)
+        {
+            Log::signalLog(" code: ");
+            Log::signalLogNumber(info->si_code);
+            Log::signalLog(" for address: 0x");
+            Log::signalLogNumber((size_t)info->si_addr, 16);
+        }
+        Log::signalLog("\n");
+
+        Log::signalLog("Recent activity:\n");
+        for (size_t i = 0; i < ActivityStrings.size(); ++i)
+        {
+            size_t idx = (ActivityStringIndex + i) % ActivityStrings.size();
+            if (!ActivityStrings[idx].empty())
+            {
+                // no plausible impl. will heap allocate in c_str.
+                Log::signalLog("\t");
+                Log::signalLog(ActivityStrings[idx].c_str());
+                Log::signalLog("\n");
+            }
+        }
 
         struct sigaction action;
 
@@ -280,14 +329,30 @@ namespace SigUtil
             backtrace_symbols_fd(backtraceBuffer, numSlots, STDERR_FILENO);
         }
 #else
-        LOG_SYS("Backtrace not available on Android.");
+        LOG_INF("Backtrace not available on Android.");
 #endif
 
+#if !ENABLE_DEBUG
         if (std::getenv("LOOL_DEBUG"))
+#endif
         {
-            Log::signalLog(FatalGdbString);
-            LOG_ERR("Sleeping 30s to allow debugging.");
-            sleep(30);
+            if (UnattendedRun)
+            {
+                static constexpr auto msg =
+                    "Crashed in unattended run and won't wait for debugger. Re-run without "
+                    "--unattended to attach a debugger.";
+                LOG_ERR(msg);
+                std::cerr << msg << '\n';
+            }
+            else
+            {
+                Log::signalLog(FatalGdbString);
+                LOG_ERR("Sleeping 60s to allow debugging: attach " << getpid());
+                std::cerr << "Sleeping 60s to allow debugging: attach " << getpid() << '\n';
+                sleep(60);
+                LOG_ERR("Finished sleeping to allow debugging of: " << getpid());
+                std::cerr << "Finished sleeping to allow debugging of: " << getpid() << '\n';
+            }
         }
     }
 
@@ -305,8 +370,8 @@ namespace SigUtil
         setVersionInfo(versionInfo);
 
         sigemptyset(&action.sa_mask);
-        action.sa_flags = 0;
-        action.sa_handler = handleFatalSignal;
+        action.sa_flags = SA_SIGINFO;
+        action.sa_sigaction = handleFatalSignal;
 
         sigaction(SIGSEGV, &action, nullptr);
         sigaction(SIGBUS, &action, nullptr);

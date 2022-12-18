@@ -114,6 +114,21 @@ static bool AnonymizeUserData = false;
 static uint64_t AnonymizationSalt = 82589933;
 #endif
 
+/// When chroot is enabled, this is blank as all
+/// the paths inside the jail, relative to it's jail.
+/// E.g. /tmp/user/docs/...
+/// However, without chroot, the jail path is
+/// absolute in the system root.
+/// I.e. ChildRoot/JailId/tmp/user/docs/...
+/// We need to know where the jail really is
+/// because WSD doesn't know if chroot will succeed
+/// or fail, but it assumes the document path to
+/// be relative to the root of the jail (i.e. chroot
+/// expected to succeed). If it fails, or when caps
+/// are disabled, file paths would be relative to the
+/// system root, not the jail.
+static std::string JailRoot;
+
 #if !MOBILEAPP
 
 static LokHookFunction2* initFunction = nullptr;
@@ -521,8 +536,8 @@ public:
                     sessionId << " on jailId: " << _jailId);
 
             auto session = std::make_shared<ChildSession>(
-                _websocketHandler,
-                sessionId, _jailId, *this);
+                _websocketHandler, sessionId,
+                _jailId, JailRoot, *this);
             _sessions.emplace(sessionId, session);
 
             int viewId = session->getViewId();
@@ -731,7 +746,9 @@ public:
             self->setDocumentPassword(type);
             return;
         }
-        else if (type == LOK_CALLBACK_STATUS_INDICATOR_SET_VALUE)
+        else if (type == LOK_CALLBACK_STATUS_INDICATOR_START ||
+                 type == LOK_CALLBACK_STATUS_INDICATOR_SET_VALUE ||
+                 type == LOK_CALLBACK_STATUS_INDICATOR_FINISH)
         {
             for (auto& it : self->_sessions)
             {
@@ -964,11 +981,6 @@ private:
         std::unique_lock<std::mutex> lock(_mutex);
 
         return _sessionUserInfo;
-    }
-
-    std::mutex& getMutex() override
-    {
-        return _mutex;
     }
 
     std::shared_ptr<TileQueue>& getTileQueue() override
@@ -2171,7 +2183,7 @@ void lokit_main(
                 // Hard-random tmpdir inside the jail for added sercurity.
                 const std::string tempRoot = Poco::Path(childRoot, "tmp").toString();
                 Poco::File(tempRoot).createDirectories();
-                const std::string tmpSubDir = Util::createRandomTmpDir(tempRoot);
+                const std::string tmpSubDir = FileUtil::createRandomTmpDir(tempRoot);
                 const std::string jailTmpDir = Poco::Path(jailPath, "tmp").toString();
                 LOG_INF("Mounting random temp dir " << tmpSubDir << " -> " << jailTmpDir);
                 if (!JailUtil::bind(tmpSubDir, jailTmpDir))
@@ -2262,10 +2274,12 @@ void lokit_main(
         }
         else // noCapabilities set
         {
-            LOG_ERR("Security warning - using template "
-                    << loTemplate << " as install subpath - skipping chroot jail setup");
+            LOG_WRN("Security warning: running without chroot jails is insecure.");
+            LOG_INF("Using template ["
+                    << loTemplate << "] as install subpath directly, without chroot jail setup.");
             userdir_url = "file:///" + jailPathStr + "/tmp/user";
             instdir_path = '/' + loTemplate + "/program";
+            JailRoot = jailPathStr;
         }
 
         LibreOfficeKit *kit;

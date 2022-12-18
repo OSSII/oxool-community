@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -21,13 +19,14 @@ namespace SigUtil
     bool getShutdownRequestFlag();
 
     /// Get the flag to stop pump loops forcefully.
+    /// If this returns true, getShutdownRequestFlag() must also return true.
     bool getTerminationFlag();
-    /// Set the flag to stop pump loops forcefully.
+    /// Set the flag to stop pump loops forcefully and request shutting down.
     void setTerminationFlag();
 #if MOBILEAPP
-    /// Reset the flag to stop pump loops forcefully.
+    /// Reset the flags to stop pump loops forcefully.
     /// Only necessary in Mobile.
-    void resetTerminationFlag();
+    void resetTerminationFlags();
 #endif
 #else
     // In the mobile apps we have no need to shut down the app.
@@ -49,6 +48,14 @@ namespace SigUtil
     extern "C" { typedef void (*GlobalDumpStateFn)(void); }
 
     void checkDumpGlobalState(GlobalDumpStateFn dumpState);
+
+    /// Add a message to a round-robin buffer to be dumped on fatal signal
+    void addActivity(const std::string &message);
+
+    /// Called to flag that we are running in unattended mode, not interactive.
+    /// In unattended mode we know there is no one to attach a debugger on
+    /// faulting, so we do not wait unnecessarily. Otherwise, we wait for 60s.
+    void setUnattended();
 
 #if !MOBILEAPP
     /// Wait for the signal handler, if any,

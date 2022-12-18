@@ -9,9 +9,10 @@
 
 #pragma once
 
-#include <mutex>
 #include <unordered_map>
 #include <queue>
+
+#include <atomic>
 
 #define LOK_USE_UNSTABLE_API
 #include <LibreOfficeKit/LibreOfficeKit.hxx>
@@ -61,7 +62,6 @@ public:
 
     /// Get a view ID <-> UserInfo map.
     virtual std::map<int, UserInfo> getViewInfo() = 0;
-    virtual std::mutex& getMutex() = 0;
 
     virtual std::string getObfuscatedFileId() = 0;
 
@@ -201,10 +201,11 @@ public:
         const std::shared_ptr<ProtocolHandlerInterface> &protocol,
         const std::string& id,
         const std::string& jailId,
+        const std::string& jailRoot,
         DocumentManagerInterface& docManager);
     virtual ~ChildSession();
 
-    bool getStatus(const char* buffer, int length);
+    bool getStatus();
     int getViewId() const { return _viewId; }
     void setViewId(const int viewId) { _viewId = viewId; }
     const std::string& getViewUserId() const { return getUserId(); }
@@ -241,7 +242,7 @@ public:
 
     using Session::sendTextFrame;
 
-    bool getClipboard(const char* buffer, int length, const StringVector& tokens);
+    bool getClipboard(const StringVector& tokens);
 
     void resetDocManager()
     {
@@ -250,63 +251,67 @@ public:
     }
 
 private:
-    bool loadDocument(const char* buffer, int length, const StringVector& tokens);
+    bool loadDocument(const StringVector& tokens);
 
-    bool sendFontRendering(const char* buffer, int length, const StringVector& tokens);
-    bool getCommandValues(const char* buffer, int length, const StringVector& tokens);
+    bool sendFontRendering(const StringVector& tokens);
+    bool getCommandValues(const StringVector& tokens);
 
-    bool clientZoom(const char* buffer, int length, const StringVector& tokens);
-    bool clientVisibleArea(const char* buffer, int length, const StringVector& tokens);
-    bool outlineState(const char* buffer, int length, const StringVector& tokens);
-    bool downloadAs(const char* buffer, int length, const StringVector& tokens);
+    bool clientZoom(const StringVector& tokens);
+    bool clientVisibleArea(const StringVector& tokens);
+    bool outlineState(const StringVector& tokens);
+    bool downloadAs(const StringVector& tokens);
     bool getChildId();
-    bool getTextSelection(const char* buffer, int length, const StringVector& tokens);
+    bool getTextSelection(const StringVector& tokens);
     bool setClipboard(const char* buffer, int length, const StringVector& tokens);
     std::string getTextSelectionInternal(const std::string& mimeType);
     bool paste(const char* buffer, int length, const StringVector& tokens);
-    bool insertFile(const char* buffer, int length, const StringVector& tokens);
-    bool insertPicture(const char* buffer, int length, const StringVector& tokens, bool isChange = false);
-    bool keyEvent(const char* buffer, int length, const StringVector& tokens, const LokEventTargetEnum target);
-    bool extTextInputEvent(const char* /*buffer*/, int /*length*/, const StringVector& tokens);
+    bool insertFile(const StringVector& tokens);
+    bool insertPicture(const StringVector& tokens, bool isChange = false);
+    bool keyEvent(const StringVector& tokens, const LokEventTargetEnum target);
+    bool extTextInputEvent(const StringVector& tokens);
     bool dialogKeyEvent(const char* buffer, int length, const std::vector<std::string>& tokens);
-    bool mouseEvent(const char* buffer, int length, const StringVector& tokens, const LokEventTargetEnum target);
-    bool gestureEvent(const char* buffer, int length, const StringVector& tokens);
-    bool dialogEvent(const char* buffer, int length, const StringVector& tokens);
-    bool completeFunction(const char* buffer, int length, const StringVector& tokens);
-    bool unoCommand(const char* buffer, int length, const StringVector& tokens);
-    bool selectText(const char* buffer, int length, const StringVector& tokens, const LokEventTargetEnum target);
-    bool selectGraphic(const char* buffer, int length, const StringVector& tokens);
-    bool renderWindow(const char* buffer, int length, const StringVector& tokens);
-    bool resizeWindow(const char* buffer, int length, const StringVector& tokens);
-    bool resetSelection(const char* buffer, int length, const StringVector& tokens);
-    bool saveAs(const char* buffer, int length, const StringVector& tokens);
-    bool setClientPart(const char* buffer, int length, const StringVector& tokens);
-    bool selectClientPart(const char* buffer, int length, const StringVector& tokens);
-    bool moveSelectedClientParts(const char* buffer, int length, const StringVector& tokens);
-    bool setPage(const char* buffer, int length, const StringVector& tokens);
-    bool sendWindowCommand(const char* buffer, int length, const StringVector& tokens);
+    bool mouseEvent(const StringVector& tokens, const LokEventTargetEnum target);
+    bool gestureEvent(const StringVector& tokens);
+    bool dialogEvent(const StringVector& tokens);
+    bool completeFunction(const StringVector& tokens);
+    bool unoCommand(const StringVector& tokens);
+    bool selectText(const StringVector& tokens, const LokEventTargetEnum target);
+    bool selectGraphic(const StringVector& tokens);
+    bool renderWindow(const StringVector& tokens);
+    bool resizeWindow(const StringVector& tokens);
+    bool resetSelection(const StringVector& tokens);
+    bool saveAs(const StringVector& tokens);
+    bool setClientPart(const StringVector& tokens);
+    bool selectClientPart(const StringVector& tokens);
+    bool moveSelectedClientParts(const StringVector& tokens);
+    bool setPage(const StringVector& tokens);
+    bool sendWindowCommand(const StringVector& tokens);
     bool signDocumentContent(const char* buffer, int length, const StringVector& tokens);
     bool askSignatureStatus(const char* buffer, int length, const StringVector& tokens);
     bool uploadSignedDocument(const char* buffer, int length, const StringVector& tokens);
     bool exportSignAndUploadDocument(const char* buffer, int length, const StringVector& tokens);
-    bool renderShapeSelection(const char* buffer, int length, const StringVector& tokens);
-    bool getGraphicSelection(const char* buffer, int length, const StringVector& tokens);
-    bool removeTextContext(const char* /*buffer*/, int /*length*/, const StringVector& tokens);
-
-    void rememberEventsForInactiveUser(const int type, const std::string& payload);
+    bool renderShapeSelection(const StringVector& tokens);
+    bool getGraphicSelection(const StringVector& tokens);
+    bool removeTextContext(const StringVector& tokens);
     bool formFieldEvent(const char* buffer, int length, const StringVector& tokens);
     bool renderSearchResult(const char* buffer, int length, const StringVector& tokens);
+    void rememberEventsForInactiveUser(const int type, const std::string& payload);
     bool initUnoStatus(const char* buffer, int length, const StringVector& tokens);
 
     virtual void disconnect() override;
     virtual bool _handleInput(const char* buffer, int length) override;
 
-    std::shared_ptr<lok::Document> getLOKitDocument()
+    std::shared_ptr<lok::Document> getLOKitDocument() const
     {
         return _docManager->getLOKitDocument();
     }
 
-    std::string getLOKitLastError()
+    std::shared_ptr<lok::Office> getLOKit() const
+    {
+        return _docManager->getLOKit();
+    }
+
+    std::string getLOKitLastError() const
     {
         char *lastErr = _docManager->getLOKit()->getError();
         std::string ret;
@@ -327,6 +332,7 @@ public:
 
 private:
     const std::string _jailId;
+    const std::string _jailRoot;
     DocumentManagerInterface* _docManager;
 
     std::queue<std::chrono::steady_clock::time_point> _cursorInvalidatedEvent;
