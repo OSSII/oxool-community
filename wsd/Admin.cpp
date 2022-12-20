@@ -1212,7 +1212,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
 AdminSocketHandler::AdminSocketHandler(Admin* adminManager,
                                        const std::weak_ptr<StreamSocket>& socket,
                                        const Poco::Net::HTTPRequest& request)
-    : WebSocketHandler(socket, request),
+    : WebSocketHandler(socket.lock(), request),
       _admin(adminManager),
       _isAuthenticated(false)
 {
@@ -1221,7 +1221,7 @@ AdminSocketHandler::AdminSocketHandler(Admin* adminManager,
 }
 
 AdminSocketHandler::AdminSocketHandler(Admin* adminManager)
-    : WebSocketHandler(true),
+    : WebSocketHandler(/* isClient = */ true, /* isMasking = */ true),
       _admin(adminManager),
       _isAuthenticated(true)
 {
@@ -1425,9 +1425,9 @@ void Admin::pollingThread()
         }
 
         // Handle websockets & other work.
-        const int timeout = capAndRoundInterval(
-            std::min(std::min(std::min(cpuWait, memWait), netWait), cleanupWait));
-        LOG_TRC("Admin poll for " << timeout << "ms.");
+        const auto timeout = std::chrono::milliseconds(capAndRoundInterval(
+            std::min(std::min(std::min(cpuWait, memWait), netWait), cleanupWait)));
+        LOG_TRC("Admin poll for " << timeout);
         poll(timeout * 1000); // continue with ms for admin, settings etc.
     }
 }
@@ -1731,11 +1731,11 @@ public:
             return AdminSocketHandler::getPollEvents(now, timeoutMaxMicroS);
     }
 
-    void performWrites() override
+    void performWrites(std::size_t capacity) override
     {
         LOG_TRC("Outbound monitor - connected");
         _connecting = false;
-        return AdminSocketHandler::performWrites();
+        return AdminSocketHandler::performWrites(capacity);
     }
 
     void onDisconnect() override

@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,13 +7,14 @@
 
 #pragma once
 
-#include <cassert>
 #include <cerrno>
+#include <chrono>
 #include <string>
 #include <sys/stat.h>
-#include <vector>
 
 #include <Poco/Path.h>
+
+#include "Log.hpp"
 
 namespace FileUtil
 {
@@ -32,20 +31,12 @@ namespace FileUtil
     /// Create a secure, random directory path.
     std::string createRandomDir(const std::string& path);
 
-    /// Returns the system temporary directory.
-    std::string getSysTempDirectoryPath();
-
-    /// Create randomized temporary directory in the root provided
-    /// with S_IRWXU (read, write, and execute by owner) permissions.
-    /// If root is empty, the current system temp directory is used.
-    std::string createRandomTmpDir(std::string root = std::string());
-
     // Save data to a file (overwriting an existing file if necessary) with checks for errors. Write
     // to a temporary file in the same directory that is then atomically renamed to the desired name
     // if everything goes well. In case of any error, both the destination file (if it already
     // exists) and the temporary file (if was created, or existed already) are removed. Return true
     // if everything succeeded.
-    bool saveDataToFileSafely(const std::string& fileName, const char* data, size_t size);
+    bool saveDataToFileSafely(const std::string& fileName, const char* data, std::size_t size);
 
     // We work around some of the mess of using the same sources both on the server side and in unit
     // tests with conditional compilation based on BUILDING_TESTS.
@@ -80,6 +71,10 @@ namespace FileUtil
     bool isEmptyDirectory(const char* path);
     inline bool isEmptyDirectory(const std::string& path) { return isEmptyDirectory(path.c_str()); }
 
+    /// Returns true iff the path given is writable by our *real* UID.
+    bool isWritable(const char* path);
+    inline bool isWritable(const std::string& path) { return isWritable(path.c_str()); }
+
     /// Update the access-time and modified-time metadata for the given file.
     bool updateTimestamps(const std::string& filename, timespec tsAccess, timespec tsModified);
 
@@ -100,17 +95,26 @@ namespace FileUtil
         copy(fromPath, toPath, /*log=*/true, /*throw_on_error=*/true);
     }
 
+    /// Returns the system temporary directory.
+    std::string getSysTempDirectoryPath();
+
+    /// Create randomized temporary directory in the root provided
+    /// with S_IRWXU (read, write, and execute by owner) permissions.
+    /// If root is empty, the current system temp directory is used.
+    std::string createRandomTmpDir(std::string root = std::string());
+
     /// Make a temp copy of a file, and prepend it with a prefix.
-    std::string getTempFilePath(const std::string& srcDir, const std::string& srcFilename,
+    /// Used by tests to avoid tainting the originals.
+    std::string getTempFileCopyPath(const std::string& srcDir, const std::string& srcFilename,
                                 const std::string& dstFilenamePrefix);
 
     /// Make a temp copy of a file.
-    /// Primarily used by tests to avoid tainting the originals.
+    /// Used by tests to avoid tainting the originals.
     /// srcDir shouldn't end with '/' and srcFilename shouldn't contain '/'.
     /// Returns the created file path.
-    inline std::string getTempFilePath(const std::string& srcDir, const std::string& srcFilename)
+    inline std::string getTempFileCopyPath(const std::string& srcDir, const std::string& srcFilename)
     {
-        return getTempFilePath(srcDir, srcFilename, std::string());
+        return getTempFileCopyPath(srcDir, srcFilename, std::string());
     }
 
     /// Link source to target, and copy if linking fails.
@@ -123,14 +127,19 @@ namespace FileUtil
         return realpath(path.c_str());
     }
 
+    /// Returns true iff the two files both exist, can be read,
+    /// have equal size and every byte of their contents match.
+    bool compareFileContents(const std::string& rhsPath, const std::string& lhsPath);
+
     /// File/Directory stat helper.
     class Stat
     {
+        int clearStat() { memset (&_sb, 0, sizeof(_sb)); return 0; }
     public:
         /// Stat the given path. Symbolic links are stat'ed when @link is true.
         Stat(const std::string& file, bool link = false)
             : _path(file)
-            , _res(link ? lstat(file.c_str(), &_sb) : stat(file.c_str(), &_sb))
+            , _res(clearStat() | (link ? lstat(file.c_str(), &_sb) : stat(file.c_str(), &_sb)))
             , _errno(errno)
         {
         }
@@ -145,11 +154,14 @@ namespace FileUtil
         bool isDirectory() const { return S_ISDIR(_sb.st_mode); }
         bool isFile() const { return S_ISREG(_sb.st_mode); }
         bool isLink() const { return S_ISLNK(_sb.st_mode); }
+        std::size_t hardLinkCount() const { return _sb.st_nlink; }
+        ino_t inodeNumber() const { return _sb.st_ino; }
 
         /// Returns the filesize in bytes.
-        size_t size() const { return _sb.st_size; }
+        std::size_t size() const { return _sb.st_size; }
 
-        /// Returns the modified time.
+        /// Returns the modified unix-time as timespec since epoch with
+        /// nanosecond precision, if/when the filesystem supports it.
         timespec modifiedTime() const
         {
 #ifdef IOS
@@ -159,6 +171,33 @@ namespace FileUtil
 #endif
         }
 
+        /// Returns the modified unix-time in microseconds since epoch.
+        int64_t modifiedTimeUs() const
+        {
+            // cast to make sure the calculation happens with enough bits
+            return (static_cast<int64_t>(modifiedTime().tv_sec) * 1000 * 1000) + (modifiedTime().tv_nsec / 1000);
+        }
+
+        /// Returns the modified unix-time in milliseconds since epoch.
+        std::size_t modifiedTimeMs() const
+        {
+            return (modifiedTime().tv_sec * 1000) + (modifiedTime().tv_nsec / 1000000);
+        }
+
+        /// Returns the modified unix-time as time_point (in microsecond precision, if available).
+        /// The units is system-dependent, but it's 100% safe as time_point does the conversion
+        /// to whatever we request, remembering the original units.
+        std::chrono::system_clock::time_point modifiedTimepoint() const
+        {
+            // The time in microseconds.
+            const std::chrono::microseconds us{ modifiedTimeUs() };
+
+            // Convert to the precision of the system_clock::time_point,
+            // which can be different from microseconds.
+            return std::chrono::system_clock::time_point(
+                std::chrono::duration_cast<std::chrono::system_clock::duration>(us));
+        }
+
         /// Returns true iff the path exists, regardless of access permission.
         bool exists() const { return good() || (_errno != ENOENT && _errno != ENOTDIR); }
 
@@ -166,17 +205,22 @@ namespace FileUtil
         /// the same size and modified timestamp.
         bool isUpToDate(const Stat& other) const
         {
-            if (exists() && other.exists() && !isDirectory() && !other.isDirectory())
+            // No need to check whether they are linked or not,
+            // since if they are, the following check will match,
+            // and if they aren't, we still need to rely on the following.
+            // Finally, compare the contents, to avoid costly copying if we fail to update.
+            if (exists() && other.exists() && !isDirectory() && !other.isDirectory()
+                && size() == other.size() && compareFileContents(_path, other._path))
             {
-                // No need to check whether they are linked or not,
-                // since if they are, the following check will match,
-                // and if they aren't, we still need to rely on the following.
-                return (size() == other.size()
-                        && modifiedTime().tv_sec == other.modifiedTime().tv_sec
-                        && (modifiedTime().tv_nsec / 1000000) // Millisecond precision.
-                               == (other.modifiedTime().tv_nsec / 1000000));
+                return true;
             }
 
+            // Clearly, no match. Log something informative.
+            LOG_DBG("File contents mismatch: ["
+                    << _path << "] " << (exists() ? "exists" : "missing") << ", " << size()
+                    << " bytes, modified at " << modifiedTime().tv_sec << " =/= [" << other._path
+                    << "]: " << (other.exists() ? "exists" : "missing") << ", " << other.size()
+                    << " bytes, modified at " << other.modifiedTime().tv_sec);
             return false;
         }
 

@@ -288,27 +288,6 @@ namespace Util
 
 #endif
 
-    bool dataFromHexString(const std::string& hexString, std::vector<unsigned char>& data)
-    {
-        if (hexString.length() % 2 != 0)
-        {
-            return false;
-        }
-
-        data.clear();
-        std::stringstream stream;
-        unsigned value;
-        for (unsigned long offset = 0; offset < hexString.size(); offset += 2)
-        {
-            stream.clear();
-            stream << std::hex << hexString.substr(offset, 2);
-            stream >> value;
-            data.push_back(static_cast<unsigned char>(value));
-        }
-
-        return true;
-    }
-
     std::string encodeId(const std::uint64_t number, const int padding)
     {
         std::ostringstream oss;
@@ -1152,6 +1131,103 @@ namespace Util
     {
         Log::shutdown();
         std::_Exit(code);
+    }
+
+    std::string getValue(const std::map<std::string, std::string>& map, const std::string& subject)
+    {
+        if (map.find(subject) != map.end())
+        {
+            return map.at(subject);
+        }
+
+        // Not a perfect match, try regex.
+        for (const auto& value : map)
+        {
+            try
+            {
+                // Not performance critical to warrant caching.
+                Poco::RegularExpression re(value.first, Poco::RegularExpression::RE_CASELESS);
+                Poco::RegularExpression::Match reMatch;
+
+                // Must be a full match.
+                if (re.match(subject, reMatch) && reMatch.offset == 0 &&
+                    reMatch.length == subject.size())
+                {
+                    return value.second;
+                }
+            }
+            catch (const std::exception& exc)
+            {
+                // Nothing to do; skip.
+            }
+        }
+
+        return std::string();
+    }
+
+    bool matchRegex(const std::set<std::string>& set, const std::string& subject)
+    {
+        if (set.find(subject) != set.end())
+        {
+            return true;
+        }
+
+        // Not a perfect match, try regex.
+        for (const auto& value : set)
+        {
+            try
+            {
+                // Not performance critical to warrant caching.
+                Poco::RegularExpression re(value, Poco::RegularExpression::RE_CASELESS);
+                Poco::RegularExpression::Match reMatch;
+
+                // Must be a full match.
+                if (re.match(subject, reMatch) && reMatch.offset == 0 &&
+                    reMatch.length == subject.size())
+                {
+                    return true;
+                }
+            }
+            catch (const std::exception& exc)
+            {
+                // Nothing to do; skip.
+            }
+        }
+
+        return false;
+    }
+
+    std::string getValue(const std::set<std::string>& set, const std::string& subject)
+    {
+        auto search = set.find(subject);
+        if (search != set.end())
+        {
+            return *search;
+        }
+
+        // Not a perfect match, try regex.
+        for (const auto& value : set)
+        {
+            try
+            {
+                // Not performance critical to warrant caching.
+                Poco::RegularExpression re(value, Poco::RegularExpression::RE_CASELESS);
+                Poco::RegularExpression::Match reMatch;
+
+                // Must be a full match.
+                if (re.match(subject, reMatch) && reMatch.offset == 0 &&
+                    reMatch.length == subject.size())
+                {
+                    return value;
+                }
+            }
+            catch (const std::exception& exc)
+            {
+                // Nothing to do; skip.
+            }
+        }
+
+        return std::string();
     }
 }
 

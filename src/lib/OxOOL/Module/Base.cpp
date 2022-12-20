@@ -1,4 +1,5 @@
 
+#include <config.h>
 #include <memory>
 
 #include <Poco/Net/NetException.h>

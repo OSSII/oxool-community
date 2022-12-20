@@ -1,4 +1,5 @@
 
+#include <config.h>
 
 #include <Poco/URI.h>
 #include <Poco/Path.h>

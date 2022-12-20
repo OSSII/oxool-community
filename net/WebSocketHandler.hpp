@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -15,8 +13,10 @@
 
 #include "common/Common.hpp"
 #include "common/Log.hpp"
+#include "common/TraceEvent.hpp"
 #include "common/Unit.hpp"
 #include "Socket.hpp"
+#include <net/HttpRequest.hpp>
 
 #include <Poco/MemoryStream.h>
 #include <Poco/Net/HTTPRequest.h>
@@ -34,21 +34,23 @@ private:
     int _pingTimeUs;
     bool _isMasking;
     bool _inFragmentBlock;
+    /// The security key. Meaningful only for clients.
+    const std::string _key;
 #endif
 
     std::vector<char> _wsPayload;
     std::atomic<bool> _shuttingDown;
-    bool _isClient;
+    const bool _isClient;
 
 protected:
     struct WSFrameMask
     {
-        static const unsigned char Fin = 0x80;
-        static const unsigned char Mask = 0x80;
+        static constexpr unsigned char Fin = 0x80;
+        static constexpr unsigned char Mask = 0x80;
     };
 
-    static const int InitialPingDelayMicroS;
-    static const int PingFrequencyMicroS;
+    static constexpr std::chrono::microseconds InitialPingDelayMicroS = std::chrono::milliseconds(25);
+    static constexpr std::chrono::microseconds PingFrequencyMicroS = std::chrono::seconds(18);
 
 public:
     /// Perform upgrade ourselves, or select a client web socket.
@@ -56,16 +58,13 @@ public:
     /// isClient: the instance should behave like a client (true) or like a server (false)
     ///           (from websocket perspective)
     /// isMasking: a client should mask (true) or not (false) outgoing frames
-    /// isManualDefrag: the message handler should be called for every fragment of a message and
-    ///                 defragmentation should be handled inside message handler (true) or the message handler
-    ///                 should be called after all fragments of a message were received and the message
-    ///                 was defragmented (false).
-    WebSocketHandler(bool isClient = false, bool isMasking = true) :
+    WebSocketHandler(bool isClient, bool isMasking) :
 #if !MOBILEAPP
         _lastPingSentTime(std::chrono::steady_clock::now()),
         _pingTimeUs(0),
         _isMasking(isClient && isMasking),
         _inFragmentBlock(false),
+        _key(isClient ? PublicComputeAccept::generateKey() : std::string()),
 #endif
         _shuttingDown(false),
         _isClient(isClient)
@@ -76,28 +75,27 @@ public:
     /// Parameters:
     /// socket: the TCP socket which received the upgrade request
     /// request: the HTTP upgrade request to WebSocket
-    WebSocketHandler(const std::weak_ptr<StreamSocket>& socket,
-                     const Poco::Net::HTTPRequest& request)
+    template <typename T>
+    WebSocketHandler(const std::shared_ptr<StreamSocket>& socket, const T& request)
         : _socket(socket)
 #if !MOBILEAPP
-        , _lastPingSentTime(std::chrono::steady_clock::now() -
-                            std::chrono::microseconds(PingFrequencyMicroS) -
-                            std::chrono::microseconds(InitialPingDelayMicroS))
+        , _lastPingSentTime(std::chrono::steady_clock::now()
+                            - std::chrono::microseconds(PingFrequencyMicroS)
+                            - std::chrono::microseconds(InitialPingDelayMicroS))
         , _pingTimeUs(0)
         , _isMasking(false)
         , _inFragmentBlock(false)
+        , _key(std::string())
 #endif
         , _shuttingDown(false)
         , _isClient(false)
     {
-        upgradeToWebSocket(request);
-    }
+        if (!socket)
+            throw std::runtime_error("Invalid socket while upgrading to WebSocket.");
 
-    /// Implementation of the ProtocolHandlerInterface.
-    void onConnect(const std::shared_ptr<StreamSocket>& socket) override
-    {
-        _socket = socket;
-        LOG_TRC('#' << socket->getFD() << " Connected to WS Handler " << this);
+        // As a server, respond with 101 protocol-upgrade.
+        if (!_isClient)
+            upgradeToWebSocket(*socket, request);
     }
 
     /// Status codes sent to peer on shutdown.
@@ -118,13 +116,71 @@ public:
         RESERVED_TLS_FAILURE    = 1015
     };
 
+#if !MOBILEAPP
+
+    /// Returns the Web-Socket Security Key generated for this instance.
+    const std::string& getWebSocketKey() const { return _key; }
+
+    /// Create a WebSocket connection to the given @host
+    /// and @port and add the socket to @poll.
+    bool wsRequest(http::Request& req, const std::string& host, const std::string& port,
+                   bool isSecure, SocketPoll& poll)
+    {
+        const std::string hostAndPort = host + ':' + port;
+        LOG_TRC("Web-Socket request: " << hostAndPort);
+
+        auto socket = net::connect(host, port, isSecure, shared_from_this());
+        if (!socket)
+        {
+            LOG_ERR("Failed to connect to " << host << ':' << port);
+            return false;
+        }
+
+        onConnect(socket);
+
+        req.set("Host", hostAndPort); // Make sure the host is set.
+        req.set("Date", Util::getHttpTimeNow());
+        req.set("User-Agent", HTTP_AGENT_STRING);
+
+        req.set("Connection", "Upgrade");
+        req.set("Upgrade", "websocket");
+        req.set("Sec-WebSocket-Version", "13");
+        req.set("Sec-WebSocket-Key", getWebSocketKey());
+
+        if (socket->send(req))
+        {
+            poll.insertNewSocket(socket);
+            return true;
+        }
+
+        LOG_ERR("Failed to make WebSocket request.");
+        return false;
+    }
+#endif
+
+protected:
+    /// Implementation of the ProtocolHandlerInterface.
+    void onConnect(const std::shared_ptr<StreamSocket>& socket) override
+    {
+        _socket = socket;
+        LOG_TRC('#' << socket->getFD() << " Connected to WS Handler " << this);
+    }
+
     /// Sends WS Close frame to the peer.
-    void sendCloseFrame(const StatusCodes statusCode = StatusCodes::NORMAL_CLOSE, const std::string& statusMessage = "")
+    void sendCloseFrame(const StatusCodes statusCode = StatusCodes::NORMAL_CLOSE,
+                        const std::string& statusMessage = std::string())
     {
         std::shared_ptr<StreamSocket> socket = _socket.lock();
         if (!socket)
         {
-            LOG_ERR("No socket associated with WebSocketHandler " << this);
+            LOG_ERR("No socket associated with WebSocketHandler " << this
+                                                                  << " to send Close Frame to.");
+            return;
+        }
+
+        if (socket->isClosed())
+        {
+            LOG_DBG('#' << socket->getFD() << " is closed. Cannot send Close Frame.");
             return;
         }
 
@@ -163,13 +219,16 @@ public:
         }
     }
 
-    void shutdown(const StatusCodes statusCode = StatusCodes::NORMAL_CLOSE, const std::string& statusMessage = "")
+public:
+    void shutdown(const StatusCodes statusCode = StatusCodes::NORMAL_CLOSE,
+                  const std::string& statusMessage = std::string())
     {
         if (!_shuttingDown)
             sendCloseFrame(statusCode, statusMessage);
         std::shared_ptr<StreamSocket> socket = _socket.lock();
         if (socket)
         {
+            LOG_TRC('#' << socket->getFD() << ": Shutdown. Close Connection.");
             socket->closeConnection();
             socket->getInBuffer().clear();
             socket->ignoreInput();
@@ -181,6 +240,7 @@ public:
         _shuttingDown = false;
     }
 
+private:
     bool handleTCPStream(const std::shared_ptr<StreamSocket>& socket)
     {
         assert(socket && "Expected a valid socket instance.");
@@ -266,7 +326,7 @@ public:
             std::vector<char> ctrlPayload;
 
             readPayload(data, payloadLen, mask, ctrlPayload);
-            socket->getInBuffer().erase(socket->getInBuffer().begin(), socket->getInBuffer().begin() + headerLen + payloadLen);
+            socket->getInBuffer().eraseFirst(headerLen + payloadLen);
             LOG_TRC('#' << socket->getFD() << ": Incoming WebSocket frame code " << static_cast<unsigned>(code) <<
                 ", fin? " << fin << ", mask? " << hasMask << ", payload length: " << payloadLen <<
                 ", residual socket data: " << socket->getInBuffer().size() << " bytes.");
@@ -295,6 +355,7 @@ public:
                     _pingTimeUs = std::chrono::duration_cast<std::chrono::microseconds>
                         (std::chrono::steady_clock::now() - _lastPingSentTime).count();
                     LOG_TRC('#' << socket->getFD() << ": Pong received: " << _pingTimeUs << " microseconds");
+                    gotPing(code, _pingTimeUs);
                 }
                 break;
             case WSOpCode::Ping:
@@ -306,6 +367,7 @@ public:
                     _pingTimeUs = std::chrono::duration_cast<std::chrono::microseconds>
                                             (now - _lastPingSentTime).count();
                     sendPong(now, &ctrlPayload[0], payloadLen, socket);
+                    gotPing(code, _pingTimeUs);
                 }
                 break;
             case WSOpCode::Close:
@@ -363,7 +425,7 @@ public:
         const size_t payloadLen = len;
 #endif
 
-        socket->getInBuffer().erase(socket->getInBuffer().begin(), socket->getInBuffer().begin() + headerLen + payloadLen);
+        socket->eraseFirstInputBytes(headerLen + payloadLen);
 
 #if !MOBILEAPP
 
@@ -410,7 +472,6 @@ public:
         {
             LOG_ERR('#' << socket->getFD() << ": Error during handleMessage.");
         }
-
 #endif
 
         _wsPayload.clear();
@@ -418,6 +479,7 @@ public:
         return true;
     }
 
+protected:
     /// Implementation of the ProtocolHandlerInterface.
     virtual void handleIncomingMessage(SocketDisposition&) override
     {
@@ -435,7 +497,17 @@ public:
         }
 #if !MOBILEAPP
         else if (_isClient && !socket->isWebSocket())
-            handleClientUpgrade(socket);
+        {
+            try
+            {
+                handleClientUpgrade(socket);
+            }
+            catch (const std::exception& ex)
+            {
+                LOG_DBG('#' << socket->getFD()
+                            << " handleClientUpgrade exception caught: " << ex.what());
+            }
+        }
 #endif
         else
         {
@@ -450,9 +522,10 @@ public:
 #if !MOBILEAPP
         if (!_isClient)
         {
-            const int64_t timeSincePingMicroS =
-                std::chrono::duration_cast<std::chrono::microseconds>(now - _lastPingSentTime).count();
-            timeoutMaxMicroS = std::min(timeoutMaxMicroS, PingFrequencyMicroS - timeSincePingMicroS);
+            const auto timeSincePingMicroS
+                = std::chrono::duration_cast<std::chrono::microseconds>(now - _lastPingSentTime);
+            timeoutMaxMicroS
+                = std::min(timeoutMaxMicroS, (int64_t)(PingFrequencyMicroS - timeSincePingMicroS).count());
         }
 #endif
         int events = POLLIN;
@@ -486,10 +559,11 @@ private:
         _lastPingSentTime = now;
     }
 
+public:
     void sendPing(std::chrono::steady_clock::time_point now,
                   const std::shared_ptr<StreamSocket>& socket)
     {
-        assert(!_isClient);
+//        assert(!_isClient);
         sendPingOrPong(now, "", 1, WSOpCode::Ping, socket);
     }
 
@@ -497,7 +571,6 @@ private:
                   const char* data, const size_t len,
                   const std::shared_ptr<StreamSocket>& socket)
     {
-        assert(_isClient);
         sendPingOrPong(now, data, len, WSOpCode::Pong, socket);
     }
 #endif
@@ -509,8 +582,8 @@ private:
         if (_isClient)
             return;
 
-        const int64_t timeSincePingMicroS =
-            std::chrono::duration_cast<std::chrono::microseconds>(now - _lastPingSentTime).count();
+        const auto timeSincePingMicroS
+            = std::chrono::duration_cast<std::chrono::microseconds>(now - _lastPingSentTime);
         if (timeSincePingMicroS >= PingFrequencyMicroS)
         {
             const std::shared_ptr<StreamSocket> socket = _socket.lock();
@@ -519,11 +592,12 @@ private:
         }
 #endif
     }
+
 public:
-    void performWrites() override
+    void performWrites(std::size_t capacity) override
     {
         if (_msgHandler)
-            _msgHandler->writeQueuedMessages();
+            _msgHandler->writeQueuedMessages(capacity);
     }
 
     void onDisconnect() override
@@ -552,11 +626,12 @@ public:
 
     /// Sends a WebSocket message of WPOpCode type.
     /// Returns the number of bytes written (including frame overhead) on success,
-    /// 0 for closed/invalid socket, and -1 for other errors.
-    int sendMessage(const char* data, const size_t len, const WSOpCode code, const bool flush = true) const
+    /// 0 for closed socket, and -1 for other errors.
+    int sendMessage(const char* data, const size_t len, const WSOpCode code, const bool flush) const
     {
         int unitReturn = -1;
-        if (!Util::isFuzzing() && UnitBase::get().filterSendMessage(data, len, code, flush, unitReturn))
+        if (!Util::isFuzzing() &&
+            UnitBase::get().filterSendWebSocketMessage(data, len, code, flush, unitReturn))
             return unitReturn;
 
         //TODO: Support fragmented messages.
@@ -641,15 +716,18 @@ protected:
     /// 0 for closed/invalid socket, and -1 for other errors.
     int sendFrame(const std::shared_ptr<StreamSocket>& socket,
                   const char* data, const uint64_t len,
-                  unsigned char flags, const bool flush = true) const
+                  unsigned char flags, bool flush = true) const
     {
         if (!socket || data == nullptr || len == 0)
             return -1;
 
         if (socket->isClosed())
+        {
+            LOG_DBG('#' << socket->getFD() << " is closed. Cannot send WS frame.");
             return 0;
+        }
 
-        socket->assertCorrectThread();
+        ASSERT_CORRECT_SOCKET_THREAD(socket);
         Buffer& out = socket->getOutBuffer();
 
         LOG_TRC("WebSocketHandler::sendFrame: Writing to #"
@@ -660,32 +738,70 @@ protected:
         // it would be good to include in the args some identificating information about the sender
         // and recipient of the frame (and what message it is related to, if any).
 
+        // TraceEvent::emitInstantEvent("WebSocketHandler::sendFrame", { { "length", std::to_string(len) } });
+
 #if !MOBILEAPP
         const size_t oldSize = out.size();
 
         buildFrame(data, len, flags, out);
 
+        // Return the number of bytes we wrote to the *buffer*.
         const size_t size = out.size() - oldSize;
-
-        if (flush)
-            socket->writeOutgoingData();
 #else
-        LOG_TRC("WebSocketHandle::sendFrame: Writing to #" << socket->getFD() << ' ' << len << " bytes");
-
         // We ignore the flush parameter and always flush in the MOBILEAPP case because there is no
         // WebSocket framing, we put the messages as such into the FakeSocket queue.
-
-        (void) flush;
-        out.insert(out.end(), data, data + len);
+        flush = true;
+        out.append(data, len);
         const size_t size = out.size();
-
-        socket->writeOutgoingData();
 #endif
+
+        if (flush || _shuttingDown)
+        {
+            socket->writeOutgoingData();
+
+            // Retry if we are shutting down and failed.
+            // This is particularly relevant when we simulate socket error
+            // during unit-tests. Dropping WS frames results in random test failures.
+            // But more important is to flush the data we have before closing the socket.
+            // There is a FIXME item in Session::shutdown specifically to address this case.
+            // When we terminte a client's connection in DocumentBroker::finalRemoveSession,
+            // we send the close frame and close the socket via Socket::closeConnection(),
+            // which is called immediately after *this* function (see shutdown() above).
+            // So, a common scenario is when we want to shutdown all clients. The stack
+            // trace looks like this:
+            //
+            // WebSocketHandler::sendFrame at ./net/WebSocketHandler.hpp:678 (this function)
+            // WebSocketHandler::sendCloseFrame at ./net/WebSocketHandler.hpp:149
+            // WebSocketHandler::shutdown at ./net/WebSocketHandler.hpp:175
+            // WebSocketHandler::shutdown at ./net/WebSocketHandler.hpp:155
+            // Session::shutdown at common/Session.cpp:235
+            // Session::shutdownGoingAway at ./common/Session.hpp:152 (this will close the socket)
+            // DocumentBroker::shutdownClients at wsd/DocumentBroker.cpp:2386
+            // DocumentBroker::terminateChild at wsd/DocumentBroker.cpp:2421
+            //
+            // The proper fix is to flag the socket(s) for shutdown, but continue
+            // polling until we completly flush the buffered data, then we close
+            // the socket in question. This isn't possible in the above scenario,
+            // and a proper fix is to modify DocumentBroker's poll to take this
+            // flushing into account (note that currently terminateChild is called
+            // *after* the poll loop exists). This will be done in a follow up later.
+            // For now, we just do a second write, and hope for the best.
+            if (_shuttingDown && !out.empty())
+            {
+                socket->writeOutgoingData();
+                if (!out.empty())
+                {
+                    LOG_WRN('#'
+                            << socket->getFD() << " is shutting down but " << out.size()
+                            << " bytes couldn't be flushed and still remain in the output buffer.");
+                }
+            }
+        }
 
         return size;
     }
 
-    bool isControlFrame(WSOpCode code){ return code >= WSOpCode::Close; }
+    bool isControlFrame(WSOpCode code) const { return code >= WSOpCode::Close; }
 
     void readPayload(unsigned char *data, size_t dataLen, unsigned char* mask, std::vector<char>& payload)
     {
@@ -707,7 +823,7 @@ protected:
             payload.insert(payload.end(), data, data + dataLen);
     }
 
-    /// To be overriden to handle the websocket messages the way you need.
+    /// To be overridden to handle the websocket messages the way you need.
     virtual void handleMessage(const std::vector<char> &data)
     {
         if (_msgHandler)
@@ -734,27 +850,25 @@ protected:
     /// Implementation of the ProtocolHandlerInterface.
     void dumpState(std::ostream& os) override;
 
-private:
     /// To make the protected 'computeAccept' accessible.
-    class PublicComputeAccept : public Poco::Net::WebSocket
+    class PublicComputeAccept final : public Poco::Net::WebSocket
     {
     public:
         static std::string doComputeAccept(const std::string &key)
         {
             return computeAccept(key);
         }
+
+        static std::string generateKey() { return createKey(); }
     };
 
-protected:
     /// Upgrade the http(s) connection to a websocket.
-    void upgradeToWebSocket(const Poco::Net::HTTPRequest& req)
+    template <typename T>
+    void upgradeToWebSocket(StreamSocket& socket, const T& req)
     {
-        std::shared_ptr<StreamSocket> socket = _socket.lock();
-        if (!socket)
-            throw std::runtime_error("Invalid socket while upgrading to WebSocket. Request: " + req.getURI());
-
-        LOG_TRC('#' << socket->getFD() << ": Upgrading to WebSocket.");
-        assert(!socket->isWebSocket());
+        LOG_TRC('#' << socket.getFD() << ": Upgrading to WebSocket.");
+        assert(!socket.isWebSocket());
+        assert(!_isClient && "Accepting upgrade requests are done by servers only.");
 
 #if !MOBILEAPP
         // create our websocket goodness ...
@@ -762,24 +876,21 @@ protected:
         const std::string wsKey = req.get("Sec-WebSocket-Key", "");
         const std::string wsProtocol = req.get("Sec-WebSocket-Protocol", "chat");
         // FIXME: other sanity checks ...
-        LOG_INF('#' << socket->getFD() << ": WebSocket version: " << wsVersion <<
-                ", key: [" << wsKey << "], protocol: [" << wsProtocol << "].");
+        LOG_INF('#' << socket.getFD() << ": WebSocket version: " << wsVersion << ", key: [" << wsKey
+                    << "], protocol: [" << wsProtocol << "].");
 
 #if ENABLE_DEBUG
         if (std::getenv("LOOL_ZERO_BUFFER_SIZE"))
-            socket->setSocketBufferSize(0);
+            socket.setSocketBufferSize(0);
 #endif
 
-        std::ostringstream oss;
-        oss << "HTTP/1.1 101 Switching Protocols\r\n"
-            << "Upgrade: websocket\r\n"
-            << "Connection: Upgrade\r\n"
-            << "Sec-WebSocket-Accept: " << PublicComputeAccept::doComputeAccept(wsKey) << "\r\n"
-            << "\r\n";
-
-        const std::string res = oss.str();
-        LOG_TRC('#' << socket->getFD() << ": Sending WS Upgrade response: " << res);
-        socket->send(res);
+        http::Response httpResponse(http::StatusLine(101));
+        httpResponse.set("Upgrade", "websocket");
+        httpResponse.set("Connection", "Upgrade");
+        httpResponse.set("Sec-WebSocket-Accept", PublicComputeAccept::doComputeAccept(wsKey));
+        LOG_TRC('#' << socket.getFD()
+                    << ": Sending WS Upgrade response: " << httpResponse.header().toString());
+        socket.send(httpResponse);
 #endif
         setWebSocket();
     }
@@ -789,67 +900,53 @@ protected:
     void handleClientUpgrade(const std::shared_ptr<StreamSocket>& socket)
     {
         assert(socket && "socket must be valid");
+        assert(_isClient && "Upgrade handshakes are finished by clients.");
 
-        LOG_TRC("Incoming client websocket upgrade response: "
-                << std::string(&socket->getInBuffer()[0], socket->getInBuffer().size()));
+        Buffer& data = socket->getInBuffer();
 
-        bool bOk = false;
-        StreamSocket::MessageMap map;
+        LOG_TRC('#' << socket->getFD() << " Incoming client websocket upgrade response: "
+                    << std::string(data.data(), data.size()));
 
-        try
-        {
-            Poco::MemoryInputStream message(&socket->getInBuffer()[0], socket->getInBuffer().size());;
-            Poco::Net::HTTPResponse response;
-
-            response.read(message);
-
+        // Consume the incoming data by parsing and processing the body.
+        http::Response response([&]() {
+            if (response.statusLine().statusCode()
+                    == Poco::Net::HTTPResponse::HTTP_SWITCHING_PROTOCOLS
+                && Util::iequal(response.get("Upgrade"), "websocket")
+                && Util::iequal(response.get("Connection", ""), "Upgrade")
+                && response.get("Sec-WebSocket-Accept", "")
+                       == PublicComputeAccept::doComputeAccept(_key))
             {
-                static const std::string marker("\r\n\r\n");
-                auto itBody = std::search(socket->getInBuffer().begin(),
-                                          socket->getInBuffer().end(),
-                                          marker.begin(), marker.end());
-
-                if (itBody != socket->getInBuffer().end())
-                    map._headerSize = itBody - socket->getInBuffer().begin() + marker.size();
+                LOG_TRC('#' << socket->getFD() << " Accepted incoming websocket response");
+                setWebSocket();
             }
-
-            if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_SWITCHING_PROTOCOLS
-                && response.has("Upgrade")
-                && Poco::icompare(response.get("Upgrade"), "websocket") == 0)
+            else
             {
-#if 0 // SAL_DEBUG ...
-                const std::string wsKey = response.get("Sec-WebSocket-Accept", "");
-                const std::string wsProtocol = response.get("Sec-WebSocket-Protocol", "");
-                if (Poco::icompare(wsProtocol, "chat") != 0)
-                    LOG_ERR("Unknown websocket protocol " << wsProtocol);
-                else
-#endif
-                {
-                    LOG_TRC("Accepted incoming websocket response");
-                    // FIXME: validate Sec-WebSocket-Accept vs. Sec-WebSocket-Key etc.
-                    bOk = true;
-                }
+                LOG_ERR('#' << socket->getFD()
+                            << " Server returned invalid accept token during handshake. "
+                               "Disconnecting.");
+                socket->shutdown();
             }
-        }
-        catch (const Poco::Exception& exc)
-        {
-            LOG_DBG("handleClientUpgrade exception caught: " << exc.displayText());
-        }
-        catch (const std::exception& exc)
-        {
-            LOG_DBG("handleClientUpgrade exception caught.");
-        }
+        });
 
-        if (!bOk || map._headerSize == 0)
+        const int64_t read = response.readData(data.data(), data.size());
+        if (read < 0)
         {
-            LOG_ERR("Bad websocker server response.");
-
+            // Error: Interrupt the transfer.
+            LOG_ERR('#' << socket->getFD()
+                        << " Error in client websocket upgrade response. Disconnecting");
             socket->shutdown();
             return;
         }
 
-        setWebSocket();
-        socket->eraseFirstInputBytes(map);
+        if (read > 0)
+        {
+            // Remove consumed data.
+            socket->eraseFirstInputBytes(read);
+            return;
+        }
+
+        // Nothing to do, not enough data to parse.
+        assert(read == 0 && "Need more more data to parse.");
     }
 #endif
 
@@ -879,6 +976,10 @@ protected:
             return socket->processInputEnabled();
 
         return false;
+    }
+
+    virtual void gotPing(WSOpCode /* code */, int /* pingTimeUs */)
+    {
     }
 };
 

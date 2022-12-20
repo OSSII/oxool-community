@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
+#include <config.h>
 #include <OxOOL/ModuleManager.h>
 #include <OxOOL/XMLConfig.h>
 #include <OxOOL/HttpHelper.h>
@@ -101,7 +101,7 @@ void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
 ModuleAdminSocketHandler::ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
                                                    const std::weak_ptr<StreamSocket>& socket,
                                                    const Poco::Net::HTTPRequest& request)
-    : WebSocketHandler(socket, request),
+    : WebSocketHandler(socket.lock(), request),
       mpModule(module),
       mbIsAuthenticated(false)
 {
@@ -125,7 +125,7 @@ std::string ModuleAdminSocketHandler::getModuleInfoJson()
     return oss.str();
 }
 
-int ModuleAgent::AgentTimeoutMicroS = 60 * 1000 * 1000; // 1 分鐘
+constexpr std::chrono::microseconds ModuleAgent::AgentTimeoutMicroS;
 
 ModuleAgent::ModuleAgent(const std::string& threadName) :
     SocketPoll(threadName)
@@ -179,12 +179,12 @@ void ModuleAgent::pollingThread()
                 purge(); // 清理資料，恢復閒置狀態，可以再利用
             }
         }
-        int rc = poll(AgentTimeoutMicroS);
+        int64_t rc = poll(AgentTimeoutMicroS);
         if (rc == 0) // polling timeout.
         {
             // 現在時間
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-            int durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime).count();
+            auto durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime);
             // 閒置超過預設時間，就脫離迴圈
             if (durationTime >= AgentTimeoutMicroS)
             {

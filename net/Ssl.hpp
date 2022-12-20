@@ -1,13 +1,13 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 #pragma once
+
+#include <common/Util.hpp>
 
 #include <atomic>
 #include <cassert>
@@ -24,35 +24,32 @@
 #include <openssl/conf.h>
 #endif
 
-class SslContext
+namespace ssl
+{
+/// The certificate verification requirements.
+enum class CertificateVerification
+{
+    Disabled, //< No verification is performed or results ignored.
+    IfProvided, //< Verified if an optional certificate is provided.
+    Required //< Certificate must be provided and will be verified.
+};
+} // namespace ssl
+
+class SslContext final
 {
 public:
-    static void initialize(const std::string& certFilePath,
-                           const std::string& keyFilePath,
-                           const std::string& caFilePath,
-                           const std::string& cipherList,
-                           const std::string& password)
-    {
-        assert (!Instance);
-        Instance.reset(new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, password));
-    }
+    SslContext(const std::string& certFilePath, const std::string& keyFilePath,
+               const std::string& caFilePath, const std::string& cipherList,
+               ssl::CertificateVerification verification);
 
-    static void uninitialize();
-
-    static SSL* newSsl()
-    {
-        return SSL_new(Instance->_ctx);
-    }
+    /// Returns a new SSL Context to be used with raw API.
+    SSL* newSsl() { return SSL_new(_ctx); }
 
     ~SslContext();
 
-private:
-    SslContext(const std::string& certFilePath,
-               const std::string& keyFilePath,
-               const std::string& caFilePath,
-               const std::string& cipherList,
-               const std::string& password);
+    ssl::CertificateVerification verification() const { return _verification; }
 
+private:
     void initDH();
     void initECDH();
     void shutdown();
@@ -61,18 +58,74 @@ private:
 
     // Multithreading support for OpenSSL.
     // Not needed in recent (1.x?) versions.
-    static void lock(int mode, int n, const char* file, int line);
     static unsigned long id();
     static struct CRYPTO_dynlock_value* dynlockCreate(const char* file, int line);
     static void dynlock(int mode, struct CRYPTO_dynlock_value* lock, const char* file, int line);
     static void dynlockDestroy(struct CRYPTO_dynlock_value* lock, const char* file, int line);
 
 private:
-    static std::unique_ptr<SslContext> Instance;
-
-    std::vector<std::unique_ptr<std::mutex>> _mutexes;
-
     SSL_CTX* _ctx;
+    const ssl::CertificateVerification _verification;
 };
+
+namespace ssl
+{
+class Manager
+{
+public:
+    static void initializeServerContext(const std::string& certFilePath,
+                                        const std::string& keyFilePath,
+                                        const std::string& caFilePath,
+                                        const std::string& cipherList,
+                                        ssl::CertificateVerification verification)
+    {
+        assert(!isServerContextInitialized() &&
+               "Cannot initialize the server context more than once");
+        ServerInstance.reset(
+            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification));
+    }
+
+    static void uninitializeServerContext() { ServerInstance.reset(); }
+
+    /// Returns true iff the Server SslContext has been initialized.
+    static bool isServerContextInitialized() { return !!ServerInstance; }
+
+    static SSL* newServerSsl(ssl::CertificateVerification& verification)
+    {
+        assert(isServerContextInitialized() && "Server SslContext is not initialized");
+        verification = ServerInstance->verification();
+        return ServerInstance->newSsl();
+    }
+
+    static void initializeClientContext(const std::string& certFilePath,
+                                        const std::string& keyFilePath,
+                                        const std::string& caFilePath,
+                                        const std::string& cipherList,
+                                        ssl::CertificateVerification verification)
+    {
+        assert(!isClientContextInitialized() &&
+               "Cannot initialize the client context more than once");
+        ClientInstance.reset(
+            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification));
+    }
+
+    static void uninitializeClientContext() { ClientInstance.reset(); }
+
+    /// Returns true iff the SslContext has been initialized.
+    static bool isClientContextInitialized() { return !!ClientInstance; }
+
+    static SSL* newClientSsl(ssl::CertificateVerification& verification)
+    {
+        assert(isClientContextInitialized() && "Client SslContext is not initialized");
+        verification = ClientInstance->verification();
+        return ClientInstance->newSsl();
+    }
+
+private:
+    static std::unique_ptr<SslContext> ServerInstance;
+    static std::unique_ptr<SslContext> ClientInstance;
+};
+
+} // namespace ssl
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

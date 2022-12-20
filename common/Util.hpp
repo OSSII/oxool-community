@@ -97,7 +97,28 @@ namespace Util
 #endif
 
     /// Hex to unsigned char
-    bool dataFromHexString(const std::string& hexString, std::vector<unsigned char>& data);
+    template <typename T>
+    bool dataFromHexString(const std::string& hexString, T& data)
+    {
+        if (hexString.length() % 2 != 0)
+        {
+            return false;
+        }
+
+        data.clear();
+        std::stringstream stream;
+        unsigned value;
+        for (unsigned long offset = 0; offset < hexString.size(); offset += 2)
+        {
+            stream.clear();
+            stream << std::hex << hexString.substr(offset, 2);
+            stream >> value;
+            data.push_back(static_cast<typename T::value_type>(value));
+        }
+
+        return true;
+    }
+
     /// Encode an integral ID into a string, with padding support.
     std::string encodeId(const std::uint64_t number, const int padding = 5);
     /// Decode an integral ID from a string.
@@ -1021,6 +1042,16 @@ int main(int argc, char**argv)
     /// Extract and return the filename given a url or path.
     std::string getFilenameFromURL(const std::string& url);
 
+    /// Return true if the subject matches in given set. It uses regex
+    /// Mainly used to match WOPI hosts patterns
+    bool matchRegex(const std::set<std::string>& set, const std::string& subject);
+
+    /// Return value from key:value pair if the subject matches in given map. It uses regex
+    /// Mainly used to match WOPI hosts patterns
+    std::string getValue(const std::map<std::string, std::string>& map, const std::string& subject);
+
+    std::string getValue(const std::set<std::string>& set, const std::string& subject);
+
     /// Given one or more patterns to allow, and one or more to deny,
     /// the match member will return true if, and only if, the subject
     /// matches the allowed list, but not the deny.
@@ -1074,39 +1105,21 @@ int main(int argc, char**argv)
 
         bool match(const std::string& subject) const
         {
-            return (_allowByDefault || match(_allowed, subject)) && !match(_denied, subject);
+            return (_allowByDefault ||
+                    Util::matchRegex(_allowed, subject)) &&
+                   !Util::matchRegex(_denied, subject);
         }
 
-    private:
-        static bool match(const std::set<std::string>& set, const std::string& subject)
+        // whether a match exist within both _allowed and _denied
+        bool matchExist(const std::string& subject) const
         {
-            if (set.find(subject) != set.end())
-            {
-                return true;
-            }
+            return (Util::matchRegex(_allowed, subject) ||
+                    Util::matchRegex(_denied, subject));
+        }
 
-            // Not a perfect match, try regex.
-            for (const auto& value : set)
-            {
-                try
-                {
-                    // Not performance critical to warrant caching.
-                    Poco::RegularExpression re(value, Poco::RegularExpression::RE_CASELESS);
-                    Poco::RegularExpression::Match reMatch;
-
-                    // Must be a full match.
-                    if (re.match(subject, reMatch) && reMatch.offset == 0 && reMatch.length == subject.size())
-                    {
-                        return true;
-                    }
-                }
-                catch (const std::exception& exc)
-                {
-                    // Nothing to do; skip.
-                }
-            }
-
-            return false;
+        bool empty() const
+        {
+            return _allowed.empty() && _denied.empty();
         }
 
     private:

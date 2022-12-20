@@ -466,7 +466,7 @@ void DocumentBroker::pollThread()
     }
 
     // Flush socket data first.
-    constexpr int64_t flushTimeoutMicroS = POLL_TIMEOUT_MICRO_S * 2; // ~1000ms
+    constexpr auto flushTimeoutMicroS = std::chrono::microseconds(POLL_TIMEOUT_MICRO_S * 2); // ~1000ms
     LOG_INF("Flushing socket for doc ["
             << _docKey << "] for " << flushTimeoutMicroS << " us. stop: " << _stop
             << ", continuePolling: " << _poll->continuePolling()
@@ -477,11 +477,15 @@ void DocumentBroker::pollThread()
     while (_poll->getSocketCount())
     {
         const auto now = std::chrono::steady_clock::now();
-        const int64_t elapsedMicroS = std::chrono::duration_cast<std::chrono::microseconds>(now - flushStartTime).count();
+        const auto elapsedMicroS
+            = std::chrono::duration_cast<std::chrono::microseconds>(now - flushStartTime);
         if (elapsedMicroS > flushTimeoutMicroS)
             break;
 
-        _poll->poll(std::min(flushTimeoutMicroS - elapsedMicroS, (int64_t)POLL_TIMEOUT_MICRO_S / 5));
+        const std::chrono::microseconds timeoutMicroS
+            = std::min(flushTimeoutMicroS - elapsedMicroS,
+                       std::chrono::microseconds(POLL_TIMEOUT_MICRO_S / 5));
+        _poll->poll(timeoutMicroS);
     }
 
     LOG_INF("Finished flushing socket for doc [" << _docKey << "]. stop: " << _stop << ", continuePolling: " <<
@@ -877,7 +881,7 @@ bool DocumentBroker::load(const std::shared_ptr<ClientSession>& session, const s
     session->setUserId(userId);
     session->setUserName(username);
     session->setUserExtraInfo(userExtraInfo);
-    session->recalcCanonicalViewId(_sessions);
+    session->createCanonicalViewId(_sessions);
 
     // Basic file information was stored by the above getWOPIFileInfo() or getLocalFileInfo() calls
     const StorageBase::FileInfo fileInfo = _storage->getFileInfo();

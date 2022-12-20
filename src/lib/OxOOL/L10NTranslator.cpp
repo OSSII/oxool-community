@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <config.h>
 #include <Poco/Exception.h>
 #include <OxOOL/L10NTranslator.h>
 #include <OxOOL/HttpHelper.h>

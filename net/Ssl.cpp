@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,6 +10,10 @@
 #include <assert.h>
 #include <unistd.h>
 #include "Ssl.hpp"
+
+#ifdef __FreeBSD__
+#include <pthread_np.h>
+#endif
 
 #include <sys/syscall.h>
 #include <Util.hpp>
@@ -30,32 +32,62 @@ extern "C"
     };
 }
 
-std::string defaultPassword;
-int passwordCB(char *buf, int size, int /*rwflag*/, void* /*userdata*/)
+namespace ssl
 {
-        strncpy(buf, defaultPassword.c_str(), size);
-        buf[size - 1] = '\0';
-        return(strlen(buf));
+
+// The locking API is removed from 1.1 onward.
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+
+/// Manages the SSL locks.
+class Lock
+{
+public:
+    Lock()
+    {
+        for (int x = 0; x < CRYPTO_num_locks(); ++x)
+        {
+            _mutexes.emplace_back(new std::mutex);
+        }
+    }
+
+    void lock(int mode, int n)
+    {
+        assert(n < CRYPTO_num_locks() && "Unexpected lock index");
+        if (mode & CRYPTO_LOCK)
+        {
+            _mutexes[n]->lock();
+        }
+        else
+        {
+            _mutexes[n]->unlock();
+        }
+    }
+
+private:
+    std::vector<std::unique_ptr<std::mutex>> _mutexes;
+};
+
+/// Locks are shared across SSL Contexts (by openssl design).
+static inline void lock(int mode, int n, const char* /*file*/, int /*line*/)
+{
+    static ssl::Lock lock;
+    lock.lock(mode, n);
 }
 
+#endif
+} // namespace ssl
 
-std::unique_ptr<SslContext> SslContext::Instance(nullptr);
+std::unique_ptr<SslContext> ssl::Manager::ServerInstance(nullptr);
+std::unique_ptr<SslContext> ssl::Manager::ClientInstance(nullptr);
 
-SslContext::SslContext(const std::string& certFilePath,
-                       const std::string& keyFilePath,
-                       const std::string& caFilePath,
-                       const std::string& cipherList,
-                       const std::string& password) :
-    _ctx(nullptr)
+SslContext::SslContext(const std::string& certFilePath, const std::string& keyFilePath,
+                       const std::string& caFilePath, const std::string& cipherList,
+                       ssl::CertificateVerification verification)
+    : _ctx(nullptr)
+    , _verification(verification)
 {
     const std::vector<char> rand = Util::rng::getBytes(512);
     RAND_seed(&rand[0], rand.size());
-
-    // Initialize multi-threading support.
-    for (int x = 0; x < CRYPTO_num_locks(); ++x)
-    {
-        _mutexes.emplace_back(new std::mutex);
-    }
 
 #if OPENSSL_VERSION_NUMBER >= 0x0907000L && OPENSSL_VERSION_NUMBER < 0x10100003L
     OPENSSL_config(nullptr);
@@ -69,7 +101,7 @@ SslContext::SslContext(const std::string& certFilePath,
     OpenSSL_add_all_algorithms();
 #endif
 
-    CRYPTO_set_locking_callback(&SslContext::lock);
+    CRYPTO_set_locking_callback(&ssl::lock);
     CRYPTO_set_id_callback(&SslContext::id);
     CRYPTO_set_dynlock_create_callback(&SslContext::dynlockCreate);
     CRYPTO_set_dynlock_lock_callback(&SslContext::dynlock);
@@ -88,6 +120,7 @@ SslContext::SslContext(const std::string& certFilePath,
     SSL_CTX_set_options(_ctx, SSL_OP_NO_TLSv1_1);
 #endif
 
+    // SSL_CTX_set_default_passwd_cb(_ctx, &privateKeyPassphraseCallback);
     ERR_clear_error();
     SSL_CTX_set_options(_ctx, SSL_OP_ALL);
 
@@ -106,14 +139,6 @@ SslContext::SslContext(const std::string& certFilePath,
 
         if (!keyFilePath.empty())
         {
-            // Added by Firefly <firefly@ossii.com.tw>
-            // 有帶 password 的話，紀錄下來，並指定 callback
-            if (password.size() > 0)
-            {
-                defaultPassword = password;
-                SSL_CTX_set_default_passwd_cb(_ctx, passwordCB);
-            }
-
             errCode = SSL_CTX_use_PrivateKey_file(_ctx, keyFilePath.c_str(), SSL_FILETYPE_PEM);
             if (errCode != 1)
             {
@@ -161,35 +186,17 @@ SslContext::~SslContext()
     CRYPTO_set_id_callback(0);
 
     CONF_modules_free();
-
-    _mutexes.clear();
-}
-
-void SslContext::uninitialize()
-{
-    assert (Instance);
-    Instance.reset();
-}
-
-void SslContext::lock(int mode, int n, const char* /*file*/, int /*line*/)
-{
-    assert(n < CRYPTO_num_locks());
-    if (Instance)
-    {
-        if (mode & CRYPTO_LOCK)
-        {
-            Instance->_mutexes[n]->lock();
-        }
-        else
-        {
-            Instance->_mutexes[n]->unlock();
-        }
-    }
 }
 
 unsigned long SslContext::id()
 {
+#ifdef __linux__
     return syscall(SYS_gettid);
+#elif defined(__FreeBSD__)
+    return pthread_getthreadid_np();
+#else
+#error Implement for your platform
+#endif
 }
 
 CRYPTO_dynlock_value* SslContext::dynlockCreate(const char* /*file*/, int /*line*/)
@@ -217,6 +224,10 @@ void SslContext::dynlockDestroy(struct CRYPTO_dynlock_value* lock, const char* /
 void SslContext::initDH()
 {
 #ifndef OPENSSL_NO_DH
+// On OpenSSL 1.1 and newer use the auto parameters.
+#if OPENSSL_VERSION_NUMBER >= 0x10100003L
+    SSL_CTX_set_dh_auto(_ctx, 1);
+#else
     // 2048-bit MODP Group with 256-bit prime order subgroup (RFC5114)
 
     static const unsigned char dh2048_p[] =
@@ -300,6 +311,7 @@ void SslContext::initDH()
     SSL_CTX_set_tmp_dh(_ctx, dh);
     SSL_CTX_set_options(_ctx, SSL_OP_SINGLE_DH_USE);
     DH_free(dh);
+#endif
 #endif
 }
 

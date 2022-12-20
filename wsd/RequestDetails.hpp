@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,6 +8,7 @@
 #pragma once
 
 #include <Poco/Net/HTTPRequest.h>
+#include <Poco/URI.h>
 
 #include <common/StringVector.hpp>
 #include <common/Util.hpp>
@@ -31,34 +30,33 @@
  * Example:
  *  convert-to
  *
- * loleaflet URI: used to load loleaflet.html and other static files.
+ * cool URI: used to load loleaflet.html and other static files.
  * Origin: the page where the document will be embedded.
  * Format:
- *  /loleaflet/<oxoolwsd-version-hash>/[path/]<filename>.<ext>[?WOPISrc=<encoded-document-URI>]
+ *  /loleaflet/<coolwsd-version-hash>/[path/]<filename>.<ext>[?WOPISrc=<encoded-document-URI>]
  * Identifier: /loleaflet/.
  * Examples:
  *  /loleaflet/49c225146/src/map/Clipboard.js
  *  /loleaflet/49c225146/loleaflet.html?WOPISrc=http%3A%2F%2Flocalhost%2Fnextcloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2Ffiles%2F593_ocqiesh0cngs&title=empty.odt&lang=en-us&closebutton=1&revisionhistory=1
  *
- * lool URI: used to load the document.
+ * cool URI: used to load the document.
  * Origin: loleaflet.html
  * Format:
- *  /lool/<encoded-document-URI+options>/ws?WOPISrc=<encoded-document-URI>&compat=/ws[/<sessionId>/<command>/<serial>]
- * Identifier: /lool/.
+ *  /cool/<encoded-document-URI+options>/ws?WOPISrc=<encoded-document-URI>&compat=/ws[/<sessionId>/<command>/<serial>]
+ * Identifier: /cool/.
  *
  * The 'document-URI' is the original URL in the client that is used to load the document page.
  * The optional section at the end, in square-brackets, is for richproxy.
  *
  * Example:
- *  /lool/http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2Ffiles%2F165_ocgdpzbkm39u%3F
- *  access_token%3DODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ%26access_token_ttl%3D0%26reuse_cookies%3DXCookieName%253DXCookieValue%253
- *  ASuperCookieName%253DBAZINGA/ws?WOPISrc=http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2F
+ *  /cool/http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2Ffiles%2F165_ocgdpzbkm39u%3F
+ *  access_token%3DODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ%26access_token_ttl%3D0/ws?
+ *  WOPISrc=http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2F
  *  files%2F165_ocgdpzbkm39u&compat=/ws/1c99a7bcdbf3209782d7eb38512e6564/write/2
  *  Where:
  *      encoded-document-URI+options:
  *          http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2Ffiles%2F165_ocgdpzbkm39u%3F
- *          access_token%3DODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ%26access_token_ttl%3D0%26reuse_cookies%3DXCookieName%253DXCookieValue%253
- *          ASuperCookieName%253DBAZINGA
+ *          access_token%3DODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ%26access_token_ttl%3D0
  *      encoded-document-URI:
  *          http%3A%2F%2Flocalhost%2Fowncloud%2Findex.php%2Fapps%2Frichdocuments%2Fwopi%2Ffiles%2F165_ocgdpzbkm39u
  *      sessionId:
@@ -70,7 +68,7 @@
  *  In decoded form:
  *      document-URI+options:
  *          http://localhost/owncloud/index.php/apps/richdocuments/wopi/files/165_ocgdpzbkm39u?access_token=
- *          ODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ&access_token_ttl=0&reuse_cookies=XCookieName%3DXCookieValue%3ASuperCookieName%3DBAZINGA
+ *          ODhIXdJdbsVYQoKKCuaYofyzrovxD3MQ&access_token_ttl=0
  *      document-URI:
  *          http://localhost/owncloud/index.php/apps/richdocuments/wopi/files/165_ocgdpzbkm39u
  *
@@ -83,10 +81,13 @@
  * The different sections are henceforth given names to help both in documenting and
  * communicating them, and to facilitate parsing them.
  *
- * /lool/<encoded-document-URI+options>/ws?WOPISrc=<encoded-document-URI>&compat=/ws[/<sessionId>/<command>/<serial>]
+ * /cool/<encoded-document-URI+options>/ws?WOPISrc=<encoded-document-URI>&compat=/ws[/<sessionId>/<command>/<serial>]
  *       |--------documentURI---------|            |-------WOPISrc------|        |--------------compat--------------|
  *                            |options|                                               |sessionId| |command| |serial|
  *       |---------------------------LegacyDocumentURI---------------------------|
+ *
+ * Alternatively, the LegacyDocumentURI (encoded) could be hexified, as follows:
+ * /cool/0x123456789/ws?WOPISrc=<encoded-document-URI>&compat=/ws[/<sessionId>/<command>/<serial>]
  */
 class RequestDetails
 {
@@ -121,6 +122,7 @@ private:
     std::map<Field, std::string> _fields;
     std::map<std::string, std::string> _docUriParams;
 
+    void dehexify();
     void processURI();
 
 public:
@@ -128,12 +130,28 @@ public:
     RequestDetails(Poco::Net::HTTPRequest &request, const std::string& serviceRoot);
     RequestDetails(const std::string &mobileURI);
 
+    /// Decode and sanitize a URI.
+    static Poco::URI sanitizeURI(const std::string& uri);
+
+    /// Returns a document-specific key, based
+    /// on the URI of the document (aka the wopiSrc).
+    static std::string getDocKey(const Poco::URI& uri);
+
+    /// Sanitize the URI and return the document-specific key.
+    static std::string getDocKey(const std::string& uri) { return getDocKey(sanitizeURI(uri)); }
+
     // matches the WOPISrc if used. For load balancing
-    // must be 2nd element in the path after /lool/<here>
+    // must be 2nd element in the path after /cool/<here>
     std::string getLegacyDocumentURI() const { return getField(Field::LegacyDocumentURI); }
 
     /// The DocumentURI, decoded. Doesn't contain WOPISrc or any other appendages.
     std::string getDocumentURI() const { return getField(Field::DocumentURI); }
+
+    /// The DocumentURI, decoded and sanitized. Doesn't contain WOPISrc or any other appendages.
+    std::string getDocumentURISanitized() const
+    {
+        return sanitizeURI(getField(Field::DocumentURI)).toString();
+    }
 
     const std::map<std::string, std::string>& getDocumentURIParams() const { return _docUriParams; }
 
@@ -215,7 +233,7 @@ public:
         oss << ", host: " << _hostUntrusted;
         oss << ", path: " << _pathSegs.size();
         for (std::size_t i = 0; i < _pathSegs.size(); ++i)
-            oss << "\n[" << i << "] '" << _pathSegs[i] << "'";
+            oss << "\n[" << i << "] '" << _pathSegs[i] << '\'';
         oss << "\nfull URI: " << _uriString;
         return oss.str();
     }

@@ -205,7 +205,7 @@ private:
     bool hasQueuedMessages() const override;
 
     /// SocketHandler: send those messages
-    void writeQueuedMessages() override;
+    void writeQueuedMessages(std::size_t capacity) override;
 
     virtual bool _handleInput(const char* buffer, int length) override;
 

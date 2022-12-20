@@ -42,7 +42,7 @@ public:
     {
     }
 
-    void performWrites() override;
+    void performWrites(std::size_t capacity) override;
 
     void onDisconnect() override
     {
@@ -71,7 +71,7 @@ public:
 private:
     std::shared_ptr<StreamSocket> popOutSocket();
     /// can we find anything to send back if we try ?
-    bool slurpHasMessages();
+    bool slurpHasMessages(std::size_t capacity);
     int sendMessage(const char *msg, const size_t len, bool text, bool flush);
     bool flushQueueTo(const std::shared_ptr<StreamSocket> &socket);
 

@@ -39,19 +39,24 @@ public:
     SessionMap() {
         static_assert(std::is_base_of<Session, T>::value, "sessions must have base of Session");
     }
-    /// Generate a unique key for this set of view properties
-    int getCanonicalId(const std::string &viewProps)
+
+    /// Generate a unique key for this set of view properties, only used by WSD
+    int createCanonicalId(const std::string &viewProps)
     {
         if (viewProps.empty())
             return 0;
-        for (auto &it : _canonicalIds) {
+        for (const auto& it : _canonicalIds)
+        {
             if (it.first == viewProps)
                 return it.second;
         }
-        size_t id = _canonicalIds.size() + 1;
+
+        const std::size_t id = _canonicalIds.size() + 1;
         _canonicalIds[viewProps] = id;
         return id;
     }
+
+    /// Lookup one session in the map that matches this canonical view id, only used by Kit
     std::shared_ptr<T> findByCanonicalId(int id)
     {
         for (const auto &it : *this) {
@@ -100,7 +105,7 @@ public:
     }
 
     // By default rely on the socket buffer.
-    void writeQueuedMessages() override
+    void writeQueuedMessages(std::size_t) override
     {
         assert(false);
     }
@@ -120,12 +125,21 @@ public:
     template <std::size_t N>
     bool sendTextFrame(const char (&buffer)[N])
     {
-        return (buffer != nullptr && N > 0 ? sendTextFrame(buffer, N) : false);
+        static_assert(N > 0, "Cannot have string literal with size zero");
+        return sendTextFrame(buffer, N - 1);
     }
 
     bool sendTextFrame(const char* buffer)
     {
-        return (buffer != nullptr ? sendTextFrame(buffer, std::strlen(buffer)) : false);
+        return buffer != nullptr && sendTextFrame(buffer, std::strlen(buffer));
+    }
+
+    template <std::size_t N>
+    bool sendTextFrameAndLogError(const char (&buffer)[N])
+    {
+        static_assert(N > 0, "Cannot have string literal with size zero");
+        LOG_ERR(buffer);
+        return sendTextFrame(buffer, N - 1);
     }
 
     bool sendTextFrameAndLogError(const std::string& text)
@@ -137,7 +151,7 @@ public:
     bool sendTextFrameAndLogError(const char* buffer)
     {
         LOG_ERR(buffer);
-        return (buffer != nullptr ? sendTextFrame(buffer, std::strlen(buffer)) : false);
+        return buffer != nullptr && sendTextFrame(buffer, std::strlen(buffer));
     }
 
     virtual void handleMessage(const std::vector<char> &data) override;
@@ -146,10 +160,16 @@ public:
     virtual void disconnect();
 
     /// clean & normal shutdown
-    void shutdownNormal(const std::string& statusMessage = "")    { shutdown(false, statusMessage); }
+    void shutdownNormal(const std::string& statusMessage = std::string())
+    {
+        shutdown(false, statusMessage);
+    }
 
     /// abnormal / hash shutdown end-point going away
-    void shutdownGoingAway(const std::string& statusMessage = "") { shutdown(true, statusMessage); }
+    void shutdownGoingAway(const std::string& statusMessage = std::string())
+    {
+        shutdown(true, statusMessage);
+    }
 
     bool isActive() const { return _isActive; }
     void setIsActive(bool active) { _isActive = active; }
@@ -245,7 +265,7 @@ public:
 
     template<class T> void recalcCanonicalViewId(SessionMap<T> &map)
     {
-        _canonicalViewId = map.getCanonicalId(_watermarkText);
+        _canonicalViewId = map.createCanonicalId(_watermarkText);
     }
 
     const std::string& getDeviceFormFactor() const { return _deviceFormFactor; }
@@ -276,7 +296,7 @@ protected:
 
 private:
 
-    void shutdown(bool goingAway = false, const std::string& statusMessage = "");
+    void shutdown(bool goingAway = false, const std::string& statusMessage = std::string());
 
     virtual bool _handleInput(const char* buffer, int length) = 0;
 

@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,17 +7,23 @@
 
 #include <config.h>
 
+#include "NetUtil.hpp"
 #include "Socket.hpp"
 
 #include <cstring>
 #include <ctype.h>
 #include <iomanip>
+#include <memory>
+#include <sstream>
 #include <stdio.h>
+#include <string>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <zlib.h>
+#ifdef __FreeBSD__
+#include <sys/ucred.h>
+#endif
 
 #include <Poco/DateTime.h>
 #include <Poco/DateTimeFormat.h>
@@ -28,15 +32,24 @@
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/URI.h>
+#if ENABLE_SSL
+#include <Poco/Net/X509Certificate.h>
+#endif
 
 #include <SigUtil.hpp>
 #include "ServerSocket.hpp"
-#if !MOBILEAPP
-#include "SslSocket.hpp"
+#if !MOBILEAPP && ENABLE_SSL
+#include <net/SslSocket.hpp>
+#include <openssl/x509v3.h>
 #endif
 #include "WebSocketHandler.hpp"
+#include <net/HttpRequest.hpp>
 
-int SocketPoll::DefaultPollTimeoutMicroS = 5000 * 1000;
+// Bug in pre C++17 where static constexpr must be defined. Fixed in C++17.
+constexpr std::chrono::microseconds SocketPoll::DefaultPollTimeoutMicroS;
+constexpr std::chrono::microseconds WebSocketHandler::InitialPingDelayMicroS;
+constexpr std::chrono::microseconds WebSocketHandler::PingFrequencyMicroS;
+
 std::atomic<bool> SocketPoll::InhibitThreadChecks(false);
 std::atomic<bool> Socket::InhibitThreadChecks(false);
 
@@ -52,13 +65,94 @@ int Socket::createSocket(Socket::Type type)
     case Type::IPv6: domain = AF_INET6; break;
     case Type::All:  domain = AF_INET6; break;
     case Type::Unix: domain = AF_UNIX;  break;
-    default: assert (false); break;
+    default: assert(!"Unknown Socket::Type"); break;
     }
+
     return socket(domain, SOCK_STREAM | SOCK_NONBLOCK, 0);
 #else
     return fakeSocketSocket();
 #endif
 }
+
+#if ENABLE_DEBUG
+static std::atomic<long> socketErrorCount;
+
+bool StreamSocket::simulateSocketError(bool read)
+{
+    if ((socketErrorCount++ % 7) == 0)
+    {
+        LOG_TRC("Simulating socket error during " << (read ? "read." : "write."));
+        errno = EAGAIN;
+        return true;
+    }
+
+    return false;
+}
+#endif //ENABLE_DEBUG
+
+#if ENABLE_SSL
+static std::string X509_NAME_to_utf8(X509_NAME* name)
+{
+    BIO* bio = BIO_new(BIO_s_mem());
+    X509_NAME_print_ex(bio, name, 0,
+                       (ASN1_STRFLGS_RFC2253 | XN_FLAG_SEP_COMMA_PLUS | XN_FLAG_FN_SN |
+                        XN_FLAG_DUMP_UNKNOWN_FIELDS) &
+                           ~ASN1_STRFLGS_ESC_MSB);
+    BUF_MEM* buf;
+    BIO_get_mem_ptr(bio, &buf);
+    std::string text = std::string(buf->data, buf->length);
+    BIO_free(bio);
+    return text;
+}
+
+bool SslStreamSocket::verifyCertificate()
+{
+    if (_verification == ssl::CertificateVerification::Disabled || net::isLocalhost(hostname()))
+    {
+        return true;
+    }
+
+    LOG_TRC("Verifying certificate of [" << hostname() << ']');
+    X509* x509 = SSL_get_peer_certificate(_ssl);
+    if (x509)
+    {
+        // Dump cert info, for debugging only.
+        const std::string issuerName = X509_NAME_to_utf8(X509_get_issuer_name(x509));
+        const std::string subjectName = X509_NAME_to_utf8(X509_get_subject_name(x509));
+        std::string serialNumber;
+        BIGNUM* pBN = ASN1_INTEGER_to_BN(X509_get_serialNumber(const_cast<X509*>(x509)), 0);
+        if (pBN)
+        {
+            char* pSN = BN_bn2hex(pBN);
+            if (pSN)
+            {
+                serialNumber = pSN;
+                OPENSSL_free(pSN);
+            }
+
+            BN_free(pBN);
+        }
+
+        LOG_TRC("SSL cert issuer: " << issuerName << ", subject: " << subjectName
+                                    << ", serial: " << serialNumber);
+
+        Poco::Net::X509Certificate cert(x509);
+        if (cert.verify(hostname()))
+        {
+            LOG_TRC("SSL cert verified for host [" << hostname() << ']');
+            return true;
+        }
+        else
+        {
+            LOG_INF("SSL cert failed verification for host [" << hostname() << ']');
+            return false;
+        }
+    }
+
+    // No certificate; acceptable only if verification is not strictly required.
+    return (_verification == ssl::CertificateVerification::IfProvided);
+}
+#endif //ENABLE_SSL
 
 // help with initialization order
 namespace {
@@ -74,14 +168,17 @@ namespace {
     }
 }
 
-SocketPoll::SocketPoll(const std::string& threadName)
-    : _name(threadName),
+SocketPoll::SocketPoll(std::string threadName)
+    : _name(std::move(threadName)),
+      _pollStartIndex(0),
       _stop(false),
-      _threadStarted(false),
+      _threadStarted(0),
       _threadFinished(false),
       _runOnClientThread(false),
       _owner(std::this_thread::get_id())
 {
+    ProfileZone profileZone("SocketPoll::SocketPoll");
+
     // Create the wakeup fd.
     if (
 #if !MOBILEAPP
@@ -94,12 +191,16 @@ SocketPoll::SocketPoll(const std::string& threadName)
         throw std::runtime_error("Failed to allocate pipe for SocketPoll [" + threadName + "] waking.");
     }
 
+    LOG_DBG("New SocketPoll [" << _name << "] owned by " << Log::to_string(_owner));
+
     std::lock_guard<std::mutex> lock(getPollWakeupsMutex());
     getWakeupsArray().push_back(_wakeup[1]);
 }
 
 SocketPoll::~SocketPoll()
 {
+    LOG_TRC("~SocketPoll [" << _name << "] destroying. Joining thread now.");
+
     joinThread();
 
     {
@@ -127,21 +228,37 @@ bool SocketPoll::startThread()
 {
     assert(!_runOnClientThread);
 
-    if (!_threadStarted)
+    // In a race, only the first gets in.
+    if (_threadStarted++ == 0)
     {
-        _threadStarted = true;
         _threadFinished = false;
         _stop = false;
         try
         {
+            LOG_TRC("Creating thread for SocketPoll " << _name);
             _thread = std::thread(&SocketPoll::pollingThreadEntry, this);
             return true;
         }
         catch (const std::exception& exc)
         {
-            LOG_ERR("Failed to start poll thread: " << exc.what());
-            _threadStarted = false;
+            LOG_ERR("Failed to start SocketPoll thread [" << _name << "]: " << exc.what());
+            _threadStarted = 0;
         }
+    }
+    else if (isAlive())
+    {
+        // Most likely a programming error--use isAlive().
+        LOG_DBG("SocketPoll [" << _name << "] thread is already running.");
+    }
+    else
+    {
+        // This is most likely a programming error.
+        // There is no point in starting a new thread either,
+        // because the owner is unlikely to recover.
+        // If there is a valid use-case for restarting
+        // an expired thread, we should add a way to reset it.
+        LOG_ERR("SocketPoll [" << _name
+                               << "] thread has ran and finished. Will not start it again.");
     }
 
     return false;
@@ -165,7 +282,7 @@ void SocketPoll::joinThread()
         else
         {
             _thread.join();
-            _threadStarted = false;
+            _threadStarted = 0;
         }
     }
 }
@@ -201,6 +318,11 @@ int SocketPoll::poll(int64_t timeoutMaxMicroS)
         checkAndReThread();
     else
         assertCorrectThread();
+
+#if ENABLE_DEBUG
+    // perturb - to rotate errors among several busy sockets.
+    socketErrorCount++;
+#endif
 
     std::chrono::steady_clock::time_point now =
         std::chrono::steady_clock::now();
@@ -300,30 +422,60 @@ int SocketPoll::poll(int64_t timeoutMaxMicroS)
     std::chrono::steady_clock::time_point newNow =
         std::chrono::steady_clock::now();
 
-    for (int i = static_cast<int>(size) - 1; i >= 0; --i)
+    if (size > 0)
     {
-        SocketDisposition disposition(_pollSockets[i]);
-        try
+        // We use the _pollStartIndex to start the polling at a different index each time. Do some
+        // sanity check first to handle the case where we removed one or several sockets last time.
+        if (_pollStartIndex > size - 1)
+            _pollStartIndex = size - 1;
+
+        std::vector<int> toErase;
+
+        size_t i = _pollStartIndex;
+        LOG_TRC("Starting handling poll results of "
+                << _name << " #" << _pollFds[i].fd << " at index " << _pollStartIndex << " (of "
+                << size << "): " << std::hex << _pollFds[i].revents << std::dec);
+
+        for (std::size_t j = 0; j < size; ++j)
         {
-            _pollSockets[i]->handlePoll(disposition, newNow,
-                                        _pollFds[i].revents);
+            SocketDisposition disposition(_pollSockets[i]);
+            try
+            {
+                _pollSockets[i]->handlePoll(disposition, newNow,
+                                            _pollFds[i].revents);
+            }
+            catch (const std::exception& exc)
+            {
+                LOG_ERR('#' << _pollFds[i].fd << " Error while handling poll at " << i << " in "
+                            << _name << ": " << exc.what());
+                disposition.setClosed();
+                rc = -1;
+            }
+
+            if (!disposition.isContinue())
+                toErase.push_back(i);
+
+            disposition.execute();
+
+            if (i == 0)
+                i = size - 1;
+            else
+                i--;
         }
-        catch (const std::exception& exc)
+        if (!toErase.empty())
         {
-            LOG_ERR("Error while handling poll for socket #" <<
-                    _pollFds[i].fd << " in " << _name << ": " << exc.what());
-            disposition.setClosed();
-            rc = -1;
+            std::sort(toErase.begin(), toErase.end(), [](int a, int b) { return a > b; });
+            for (int eraseIndex : toErase)
+            {
+                LOG_TRC("Removing socket #" << _pollFds[eraseIndex].fd << " (at " << eraseIndex
+                                            << " of " << _pollSockets.size() << ") from " << _name);
+                _pollSockets.erase(_pollSockets.begin() + eraseIndex);
+            }
         }
 
-        if (disposition.isMove() || disposition.isClosed())
-        {
-            LOG_DBG("Removing socket #" << _pollFds[i].fd << " (of " <<
-                    _pollSockets.size() << ") from " << _name);
-            _pollSockets.erase(_pollSockets.begin() + i);
-        }
-
-        disposition.execute();
+        // In case we removed sockets the new _pollStartIndex might be out of bounds, but we check it
+        // before using it above anyway.
+        _pollStartIndex = (_pollStartIndex + 1) % size;
     }
 
     return rc;
@@ -337,22 +489,12 @@ void SocketPoll::wakeupWorld()
 
 #if !MOBILEAPP
 
-void SocketPoll::insertNewWebSocketSync(
-    const Poco::URI &uri,
-    const std::shared_ptr<ProtocolHandlerInterface>& websocketHandler)
+void SocketPoll::insertNewWebSocketSync(const Poco::URI& uri,
+                                        const std::shared_ptr<WebSocketHandler>& websocketHandler)
 {
-    LOG_INF("Connecting to " << uri.getHost() << " : " << uri.getPort() << " : " << uri.getPath());
+    LOG_TRC("Connecting WS to " << uri.getHost());
 
-    // FIXME: put this in a ClientSocket class ?
-    // FIXME: store the address there - and ... (so on) ...
-    struct addrinfo* ainfo = nullptr;
-    struct addrinfo hints;
-    std::memset(&hints, 0, sizeof(hints));
-    int rc = getaddrinfo(uri.getHost().c_str(),
-                         std::to_string(uri.getPort()).c_str(),
-                         &hints, &ainfo);
-    std::string canonicalName;
-    bool isSSL = uri.getScheme() != "ws";
+    const bool isSSL = uri.getScheme() != "ws";
 #if !ENABLE_SSL
     if (isSSL)
     {
@@ -361,118 +503,89 @@ void SocketPoll::insertNewWebSocketSync(
     }
 #endif
 
-    if (!rc && ainfo)
+    http::Request req(uri.getPathAndQuery());
+    req.set("User-Foo", "Adminbits");
+    //FIXME: Why do we need the following here?
+    req.set("Accept-Language", "en");
+    req.set("Cache-Control", "no-cache");
+    req.set("Pragma", "no-cache");
+
+    const std::string port = std::to_string(uri.getPort());
+    if (websocketHandler->wsRequest(req, uri.getHost(), port, isSSL, *this))
     {
-        for (struct addrinfo* ai = ainfo; ai; ai = ai->ai_next)
-        {
-            if (ai->ai_canonname)
-                canonicalName = ai->ai_canonname;
-
-            if (ai->ai_addrlen && ai->ai_addr)
-            {
-                int fd = socket(ai->ai_addr->sa_family, SOCK_STREAM | SOCK_NONBLOCK, 0);
-                int res = connect(fd, ai->ai_addr, ai->ai_addrlen);
-                if (fd < 0 || (res < 0 && errno != EINPROGRESS))
-                {
-                    LOG_ERR("Failed to connect to " << uri.getHost());
-                    ::close(fd);
-                }
-                else
-                {
-                    std::shared_ptr<StreamSocket> socket;
-#if ENABLE_SSL
-                    if (isSSL)
-                        socket = StreamSocket::create<SslStreamSocket>(fd, true, websocketHandler);
-#endif
-                    if (!socket && !isSSL)
-                        socket = StreamSocket::create<StreamSocket>(fd, true, websocketHandler);
-
-                    if (socket)
-                    {
-                        LOG_DBG("Connected to client websocket " << uri.getHost() << " #" << socket->getFD());
-                        clientRequestWebsocketUpgrade(socket, websocketHandler, uri.getPathAndQuery());
-                        insertNewSocket(socket);
-                    }
-                    else
-                    {
-                        LOG_ERR("Failed to allocate socket for client websocket " << uri.getHost());
-                        ::close(fd);
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        freeaddrinfo(ainfo);
+        LOG_DBG("Connected WS to " << uri.getHost());
     }
     else
-        LOG_ERR("Failed to lookup client websocket host '" << uri.getHost() << "' skipping");
-}
-
-// should this be a static method in the WebsocketHandler(?)
-void SocketPoll::clientRequestWebsocketUpgrade(const std::shared_ptr<StreamSocket>& socket,
-                                               const std::shared_ptr<ProtocolHandlerInterface>& websocketHandler,
-                                               const std::string &pathAndQuery, const int shareFD)
-{
-    // cf. WebSocketHandler::upgradeToWebSocket (?)
-    // send Sec-WebSocket-Key: <hmm> ... Sec-WebSocket-Protocol: chat, Sec-WebSocket-Version: 13
-
-    LOG_TRC("Requesting upgrade of websocket at path " << pathAndQuery << " #" << socket->getFD());
-
-    std::ostringstream oss;
-    oss << "GET " << pathAndQuery << " HTTP/1.1\r\n"
-        "Connection:Upgrade\r\n"
-        "User-Foo: Adminbits\r\n"
-        "Sec-WebSocket-Key:fxTaWTEMVhq1PkWsMoLxGw==\r\n"
-        "Upgrade:websocket\r\n"
-        "Accept-Language:en\r\n"
-        "Cache-Control:no-cache\r\n"
-        "Pragma:no-cache\r\n"
-        "Sec-WebSocket-Version:13\r\n"
-        "User-Agent: " WOPI_AGENT_STRING "\r\n"
-        "\r\n";
-    if (shareFD == -1)
-        socket->send(oss.str());
-    else
     {
-        std::string request = oss.str();
-        socket->sendFD(request.c_str(), request.size(), shareFD);
+        LOG_ERR("Failed to connected WS to " << uri.getHost());
     }
-    websocketHandler->onConnect(socket);
 }
 
-void SocketPoll::insertNewUnixSocket(
+bool SocketPoll::insertNewUnixSocket(
     const std::string &location,
     const std::string &pathAndQuery,
-    const std::shared_ptr<ProtocolHandlerInterface>& websocketHandler,
+    const std::shared_ptr<WebSocketHandler>& websocketHandler,
     const int shareFD)
 {
-    int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    LOG_DBG("Connecting to local UDS " << location);
+    const int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
 
     struct sockaddr_un addrunix;
     std::memset(&addrunix, 0, sizeof(addrunix));
     addrunix.sun_family = AF_UNIX;
+#ifdef HAVE_ABSTRACT_UNIX_SOCKETS
     addrunix.sun_path[0] = '\0'; // abstract name
+#else
+    addrunix.sun_path[0] = '0';
+#endif
     memcpy(&addrunix.sun_path[1], location.c_str(), location.length());
 
-    int res = connect(fd, (const struct sockaddr *)&addrunix, sizeof(addrunix));
+    const int res = connect(fd, (const struct sockaddr*)&addrunix, sizeof(addrunix));
     if (fd < 0 || (res < 0 && errno != EINPROGRESS))
     {
-        LOG_ERR("Failed to connect to unix socket at " << location);
+        LOG_SYS("Failed to connect to unix socket at " << location);
         ::close(fd);
+        return false;
+    }
+
+    std::shared_ptr<StreamSocket> socket
+        = StreamSocket::create<StreamSocket>(std::string(), fd, true, websocketHandler);
+    if (!socket)
+    {
+        LOG_ERR("Failed to create socket unix socket at " << location);
+        return false;
+    }
+
+    LOG_DBG("Connected to local UDS " << location << " #" << socket->getFD());
+
+    http::Request req(pathAndQuery);
+    req.set("User-Foo", "Adminbits");
+    req.set("Sec-WebSocket-Key", websocketHandler->getWebSocketKey());
+    req.set("Sec-WebSocket-Version", "13");
+    //FIXME: Why do we need the following here?
+    req.set("Accept-Language", "en");
+    req.set("Cache-Control", "no-cache");
+    req.set("Pragma", "no-cache");
+
+    LOG_TRC("Requesting upgrade of websocket at path " << pathAndQuery << " #" << socket->getFD());
+    if (shareFD == -1)
+    {
+        socket->send(req);
     }
     else
     {
-        std::shared_ptr<StreamSocket> socket;
-        socket = StreamSocket::create<StreamSocket>(fd, true, websocketHandler);
-        if (socket)
-        {
-            LOG_DBG("Connected to local UDS " << location << " #" << socket->getFD());
-            clientRequestWebsocketUpgrade(socket, websocketHandler, pathAndQuery, shareFD);
-            insertNewSocket(socket);
-        }
+        Buffer buf;
+        req.writeData(buf, INT_MAX); // Write the whole request.
+        socket->sendFD(buf.getBlock(), buf.getBlockSize(), shareFD);
     }
+
+    std::static_pointer_cast<ProtocolHandlerInterface>(websocketHandler)->onConnect(socket);
+    insertNewSocket(socket);
+
+    // We send lots of data back via this local UDS'
+    socket->setSocketBufferSize(Socket::MaximumSendBufferSize);
+
+    return true;
 }
 
 #else
@@ -492,7 +605,7 @@ void SocketPoll::insertNewFakeSocket(
     else
     {
         std::shared_ptr<StreamSocket> socket;
-        socket = StreamSocket::create<StreamSocket>(fd, true, websocketHandler);
+        socket = StreamSocket::create<StreamSocket>(std::string(), fd, true, websocketHandler);
         if (socket)
         {
             LOG_TRC("Sending 'hello' instead of HTTP GET for now");
@@ -520,14 +633,28 @@ void SocketDisposition::execute()
     if (_socketMove)
     {
         // Drop pretentions of ownership before _socketMove.
-        _socket->setThreadOwner(std::thread::id());
-        _socketMove(_socket);
-    }
-    _socketMove = nullptr;
-}
+        _socket->resetThreadOwner();
 
-const int WebSocketHandler::InitialPingDelayMicroS = 25 * 1000;
-const int WebSocketHandler::PingFrequencyMicroS = 18 * 1000 * 1000;
+        if (!_toPoll) {
+            assert (isMove());
+            _socketMove(_socket);
+        } else {
+            assert (isTransfer());
+            // Ensure the thread is running before adding callback.
+            _toPoll->startThread();
+            auto pollCopy = _toPoll;
+            auto socket = _socket;
+            auto socketMoveFn = std::move(_socketMove);
+            _toPoll->addCallback([pollCopy, socket, socketMoveFn]()
+                {
+                    pollCopy->insertNewSocket(socket);
+                    socketMoveFn(socket);
+                });
+        }
+        _socketMove = nullptr;
+        _toPoll = nullptr;
+    }
+}
 
 void WebSocketHandler::dumpState(std::ostream& os)
 {
@@ -536,7 +663,7 @@ void WebSocketHandler::dumpState(std::ostream& os)
     os << std::setw(5) << _pingTimeUs/1000. << "ms ";
 #endif
     if (_wsPayload.size() > 0)
-        Util::dumpHex(os, "\t\tws queued payload:\n", "\t\t", _wsPayload);
+        Util::dumpHex(os, _wsPayload, "\t\tws queued payload:\n", "\t\t");
     os << '\n';
     if (_msgHandler)
         _msgHandler->dumpState(os);
@@ -544,20 +671,22 @@ void WebSocketHandler::dumpState(std::ostream& os)
 
 void StreamSocket::dumpState(std::ostream& os)
 {
-    int64_t timeoutMaxMicroS = SocketPoll::DefaultPollTimeoutMicroS;
-    int events = getPollEvents(std::chrono::steady_clock::now(), timeoutMaxMicroS);
+    int64_t timeoutMaxMicroS = SocketPoll::DefaultPollTimeoutMicroS.count();
+    const int events = getPollEvents(std::chrono::steady_clock::now(), timeoutMaxMicroS);
     os << '\t' << getFD() << '\t' << events << '\t'
+       << (ignoringInput() ? "ignore\t" : "process\t")
        << _inBuffer.size() << '\t' << _outBuffer.size() << '\t'
        << " r: " << _bytesRecvd << "\t w: " << _bytesSent << '\t'
        << clientAddress() << '\t';
     _socketHandler->dumpState(os);
     if (_inBuffer.size() > 0)
         Util::dumpHex(os, _inBuffer, "\t\tinBuffer:\n", "\t\t");
+    _outBuffer.dumpHex(os, "\t\toutBuffer:\n", "\t\t");
 }
 
 void StreamSocket::send(Poco::Net::HTTPResponse& response)
 {
-    response.set("Server", HTTP_AGENT_STRING);
+    response.set("Server", HTTP_SERVER_STRING);
     response.set("Date", Util::getHttpTimeNow());
 
     std::ostringstream oss;
@@ -566,23 +695,56 @@ void StreamSocket::send(Poco::Net::HTTPResponse& response)
     send(oss.str());
 }
 
-void StreamSocket::sendAndShutdown(Poco::Net::HTTPResponse& response)
+bool StreamSocket::send(const http::Response& response)
+{
+    if (response.writeData(_outBuffer))
+    {
+        flush();
+        return true;
+    }
+    else
+    {
+        shutdown();
+        return false;
+    }
+}
+
+bool StreamSocket::send(http::Request& request)
+{
+    if (request.writeData(_outBuffer, getSendBufferCapacity()))
+    {
+        flush();
+        return true;
+    }
+    else
+    {
+        shutdown();
+        return false;
+    }
+}
+
+bool StreamSocket::sendAndShutdown(http::Response& response)
 {
     response.set("Connection", "close");
-    send(response);
-    flush();
-    shutdown();
+    if (send(response))
+    {
+        shutdown();
+        return true;
+    }
+
+    return false;
 }
 
 void SocketPoll::dumpState(std::ostream& os)
 {
     // FIXME: NOT thread-safe! _pollSockets is modified from the polling thread!
-    os << " Poll [" << _pollSockets.size() << "] - wakeup r: "
+    os << "\n  SocketPoll:";
+    os << "\n    Poll [" << _pollSockets.size() << "] - wakeup r: "
        << _wakeup[0] << " w: " << _wakeup[1] << '\n';
     if (_newCallbacks.size() > 0)
         os << "\tcallbacks: " << _newCallbacks.size() << '\n';
     os << "\tfd\tevents\trsize\twsize\n";
-    for (auto &i : _pollSockets)
+    for (const auto &i : _pollSockets)
         i->dumpState(os);
 }
 
@@ -624,15 +786,19 @@ bool ServerSocket::bind(Type type, int port)
         else
             addrv6.sin6_addr = in6addr_loopback;
 
-        int ipv6only = _type == Socket::Type::All ? 0 : 1;
+        const int ipv6only = (_type == Socket::Type::All ? 0 : 1);
         if (::setsockopt(getFD(), IPPROTO_IPV6, IPV6_V6ONLY, (char*)&ipv6only, sizeof(ipv6only)) == -1)
-            LOG_SYS("Failed set ipv6 socket to %d" << ipv6only);
+            LOG_SYS('#' << getFD() << " Failed set ipv6 socket to " << ipv6only);
 
         rc = ::bind(getFD(), (const sockaddr *)&addrv6, sizeof(addrv6));
     }
 
     if (rc)
-        LOG_SYS("Failed to bind to: " << (_type == Socket::Type::IPv4 ? "IPv4" : "IPv6") << " port: " << port);
+        LOG_SYS('#' << getFD() << " Failed to bind to: "
+                    << (_type == Socket::Type::IPv4 ? "IPv4" : "IPv6") << " port: " << port);
+    else
+        LOG_TRC('#' << getFD() << " bind to: " << (_type == Socket::Type::IPv4 ? "IPv4" : "IPv6")
+                    << " port: " << port);
 
     return rc == 0;
 #else
@@ -653,13 +819,13 @@ std::shared_ptr<Socket> ServerSocket::accept()
 #else
     const int rc = fakeSocketAccept4(getFD());
 #endif
-    LOG_DBG("Accepted socket #" << rc << ", creating socket object.");
+    LOG_TRC("Accepted socket #" << rc << ", creating socket object.");
     try
     {
         // Create a socket object using the factory.
         if (rc != -1)
         {
-            std::shared_ptr<Socket> _socket = _sockFactory->create(rc);
+            std::shared_ptr<Socket> _socket = createSocketFromAccept(rc);
 
 #if !MOBILEAPP
             char addrstr[INET6_ADDRSTRLEN];
@@ -679,8 +845,9 @@ std::shared_ptr<Socket> ServerSocket::accept()
             inet_ntop(clientInfo.sin6_family, inAddr, addrstr, sizeof(addrstr));
             _socket->setClientAddress(addrstr);
 
-            LOG_DBG("Accepted socket has family " << clientInfo.sin6_family <<
-                    " address " << _socket->clientAddress());
+            LOG_TRC("Accepted socket #" << _socket->getFD() << " has family "
+                                        << clientInfo.sin6_family << " address "
+                                        << _socket->clientAddress());
 #endif
             return _socket;
         }
@@ -688,7 +855,7 @@ std::shared_ptr<Socket> ServerSocket::accept()
     }
     catch (const std::exception& ex)
     {
-        LOG_SYS("Failed to create client socket #" << rc << ". Error: " << ex.what());
+        LOG_ERR("Failed to create client socket #" << rc << ". Error: " << ex.what());
     }
 
     return nullptr;
@@ -698,14 +865,27 @@ std::shared_ptr<Socket> ServerSocket::accept()
 
 int Socket::getPid() const
 {
+#ifdef __linux__
     struct ucred creds;
     socklen_t credSize = sizeof(struct ucred);
     if (getsockopt(_fd, SOL_SOCKET, SO_PEERCRED, &creds, &credSize) < 0)
     {
-        LOG_TRC("Failed to get pid via peer creds on " << _fd << ' ' << strerror(errno));
+        LOG_SYS("Failed to get pid via peer creds on " << _fd);
         return -1;
     }
     return creds.pid;
+#elif defined(__FreeBSD__)
+    struct xucred creds;
+    socklen_t credSize = sizeof(struct xucred);
+    if (getsockopt(_fd, SOL_LOCAL, LOCAL_PEERCRED, &creds, &credSize) < 0)
+    {
+        LOG_SYS("Failed to get pid via peer creds on " << _fd);
+        return -1;
+    }
+    return creds.cr_pid;
+#else
+#error Implement for your platform
+#endif
 }
 
 // Does this socket come from the localhost ?
@@ -729,37 +909,54 @@ std::shared_ptr<Socket> LocalServerSocket::accept()
         if (rc < 0)
             return std::shared_ptr<Socket>(nullptr);
 
-        std::shared_ptr<Socket> _socket = _sockFactory->create(rc);
+        std::shared_ptr<Socket> _socket = createSocketFromAccept(rc);
         // Sanity check this incoming socket
+#ifndef __FreeBSD__
+#define CREDS_UID(c) c.uid
+#define CREDS_GID(c) c.gid
+#define CREDS_PID(c) c.pid
         struct ucred creds;
         socklen_t credSize = sizeof(struct ucred);
-        if (getsockopt(getFD(), SOL_SOCKET, SO_PEERCRED, &creds, &credSize) < 0)
+        if (getsockopt(rc, SOL_SOCKET, SO_PEERCRED, &creds, &credSize) < 0)
         {
-            LOG_ERR("Failed to get peer creds on " << getFD() << ' ' << strerror(errno));
+            LOG_SYS("Failed to get peer creds on " << rc);
             ::close(rc);
             return std::shared_ptr<Socket>(nullptr);
         }
+#else
+#define CREDS_UID(c) c.cr_uid
+#define CREDS_GID(c) c.cr_groups[0]
+#define CREDS_PID(c) c.cr_pid
+        struct xucred creds;
+        socklen_t credSize = sizeof(struct xucred);
+        if (getsockopt(rc, SOL_LOCAL, LOCAL_PEERCRED, &creds, &credSize) < 0)
+        {
+            LOG_SYS("Failed to get peer creds on " << rc);
+            ::close(rc);
+            return std::shared_ptr<Socket>(nullptr);
+        }
+#endif
 
         uid_t uid = getuid();
         uid_t gid = getgid();
-        if (creds.uid != uid || creds.gid != gid)
+        if (CREDS_UID(creds) != uid || CREDS_GID(creds) != gid)
         {
             LOG_ERR("Peercred mis-match on domain socket - closing connection. uid: " <<
-                    creds.uid << "vs." << uid << " gid: " << creds.gid << "vs." << gid);
+                    CREDS_UID(creds) << "vs." << uid << " gid: " << CREDS_GID(creds) << "vs." << gid);
             ::close(rc);
             return std::shared_ptr<Socket>(nullptr);
         }
         std::string addr("uds-to-pid-");
-        addr.append(std::to_string(creds.pid));
+        addr.append(std::to_string(CREDS_PID(creds)));
         _socket->setClientAddress(addr);
 
         LOG_DBG("Accepted socket is UDS - address " << addr <<
-                " and uid/gid " << creds.uid << '/' << creds.gid);
+                " and uid/gid " << CREDS_UID(creds) << '/' << CREDS_GID(creds));
         return _socket;
     }
     catch (const std::exception& ex)
     {
-        LOG_SYS("Failed to create client socket #" << rc << ". Error: " << ex.what());
+        LOG_ERR("Failed to create client socket #" << rc << ". Error: " << ex.what());
         return std::shared_ptr<Socket>(nullptr);
     }
 }
@@ -781,20 +978,42 @@ std::string LocalServerSocket::bind()
         std::memset(&addrunix, 0, sizeof(addrunix));
         addrunix.sun_family = AF_UNIX;
         std::memcpy(addrunix.sun_path, socketAbstractUnixName.c_str(), socketAbstractUnixName.length());
+#ifdef HAVE_ABSTRACT_UNIX_SOCKETS
         addrunix.sun_path[0] = '\0'; // abstract name
+#endif
 
-        std::string rand = Util::rng::getFilename(8);
+        const std::string rand = Util::rng::getFilename(8);
         memcpy(addrunix.sun_path + socketAbstractUnixName.length(), rand.c_str(), 8);
 
         rc = ::bind(getFD(), (const sockaddr *)&addrunix, sizeof(struct sockaddr_un));
-        LOG_TRC("Bind to location " << std::string(&addrunix.sun_path[1]) <<
-                " result - " << rc << "errno: " << ((rc >= 0) ? "no error" : ::strerror(errno)));
+        LOG_SYS('#' << getFD() << " Bind to location " << std::string(&addrunix.sun_path[1])
+                    << " result - " << rc);
     } while (rc < 0 && errno == EADDRINUSE);
 
     if (rc >= 0)
+    {
+        _name = std::string(&addrunix.sun_path[0]);
         return std::string(&addrunix.sun_path[1]);
+    }
 
-    return "";
+    return std::string();
+}
+
+#ifndef HAVE_ABSTRACT_UNIX_SOCKETS
+bool LocalServerSocket::link(std::string to)
+{
+    _linkName = to;
+    return 0 == ::link(_name.c_str(), to.c_str());
+}
+#endif
+
+LocalServerSocket::~LocalServerSocket()
+{
+#ifndef HAVE_ABSTRACT_UNIX_SOCKETS
+    ::unlink(_name.c_str());
+    if (!_linkName.empty())
+        ::unlink(_linkName.c_str());
+#endif
 }
 
 // For a verbose life, tweak here:
@@ -809,8 +1028,6 @@ bool StreamSocket::parseHeader(const char *clientName,
                                Poco::Net::HTTPRequest &request,
                                MessageMap *map)
 {
-    LOG_TRC('#' << getFD() << " handling incoming " << _inBuffer.size() << " bytes.");
-
     assert(!map || (map->_headerSize == 0 && map->_messageSize == 0));
 
     // Find the end of the header, if any.
@@ -819,7 +1036,8 @@ bool StreamSocket::parseHeader(const char *clientName,
                               marker.begin(), marker.end());
     if (itBody == _inBuffer.end())
     {
-        LOG_TRC('#' << getFD() << " doesn't have enough data yet.");
+        LOG_TRC('#' << getFD() << ": " << clientName
+                    << " doesn't have enough data for the header yet.");
         return false;
     }
 
@@ -857,14 +1075,15 @@ bool StreamSocket::parseHeader(const char *clientName,
 
         if (contentLength != Poco::Net::HTTPMessage::UNKNOWN_CONTENT_LENGTH && available < contentLength)
         {
-            LOG_DBG("Not enough content yet: ContentLength: " << contentLength << ", available: " << available);
+            LOG_DBG('#' << getFD() << ": Not enough content yet: ContentLength: " << contentLength
+                        << ", available: " << available);
             return false;
         }
         if (map)
             map->_messageSize += contentLength;
 
         const std::string expect = request.get("Expect", "");
-        bool getExpectContinue =  !expect.empty() && Poco::icompare(expect, "100-continue") == 0;
+        const bool getExpectContinue = Util::iequal(expect, "100-continue");
         if (getExpectContinue && !_sentHTTPContinue)
         {
             LOG_TRC('#' << getFD() << " got Expect: 100-continue, sending Continue");
@@ -949,14 +1168,16 @@ bool StreamSocket::parseHeader(const char *clientName,
     }
     catch (const Poco::Exception& exc)
     {
-        LOG_DBG("parseHeader exception caught with " << _inBuffer.size() << " bytes: " << exc.displayText());
+        LOG_DBG('#' << getFD() << ": parseHeader exception caught with " << _inBuffer.size()
+                    << " bytes: " << exc.displayText());
         // Probably don't have enough data just yet.
         // TODO: timeout if we never get enough.
         return false;
     }
     catch (const std::exception& exc)
     {
-        LOG_DBG("parseHeader std::exception caught with " << _inBuffer.size() << " bytes: " << exc.what());
+        LOG_DBG('#' << getFD() << ": parseHeader std::exception caught with " << _inBuffer.size()
+                    << " bytes: " << exc.what());
         // Probably don't have enough data just yet.
         // TODO: timeout if we never get enough.
         return false;
@@ -993,7 +1214,11 @@ bool StreamSocket::compactChunks(MessageMap *map)
     // shrink our size to fit
     map->_messageSize -= gap;
 
-    dumpState(std::cerr);
+#if ENABLE_DEBUG
+    std::ostringstream oss;
+    dumpState(oss);
+    LOG_TRC('#' << getFD() << " Socket state: " << oss.str());
+#endif
 
     return true;
 }

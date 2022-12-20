@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -39,6 +37,20 @@ public:
     /// Control access to a bound TCP socket
     enum Type { Local, Public };
 
+    /// Create a new server socket - accepted sockets will be added
+    /// to the @clientSockets' poll when created with @factory.
+    static std::shared_ptr<ServerSocket> create(ServerSocket::Type type, int port,
+                                                Socket::Type socketType, SocketPoll& clientSocket,
+                                                std::shared_ptr<SocketFactory> factory)
+    {
+        auto serverSocket = std::make_shared<ServerSocket>(socketType, clientSocket, std::move(factory));
+
+        if (serverSocket && serverSocket->bind(type, port) && serverSocket->listen())
+            return serverSocket;
+
+        return nullptr;
+    }
+
     /// Binds to a local address (Servers only).
     /// Does not retry on error.
     /// Returns true only on success.
@@ -55,7 +67,9 @@ public:
         const int rc = fakeSocketListen(getFD());
 #endif
         if (rc)
-            LOG_SYS("Failed to listen");
+            LOG_SYS('#' << getFD() << " Failed to listen");
+        else
+            LOG_TRC('#' << getFD() << " Listening");
         return rc == 0;
     }
 
@@ -85,9 +99,16 @@ public:
                 throw std::runtime_error(msg + std::strerror(errno) + ')');
             }
 
-            LOG_DBG("Accepted client #" << clientSocket->getFD());
+            LOG_TRC("Accepted client #" << clientSocket->getFD());
             _clientPoller.insertNewSocket(clientSocket);
         }
+    }
+
+protected:
+    /// Create a Socket instance from the accepted socket FD.
+    std::shared_ptr<Socket> createSocketFromAccept(int fd) const
+    {
+        return _sockFactory->create(fd);
     }
 
 private:
@@ -95,7 +116,6 @@ private:
     Socket::Type _type;
 #endif
     SocketPoll& _clientPoller;
-protected:
     std::shared_ptr<SocketFactory> _sockFactory;
 };
 
@@ -109,12 +129,20 @@ public:
         ServerSocket(Socket::Type::Unix, clientPoller, std::move(sockFactory))
     {
     }
+    ~LocalServerSocket();
+
     virtual bool bind(Type, int) override { assert(false); return false; }
     virtual std::shared_ptr<Socket> accept() override;
     std::string bind();
+#ifndef HAVE_ABSTRACT_UNIX_SOCKETS
+    bool link(std::string to);
+#endif
 
 private:
     std::string _name;
+#ifndef HAVE_ABSTRACT_UNIX_SOCKETS
+    std::string _linkName;
+#endif
 };
 
 #endif

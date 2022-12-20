@@ -515,7 +515,7 @@ public:
             return false;
         }
 
-        _websocketHandler->sendMessage(data, size, code);
+        _websocketHandler->sendMessage(data, size, code, /*flush=*/true);
         return true;
     }
 
@@ -1750,7 +1750,7 @@ public:
         if (timeoutMicroS < 0)
         {
             // Flush at most 1 + maxExtraEvents, or return when nothing left.
-            while (poll(0) > 0 && maxExtraEvents-- > 0)
+            while (poll(std::chrono::microseconds::zero()) > 0 && maxExtraEvents-- > 0)
                 ++eventsSignalled;
         }
         else
@@ -1762,7 +1762,7 @@ public:
                 int realTimeout = timeoutMicroS;
                 if (_document && _document->hasQueueItems())
                     realTimeout = 0;
-                if (poll(realTimeout) <= 0)
+                if (poll(std::chrono::microseconds(realTimeout)) <= 0)
                     break;
 
                 const auto now = std::chrono::steady_clock::now();

@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -16,12 +14,16 @@
 #include <ftw.h>
 #include <stdexcept>
 #include <sys/time.h>
-#ifdef __linux
+#ifdef __linux__
 #include <sys/vfs.h>
 #elif defined IOS
 #import <Foundation/Foundation.h>
+#elif defined __FreeBSD__
+#include <sys/param.h>
+#include <sys/mount.h>
 #endif
 
+#include <fcntl.h>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -79,53 +81,13 @@ namespace FileUtil
 {
     std::string createRandomDir(const std::string& path)
     {
-        const std::string name = Util::rng::getFilename(64);
+        std::string name = Util::rng::getFilename(64);
 #if HAVE_STD_FILESYSTEM
         filesystem::create_directory(path + '/' + name);
 #else
         Poco::File(Poco::Path(path, name)).createDirectories();
 #endif
         return name;
-    }
-
-    std::string getSysTempDirectoryPath()
-    {
-        // Don't const to allow for automatic move on return.
-#if HAVE_STD_FILESYSTEM
-        std::string path = filesystem::temp_directory_path();
-#else
-        std::string path = Poco::Path::temp();
-#endif
-
-        if (!path.empty())
-            return path;
-
-        // Sensible fallback, though shouldn't be needed.
-        const char *tmp = getenv("TMPDIR");
-        if (!tmp)
-            tmp = getenv("TEMP");
-        if (!tmp)
-            tmp = getenv("TMP");
-        if (!tmp)
-            tmp = "/tmp";
-        return tmp;
-    }
-
-    std::string createRandomTmpDir(std::string root)
-    {
-        if (root.empty())
-            root = getSysTempDirectoryPath();
-
-        Poco::File(root).createDirectories();
-
-        // Don't const to allow for automatic move on return.
-        std::string newTmp = root + "/oxool-" + Util::rng::getFilename(16);
-        if (::mkdir(newTmp.c_str(), S_IRWXU) < 0)
-        {
-            LOG_SYS("Failed to create random temp directory [" << newTmp << ']');
-            return root;
-        }
-        return newTmp;
     }
 
     bool copy(const std::string& fromPath, const std::string& toPath, bool log, bool throw_on_error)
@@ -197,7 +159,7 @@ namespace FileUtil
             oss << "Error while copying from " << anonymizeUrl(fromPath) << " to "
                 << anonymizeUrl(toPath) << ": " << ex.what();
             const std::string err = oss.str();
-            LOG_SYS(err);
+            LOG_ERR(err);
             close(from);
             close(to);
             unlink(toPath.c_str());
@@ -208,12 +170,53 @@ namespace FileUtil
         return false;
     }
 
-    std::string getTempFilePath(const std::string& srcDir, const std::string& srcFilename, const std::string& dstFilenamePrefix)
+    std::string getSysTempDirectoryPath()
+    {
+        // Don't const to allow for automatic move on return.
+#if HAVE_STD_FILESYSTEM
+        std::string path = filesystem::temp_directory_path();
+#else
+        std::string path = Poco::Path::temp();
+#endif
+
+        if (!path.empty())
+            return path;
+
+        // Sensible fallback, though shouldn't be needed.
+        const char *tmp = getenv("TMPDIR");
+        if (!tmp)
+            tmp = getenv("TEMP");
+        if (!tmp)
+            tmp = getenv("TMP");
+        if (!tmp)
+            tmp = "/tmp";
+        return tmp;
+    }
+
+    std::string createRandomTmpDir(std::string root)
+    {
+        if (root.empty())
+            root = getSysTempDirectoryPath();
+
+        Poco::File(root).createDirectories();
+
+        // Don't const to allow for automatic move on return.
+        std::string newTmp = root + "/cool-" + Util::rng::getFilename(16);
+        if (::mkdir(newTmp.c_str(), S_IRWXU) < 0)
+        {
+            LOG_SYS("Failed to create random temp directory [" << newTmp << ']');
+            return root;
+        }
+        return newTmp;
+    }
+
+    std::string getTempFileCopyPath(const std::string& srcDir, const std::string& srcFilename, const std::string& dstFilenamePrefix)
     {
         const std::string srcPath = srcDir + '/' + srcFilename;
         const std::string dstFilename = dstFilenamePrefix + Util::encodeId(Util::rng::getNext()) + '_' + srcFilename;
 #if HAVE_STD_FILESYSTEM
-        const std::string dstPath = filesystem::temp_directory_path() / dstFilename;
+        // Don't const to allow for automatic move on return.
+        std::string dstPath = filesystem::temp_directory_path() / dstFilename;
         filesystem::copy(srcPath, dstPath);
 
         static FileDeleter fileDeleter;
@@ -276,11 +279,15 @@ namespace FileUtil
                 nftw(path.c_str(), nftw_cb, 128, FTW_DEPTH | FTW_PHYS);
             }
         }
-        catch (const std::exception&e)
+        catch (const std::exception& e)
         {
-            // Already removed or we don't care about failures.
-            LOG_DBG("Failed to remove [" << path << "] " << (recursive ? "recursively: " : "only: ")
-                                         << e.what());
+            // Don't complain if already non-existant.
+            if (FileUtil::Stat(path).exists())
+            {
+                // Error only if it still exists.
+                LOG_ERR("Failed to remove ["
+                        << path << "] " << (recursive ? "recursively: " : "only: ") << e.what());
+            }
         }
 #endif
     }
@@ -295,7 +302,7 @@ namespace FileUtil
             return real;
         }
 
-        LOG_SYS("Failed to get the realpath of [" << path << "]");
+        LOG_SYS("Failed to get the realpath of [" << path << ']');
         return path;
     }
 
@@ -311,6 +318,15 @@ namespace FileUtil
 
         closedir(dir);
         return count <= 2; // Discounting . and ..
+    }
+
+    bool isWritable(const char* path)
+    {
+        if (access(path, W_OK) == 0)
+            return true;
+
+        LOG_INF("No write access to path [" << path << "]: " << strerror(errno));
+        return false;
     }
 
     bool updateTimestamps(const std::string& filename, timespec tsAccess, timespec tsModified)
@@ -335,7 +351,7 @@ namespace FileUtil
                           };
         if (utimes(filename.c_str(), timestamps) != 0)
         {
-            LOG_SYS("Failed to update the timestamp of [" << filename << "]");
+            LOG_SYS("Failed to update the timestamp of [" << filename << ']');
             return false;
         }
 
@@ -369,6 +385,26 @@ namespace FileUtil
         }
 
         return false;
+    }
+
+    bool compareFileContents(const std::string& rhsPath, const std::string& lhsPath)
+    {
+        std::ifstream rhs(rhsPath, std::ifstream::binary | std::ifstream::ate);
+        if (rhs.fail())
+            return false;
+
+        std::ifstream lhs(lhsPath, std::ifstream::binary | std::ifstream::ate);
+        if (lhs.fail())
+            return false;
+
+        if (rhs.tellg() != lhs.tellg())
+            return false;
+
+        rhs.seekg(0, std::ifstream::beg);
+        lhs.seekg(0, std::ifstream::beg);
+        return std::equal(std::istreambuf_iterator<char>(rhs.rdbuf()),
+                          std::istreambuf_iterator<char>(),
+                          std::istreambuf_iterator<char>(lhs.rdbuf()));
     }
 
     bool linkOrCopyFile(const char* source, const char* target)
@@ -442,25 +478,32 @@ namespace FileUtil
     std::string checkDiskSpaceOnRegisteredFileSystems(const bool cacheLastCheck)
     {
         static std::chrono::steady_clock::time_point lastCheck;
+        static std::string lastResult;
         std::chrono::steady_clock::time_point now(std::chrono::steady_clock::now());
 
         std::lock_guard<std::mutex> lock(fsmutex);
 
-        // Don't check more often than once a minute
-        if (std::chrono::duration_cast<std::chrono::seconds>(now - lastCheck).count() < 60)
-            return std::string();
-
         if (cacheLastCheck)
+        {
+            // Don't check more often than once a minute
+            if (std::chrono::duration_cast<std::chrono::seconds>(now - lastCheck).count() < 60)
+                return lastResult;
+
             lastCheck = now;
+        }
 
         for (const auto& i: filesystems)
         {
             if (!checkDiskSpace(i.getPath()))
             {
+                if (cacheLastCheck)
+                    lastResult = i.getPath();
                 return i.getPath();
             }
         }
 
+        if (cacheLastCheck)
+            lastResult = std::string();
         return std::string();
     }
 #endif
@@ -477,13 +520,13 @@ namespace FileUtil
 
         // we should be able to run just OK with 5GB for production or 1GB for development
 #if ENABLE_DEBUG
-        const int64_t gb(1);
+        constexpr int64_t gb(1);
 #else
-        const int64_t gb(5);
+        constexpr int64_t gb(5);
 #endif
         constexpr int64_t ENOUGH_SPACE = gb*1024*1024*1024;
 
-#ifdef __linux
+#if defined(__linux__) || defined(__FreeBSD__)
         struct statfs sfs;
         if (statfs(path.c_str(), &sfs) == -1)
             return true;

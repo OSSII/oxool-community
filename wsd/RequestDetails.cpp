@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,8 +7,10 @@
 
 #include <config.h>
 
+#include "LOOLWSD.hpp"
 #include "RequestDetails.hpp"
 #include "common/Log.hpp"
+#include "HostUtil.hpp"
 
 #include <Poco/URI.h>
 #include "Exceptions.hpp"
@@ -56,7 +56,7 @@ template <typename T> bool equal(const T& lhs, const T& rhs)
 
         if (subLeft != subRight)
         {
-            LOG_ERR("!!! Data mismatch: [" << subLeft << "] != [" << subRight << "]");
+            LOG_ERR("!!! Data mismatch: [" << subLeft << "] != [" << subRight << ']');
             return false;
         }
     }
@@ -74,6 +74,7 @@ RequestDetails::RequestDetails(Poco::Net::HTTPRequest &request, const std::strin
 
     // re-writes ServiceRoot out of request
     _uriString = request.getURI().substr(serviceRoot.length());
+    dehexify();
     request.setURI(_uriString);
     const std::string &method = request.getMethod();
     _isGet = method == "GET";
@@ -83,7 +84,7 @@ RequestDetails::RequestDetails(Poco::Net::HTTPRequest &request, const std::strin
     if (_isProxy)
         _proxyPrefix = it->second;
     it = request.find("Upgrade");
-    _isWebSocket = it != request.end() && (Poco::icompare(it->second, "websocket") == 0);
+    _isWebSocket = it != request.end() && Util::iequal(it->second, "websocket");
 #if MOBILEAPP
     // request.getHost fires an exception on mobile.
 #else
@@ -101,8 +102,36 @@ RequestDetails::RequestDetails(const std::string &mobileURI)
 {
     _isMobile = true;
     _uriString = mobileURI;
-
+    dehexify();
     processURI();
+}
+
+void RequestDetails::dehexify()
+{
+    // For now, we only hexify lool/ URLs.
+    constexpr auto Prefix = "lool/0x";
+    constexpr auto PrefixLen = sizeof(Prefix) - 1;
+
+    const auto hexPos = _uriString.find(Prefix);
+    if (hexPos != std::string::npos)
+    {
+        // The start of the hex token.
+        const auto start = hexPos + PrefixLen;
+        // Find the next '/' after the hex token.
+        const auto end = _uriString.find_first_of('/', start);
+
+        std::string res = _uriString.substr(0, start - 2); // The prefix, without '0x'.
+
+        const std::string encoded =
+            _uriString.substr(start, (end == std::string::npos) ? end : end - start);
+        std::string decoded;
+        Util::dataFromHexString(encoded, decoded);
+        res += decoded;
+
+        res += _uriString.substr(end); // Concatinate the remainder.
+
+        _uriString = res; // Replace the original uri with the decoded one.
+    }
 }
 
 void RequestDetails::processURI()
@@ -210,5 +239,64 @@ void RequestDetails::processURI()
         }
     }
 }
+
+Poco::URI RequestDetails::sanitizeURI(const std::string& uri)
+{
+    // The URI of the document should be url-encoded.
+#if !MOBILEAPP
+    std::string decodedUri;
+    Poco::URI::decode(uri, decodedUri);
+    Poco::URI uriPublic(decodedUri);
+#else
+    Poco::URI uriPublic(uri);
+#endif
+
+    if (uriPublic.isRelative() || uriPublic.getScheme() == "file")
+    {
+        // TODO: Validate and limit access to local paths!
+        uriPublic.normalize();
+    }
+
+    if (uriPublic.getPath().empty())
+    {
+        throw std::runtime_error("Invalid URI.");
+    }
+
+    // We decoded access token before embedding it in loleaflet.html
+    // So, we need to decode it now to get its actual value
+    Poco::URI::QueryParameters queryParams = uriPublic.getQueryParameters();
+    for (auto& param : queryParams)
+    {
+        // look for encoded query params (access token as of now)
+        if (param.first == "access_token")
+        {
+            std::string decodedToken;
+            Poco::URI::decode(param.second, decodedToken);
+            param.second = decodedToken;
+        }
+    }
+
+    uriPublic.setQueryParameters(queryParams);
+
+    LOG_DBG("Sanitized URI [" << uri << "] to [" << uriPublic.toString() << ']');
+    return uriPublic;
+}
+
+#if !defined(BUILDING_TESTS)
+std::string RequestDetails::getDocKey(const Poco::URI& uri)
+{
+    std::string docKey;
+    std::string newUri = uri.getPath();
+
+    // resolve aliases
+#if !MOBILEAPP
+    newUri = HostUtil::getNewUri(uri);
+#endif
+
+    Poco::URI::encode(newUri, "", docKey);
+    LOG_INF("DocKey from URI [" << uri.toString() << "] => [" << docKey << ']');
+    return docKey;
+}
+#endif // !defined(BUILDING_TESTS)
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

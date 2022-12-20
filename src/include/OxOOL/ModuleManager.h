@@ -68,7 +68,7 @@ public:
 
     ~ModuleAgent() {}
 
-    static int AgentTimeoutMicroS;
+    static constexpr std::chrono::microseconds AgentTimeoutMicroS = std::chrono::seconds(60);
 
     void handleRequest(OxOOL::Module::Ptr module,
                        const Poco::Net::HTTPRequest& request,

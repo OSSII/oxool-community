@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,23 +7,30 @@
 
 #include <config.h>
 
-#include <iostream>
 #include "Unit.hpp"
 
+#include <iostream>
 #include <cassert>
 #include <dlfcn.h>
 #include <fstream>
+#include <sstream>
 #include <sysexits.h>
 #include <thread>
 
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
 #include <Poco/Util/LayeredConfiguration.h>
 
 #include "Log.hpp"
 #include "Util.hpp"
 
 #include <common/SigUtil.hpp>
+#include <common/Message.hpp>
 
 UnitBase *UnitBase::Global = nullptr;
+UnitKit *GlobalKit = nullptr;
+UnitWSD *GlobalWSD = nullptr;
+UnitTool *GlobalTool = nullptr;
 char * UnitBase::UnitLibPath;
 static std::thread TimeoutThread;
 static std::atomic<bool> TimeoutThreadRunning(false);
@@ -56,6 +61,9 @@ UnitBase *UnitBase::linkAndCreateUnit(UnitType type, const std::string &unitLibP
         case UnitType::Kit:
             symbol = "unit_create_kit";
             break;
+        case UnitType::Tool:
+            symbol = "unit_create_tool";
+            break;
     }
     CreateUnitHooksFunction* createHooks;
     createHooks = reinterpret_cast<CreateUnitHooksFunction *>(dlsym(dlHandle, symbol));
@@ -78,32 +86,36 @@ UnitBase *UnitBase::linkAndCreateUnit(UnitType type, const std::string &unitLibP
 bool UnitBase::init(UnitType type, const std::string &unitLibPath)
 {
 #if !MOBILEAPP
-    assert(!Global);
+    assert(!get(type));
 #else
     // The LOOLWSD initialization is called in a loop on mobile, allow reuse
-    if (Global)
+    if (get(type))
         return true;
 #endif
 
     if (!unitLibPath.empty())
     {
-        Global = linkAndCreateUnit(type, unitLibPath);
-        if (Global && type == UnitType::Kit)
+        UnitBase* instance = linkAndCreateUnit(type, unitLibPath);
+        rememberInstance(type, instance);
+        LOG_DBG(instance->getTestname() << ": Initializing");
+
+        if (instance && type == UnitType::Kit)
         {
             TimeoutThreadMutex.lock();
-            TimeoutThread = std::thread([]{
+            TimeoutThread = std::thread([instance]{
                     TimeoutThreadRunning = true;
                     Util::setThreadName("unit timeout");
 
-                    if (TimeoutThreadMutex.try_lock_for(std::chrono::milliseconds(Global->_timeoutMilliSeconds)))
+                    if (TimeoutThreadMutex.try_lock_for(instance->_timeoutMilliSeconds))
                     {
-                        LOG_DBG("Unit test finished in time");
+                        LOG_DBG(instance->getTestname() << ": Unit test finished in time");
                         TimeoutThreadMutex.unlock();
                     }
                     else
                     {
-                        LOG_ERR("Unit test timeout");
-                        Global->timeout();
+                        LOG_ERR(instance->getTestname()
+                                << ": Unit test timeout after " << instance->_timeoutMilliSeconds);
+                        instance->timeout();
                     }
                     TimeoutThreadRunning = false;
                 });
@@ -114,10 +126,13 @@ bool UnitBase::init(UnitType type, const std::string &unitLibPath)
         switch (type)
         {
         case UnitType::Wsd:
-            Global = new UnitWSD();
+            rememberInstance(UnitType::Wsd, new UnitWSD("UnitWSD"));
             break;
         case UnitType::Kit:
-            Global = new UnitKit();
+            rememberInstance(UnitType::Kit, new UnitKit("UnitKit"));
+            break;
+        case UnitType::Tool:
+            rememberInstance(UnitType::Tool, new UnitTool("UnitTool"));
             break;
         default:
             assert(false);
@@ -125,10 +140,51 @@ bool UnitBase::init(UnitType type, const std::string &unitLibPath)
         }
     }
 
-    if (Global)
-        Global->_type = type;
+    return get(type) != nullptr;
+}
 
-    return Global != nullptr;
+UnitBase* UnitBase::get(UnitType type)
+{
+    switch (type)
+    {
+    case UnitType::Wsd:
+        return GlobalWSD;
+        break;
+    case UnitType::Kit:
+        return GlobalKit;
+        break;
+    case UnitType::Tool:
+        return GlobalTool;
+        break;
+    default:
+        assert(false);
+        break;
+    }
+
+    return nullptr;
+}
+
+void UnitBase::rememberInstance(UnitType type, UnitBase* instance)
+{
+    assert(instance->_type == type);
+
+    Global = instance;
+
+    switch (type)
+    {
+    case UnitType::Wsd:
+        GlobalWSD = static_cast<UnitWSD*>(instance);
+        break;
+    case UnitType::Kit:
+        GlobalKit = static_cast<UnitKit*>(instance);
+        break;
+    case UnitType::Tool:
+        GlobalTool = static_cast<UnitTool*>(instance);
+        break;
+    default:
+        assert(false);
+        break;
+    }
 }
 
 bool UnitBase::isUnitTesting()
@@ -136,31 +192,97 @@ bool UnitBase::isUnitTesting()
     return Global && Global->_dlHandle;
 }
 
-void UnitBase::setTimeout(int timeoutMilliSeconds)
+void UnitBase::setTimeout(std::chrono::milliseconds timeoutMilliSeconds)
 {
     assert(!TimeoutThreadRunning);
     _timeoutMilliSeconds = timeoutMilliSeconds;
-}
-
-UnitBase::UnitBase()
-    : _dlHandle(nullptr),
-      _setRetValue(false),
-      _retValue(0),
-      _timeoutMilliSeconds(30 * 1000),
-      _type(UnitType::Wsd)
-{
+    LOG_TST(getTestname() << ": setTimeout: " << _timeoutMilliSeconds);
 }
 
 UnitBase::~UnitBase()
 {
+    LOG_TST(getTestname() << ": ~UnitBase");
+
 // FIXME: we should really clean-up properly.
 //    if (_dlHandle)
 //        dlclose(_dlHandle);
     _dlHandle = nullptr;
+    _socketPoll->joinThread();
 }
 
-UnitWSD::UnitWSD()
-    : _hasKitHooks(false)
+bool UnitBase::filterLOKitMessage(const std::shared_ptr<Message>& message)
+{
+    return onFilterLOKitMessage(message);
+}
+
+bool UnitBase::filterSendWebSocketMessage(const char* data, const std::size_t len,
+                                          const WSOpCode code, const bool flush, int& unitReturn)
+{
+    const std::string message(data, len);
+    if (Util::startsWith(message, "unocommandresult:"))
+    {
+        const std::size_t index = message.find_first_of('{');
+        if (index != std::string::npos)
+        {
+            try
+            {
+                const std::string stringJSON = message.substr(index);
+                Poco::JSON::Parser parser;
+                const Poco::Dynamic::Var parsedJSON = parser.parse(stringJSON);
+                const auto& object = parsedJSON.extract<Poco::JSON::Object::Ptr>();
+                if (object->get("commandName").toString() == ".uno:Save")
+                {
+                    const bool success = object->get("success").toString() == "true";
+                    std::string result;
+                    if (object->has("result"))
+                    {
+                        const Poco::Dynamic::Var parsedResultJSON = object->get("result");
+                        const auto& resultObj = parsedResultJSON.extract<Poco::JSON::Object::Ptr>();
+                        if (resultObj->get("type").toString() == "string")
+                            result = resultObj->get("value").toString();
+                    }
+
+                    if (onDocumentSaved(message, success, result))
+                        return false;
+                }
+            }
+            catch (const std::exception& exception)
+            {
+                LOG_TST("unocommandresult parsing failure: " << exception.what());
+            }
+        }
+        else
+        {
+            LOG_TST("Expected json unocommandresult. Ignoring: " << message);
+        }
+    }
+    else if (Util::startsWith(message, "status:"))
+    {
+        if (onDocumentLoaded(message))
+            return false;
+    }
+    else if (message == "statechanged: .uno:ModifiedStatus=true")
+    {
+        if (onDocumentModified(message))
+            return false;
+    }
+    else if (Util::startsWith(message, "statechanged:"))
+    {
+        if (onDocumentStateChanged(message))
+            return false;
+    }
+    else if (Util::startsWith(message, "error:"))
+    {
+        if (onDocumentError(message))
+            return false;
+    }
+
+    return onFilterSendWebSocketMessage(data, len, code, flush, unitReturn);
+}
+
+UnitWSD::UnitWSD(const std::string& name)
+    : UnitBase(name, UnitType::Wsd)
+    , _hasKitHooks(false)
 {
 }
 
@@ -185,13 +307,23 @@ void UnitWSD::lookupTile(int part, int width, int height, int tilePosX, int tile
                          int tileWidth, int tileHeight,
                          std::shared_ptr<std::vector<char>> &tile)
 {
-    if (tile)
-        onTileCacheHit(part, width, height, tilePosX, tilePosY, tileWidth, tileHeight);
-    else
-        onTileCacheMiss(part, width, height, tilePosX, tilePosY, tileWidth, tileHeight);
+    if (isUnitTesting())
+    {
+        if (tile)
+            onTileCacheHit(part, width, height, tilePosX, tilePosY, tileWidth, tileHeight);
+        else
+            onTileCacheMiss(part, width, height, tilePosX, tilePosY, tileWidth, tileHeight);
+    }
 }
 
-UnitKit::UnitKit()
+UnitWSD& UnitWSD::get()
+{
+    assert(GlobalWSD);
+    return *GlobalWSD;
+}
+
+UnitKit::UnitKit(const std::string& name)
+    : UnitBase(name, UnitType::Kit)
 {
 }
 
@@ -199,27 +331,48 @@ UnitKit::~UnitKit()
 {
 }
 
+UnitKit& UnitKit::get()
+{
+#if MOBILEAPP
+    if (!GlobalKit)
+        GlobalKit = new UnitKit("UnitKit");
+#endif
+
+    assert(GlobalKit);
+    return *GlobalKit;
+}
+
 void UnitBase::exitTest(TestResult result)
 {
-    if (_setRetValue)
+    if (isFinished())
     {
         return;
     }
 
-    LOG_INF("exitTest: " << testResultAsString(result) << ". Flagging to shutdown.");
+    if (result == TestResult::Ok)
+        LOG_TST(getTestname() << ": SUCCESS: exitTest: " << testResultAsString(result)
+                              << ". Flagging to shutdown.");
+    else
+        LOG_TST("ERROR " << getTestname() << ": FAILURE: exitTest: " << testResultAsString(result)
+                         << ". Flagging to shutdown.");
+
     _setRetValue = true;
     _retValue = result == TestResult::Ok ? EX_OK : EX_SOFTWARE;
 #if !MOBILEAPP
-    SigUtil::requestShutdown();
-#endif
+    LOG_INF("Setting ShutdownRequestFlag: " << getTestname() << " test has finished.");
+    SigUtil::setTerminationFlag(); // And wakupWorld.
+#else
     SocketPoll::wakeupWorld();
+#endif
 }
 
 void UnitBase::timeout()
 {
-    if (isUnitTesting())
+    // Don't timeout if we had already finished.
+    if (isUnitTesting() && !isFinished())
     {
-        LOG_ERR("Timed out waiting for unit test to complete");
+        LOG_TST("ERROR " << getTestname() << ": Timed out waiting for unit test to complete within "
+                         << _timeoutMilliSeconds);
         exitTest(TestResult::TimedOut);
     }
 }
@@ -234,8 +387,23 @@ void UnitBase::returnValue(int &retValue)
     if (TimeoutThread.joinable())
         TimeoutThread.join();
 
-    delete Global;
     Global = nullptr;
+}
+
+void UnitKit::returnValue(int &retValue)
+{
+    UnitBase::returnValue(retValue);
+
+    delete GlobalKit;
+    GlobalKit = nullptr;
+}
+
+void UnitWSD::returnValue(int &retValue)
+{
+    UnitBase::returnValue(retValue);
+
+    delete GlobalWSD;
+    GlobalWSD = nullptr;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
