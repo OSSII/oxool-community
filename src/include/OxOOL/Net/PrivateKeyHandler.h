@@ -9,46 +9,42 @@
 #include <Poco/Net/PrivateKeyPassphraseHandler.h>
 #include <iostream>
 
-namespace Poco {
-namespace Net {
+namespace OxOOL
+{
 
-class NetSSL_API OxOOLPrivateKeyHandler: public PrivateKeyPassphraseHandler
-	/// An implementation of PrivateKeyPassphraseHandler.
-	{
+namespace Net
+{
+
+/// An implementation of PrivateKeyPassphraseHandler.
+class PrivateKeyHandler: public Poco::Net::PrivateKeyPassphraseHandler
+{
 public:
 	/// Creates the OxOOLPrivateKeyHandler.
-	OxOOLPrivateKeyHandler(bool server, std::string password = "") :
+	PrivateKeyHandler(bool server, const std::string& password = std::string()) :
 		PrivateKeyPassphraseHandler(server),
-		defaultPassword(password)
-	{
-
-	}
+		maDefaultPassword(password) {}
 
 	/// Destroys the OxOOLPrivateKeyHandler
-	virtual ~OxOOLPrivateKeyHandler()
-	{
-
-	}
+	virtual ~PrivateKeyHandler() {}
 
 	/// Set private key password.
 	void onPrivateKeyRequested(const void* /*pSender*/, std::string& privateKey)
 	{
-		// 有預設的密碼，直接回覆預設密碼
-		if (defaultPassword.size() > 0)
+		// 沒有預設的密碼，由 Console 輸入取得
+		//
+		if (maDefaultPassword.empty())
 		{
-			privateKey = defaultPassword;
-		}
-		else
-		{
-			// 否則由 Console 輸入取得
 			std::cout << "Please enter the private key password: ";
 			std::cin >> privateKey;
 		}
+		else // 直接回覆預設密碼
+			privateKey = maDefaultPassword;
 	}
 
 private:
-	std::string defaultPassword;
+	std::string maDefaultPassword;
 };
 
+} // namespace Net
 
-} } // namespace Poco::Net
+} // namespace OxOOL

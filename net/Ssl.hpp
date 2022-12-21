@@ -40,7 +40,8 @@ class SslContext final
 public:
     SslContext(const std::string& certFilePath, const std::string& keyFilePath,
                const std::string& caFilePath, const std::string& cipherList,
-               ssl::CertificateVerification verification);
+               ssl::CertificateVerification verification,
+               const std::string& password = std::string());
 
     /// Returns a new SSL Context to be used with raw API.
     SSL* newSsl() { return SSL_new(_ctx); }
@@ -66,6 +67,7 @@ private:
 private:
     SSL_CTX* _ctx;
     const ssl::CertificateVerification _verification;
+    std::string _privateKeyPassword;
 };
 
 namespace ssl
@@ -77,12 +79,13 @@ public:
                                         const std::string& keyFilePath,
                                         const std::string& caFilePath,
                                         const std::string& cipherList,
-                                        ssl::CertificateVerification verification)
+                                        ssl::CertificateVerification verification,
+                                        const std::string& password = std::string())
     {
         assert(!isServerContextInitialized() &&
                "Cannot initialize the server context more than once");
         ServerInstance.reset(
-            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification));
+            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification, password));
     }
 
     static void uninitializeServerContext() { ServerInstance.reset(); }
@@ -101,12 +104,13 @@ public:
                                         const std::string& keyFilePath,
                                         const std::string& caFilePath,
                                         const std::string& cipherList,
-                                        ssl::CertificateVerification verification)
+                                        ssl::CertificateVerification verification,
+                                        const std::string& password = std::string())
     {
         assert(!isClientContextInitialized() &&
                "Cannot initialize the client context more than once");
         ClientInstance.reset(
-            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification));
+            new SslContext(certFilePath, keyFilePath, caFilePath, cipherList, verification, password));
     }
 
     static void uninitializeClientContext() { ClientInstance.reset(); }

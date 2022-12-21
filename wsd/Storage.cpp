@@ -51,7 +51,8 @@
 #include "ProofKey.hpp"
 #include <common/FileUtil.hpp>
 #include <common/JsonUtil.hpp>
-#include <OxOOLPrivateKeyHandler.hpp>
+
+#include <OxOOL/Net/PrivateKeyHandler.h>
 
 using std::size_t;
 
@@ -148,6 +149,7 @@ void StorageBase::initialize()
     }
 #endif
 
+    std::string sslPrivateKeyPassword;
     if (SSLEnabled)
     {
         sslClientParams.certificateFile = LOOLWSD::getPathFromConfigWithFallback("storage.ssl.cert_file_path", "ssl.cert_file_path");
@@ -158,11 +160,31 @@ void StorageBase::initialize()
         //sslClientParams.verificationMode = (sslClientParams.caLocation.empty() ? Poco::Net::Context::VERIFY_NONE : Poco::Net::Context::VERIFY_STRICT);
         sslClientParams.verificationMode = Poco::Net::Context::VERIFY_NONE;
         sslClientParams.loadDefaultCAs = true;
+
+        std::string secure_password_key = LOOLWSD::getPathFromConfigWithFallback("storage.ssl.secure_password", "ssl.secure_password");
+        std::string password_key = LOOLWSD::getPathFromConfigWithFallback("storage.ssl.password", "ssl.password");
+        // Added By Firefly <firefly@ossii.com.tw>
+        // 取得 SSL 私鑰密碼
+        if (app.config().has(secure_password_key)) // AES 256 編碼
+        {
+            LOG_INF("Storage SSL Private key use secure password.");
+            std::string encryptedKey = app.config().getString(secure_password_key, "");
+            // 如果安全密碼非空白，解密後再放到 sslPrivateKeyPassword
+            if (!encryptedKey.empty())
+            {
+                sslPrivateKeyPassword = Util::decryptAES256(encryptedKey);
+            }
+        }
+        else if (app.config().has(password_key)) // 明碼儲存
+        {
+            LOG_INF("Use Storage SSL Private use plaintext.");
+            sslPrivateKeyPassword = app.config().getString(password_key, "");
+        }
     }
     else
         sslClientParams.verificationMode = Poco::Net::Context::VERIFY_NONE;
 
-    Poco::SharedPtr<Poco::Net::PrivateKeyPassphraseHandler> privateKeyHandler = new Poco::Net::OxOOLPrivateKeyHandler(false, LOOLWSD::SSLPrivateKeyPassword);
+    Poco::SharedPtr<Poco::Net::PrivateKeyPassphraseHandler> privateKeyHandler = new OxOOL::Net::PrivateKeyHandler(false, sslPrivateKeyPassword);
     Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> invalidClientCertHandler = new Poco::Net::AcceptCertificateHandler(false);
 
     Poco::Net::Context::Ptr sslClientContext = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, sslClientParams);

@@ -754,7 +754,6 @@ std::string LOOLWSD::LoTemplate = LO_PATH;
 std::string LOOLWSD::ChildRoot;
 std::string LOOLWSD::ServerName;
 std::string LOOLWSD::FileServerRoot;
-std::string LOOLWSD::SSLPrivateKeyPassword;
 std::string LOOLWSD::WelcomeFilesRoot;
 std::string LOOLWSD::ServiceRoot;
 std::string LOOLWSD::LOKitVersion;
@@ -1241,32 +1240,6 @@ void LOOLWSD::initialize(Application& self)
     LOOLWSD::SSLEnabled.set(getConfigValue<bool>(conf, "ssl.enable", true));
 #endif
 
-    if (LOOLWSD::isSSLEnabled())
-    {
-        LOG_INF("SSL support: SSL is enabled.");
-        // Added By Firefly <firefly@ossii.com.tw>
-        // 取得 SSL 私鑰密碼
-        if (config().has("ssl.secure_password")) // AES 256 編碼
-        {
-            LOG_INF("SSL Private key use secure password.");
-            std::string encryptedKey = getConfigValue<std::string>(conf, "ssl.secure_password", "");
-            // 如果安全密碼非空白，解密後再放到 LOOLWSD::SSLPrivateKeyPassword
-            if (!encryptedKey.empty())
-            {
-                LOOLWSD::SSLPrivateKeyPassword = Util::decryptAES256(encryptedKey);
-            }
-        }
-        else if (config().has("ssl.password")) // 明碼儲存
-        {
-            LOG_INF("Use SSL Private use plaintext.");
-            LOOLWSD::SSLPrivateKeyPassword = getConfigValue<std::string>(conf, "ssl.password", "");
-        }
-    }
-    else
-    {
-        LOG_WRN("SSL support: SSL is disabled.");
-    }
-
 #if ENABLE_SSL
     LOOLWSD::SSLTermination.set(getConfigValue<bool>(conf, "ssl.termination", true));
 #endif
@@ -1578,9 +1551,29 @@ void LOOLWSD::initializeSSL()
             ssl_cipher_list = DEFAULT_CIPHER_SET;
     LOG_INF("SSL Cipher list: " << ssl_cipher_list);
 
+    // Added By Firefly <firefly@ossii.com.tw>
+    // 取得 SSL 私鑰密碼
+    std::string sslPrivateKeyPassword;
+    if (config().has("ssl.secure_password")) // AES 256 編碼
+    {
+        LOG_INF("SSL Private key use secure password.");
+        std::string encryptedKey = config().getString("ssl.secure_password", "");
+        // 如果安全密碼非空白，解密後再放到 sslPrivateKeyPassword
+        if (!encryptedKey.empty())
+        {
+            sslPrivateKeyPassword = Util::decryptAES256(encryptedKey);
+        }
+    }
+    else if (config().has("ssl.password")) // 明碼儲存
+    {
+        LOG_INF("Use SSL Private use plaintext.");
+        sslPrivateKeyPassword = config().getString("ssl.password", "");
+    }
+
     // Initialize the non-blocking socket SSL.
     ssl::Manager::initializeServerContext(ssl_cert_file_path, ssl_key_file_path, ssl_ca_file_path,
-                                          ssl_cipher_list, ssl::CertificateVerification::Disabled);
+                                          ssl_cipher_list, ssl::CertificateVerification::Disabled,
+                                          sslPrivateKeyPassword);
 
     if (!ssl::Manager::isServerContextInitialized())
         LOG_ERR("Failed to initialize Server SSL.");
