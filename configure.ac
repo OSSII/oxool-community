@@ -453,12 +453,6 @@ AC_DEFINE_UNQUOTED([FEEDBACK_LOCATION],["$FEEDBACK_LOCATION"],[User feedback URL
 AC_SUBST(ENABLE_FEEDBACK)
 AM_CONDITIONAL([ENABLE_FEEDBACK], [test "$ENABLE_FEEDBACK" = "true"])
 
-ENABLE_WELCOME_MESSAGE_BUTTON=false
-AS_IF([test "$enable_welcome_message_button" = "yes"],
-      [ENABLE_WELCOME_MESSAGE_BUTTON="true"])
-AC_DEFINE_UNQUOTED([ENABLE_WELCOME_MESSAGE_BUTTON],["$ENABLE_WELCOME_MESSAGE_BUTTON"],[Should the Release notes message on startup should have a dismiss button instead of an x button to close by default?])
-AC_SUBST(ENABLE_WELCOME_MESSAGE_BUTTON)
-
 USER_INTERFACE_MODE='compact'
 AC_DEFINE_UNQUOTED([USER_INTERFACE_MODE],["$USER_INTERFACE_MODE"],[Which user interface mode should be activated])
 AC_SUBST(USER_INTERFACE_MODE)
@@ -798,6 +792,12 @@ AC_SUBST(LOOLWSD_CONFIGDIR)
 
 LOOLWSD_DATADIR=${prefix}/share/${PACKAGE}
 AC_SUBST(LOOLWSD_DATADIR)
+
+LOOL_USER_ID="lool"
+if test -n "$with_user_id"; then
+   LOOL_USER_ID="$with_user_id"
+fi
+AC_DEFINE_UNQUOTED([LOOL_USER_ID],["$LOOL_USER_ID"],[The user-name which is allowed to run oxoolwsd and its tools])
 
 if test "$enable_debug" = "yes"; then
 modules_dir="`pwd`/src/modules"

@@ -1624,7 +1624,8 @@ size_t DocumentBroker::addSessionInternal(const std::shared_ptr<ClientSession>& 
     const std::string id = session->getId();
 
     // Request a new session from the child kit.
-    const std::string aMessage = "session " + id + ' ' + _docKey + ' ' + _docId;
+    const std::string aMessage = "session " + id + ' ' + _docKey + ' ' +
+        _docId + ' ' + std::to_string(session->getCanonicalViewId());
     _childProcess->sendTextFrame(aMessage);
 
 #if !MOBILEAPP

@@ -798,6 +798,11 @@ namespace Util
         return res;
     }
 
+    void clearAnonymized()
+    {
+        AnonymizedStrings.clear();
+    }
+
     std::string getFilenameFromURL(const std::string& url)
     {
         std::string base;
@@ -934,13 +939,26 @@ namespace Util
         return timestamp;
     }
 
-    std::string getSteadyClockAsString(const std::chrono::steady_clock::time_point &time)
+    /// Returns the given system_clock time_point as string in the local time.
+    /// Format: Thu Jan 27 03:45:27.123 2022
+    std::string getSystemClockAsString(const std::chrono::system_clock::time_point &time)
     {
-        auto now = std::chrono::steady_clock::now();
-        const std::time_t t = std::chrono::system_clock::to_time_t(
-            std::chrono::time_point_cast<std::chrono::seconds>(
-                std::chrono::system_clock::now() + (time - now)));
-        return std::ctime(&t);
+        const auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(time);
+        const std::time_t t = std::chrono::system_clock::to_time_t(ms);
+        const int msFraction =
+            std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch())
+                .count() %
+            1000;
+
+        std::tm tm;
+        localtime_r(&t, &tm);
+
+        char buffer[128] = { 0 };
+        std::strftime(buffer, 80, "%a %b %d %H:%M", &tm);
+        std::stringstream ss;
+        ss << buffer << '.' << std::setfill('0') << std::setw(3) << msFraction << ' '
+           << tm.tm_year + 1900;
+        return ss.str();
     }
 
     bool isFuzzing()

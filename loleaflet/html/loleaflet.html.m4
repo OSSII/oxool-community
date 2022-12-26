@@ -301,7 +301,6 @@ m4_ifelse(MOBILEAPP,[true],
       window.postMessageOriginExt = '';
       window.oxoolLogging = 'true';
       window.enableWelcomeMessage = false;
-      window.enableWelcomeMessageButton = false;
       window.outOfFocusTimeoutSecs = 1000000;
       window.idleTimeoutSecs = 1000000;
       window.protocolDebug = false;
@@ -318,10 +317,9 @@ m4_ifelse(MOBILEAPP,[true],
       window.accessTokenTTL = '%ACCESS_TOKEN_TTL%';
       window.accessHeader = '%ACCESS_HEADER%';
       window.postMessageOriginExt = '%POSTMESSAGE_ORIGIN%';
-      window.oxoolLogging = '%OXLEAFLET_LOGGING%';
+      window.oxoolLogging = '%LOLEAFLET_LOGGING%';
       window.oxoolwsdVersion = '%LOOLWSD_VERSION%';
       window.enableWelcomeMessage = %ENABLE_WELCOME_MSG%;
-      window.enableWelcomeMessageButton = %ENABLE_WELCOME_MSG_BTN%;
       window.userInterfaceMode = '%USER_INTERFACE_MODE%';
       window.useIntegrationTheme = '%USE_INTEGRATION_THEME%';
       window.enableMacrosExecution = '%ENABLE_MACROS_EXECUTION%';

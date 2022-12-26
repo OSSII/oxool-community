@@ -1048,6 +1048,17 @@ bool ClientSession::loadDocument(const char* /*buffer*/, int /*length*/,
 
         oss << " timezoneOffset=" << getTimezoneOffset();
 
+        if (LOOLWSD::hasProperty("security.enable_macros_execution"))
+        {
+            oss << " enableMacrosExecution=" << std::boolalpha
+                << LOOLWSD::getConfigValue<bool>("security.enable_macros_execution", false);
+        }
+
+        if (LOOLWSD::hasProperty("security.macro_security_level"))
+        {
+            oss << " macroSecurityLevel=" << LOOLWSD::getConfigValue<int>("security.macro_security_level", 1);
+        }
+
         if (!getDocOptions().empty())
         {
             oss << " options=" << getDocOptions();

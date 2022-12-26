@@ -238,8 +238,8 @@ void TileCache::saveTileAndNotify(const TileDesc& tile, const char *data, const 
         // Remove subscriptions.
         if (tileBeingRendered->getVersion() <= tile.getVersion())
         {
-            /* LOG_DBG("STATISTICS: tile " << tile.getVersion() << " internal roundtrip " <<
-                    tileBeingRendered->getElapsedTimeMs()); */
+            LOG_DBG("STATISTICS: tile " << tile.getVersion() << " internal roundtrip " <<
+                    tileBeingRendered->getElapsedTimeMs());
             forgetTileBeingRendered(tileBeingRendered);
         }
     }

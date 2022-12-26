@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -13,7 +11,9 @@
 
 #include <config.h>
 
+#ifndef __FreeBSD__
 #include <sys/capability.h>
+#endif
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sysexits.h>
@@ -43,7 +43,8 @@
 #include <common/JailUtil.hpp>
 #include <common/Seccomp.hpp>
 #include <common/SigUtil.hpp>
-#include <security.h>
+#include <common/security.h>
+#include <common/ConfigUtil.hpp>
 
 #ifndef KIT_IN_PROCESS
 static bool NoCapsForKit = false;
@@ -51,6 +52,9 @@ static bool NoSeccomp = false;
 #if ENABLE_DEBUG
 static bool SingleKit = false;
 #endif
+#else
+static const bool NoCapsForKit = true; // NoCaps for in-process kit.
+static const bool NoSeccomp = true; // NoSeccomp for in-process kit.
 #endif
 
 static std::string UserInterface;
@@ -59,7 +63,10 @@ static std::string UnitTestLibrary;
 static std::string LogLevel;
 static std::atomic<unsigned> ForkCounter(0);
 
+/// The [child pid -> jail path] map.
 static std::map<pid_t, std::string> childJails;
+/// The jails that need cleaning up. This should be small.
+static std::vector<std::string> cleanupJailPaths;
 
 #ifndef KIT_IN_PROCESS
 int ClientPortNumber = DEFAULT_CLIENT_PORT_NUMBER;
@@ -148,6 +155,12 @@ protected:
                 LOG_WRN("Cannot spawn " << tokens[1] << " children as requested.");
             }
         }
+        else if (tokens.size() == 2 && tokens.equals(0, "setloglevel"))
+        {
+            // Set environment variable so that new children will also set their log levels accordingly.
+            setenv("LOOL_LOGLEVEL", tokens[1].c_str(), 1);
+            Log::logger().setLevel(tokens[1]);
+        }
         else if (tokens.size() == 3 && tokens.equals(0, "setconfig"))
         {
             // Currently only rlimit entries are supported.
@@ -155,6 +168,14 @@ protected:
             {
                 LOG_ERR("Unknown setconfig command: " << message);
             }
+        }
+        else if (tokens.size() == 2 && tokens.equals(0, "addfont"))
+        {
+            // Tell core to use that font file
+            std::string fontFile = tokens[1];
+
+            assert(loKitPtr);
+            loKitPtr->pClass->setOption(loKitPtr, "addfont", Poco::URI(Poco::Path(fontFile)).toString().c_str());
         }
         else if (tokens.equals(0, "exit"))
         {
@@ -170,20 +191,21 @@ protected:
     void onDisconnect() override
     {
 #if !MOBILEAPP
-        LOG_WRN("ForKit connection lost without exit arriving from wsd. Setting TerminationFlag");
+        LOG_ERR("ForKit connection lost without exit arriving from wsd. Setting TerminationFlag");
         SigUtil::setTerminationFlag();
 #endif
     }
 };
 
 #ifndef KIT_IN_PROCESS
+#ifndef __FreeBSD__
 static bool haveCapability(cap_value_t capability)
 {
     cap_t caps = cap_get_proc();
 
     if (caps == nullptr)
     {
-        LOG_SFL("cap_get_proc() failed.");
+        LOG_SFL("cap_get_proc() failed");
         return false;
     }
 
@@ -194,12 +216,12 @@ static bool haveCapability(cap_value_t capability)
     {
         if (cap_name)
         {
-            LOG_SFL("cap_get_flag failed for " << cap_name << '.');
+            LOG_SFL("cap_get_flag failed for " << cap_name);
             cap_free(cap_name);
         }
         else
         {
-            LOG_SFL("cap_get_flag failed for capability " << capability << '.');
+            LOG_SFL("cap_get_flag failed for capability " << capability);
         }
         return false;
     }
@@ -208,7 +230,7 @@ static bool haveCapability(cap_value_t capability)
     {
         if (cap_name)
         {
-            LOG_FTL("Capability " << cap_name << " is not set for the oxoolforkit program.");
+            LOG_ERR("Capability " << cap_name << " is not set for the oxoolforkit program.");
             cap_free(cap_name);
         }
         else
@@ -242,18 +264,29 @@ static bool haveCorrectCapabilities()
         result = false;
     if (!haveCapability(CAP_FOWNER))
         result = false;
+    if (!haveCapability(CAP_CHOWN))
+        result = false;
 
     return result;
 }
+#else
+static bool haveCorrectCapabilities()
+{
+    // chroot() can only be called by root
+    return getuid() == 0;
+}
+#endif // __FreeBSD__
 #endif
 
 /// Check if some previously forked kids have died.
 static void cleanupChildren()
 {
-    std::vector<std::string> jails;
     pid_t exitedChildPid;
     int status = 0;
     int segFaultCount = 0;
+
+    LOG_TRC("cleanupChildren with " << childJails.size()
+                                    << (childJails.size() == 1 ? " child" : " children"));
 
     // Reap quickly without doing slow cleanup so WSD can spawn more rapidly.
     while ((exitedChildPid = waitpid(-1, &status, WUNTRACED | WNOHANG)) > 0)
@@ -262,7 +295,7 @@ static void cleanupChildren()
         if (it != childJails.end())
         {
             LOG_INF("Child " << exitedChildPid << " has exited, will remove its jail [" << it->second << "].");
-            jails.emplace_back(it->second);
+            cleanupJailPaths.emplace_back(it->second);
             childJails.erase(it);
             if (childJails.empty() && !SigUtil::getTerminationFlag())
             {
@@ -279,6 +312,16 @@ static void cleanupChildren()
         {
             LOG_ERR("Unknown child " << exitedChildPid << " has exited");
         }
+    }
+
+    if (Log::traceEnabled())
+    {
+        std::ostringstream oss;
+        for (const auto& pair : childJails)
+            oss << pair.first << ' ';
+
+        LOG_TRC("cleanupChildren reaped " << cleanupJailPaths.size() << " children to have "
+                                          << childJails.size() << " left: " << oss.str());
     }
 
     if (segFaultCount)
@@ -306,9 +349,16 @@ static void cleanupChildren()
     }
 
     // Now delete the jails.
-    for (const std::string& path : jails)
+    auto i = cleanupJailPaths.size();
+    while (i-- > 0)
     {
+        const std::string path = cleanupJailPaths[i];
         JailUtil::removeJail(path);
+        const FileUtil::Stat st(path);
+        if (st.good() && st.isDirectory())
+            LOG_DBG("Could not remove jail path [" << path << "]. Will retry later.");
+        else
+            cleanupJailPaths.erase(cleanupJailPaths.begin() + i);
     }
 }
 
@@ -327,7 +377,8 @@ static int createLibreOfficeKit(const std::string& childRoot,
     // Used to label the spare kit instances
     static size_t spareKitId = 0;
     ++spareKitId;
-    LOG_DBG("Forking a oxoolkit process with jailId: " << jailId << " as spare oxoolkit #" << spareKitId << '.');
+    LOG_DBG("Forking a oxoolkit process with jailId: " << jailId << " as spare oxoolkit #"
+                                                      << spareKitId << '.');
 
     const pid_t pid = fork();
     if (!pid)
@@ -353,22 +404,19 @@ static int createLibreOfficeKit(const std::string& childRoot,
             }
         }
 
-#ifndef KIT_IN_PROCESS
-        lokit_main(childRoot, jailId, sysTemplate, loTemplate, loSubPath, NoCapsForKit, NoSeccomp, queryVersion, DisplayVersion, spareKitId);
-#else
-        lokit_main(childRoot, jailId, sysTemplate, loTemplate, loSubPath, true, true, queryVersion, DisplayVersion, spareKitId);
-#endif
+        lokit_main(childRoot, jailId, sysTemplate, loTemplate, loSubPath, NoCapsForKit, NoSeccomp,
+                   queryVersion, DisplayVersion, spareKitId);
     }
     else
     {
         // Parent
         if (pid < 0)
         {
-            LOG_SYS("Fork failed.");
+            LOG_SYS("Fork failed");
         }
         else
         {
-            LOG_INF("Forked kit [" << pid << "].");
+            LOG_INF("Forked kit [" << pid << ']');
             childJails[pid] = childRoot + jailId;
         }
 
@@ -386,6 +434,8 @@ void forkLibreOfficeKit(const std::string& childRoot,
                         const std::string& loSubPath,
                         int limit)
 {
+    LOG_TRC("forkLibreOfficeKit limit: " << limit);
+
     // Cleanup first, to reduce disk load.
     cleanupChildren();
 
@@ -404,7 +454,8 @@ void forkLibreOfficeKit(const std::string& childRoot,
         const size_t retry = count * 2;
         for (size_t i = 0; ForkCounter > 0 && i < retry; ++i)
         {
-            if (ForkCounter-- <= 0 || createLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath) < 0)
+            if (ForkCounter-- <= 0
+                || createLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath) < 0)
             {
                 LOG_ERR("Failed to create a kit process.");
                 ++ForkCounter;
@@ -425,23 +476,59 @@ static void printArgumentHelp()
 
 int main(int argc, char** argv)
 {
-    // early check for avoiding the security check for username 'lool'
-    // (deliberately only this, not moving the entire parameter parsing here)
-    bool checkLoolUser = true;
-    for (int i = 0; i < argc; ++i)
-    {
-        char *cmd = argv[i];
-        if (std::strstr(cmd, "--disable-lool-user-checking") == cmd)
-        {
-            std::cerr << "Security: Check for the 'lool' username overridden on the command line." << std::endl;
-            checkLoolUser = false;
-        }
-    }
+    /*WARNING: PRIVILEGED CODE CHECKING START */
 
-    if (checkLoolUser && !hasCorrectUID("oxoolforkit"))
-    {
-        return EX_SOFTWARE;
-    }
+    /*WARNING*/ // early check for avoiding the security check for username 'lool'
+    /*WARNING*/ // (deliberately only this, not moving the entire parameter parsing here)
+    /*WARNING*/ bool checkLoolUser = true;
+    /*WARNING*/ std::string disableLoolUserChecking("--disable-lool-user-checking");
+    /*WARNING*/ for (int i = 1; checkLoolUser && (i < argc); ++i)
+    /*WARNING*/ {
+    /*WARNING*/     if (disableLoolUserChecking == argv[i])
+    /*WARNING*/         checkLoolUser = false;
+    /*WARNING*/ }
+
+    /*WARNING*/ if (!hasCorrectUID("oxoolforkit"))
+    /*WARNING*/ {
+    /*WARNING*/     // don't allow if any capability is set (unless root; who runs this
+    /*WARNING*/     // as root or runs this in a container and provides --disable-lool-user-checking knows what they
+    /*WARNING*/     // are doing)
+    /*WARNING*/     if (hasUID("root"))
+    /*WARNING*/     {
+    /*WARNING*/        // This is fine, the 'root' can do anything anyway
+    /*WARNING*/     }
+    /*WARNING*/     else if (isInContainer())
+    /*WARNING*/     {
+    /*WARNING*/         // This is fine, we are confined in the container anyway
+    /*WARNING*/     }
+    /*WARNING*/     else if (hasAnyCapability())
+    /*WARNING*/     {
+    /*WARNING*/         if (!checkLoolUser)
+    /*WARNING*/             LOG_FTL("Security: --disable-lool-user-checking failed, oxoolforkit has some capabilities set.");
+
+    /*WARNING*/         LOG_FTL("Aborting.");
+    /*WARNING*/         return EX_SOFTWARE;
+    /*WARNING*/     }
+
+    /*WARNING*/     // even without the capabilities, don't run unless the user really knows
+    /*WARNING*/     // what they are doing, and provided a --disable-lool-user-checking
+    /*WARNING*/     if (checkLoolUser)
+    /*WARNING*/     {
+    /*WARNING*/         LOG_FTL("Aborting.");
+    /*WARNING*/         return EX_SOFTWARE;
+    /*WARNING*/     }
+
+    /*WARNING*/     LOG_ERR("Security: Check for the 'lool' username overridden on the command line.");
+    /*WARNING*/ }
+
+    /*WARNING: PRIVILEGED CODE CHECKING END */
+
+    // Continue in privileged mode, but only if:
+    // * the user is 'lool' (privileged user)
+    // * the user is 'root', and --disable-lool-user-checking was provided
+    // Alternatively allow running in non-privileged mode (with --nocaps), if:
+    // * the user is a non-priviled user, the binary is not privileged
+    //   either (no caps set), and --disable-lool-user-checking was provided
 
     if (std::getenv("SLEEPFORDEBUGGER"))
     {
@@ -455,12 +542,9 @@ int main(int argc, char** argv)
         }
     }
 
-#ifndef FUZZER
     SigUtil::setFatalSignals("forkit startup of " LOOLWSD_VERSION " " LOOLWSD_VERSION_HASH);
     SigUtil::setTerminationSignals();
-#endif
 
-    Util::setThreadName("forkit");
     Util::setApplicationPath(Poco::Path(argv[0]).parent().toString());
 
     // Initialization
@@ -546,6 +630,10 @@ int main(int argc, char** argv)
                 }
             }
         }
+        else if (std::strstr(cmd, "--unattended") == cmd)
+        {
+            SigUtil::setUnattended();
+        }
 #if ENABLE_DEBUG
         // this process has various privileges - don't run arbitrary code.
         else if (std::strstr(cmd, "--unitlib=") == cmd)
@@ -576,6 +664,8 @@ int main(int argc, char** argv)
         {
             eq = std::strchr(cmd, '=');
             UserInterface = std::string(eq+1);
+            if (UserInterface != "classic" && UserInterface != "notebookbar")
+                UserInterface = "classic";
         }
 
         else if (std::strstr(cmd, "--pdfdpi") == cmd)
@@ -595,7 +685,7 @@ int main(int argc, char** argv)
     if (!UnitBase::init(UnitBase::UnitType::Kit,
                         UnitTestLibrary))
     {
-        LOG_ERR("Failed to load kit unit test library");
+        LOG_FTL("Failed to load kit unit test library");
         return EX_USAGE;
     }
 
@@ -609,9 +699,9 @@ int main(int argc, char** argv)
 
     if (!NoCapsForKit && !haveCorrectCapabilities())
     {
-        std::cerr << "FATAL: Capabilities are not set for the oxoolforkit program." << std::endl;
-        std::cerr << "Please make sure that the current partition was *not* mounted with the 'nosuid' option." << std::endl;
-        std::cerr << "If you are on SLES11, please set 'file_caps=1' as kernel boot option." << std::endl << std::endl;
+        LOG_FTL("Capabilities are not set for the oxoolforkit program.");
+        LOG_FTL("Please make sure that the current partition was *not* mounted with the 'nosuid' option.");
+        LOG_FTL("If you are on SLES11, please set 'file_caps=1' as kernel boot option.");
         return EX_SOFTWARE;
     }
 
@@ -624,7 +714,7 @@ int main(int argc, char** argv)
     }
 
     if (Util::getProcessThreadCount() != 1)
-        LOG_ERR("Error: forkit has more than a single thread after pre-init");
+        LOG_ERR("forkit has more than a single thread after pre-init");
 
     // Link the network and system files in sysTemplate, if possible.
     JailUtil::SysTemplate::setupDynamicFiles(sysTemplate);
@@ -632,12 +722,22 @@ int main(int argc, char** argv)
     // Make dev/[u]random point to the writable devices in tmp/dev/.
     JailUtil::SysTemplate::setupRandomDeviceLinks(sysTemplate);
 
+#if !MOBILEAPP
+    // Parse the configuration.
+    const auto conf = std::getenv("LOOL_CONFIG");
+    config::initialize(std::string(conf ? conf : std::string()));
+    EnableExperimental = config::getBool("experimental_features", false);
+#endif
+
+    Util::setThreadName("forkit");
+
     LOG_INF("Preinit stage OK.");
 
     // We must have at least one child, more are created dynamically.
     // Ask this first child to send version information to master process and trace startup.
     ::setenv("LOOL_TRACE_STARTUP", "1", 1);
-    pid_t forKitPid = createLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath, true);
+    const pid_t forKitPid
+        = createLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath, true);
     if (forKitPid < 0)
     {
         LOG_FTL("Failed to create a kit process.");
@@ -659,12 +759,17 @@ int main(int argc, char** argv)
     WSHandler = std::make_shared<ServerWSHandler>("forkit_ws");
 
 #if !MOBILEAPP
-    mainPoll.insertNewUnixSocket(MasterLocation, FORKIT_URI, WSHandler);
+    if (!mainPoll.insertNewUnixSocket(MasterLocation, FORKIT_URI, WSHandler))
+    {
+        LOG_SFL("Failed to connect to WSD. Will exit.");
+        Util::forcedExit(EX_SOFTWARE);
+    }
 #endif
 
     SigUtil::setUserSignals();
 
-    LOG_INF("ForKit process is ready.");
+    const int parentPid = getppid();
+    LOG_INF("ForKit process is ready. Parent: " << parentPid);
 
     while (!SigUtil::getTerminationFlag())
     {
@@ -674,23 +779,24 @@ int main(int argc, char** argv)
 
         SigUtil::checkDumpGlobalState(dump_forkit_state);
 
+        // When our parent exits, we are assigned a new parent (typically init).
+        if (getppid() != parentPid)
+        {
+            LOG_SFL("Parent process has died. Will exit now.");
+            break;
+        }
+
 #if ENABLE_DEBUG
         if (!SingleKit)
 #endif
-        forkLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath);
+            forkLibreOfficeKit(childRoot, sysTemplate, loTemplate, loSubPath);
     }
 
     int returnValue = EX_OK;
     UnitKit::get().returnValue(returnValue);
 
-#if 0
-    int status = 0;
-    waitpid(forKitPid, &status, WUNTRACED);
-#endif
-
     LOG_INF("ForKit process finished.");
-    Log::shutdown();
-    std::_Exit(returnValue);
+    Util::forcedExit(returnValue);
 }
 #endif
 

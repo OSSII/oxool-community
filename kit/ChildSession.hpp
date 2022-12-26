@@ -218,6 +218,8 @@ public:
 
     std::shared_ptr<Watermark> _docWatermark;
 
+    const std::shared_ptr<Watermark>& watermark() const { return _docWatermark; }
+
     bool sendTextFrame(const char* buffer, int length) override
     {
         if (!_docManager)

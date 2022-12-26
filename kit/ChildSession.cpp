@@ -41,9 +41,11 @@
 #include <androidapp.hpp>
 #endif
 
+#include <common/ConfigUtil.hpp>
 #include <common/FileUtil.hpp>
 #include <common/JsonUtil.hpp>
 #include <common/Authorization.hpp>
+#include <common/TraceEvent.hpp>
 #include "KitHelper.hpp"
 #include <Log.hpp>
 #include <Png.hpp>
@@ -51,6 +53,8 @@
 #include <Unit.hpp>
 #include <Clipboard.hpp>
 #include <string>
+
+#define RENAME_TO_UPLOAD 0
 
 using Poco::JSON::Object;
 using Poco::JSON::Parser;
@@ -341,9 +345,12 @@ bool ChildSession::_handleInput(const char *buffer, int length)
                tokens.equals(0, "completefunction") ||
                tokens.equals(0, "initunostatus") ||
                tokens.equals(0, "formfieldevent") ||
+               tokens.equals(0, "traceeventrecording") ||
                tokens.equals(0, "sallogoverride") ||
                tokens.equals(0, "rendersearchresult"));
 
+        std::string pzName("ChildSession::_handleInput:" + tokens[0]);
+        ProfileZone pz(pzName.c_str());
         if (tokens.equals(0, "clientzoom"))
         {
             return clientZoom(tokens);
@@ -505,6 +512,28 @@ bool ChildSession::_handleInput(const char *buffer, int length)
         else if (tokens.equals(0, "formfieldevent"))
         {
             return formFieldEvent(buffer, length, tokens);
+        }
+        else if (tokens.equals(0, "traceeventrecording"))
+        {
+            static const bool traceEventsEnabled = config::getBool("trace_event[@enable]", false);
+            if (traceEventsEnabled)
+            {
+                if (tokens.size() > 0)
+                {
+                    if (tokens.equals(1, "start"))
+                    {
+                        getLOKit()->setOption("traceeventrecording", "start");
+                        TraceEvent::startRecording();
+                        LOG_INF("Trace Event recording in this Kit process turned on (might have been on already)");
+                    }
+                    else if (tokens.equals(1, "stop"))
+                    {
+                        getLOKit()->setOption("traceeventrecording", "stop");
+                        TraceEvent::stopRecording();
+                        LOG_INF("Trace Event recording in this Kit process turned off (might have been off already)");
+                    }
+                }
+            }
         }
         else if (tokens.equals(0, "initunostatus"))
         {
@@ -714,13 +743,47 @@ bool ChildSession::loadDocument(const StringVector& tokens)
 
     if (!doctemplate.empty())
     {
-        std::string url = getJailedFilePath();
-        bool success = getLOKitDocument()->saveAs(url.c_str(), nullptr, "TakeOwnership");
+        static constexpr auto Protocol = "file://";
+
+        // If we aren't chroot-ed, we need to use the absolute path.
+        // Because that's where Storage in WSD expects the document.
+        std::string url;
+        if (!_jailRoot.empty())
+        {
+            url = Protocol + _jailRoot;
+            if (Util::startsWith(getJailedFilePath(), Protocol))
+                url += getJailedFilePath().substr(sizeof(Protocol) - 1);
+            else
+                url += getJailedFilePath();
+        }
+        else
+            url += getJailedFilePath();
+
+        LOG_INF("Saving the template document after loading to [" << url << "].");
+
+        const bool success = getLOKitDocument()->saveAs(url.c_str(), nullptr, "TakeOwnership");
         if (!success)
         {
-            LOG_ERR("Failed to save template [" << getJailedFilePath() << "].");
+            LOG_ERR("Failed to save template [" << url << "].");
             return false;
         }
+
+#if !MOBILEAPP
+#if RENAME_TO_UPLOAD
+            // Create the 'upload' file so DocBroker picks up and uploads.
+            const std::string oldName = Poco::URI(url).getPath();
+            const std::string newName = oldName + TO_UPLOAD_SUFFIX;
+            if (rename(oldName.c_str(), newName.c_str()) < 0)
+            {
+                // It's not an error if there was no file to rename, when the document isn't modified.
+                LOG_TRC("Failed to renamed [" << oldName << "] to [" << newName << ']');
+            }
+            else
+            {
+                LOG_TRC("Renamed [" << oldName << "] to [" << newName << ']');
+            }
+#endif
+#endif //!MOBILEAPP
     }
 
     getLOKitDocument()->setView(_viewId);
@@ -1314,7 +1377,7 @@ bool ChildSession::insertFile(const StringVector& tokens)
 #else
         assert(type == "graphic");
         auto binaryData = decodeBase64(data);
-        std::string tempFile = FileUtil::createRandomTmpDir() + '/' + name;
+        const std::string tempFile = FileUtil::createRandomTmpDir() + '/' + name;
         std::ofstream fileStream;
         fileStream.open(tempFile);
         fileStream.write(reinterpret_cast<char*>(binaryData.data()), binaryData.size());
@@ -2858,36 +2921,62 @@ void ChildSession::loKitCallback(const int type, const std::string& payload)
         sendTextFrame("setpart: " + payload);
         break;
     case LOK_CALLBACK_UNO_COMMAND_RESULT:
-        sendTextFrame("unocommandresult: " + payload);
-#if MOBILEAPP
+    {
+        Parser parser;
+        Poco::Dynamic::Var var = parser.parse(payload);
+        Object::Ptr object = var.extract<Object::Ptr>();
+
+        auto commandName = object->get("commandName");
+        auto success = object->get("success");
+
+        if (!commandName.isEmpty() && commandName.toString() == ".uno:Save")
         {
+#if !MOBILEAPP
+#if RENAME_TO_UPLOAD
+            // Create the 'upload' file regardless of success or failure,
+            // because we don't know if the last upload worked or not.
+            // DocBroker will have to decide to upload or skip.
+            const std::string oldName = Poco::URI(getJailedFilePath()).getPath();
+            const std::string newName = oldName + TO_UPLOAD_SUFFIX;
+            if (rename(oldName.c_str(), newName.c_str()) < 0)
+            {
+                // It's not an error if there was no file to rename, when the document isn't modified.
+                const auto onrre = errno;
+                LOG_TRC("Failed to renamed [" << oldName << "] to [" << newName << "] ("
+                                              << Util::symbolicErrno(onrre) << ": "
+                                              << std::strerror(onrre) << ')');
+            }
+            else
+            {
+                LOG_TRC("Renamed [" << oldName << "] to [" << newName << ']');
+            }
+#endif
+#else // MOBILEAPP
             // After the document has been saved (into the temporary copy that we set up in
             // -[CODocument loadFromContents:ofType:error:]), save it also using the system API so
             // that file provider extensions notice.
-
-            Parser parser;
-            Poco::Dynamic::Var var = parser.parse(payload);
-            Object::Ptr object = var.extract<Object::Ptr>();
-
-            auto commandName = object->get("commandName");
-            auto success = object->get("success");
-
-            if (!commandName.isEmpty() && commandName.toString() == ".uno:Save" && !success.isEmpty() && success.toString() == "true")
+            if (!success.isEmpty() && success.toString() == "true")
             {
 #if defined(IOS)
-                CODocument *document = getDocumentDataForMobileAppDocId(_docManager->getMobileAppDocId()).coDocument;
+                CODocument *document = DocumentData::get(_docManager->getMobileAppDocId()).coDocument;
                 [document saveToURL:[document fileURL]
                    forSaveOperation:UIDocumentSaveForOverwriting
                   completionHandler:^(BOOL success) {
                         LOG_TRC("ChildSession::loKitCallback() save completion handler gets " << (success?"YES":"NO"));
+                        if (![[NSFileManager defaultManager] removeItemAtURL:document->copyFileURL error:nil]) {
+                            LOG_SYS("Could not remove copy of document at " << [[document->copyFileURL path] UTF8String]);
+                        }
                     }];
 #elif defined(__ANDROID__)
                 postDirectMessage("SAVE " + payload);
 #endif
             }
-        }
 #endif
-        break;
+        }
+
+        sendTextFrame("unocommandresult: " + payload);
+    }
+    break;
     case LOK_CALLBACK_ERROR:
         {
             LOG_ERR("CALLBACK_ERROR: " << payload);

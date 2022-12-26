@@ -407,18 +407,6 @@ namespace FileUtil
                           std::istreambuf_iterator<char>(lhs.rdbuf()));
     }
 
-    bool linkOrCopyFile(const char* source, const char* target)
-    {
-        if (link(source, target) == -1)
-        {
-            LOG_INF("link(\"" << source << "\", \"" << target << "\") failed: " << strerror(errno)
-                              << ". Will copy.");
-            return copy(source, target, /*log=*/false, /*throw_on_error=*/false);
-        }
-
-        return true;
-    }
-
 } // namespace FileUtil
 
 namespace

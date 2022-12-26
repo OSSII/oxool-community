@@ -263,11 +263,6 @@ public:
         _canonicalViewId = map.createCanonicalId(_watermarkText);
     }
 
-    template<class T> void recalcCanonicalViewId(SessionMap<T> &map)
-    {
-        _canonicalViewId = map.createCanonicalId(_watermarkText);
-    }
-
     const std::string& getDeviceFormFactor() const { return _deviceFormFactor; }
 
     const std::string& getSpellOnline() const { return _spellOnline; }

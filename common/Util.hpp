@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <cerrno>
+#include <chrono>
 #include <cinttypes>
 #include <cstddef>
 #include <cstdint>
@@ -30,7 +31,7 @@
 
 #include <memory.h>
 
-#ifndef __linux
+#ifndef __linux__
 #include <thread>
 #endif
 
@@ -95,6 +96,29 @@ namespace Util
                      const std::vector<int>* fdsToKeep = nullptr, int *stdInput = nullptr);
 
 #endif
+
+    /// Convert unsigned char data to hex.
+    /// @buffer can be either std::vector<char> or std::string.
+    /// @offset the offset within the buffer to start from.
+    /// @length is the number of bytes to convert.
+    template <typename T>
+    inline std::string dataToHexString(const T& buffer, const std::size_t offset,
+                                       const std::size_t length)
+    {
+        char scratch[64];
+        std::stringstream os;
+
+        for (unsigned int i = 0; i < length; i++)
+        {
+            if ((offset + i) >= buffer.size())
+                break;
+
+            sprintf(scratch, "%.2x", static_cast<unsigned char>(buffer[offset + i]));
+            os << scratch;
+        }
+
+        return os.str();
+    }
 
     /// Hex to unsigned char
     template <typename T>
@@ -213,10 +237,10 @@ namespace Util
 
     const char *getThreadName();
 
-#ifdef __linux
+#if defined __linux__
     pid_t getThreadId();
 #else
-    std::thread::id getThreadId();
+    long getThreadId();
 #endif
 
     /// Get version information
@@ -387,47 +411,15 @@ namespace Util
         os.flush();
     }
 
-    /// Dump data as hex and chars to stream
-    inline void dumpHex (std::ostream &os, const char *legend, const char *prefix,
-                         const std::vector<char> &buffer, bool skipDup = true,
-                         const unsigned int width = 32)
+    /// Dump data as hex and chars into a string.
+    /// Primarily used for logging.
+    template <typename T>
+    inline std::string dumpHex(const T& buffer, const char* prefix = "", bool skipDup = true,
+                               const unsigned int width = 32)
     {
-        unsigned int j;
-        char scratch[64];
-        int skip = 0;
-        std::string lastLine;
-
-        os << legend;
-        for (j = 0; j < buffer.size() + width - 1; j += width)
-        {
-            sprintf (scratch, "%s0x%.4x  ", prefix, j);
-            os << scratch;
-
-            std::string line = stringifyHexLine(buffer, j, width);
-            if (skipDup && lastLine == line)
-                skip++;
-            else {
-                if (skip > 0)
-                {
-                    os << "... dup " << skip - 1 << "...";
-                    skip = 0;
-                }
-                else
-                    os << line;
-            }
-            lastLine.swap(line);
-
-            os << '\n';
-        }
-        os.flush();
-    }
-
-    inline void dumpHex (std::ostream &os, const char *legend, const char *prefix,
-                         const std::string &str, bool skipDup = true,
-                         const unsigned int width = 32)
-    {
-        std::vector<char> buffer(str.begin(), str.end());
-        dumpHex(os, legend, prefix, buffer, skipDup, width);
+        std::ostringstream oss;
+        dumpHex(oss, buffer, "", prefix, skipDup, width);
+        return oss.str();
     }
 
     inline std::string dumpHex (const char *legend, const char *prefix,
@@ -437,7 +429,7 @@ namespace Util
     {
         std::ostringstream oss;
         std::vector<char> data(startIt, endIt);
-        dumpHex(oss, legend, prefix, data, skipDup, width);
+        dumpHex(oss, data, legend, prefix, skipDup, width);
         return oss.str();
     }
 
@@ -542,20 +534,6 @@ namespace Util
         return trimmed(std::string(s));
     }
 
-    // Trim all type of whitespace from left and right
-    inline std::string trim_whitespace(std::string s)
-    {
-        auto last =
-            std::find_if(s.rbegin(), s.rend(), [](char ch) { return !std::isspace(ch); });
-        s.erase(last.base(), s.end()); //trim from right
-
-        auto first =
-            std::find_if(s.begin(), s.end(), [](char ch) { return !std::isspace(ch); });
-        s.erase(s.begin(), first); //trim from left
-
-        return s;
-    }
-
     /// Return true iff s starts with t.
     inline bool startsWith(const std::string& s, const std::string& t)
     {
@@ -574,32 +552,10 @@ namespace Util
         return false;
     }
 
-    /// Tokenize delimited values until we hit new-line or the end.
-    inline void tokenize(const char* data, const std::size_t size, const char delimiter,
-                         std::vector<StringToken>& tokens)
+    /// Return true iff s ends with t.
+    inline bool endsWith(const std::string& s, const std::string& t)
     {
-        if (size == 0 || data == nullptr || *data == '\0')
-            return;
-
-        tokens.reserve(16);
-
-        const char* start = data;
-        const char* end = data;
-        for (std::size_t i = 0; i < size && data[i] != '\n'; ++i, ++end)
-        {
-            if (data[i] == delimiter)
-            {
-                if (start != end && *start != delimiter)
-                    tokens.emplace_back(start - data, end - start);
-
-                start = end;
-            }
-            else if (*start == delimiter)
-                ++start;
-        }
-
-        if (start != end && *start != delimiter && *start != '\n')
-            tokens.emplace_back(start - data, end - start);
+        return equal(t.rbegin(), t.rend(), s.rbegin());
     }
 
 #ifdef IOS
@@ -920,6 +876,28 @@ int main(int argc, char**argv)
         return 0;
     }
 
+    /// Return the position of sub-array @sub in array @data, if found, -1 otherwise.
+    inline int findSubArray(const char* data, const std::size_t dataLen, const char* sub,
+                            const std::size_t subLen)
+    {
+        assert(subLen < std::numeric_limits<int>::max() && "Invalid sub-array length to find");
+        if (sub && subLen && dataLen >= subLen)
+        {
+            for (std::size_t i = 0; i < dataLen; ++i)
+            {
+                std::size_t j;
+                for (j = 0; j < subLen && i + j < dataLen && data[i + j] == sub[j]; ++j)
+                {
+                }
+
+                if (j >= subLen)
+                    return i;
+            }
+        }
+
+        return -1;
+    }
+
     inline
     std::string getDelimitedInitialSubstring(const char *message, const int length, const char delim)
     {
@@ -1035,6 +1013,9 @@ int main(int argc, char**argv)
     /// Sets the anonymized version of a given plain-text string.
     /// After this, 'anonymize(plain)' will return 'anonymized'.
     void mapAnonymized(const std::string& plain, const std::string& anonymized);
+
+    /// Clears the shared state of mapAnonymized() / anonymize().
+    void clearAnonymized();
 
     /// Anonymize the basename of filenames only, preserving the path and extension.
     std::string anonymizeUrl(const std::string& url, const std::uint64_t nAnonymizationSalt);
@@ -1183,28 +1164,62 @@ int main(int argc, char**argv)
     /// Convert time from ISO8061 fraction format
     std::chrono::system_clock::time_point iso8601ToTimestamp(const std::string& iso8601Time, const std::string& logName);
 
-    /// conversion from steady_clock for debugging / tracing
-    std::string getSteadyClockAsString(const std::chrono::steady_clock::time_point &time);
-
-    /// Automatically execute code at end of current scope.
-    /// Used for exception-safe code.
-    class ScopeGuard
+    /// A null-converter between two identical clocks.
+    template <typename Dst, typename Src, typename std::is_same<Src, Dst>::type>
+    Dst convertChronoClock(const Src time)
     {
-    public:
-        template <typename T>
-        explicit ScopeGuard(T const &func) : m_func(func) {}
+        return std::chrono::time_point_cast<Dst>(time);
+    }
 
-        ~ScopeGuard()
-        {
-            if (m_func)
-                m_func();
-        }
-    private:
-        ScopeGuard(const ScopeGuard &) = delete;
-        ScopeGuard &operator=(const ScopeGuard &) = delete;
+    /// Converter between two different clocks,
+    /// such as system_clock and stead_clock.
+    /// Note: by nature this has limited accuracy.
+    template <typename Dst, typename Src, typename Enable = void>
+    Dst convertChronoClock(const Src time)
+    {
+        const auto before = Src::clock::now();
+        const auto now = Dst::clock::now();
+        const auto after = Src::clock::now();
+        const auto diff = after - before;
+        const auto correction = before + (diff / 2);
+        return std::chrono::time_point_cast<typename Dst::duration>(now + (time - correction));
+    }
 
-        std::function<void()> m_func;
-    };
+    /// Converts from system_clock to string for debugging / tracing.
+    /// Format (local time): Thu Jan 27 03:45:27.123 2022
+    std::string getSystemClockAsString(const std::chrono::system_clock::time_point &time);
+
+    /// conversion from steady_clock for debugging / tracing
+    /// Format (local time): Thu Jan 27 03:45:27.123 2022
+    inline std::string getSteadyClockAsString(const std::chrono::steady_clock::time_point& time)
+    {
+        return getSystemClockAsString(
+            convertChronoClock<std::chrono::system_clock::time_point>(time));
+    }
+
+    /// See getSystemClockAsString.
+    inline std::string getClockAsString(const std::chrono::system_clock::time_point& time)
+    {
+        return getSystemClockAsString(time);
+    }
+
+    /// See getSteadyClockAsString.
+    inline std::string getClockAsString(const std::chrono::steady_clock::time_point& time)
+    {
+        return getSteadyClockAsString(time);
+    }
+
+    template <typename U, typename T> std::string getTimeForLog(const U& now, const T& time)
+    {
+        const auto elapsed = now - convertChronoClock<U>(time);
+        const auto elapsedS = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
+        const auto elapsedMS =
+            std::chrono::duration_cast<std::chrono::milliseconds>(elapsed) - elapsedS;
+
+        std::stringstream ss;
+        ss << getClockAsString(time) << " (" << elapsedS << ' ' << elapsedMS << " ago)";
+        return ss.str();
+    }
 
     /**
      * Avoid using the configuration layer and rely on defaults which is only useful for special
@@ -1216,6 +1231,7 @@ int main(int argc, char**argv)
      * Splits string into vector<string>. Does not accept referenced variables for easy
      * usage like (splitString("test", ..)) or (splitString(getStringOnTheFly(), ..))
      */
+     //FIXME: merge with StringVector.
     inline std::vector<std::string> splitStringToVector(const std::string& str, const char delim)
     {
         size_t start;
@@ -1246,11 +1262,12 @@ int main(int argc, char**argv)
 #endif
 
     /// Convert a string to 32-bit signed int.
-    /// Returs the parsed value and a boolean indiciating success or failure.
+    /// Returns the parsed value and a boolean indiciating success or failure.
     inline std::pair<std::int32_t, bool> i32FromString(const std::string& input)
     {
         const char* str = input.data();
         char* endptr = nullptr;
+        errno = 0;
         const auto value = std::strtol(str, &endptr, 10);
         return std::make_pair(value, endptr > str && errno != ERANGE);
     }
@@ -1264,50 +1281,13 @@ int main(int argc, char**argv)
         return pair.second ? pair : std::make_pair(def, false);
     }
 
-    /// Convert a string to 32-bit unsigned int.
-    /// Returs the parsed value and a boolean indiciating success or failure.
-    inline std::pair<std::uint32_t, bool> u32FromString(const std::string& input)
-    {
-        const char* str = input.data();
-        char* endptr = nullptr;
-        const auto value = std::strtoul(str, &endptr, 10);
-        return std::make_pair(value, endptr > str && errno != ERANGE);
-    }
-
-    /// Convert a string to 32-bit usigned int. On failure, returns the default
-    /// value, and sets the bool to false (to signify that parsing had failed).
-    inline std::pair<std::uint32_t, bool> u32FromString(const std::string& input,
-                                                        const std::uint32_t def)
-    {
-        const auto pair = u32FromString(input);
-        return pair.second ? pair : std::make_pair(def, false);
-    }
-
-    /// Convert a string to 64-bit signed int.
-    /// Returs the parsed value and a boolean indiciating success or failure.
-    inline std::pair<std::int64_t, bool> i64FromString(const std::string& input)
-    {
-        const char* str = input.data();
-        char* endptr = nullptr;
-        const auto value = std::strtol(str, &endptr, 10);
-        return std::make_pair(value, endptr > str && errno != ERANGE);
-    }
-
-    /// Convert a string to 64-bit signed int. On failure, returns the default
-    /// value, and sets the bool to false (to signify that parsing had failed).
-    inline std::pair<std::int64_t, bool> i64FromString(const std::string& input,
-                                                       const std::int64_t def)
-    {
-        const auto pair = i64FromString(input);
-        return pair.second ? pair : std::make_pair(def, false);
-    }
-
     /// Convert a string to 64-bit unsigned int.
-    /// Returs the parsed value and a boolean indiciating success or failure.
+    /// Returns the parsed value and a boolean indiciating success or failure.
     inline std::pair<std::uint64_t, bool> u64FromString(const std::string& input)
     {
         const char* str = input.data();
         char* endptr = nullptr;
+        errno = 0;
         const auto value = std::strtoul(str, &endptr, 10);
         return std::make_pair(value, endptr > str && errno != ERANGE);
     }

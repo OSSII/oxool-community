@@ -136,10 +136,7 @@ using Poco::Net::PartHandler;
 #include <Unit.hpp>
 #include "UserMessages.hpp"
 #include <Util.hpp>
-
-#ifdef FUZZER
-#  include <tools/Replay.hpp>
-#endif
+#include <common/ConfigUtil.hpp>
 
 #include <common/SigUtil.hpp>
 
@@ -205,6 +202,7 @@ static std::chrono::steady_clock::time_point LastForkRequestTime = std::chrono::
 static std::atomic<int> OutstandingForks(0);
 static std::map<std::string, std::shared_ptr<DocumentBroker> > DocBrokers;
 static std::mutex DocBrokersMutex;
+static Poco::AutoPtr<Poco::Util::XMLConfiguration> KitXmlConfig;
 
 extern "C" { void dump_state(void); /* easy for gdb */ }
 
@@ -289,6 +287,28 @@ void LOOLWSD::writeTraceEventRecording(const char *data, std::size_t nbytes)
 void LOOLWSD::writeTraceEventRecording(const std::string &recording)
 {
     writeTraceEventRecording(recording.data(), recording.length());
+}
+
+// FIXME: Somewhat idiotically, the parameter to emitOneRecordingIfEnabled() should end with a
+// newline, while the paramter to emitOneRecording() should not.
+
+void TraceEvent::emitOneRecordingIfEnabled(const std::string &recording)
+{
+    if (LOOLWSD::TraceEventFile == NULL)
+        return;
+
+    LOOLWSD::writeTraceEventRecording(recording);
+}
+
+void TraceEvent::emitOneRecording(const std::string &recording)
+{
+    if (LOOLWSD::TraceEventFile == NULL)
+        return;
+
+    if (!TraceEvent::isRecordingOn())
+        return;
+
+    LOOLWSD::writeTraceEventRecording(recording + "\n");
 }
 
 void LOOLWSD::checkSessionLimitsAndWarnClients()
@@ -754,7 +774,6 @@ std::string LOOLWSD::LoTemplate = LO_PATH;
 std::string LOOLWSD::ChildRoot;
 std::string LOOLWSD::ServerName;
 std::string LOOLWSD::FileServerRoot;
-std::string LOOLWSD::WelcomeFilesRoot;
 std::string LOOLWSD::ServiceRoot;
 std::string LOOLWSD::LOKitVersion;
 std::string LOOLWSD::ConfigFile = LOOLWSD_CONFIGDIR "/oxoolwsd.xml";
@@ -1006,8 +1025,6 @@ void LOOLWSD::initialize(Application& self)
             { "trace.path[@snapshot]", "false" },
             { "trace[@enable]", "false" },
             { "welcome.enable", ENABLE_WELCOME_MESSAGE },
-            { "welcome.enable_button", ENABLE_WELCOME_MESSAGE_BUTTON },
-            { "welcome.path", "loleaflet/welcome" },
             { "user_interface.mode", USER_INTERFACE_MODE },
             { "user_interface.use_integration_theme", "false" }
           };
@@ -1286,6 +1303,34 @@ void LOOLWSD::initialize(Application& self)
     }
 
 #if !MOBILEAPP
+
+    // Copy and serialize the config into XML to pass to forkit.
+    KitXmlConfig.reset(new Poco::Util::XMLConfiguration);
+    for (const auto& pair : DefAppConfig)
+    {
+        try
+        {
+            KitXmlConfig->setString(pair.first, config().getRawString(pair.first));
+        }
+        catch (const std::exception&)
+        {
+            // Nothing to do.
+        }
+    }
+
+    // Fixup some config entries to match out decisions/overrides.
+    KitXmlConfig->setBool("ssl.enable", isSSLEnabled());
+    KitXmlConfig->setBool("ssl.termination", isSSLTermination());
+
+    // We don't pass the config via command-line
+    // to avoid dealing with escaping and other traps.
+    std::ostringstream oss;
+    KitXmlConfig->save(oss);
+    setenv("LOOL_CONFIG", oss.str().c_str(), true);
+
+    // Initialize the config subsystem too.
+    config::initialize(&config());
+
     // Setup the jails.
     JailUtil::setupJails(getConfigValue<bool>(conf, "mount_jail_tree", true), ChildRoot,
                          SysTemplate);
@@ -1332,10 +1377,6 @@ void LOOLWSD::initialize(Application& self)
             dec.decompressAllFiles();
         }
     }
-
-    WelcomeFilesRoot = getPathFromConfig("welcome.path");
-    if (!getConfigValue<bool>(conf, "welcome.enable", true))
-        WelcomeFilesRoot = "";
 
     NumPreSpawnedChildren = getConfigValue<int>(conf, "num_prespawn_children", 1);
     if (NumPreSpawnedChildren < 1)
@@ -3755,7 +3796,6 @@ public:
            << "\n  LoTemplate: " << LOOLWSD::LoTemplate
            << "\n  ChildRoot: " << LOOLWSD::ChildRoot
            << "\n  FileServerRoot: " << LOOLWSD::FileServerRoot
-           << "\n  WelcomeFilesRoot: " << LOOLWSD::WelcomeFilesRoot
            << "\n  ServiceRoot: " << LOOLWSD::ServiceRoot
            << "\n  LOKitVersion: " << LOOLWSD::LOKitVersion
            << "\n  HostIdentifier: " << Util::getProcessIdentifier()

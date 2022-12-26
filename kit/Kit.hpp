@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <Poco/Util/XMLConfiguration.h>
 #include <map>
 #include <string>
 
@@ -40,7 +41,7 @@ void lokit_main(
                 int docBrokerSocket,
                 const std::string& userInterface,
 #endif
-                size_t numericIdentifier
+                std::size_t numericIdentifier
                 );
 
 #ifdef IOS
@@ -144,5 +145,7 @@ std::string anonymizeUsername(const std::string& username);
 /// For the Android app, for now, we need access to the one and only document open to perform eg. saveAs() for printing.
 std::shared_ptr<lok::Document> getLOKDocumentForAndroidOnly();
 #endif
+
+extern _LibreOfficeKit* loKitPtr;
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

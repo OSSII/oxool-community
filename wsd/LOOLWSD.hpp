@@ -240,7 +240,6 @@ public:
     static std::string ChildRoot;
     static std::string ServerName;
     static std::string FileServerRoot;
-    static std::string WelcomeFilesRoot; ///< From where we should serve the release notes (or otherwise useful content) that is shown on first install or version update.
     static std::string ServiceRoot; ///< There are installations that need prefixing every page with some path.
     static std::string LOKitVersion;
     static bool EnableTraceEventLogging;
@@ -368,6 +367,13 @@ public:
         if (value.empty())
             return LOOLWSD::getPathFromConfig(fallbackName);
         return value;
+    }
+
+    /// Returns true if and only if the property with the given key exists.
+    static
+    bool hasProperty(const std::string& key)
+    {
+        return Application::instance().config().hasProperty(key);
     }
 
     /// Trace a new session and take a snapshot of the file.
