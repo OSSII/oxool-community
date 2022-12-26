@@ -5,7 +5,7 @@ DPKG_EXPORT_BUILDFLAGS = 1
 
 include /usr/share/dpkg/default.mk
 
-CONFFLAGS = --enable-silent-rules --with-lokit-path=`pwd`/bundled/include --disable-setcap --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192 --with-lo-path=/opt/oxoffice $(CONFIG_OPTIONS)
+CONFFLAGS = --enable-silent-rules --prefix=/usr --localstatedir=/var --sysconfdir=/etc --with-lokit-path=`pwd`/bundled/include --disable-setcap --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192 --with-lo-path=/opt/oxoffice $(CONFIG_OPTIONS)
 
 # main packaging script based on dh7 syntax
 %:
@@ -13,10 +13,16 @@ CONFFLAGS = --enable-silent-rules --with-lokit-path=`pwd`/bundled/include --disa
 
 override_dh_auto_configure:
 	./autogen.sh
-	dh_auto_configure -- $(CONFFLAGS)
+	./configure $(CONFFLAGS)
 
 override_dh_auto_test:
 	# do not test
 
 override_dh_installinit:
 	# no init.d scripts here, assume systemd
+	
+override_dh_auto_install:
+	dh_auto_install
+	
+override_dh_install:
+	dh_install
