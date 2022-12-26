@@ -21,7 +21,6 @@ Source0:        @PACKAGE_NAME@-%{version}-@LOOLWSD_BRANCH@.tar.gz
 BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make
 BuildRequires:  poco-devel >= 1.7.5
 BuildRequires:  freetype-devel >= 2.8 fontconfig-devel >= 2.12.6
-BuildRequires:  ossiiProduct-devel >= 1.0.0
 
 # RHEL and its derivatives
 %if 0%{?rhel} == 7
