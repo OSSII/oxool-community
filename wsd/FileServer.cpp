@@ -508,7 +508,7 @@ void FileServerRequestHandler::handleRequest(const HTTPRequest& request,
             int maxAge = 31536000;
             try
             {
-                if (stsEnabled = config.getBool("ssl.sts.enabled", false))
+                if (stsEnabled = config.getBool("ssl.sts.enabled", false); stsEnabled == true)
                     maxAge = config.getInt("ssl.sts.max_age", 31536000); // Default 1 year.
             }
             catch(const std::exception& e)
