@@ -91,13 +91,20 @@ shared_sources = common/FileUtil.cpp \
                  common/Seccomp.cpp \
                  common/MessageQueue.cpp \
                  common/MobileApp.cpp \
+                 common/TraceEvent.cpp \
                  common/SigUtil.cpp \
                  common/SpookyV2.cpp \
                  common/Unit.cpp \
                  common/Util.cpp \
+                 common/ConfigUtil.cpp \
                  common/Authorization.cpp \
+                 common/CommandControl.cpp \
                  net/DelaySocket.cpp \
-                 net/Socket.cpp
+                 net/HttpRequest.cpp \
+                 net/HttpHelper.cpp \
+                 net/NetUtil.cpp \
+                 net/Socket.cpp \
+                 wsd/Exceptions.cpp
 if ENABLE_SSL
 shared_sources += net/Ssl.cpp
 endif
@@ -116,6 +123,7 @@ oxoolwsd_sources = common/Crypto.cpp \
                   wsd/FileServerUtil.cpp \
                   wsd/RequestDetails.cpp \
                   wsd/Storage.cpp \
+                  wsd/HostUtil.cpp \
                   wsd/TileCache.cpp \
                   wsd/ProofKey.cpp
 
@@ -127,19 +135,21 @@ oxoolwsd_SOURCES = $(oxoolwsd_sources) \
 oxoolwsd_LDADD = $(top_builddir)/src/lib/libOxOOL.la
 
 noinst_PROGRAMS = clientnb \
-                  connect \
+                  #connect \
                   lokitclient \
                   oxoolmap \
-                  oxoolstress \
-                  oxoolsocketdump
+                  #oxoolstress \
+                  #oxoolsocketdump
 
-connect_SOURCES = tools/Connect.cpp \
-                  common/Log.cpp \
-                  common/Protocol.cpp \
-                  common/StringVector.cpp \
-                  common/Util.cpp
+#connect_SOURCES = tools/Connect.cpp \
+#                  common/DummyTraceEventEmitter.cpp \
+#                  common/Log.cpp \
+#                  common/Protocol.cpp \
+#                  common/StringVector.cpp \
+#                  common/Util.cpp
 
 lokitclient_SOURCES = common/Log.cpp \
+                      common/DummyTraceEventEmitter.cpp \
                       tools/KitClient.cpp \
                       common/Protocol.cpp \
                       common/StringVector.cpp \
@@ -155,6 +165,7 @@ oxoolforkit_SOURCES = $(oxoolforkit_sources) \
                      $(shared_sources)
 
 clientnb_SOURCES = net/clientnb.cpp \
+                   common/DummyTraceEventEmitter.cpp \
                    common/Log.cpp \
 		   common/StringVector.cpp \
                    common/Util.cpp
@@ -165,21 +176,24 @@ oxoolmap_SOURCES = tools/map.cpp
 
 oxoolconvert_SOURCES = tools/Tool.cpp
 
-oxoolstress_CPPFLAGS = -DTDOC=\"$(abs_top_srcdir)/test/data\" ${include_paths}
-oxoolstress_SOURCES = tools/Stress.cpp \
-                     common/Protocol.cpp \
-                     common/StringVector.cpp \
-                     common/Log.cpp \
-		     common/Util.cpp
+#oxoolstress_CPPFLAGS = -DTDOC=\"$(abs_top_srcdir)/test/data\" ${include_paths}
+#oxoolstress_SOURCES = tools/Stress.cpp \
+#                     common/DummyTraceEventEmitter.cpp \
+#                     common/Protocol.cpp \
+#                     common/StringVector.cpp \
+#                     common/Log.cpp \
+#		     common/Util.cpp
 
 oxoolconfig_SOURCES = tools/Config.cpp \
+             common/DummyTraceEventEmitter.cpp \
 		     common/Crypto.cpp \
 		     common/Log.cpp \
 		     common/StringVector.cpp \
 		     common/Util.cpp
 
-oxoolsocketdump_SOURCES = tools/WebSocketDump.cpp \
-			 $(shared_sources)
+#oxoolsocketdump_SOURCES = tools/WebSocketDump.cpp \
+#             common/DummyTraceEventEmitter.cpp \
+#
 
 wsd_headers = wsd/Admin.hpp \
               wsd/AdminModel.hpp \
@@ -199,7 +213,7 @@ wsd_headers = wsd/Admin.hpp \
               wsd/TileDesc.hpp \
               wsd/TraceFile.hpp \
               wsd/UserMessages.hpp \
-              wsd/OxOOLPrivateKeyHandler.hpp
+              wsd/HostUtil.hpp
 
 shared_headers = common/Common.hpp \
                  common/Clipboard.hpp \
@@ -208,30 +222,37 @@ shared_headers = common/Common.hpp \
                  common/FileUtil.hpp \
                  common/JailUtil.hpp \
                  common/Log.hpp \
-                 common/LOOLWebSocket.hpp \
                  common/Protocol.hpp \
+                 common/StateEnum.hpp \
                  common/StringVector.hpp \
                  common/Seccomp.hpp \
                  common/Session.hpp \
                  common/Unit.hpp \
                  common/UnitHTTP.hpp \
                  common/Util.hpp \
+                 common/ConfigUtil.hpp \
                  common/Authorization.hpp \
                  common/MessageQueue.hpp \
                  common/Message.hpp \
                  common/MobileApp.hpp \
                  common/Png.hpp \
+                 common/TraceEvent.hpp \
                  common/Rectangle.hpp \
                  common/RenderTiles.hpp \
                  common/SigUtil.hpp \
                  common/security.h \
                  common/SpookyV2.h \
-				 net/Buffer.hpp \
+                 common/CommandControl.hpp \
+                 net/Buffer.hpp \
                  net/DelaySocket.hpp \
                  net/FakeSocket.hpp \
+		 net/HttpRequest.hpp \
+                 net/HttpHelper.hpp \
+                 net/NetUtil.hpp \
                  net/ServerSocket.hpp \
                  net/Socket.hpp \
                  net/WebSocketHandler.hpp \
+                 net/WebSocketSession.hpp \
                  tools/Replay.hpp
 if ENABLE_SSL
 shared_headers += net/Ssl.hpp \
@@ -251,6 +272,7 @@ noinst_HEADERS = $(wsd_headers) $(shared_headers) $(kit_headers) \
                  test/countloolkits.hpp \
                  test/lokassert.hpp \
                  test/test.hpp \
+                 test/testlog.hpp \
                  test/helpers.hpp
 
 dist-hook:
