@@ -1,0 +1,3 @@
+usr/lib/oxool/*.so
+usr/share/oxool/modules/
+etc/oxool/conf.d/

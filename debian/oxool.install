@@ -1,0 +1,16 @@
+etc/fonts/conf.d/
+etc/oxool/*.pem
+etc/oxool/*.xcu
+etc/oxool/*.xml
+etc/sudoers.d/
+etc/sysconfig/
+usr/bin/
+usr/lib/*.so*
+usr/lib/pkgconfig/
+usr/share/doc/oxool/
+usr/share/fonts/oxool/
+usr/share/man/
+usr/share/oxool/discovery.xml
+usr/share/oxool/extensions/
+usr/share/oxool/favicon.ico
+usr/share/oxool/loleaflet/

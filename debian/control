@@ -28,3 +28,15 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
 Description: OxOffice Online WebSocket Daemon
  OXOOLWSD is a daemon that talks to web browser clients and provides OxOffice
  services.
+ 
+Package: oxool-dev
+Architecture: any
+Multi-Arch: same
+Depends: oxool
+Description: Files for build OxOffice Online Editor.
+
+Package: oxool-modules
+Architecture: any
+Multi-Arch: same
+Depends: oxool
+Description: Expansion modules for OxOffice Online.
