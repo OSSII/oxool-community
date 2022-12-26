@@ -161,8 +161,10 @@ void StorageBase::initialize()
         sslClientParams.verificationMode = Poco::Net::Context::VERIFY_NONE;
         sslClientParams.loadDefaultCAs = true;
 
-        std::string secure_password_key = LOOLWSD::getPathFromConfigWithFallback("storage.ssl.secure_password", "ssl.secure_password");
-        std::string password_key = LOOLWSD::getPathFromConfigWithFallback("storage.ssl.password", "ssl.password");
+        std::string secure_password_key = app.config().has("storage.ssl.secure_password")
+                                        ? "storage.ssl.secure_password" : "ssl.secure_password";
+        std::string password_key = app.config().has("storage.ssl.password")
+                                 ? "storage.ssl.password" : "ssl.password";
         // Added By Firefly <firefly@ossii.com.tw>
         // 取得 SSL 私鑰密碼
         if (app.config().has(secure_password_key)) // AES 256 編碼
