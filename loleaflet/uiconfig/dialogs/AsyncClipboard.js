@@ -165,18 +165,27 @@ L.dialog.AsyncClipboard = {
 	},
 
 	/**
- 	 * 查詢是否可讀取剪貼簿貼上
-	 * @returns
+	 * 查詢是否可讀取剪貼簿內容
+	 * @returns true - 可以
 	 */
-	canBePaste: function() {
+	canRead: function() {
 		// prompt - 詢問使用者是否允許
 		// granted - 已由使用者授權
 		// denied - 被使用者封鎖
-		const isThatTrue = (this._clipboardState.read === 'granted' ||
-							this._clipboardState.read === 'prompt');
+		return (this._clipboardState.read === 'granted' ||
+				this._clipboardState.read === 'prompt');
+	},
+
+	/**
+ 	 * 可否執行貼上
+	 * @returns
+	 */
+	canBePaste: function() {
+		const isThatTrue = this.canRead();
+
 		console.debug('clipboardState:', this._clipboardState, "canBePaste:", isThatTrue);
 
-		return isThatTrue;
+		return true;//isThatTrue;
 	},
 
 	/**
@@ -278,12 +287,13 @@ L.dialog.AsyncClipboard = {
 			console.debug('Failed to read clipboard :', e);
 			// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
 			if (window.mode.isMobile() || window.mode.isTablet()) {
-				// 沒通知過就顯示對話框通知使用者
+				/* // 沒通知過就顯示對話框通知使用者
 				if (!that._pasteInternalUnderstood) {
 					$(that._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
 				} else { // 直接執行內部貼上
 					that.pasteFromInside(specialPasteCmd);
-				}
+				} */
+				that._map._clip._execCopyCutPaste('paste', specialPasteCmd);
 			} else { // 電腦，通知使用者改用 Ctrl + v
 				that._map._clip._warnCopyPaste();
 			}
