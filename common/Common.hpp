@@ -25,7 +25,7 @@ constexpr int DEFAULT_CLIENT_PORT_NUMBER = 9980;
 // define to wrap strace around the forkit
 #define STRACE_LOOLFORKIT 0
 // define to wrap valgrind around the forkit
-#define VALGRIND_COOLFORKIT 0
+#define VALGRIND_LOOLFORKIT 0
 
 #if VALGRIND_LOOLFORKIT
 constexpr int TRACE_MULTIPLIER = 20;

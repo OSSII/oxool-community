@@ -2024,18 +2024,34 @@ bool LOOLWSD::createForKit()
 #else
     LOG_INF("Creating new forkit process.");
 
+    // Creating a new forkit is always a slow process.
+    ChildSpawnTimeoutMs = CHILD_TIMEOUT_MS * 4;
+
     std::unique_lock<std::mutex> newChildrenLock(NewChildrenMutex);
 
     StringVector args;
-#ifdef STRACE_LOOLFORKIT
-    // if you want to use this, you need to setcap cap_fowner,cap_mknod,cap_sys_chroot=ep /usr/bin/strace
+    std::string parentPath = Path(Application::instance().commandPath()).parent().toString();
+
+#if STRACE_LOOLFORKIT
+    // if you want to use this, you need to sudo setcap cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep /usr/bin/strace
     args.push_back("-o");
     args.push_back("strace.log");
     args.push_back("-f");
     args.push_back("-tt");
     args.push_back("-s");
     args.push_back("256");
-    args.push_back(Path(Application::instance().commandPath()).parent().toString() + "oxoolforkit");
+    args.push_back(parentPath + "oxoolforkit");
+#elif VALGRIND_LOOLFORKIT
+    NoCapsForKit = true;
+    NoSeccomp = true;
+//    args.push_back("--log-file=valgrind.log");
+//    args.push_back("--track-fds=all");
+    args.push_back("--trace-children=yes");
+    args.push_back("--error-limit=no");
+    args.push_back("--num-callers=128");
+    std::string nocapsCopy = parentPath + "oxoolforkit-nocaps";
+    FileUtil::copy(parentPath + "oxoolforkit", nocapsCopy, true, true);
+    args.push_back(nocapsCopy);
 #endif
     args.push_back("--losubpath=" + std::string(LO_JAIL_SUBPATH));
     args.push_back("--systemplate=" + SysTemplate);
@@ -2074,13 +2090,15 @@ bool LOOLWSD::createForKit()
         args.push_back("--singlekit");
 #endif
 
-#ifdef STRACE_LOOLFORKIT
-    std::string forKitPath = "strace";
+#if STRACE_LOOLFORKIT
+    std::string forKitPath = "/usr/bin/strace";
+#elif VALGRIND_LOOLFORKIT
+    std::string forKitPath = "/usr/bin/valgrind";
 #else
 #if ENABLE_DEBUG
     std::string forKitPath = DEBUG_ABSSRCDIR "/oxoolforkit";
 #else
-    std::string forKitPath = Path(Application::instance().commandPath()).parent().toString() + "oxoolforkit";
+    std::string forKitPath = parentPath + "oxoolforkit";
 #endif
 #endif
 
