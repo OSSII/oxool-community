@@ -15,13 +15,24 @@
 
 constexpr int DEFAULT_CLIENT_PORT_NUMBER = 9980;
 
-constexpr int COMMAND_TIMEOUT_MS = 5000;
+// define to wrap strace around the forkit
+#define STRACE_LOOLFORKIT 0
+// define to wrap valgrind around the forkit
+#define VALGRIND_COOLFORKIT 0
+
+#if VALGRIND_LOOLFORKIT
+constexpr int TRACE_MULTIPLIER = 20;
+#else
+constexpr int TRACE_MULTIPLIER = 1;
+#endif
+
+constexpr int COMMAND_TIMEOUT_MS = 5000 * TRACE_MULTIPLIER;
 constexpr int CHILD_TIMEOUT_MS = COMMAND_TIMEOUT_MS;
 constexpr int CHILD_REBALANCE_INTERVAL_MS = CHILD_TIMEOUT_MS / 10;
 constexpr int POLL_TIMEOUT_MICRO_S = (COMMAND_TIMEOUT_MS / 5) * 1000;
-constexpr int WS_SEND_TIMEOUT_MS = 1000;
+constexpr int WS_SEND_TIMEOUT_MS = 1000 * TRACE_MULTIPLIER;
 
-constexpr int TILE_ROUNDTRIP_TIMEOUT_MS = 5000;
+constexpr int TILE_ROUNDTRIP_TIMEOUT_MS = 5000 * TRACE_MULTIPLIER;
 
 /// Pipe and Socket read buffer size.
 /// Should be large enough for ethernet packets
@@ -59,16 +70,16 @@ constexpr const char UPLOADING_SUFFIX[] = "ing";
 /// the code: they are logical execution unit names.
 #define SHARED_DOC_THREADNAME_SUFFIX "broker_"
 
-/// The HTTP response User-Agent.
+/// The HTTP request User-Agent. Used only in Requests.
 #define HTTP_AGENT_STRING "LOOLWSD HTTP Agent " LOOLWSD_VERSION
 
-/// The WOPI User-Agent.
+/// The WOPI User-Agent. Depricated: use HTTP_AGENT_STRING.
 #define WOPI_AGENT_STRING "LOOLWSD WOPI Agent " LOOLWSD_VERSION
 
 /// The HTTP response Server. Used only in Responses.
 #define HTTP_SERVER_STRING "LOOLWSD HTTP Server " LOOLWSD_VERSION
 
-// The client port number, both oxoolwsd and the kits have this.
+/// The client port number, both oxoolwsd and the kits have this.
 extern int ClientPortNumber;
 extern std::string MasterLocation;
 
