@@ -96,6 +96,7 @@ shared_sources = common/FileUtil.cpp \
                  common/SpookyV2.cpp \
                  common/Unit.cpp \
                  common/Util.cpp \
+                 common/Common.cpp \
                  common/ConfigUtil.cpp \
                  common/Authorization.cpp \
                  common/CommandControl.cpp \

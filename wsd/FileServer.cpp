@@ -411,7 +411,7 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
             std::ostringstream oss;
             oss << "HTTP/1.1 200 OK\r\n"
                 "Last-Modified: " << Util::getHttpTime(localFile.fileLastModifiedTime) << "\r\n"
-                "User-Agent: " WOPI_AGENT_STRING "\r\n"
+                "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
                 "Content-Length: " << responseString.size() << "\r\n"
                 "Content-Type: " << mimeType << "\r\n"
                 "\r\n"
@@ -431,7 +431,7 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
             std::ostringstream oss;
             oss << "HTTP/1.1 200 OK\r\n"
                 "Last-Modified: " << Util::getHttpTime(localFile.fileLastModifiedTime) << "\r\n"
-                "User-Agent: " WOPI_AGENT_STRING "\r\n"
+                "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
                 "Content-Length: " << localFile.size << "\r\n"
                 "Content-Type: " << mimeType << "\r\n"
                 "\r\n"

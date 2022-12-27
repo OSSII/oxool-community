@@ -11,6 +11,13 @@
 
 #include <string>
 
+namespace Common
+{
+const std::string& getHttpAgentString();
+const std::string& getWopiAgentString();
+const std::string& getHttpServerString();
+}
+
 // Default values and other shared data between processes.
 
 constexpr int DEFAULT_CLIENT_PORT_NUMBER = 9980;
@@ -71,13 +78,13 @@ constexpr const char UPLOADING_SUFFIX[] = "ing";
 #define SHARED_DOC_THREADNAME_SUFFIX "broker_"
 
 /// The HTTP request User-Agent. Used only in Requests.
-#define HTTP_AGENT_STRING "LOOLWSD HTTP Agent " LOOLWSD_VERSION
+#define HTTP_AGENT_STRING Common::getHttpAgentString()
 
 /// The WOPI User-Agent. Depricated: use HTTP_AGENT_STRING.
-#define WOPI_AGENT_STRING "LOOLWSD WOPI Agent " LOOLWSD_VERSION
+#define WOPI_AGENT_STRING Common::getWopiAgentString()
 
 /// The HTTP response Server. Used only in Responses.
-#define HTTP_SERVER_STRING "LOOLWSD HTTP Server " LOOLWSD_VERSION
+#define HTTP_SERVER_STRING Common::getHttpServerString()
 
 /// The client port number, both oxoolwsd and the kits have this.
 extern int ClientPortNumber;

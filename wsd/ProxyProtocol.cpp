@@ -57,7 +57,7 @@ void DocumentBroker::handleProxyRequest(
         std::ostringstream oss;
         oss << "HTTP/1.1 200 OK\r\n"
             "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-            "User-Agent: " WOPI_AGENT_STRING "\r\n"
+            "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
             "Content-Length: " << sessionId.size() << "\r\n"
             "Content-Type: application/json; charset=utf-8\r\n"
             "X-Content-Type-Options: nosniff\r\n"
@@ -152,14 +152,14 @@ bool ProxyProtocolHandler::parseEmitIncoming(
         // far from efficient:
         std::vector<char> data;
         data.insert(data.begin(), in.begin(), in.begin() + len + 1);
-        in.erase(in.begin(), in.begin() + len);
+        in.eraseFirst(len);
 
         if (in.size() < 1 || in[0] != '\n')
         {
             LOG_ERR("Missing final newline");
             return false;
         }
-        in.erase(in.begin(), in.begin() + 1);
+        in.eraseFirst(1);
 
         if (serial != _inSerial + 1)
             LOG_ERR("Serial mismatch " << serial << " vs. " << (_inSerial + 1));
@@ -214,7 +214,7 @@ void ProxyProtocolHandler::handleRequest(bool isWaiting, const std::shared_ptr<S
             std::ostringstream oss;
             oss << "HTTP/1.1 200 OK\r\n"
                 "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-                "User-Agent: " WOPI_AGENT_STRING "\r\n"
+                "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
                 "Content-Length: " << 0 << "\r\n"
                 "\r\n";
             streamSocket->send(oss.str());
@@ -342,7 +342,7 @@ bool ProxyProtocolHandler::flushQueueTo(const std::shared_ptr<StreamSocket> &soc
     std::ostringstream oss;
     oss << "HTTP/1.1 200 OK\r\n"
         "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-        "User-Agent: " WOPI_AGENT_STRING "\r\n"
+        "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
         "Content-Length: " << totalSize << "\r\n"
         "Content-Type: application/json; charset=utf-8\r\n"
         "X-Content-Type-Options: nosniff\r\n"

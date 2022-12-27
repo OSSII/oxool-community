@@ -2548,7 +2548,7 @@ private:
             std::ostringstream oss;
             oss << "HTTP/1.1 400\r\n"
                 "Date: " << Util::getHttpTimeNow() << "\r\n"
-                "User-Agent: " WOPI_AGENT_STRING "\r\n"
+                "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
                 "Content-Length: 0\r\n"
                 "\r\n";
             socket->send(oss.str());
@@ -2790,7 +2790,7 @@ private:
         std::ostringstream oss;
         oss << "HTTP/1.1 200 OK\r\n"
             "Last-Modified: " << Util::getHttpTimeNow() << "\r\n"
-            "User-Agent: " WOPI_AGENT_STRING "\r\n"
+            "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
             "Content-Length: " << responseString.size() << "\r\n"
             "Content-Type: " << mimeType << "\r\n"
             "\r\n";
