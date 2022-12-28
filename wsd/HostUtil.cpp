@@ -8,7 +8,6 @@
 #include "HostUtil.hpp"
 #include <common/ConfigUtil.hpp>
 #include <common/Log.hpp>
-#include <common/CommandControl.hpp>
 #include <config.h>
 
 Util::RegexListMatcher HostUtil::WopiHosts;
