@@ -630,7 +630,10 @@ L.Clipboard = L.Class.extend({
 			else
 			{
 				window.app.console.log('help did not arrive for ' + operation);
-				that._warnCopyPaste();
+				if (window.mode.isDesktop())
+					that._warnCopyPaste();
+				else
+					L.dialog.AsyncClipboard.onlyPasteInside(cmd);
 			}
 		}, 150 /* ms */);
 	},

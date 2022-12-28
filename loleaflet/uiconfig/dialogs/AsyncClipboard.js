@@ -189,6 +189,19 @@ L.dialog.AsyncClipboard = {
 	},
 
 	/**
+	 * 通知只能內部貼上
+	 */
+	onlyPasteInside: function(specialPasteCmd)
+	{
+		// 沒通知過就顯示對話框通知使用者
+		if (!this._pasteInternalUnderstood) {
+			$(this._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
+		} else { // 直接執行內部貼上
+			this.pasteFromInside(specialPasteCmd);
+		}
+	},
+
+	/**
 	 * 若 wopi 的 DisableCopy 啟用，則文件內所複製的資料，不會送到系統的剪貼簿，
 	 * 會出現文件剪貼簿和系統剪貼簿不一樣的情況，此時若使用者執行貼上動作，需詢問使用者要貼上哪個剪貼簿
 	 */
@@ -287,12 +300,6 @@ L.dialog.AsyncClipboard = {
 			console.debug('Failed to read clipboard :', e);
 			// 手機或平板，通知使用者，只能貼上文件內部所複製的資料
 			if (window.mode.isMobile() || window.mode.isTablet()) {
-				/* // 沒通知過就顯示對話框通知使用者
-				if (!that._pasteInternalUnderstood) {
-					$(that._pasteInternalDialog).attr('pastecommand', specialPasteCmd).dialog('open');
-				} else { // 直接執行內部貼上
-					that.pasteFromInside(specialPasteCmd);
-				} */
 				that._map._clip._execCopyCutPaste('paste', specialPasteCmd);
 			} else { // 電腦，通知使用者改用 Ctrl + v
 				that._map._clip._warnCopyPaste();
