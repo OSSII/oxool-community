@@ -43,6 +43,7 @@
             <idle_time_secs desc="Minimum idle time for a document to be candidate for bad state" type="uint" default="300">300</idle_time_secs>
             <limit_dirty_mem_mb desc="Minimum memory usage for a document to be candidate for bad state" type="uint" default="3072">3072</limit_dirty_mem_mb>
             <limit_cpu_per desc="Minimum CPU usage for a document to be candidate for bad state" type="uint" default="85">85</limit_cpu_per>
+            <lost_kit_grace_period_secs desc="The minimum grace period for a lost kit process (not referenced by oxoolwsd) to resolve its lost status before it is terminated. To disable the cleanup of lost kits use value 0" default="120">120</lost_kit_grace_period_secs>
         </cleanup>
     </per_document>
 
@@ -56,7 +57,14 @@
 
     <logging>
         <color type="bool">true</color>
+        <!--
+             Note to developers: When you do "make run", the logging.level will be set on the
+             oxoolwsd command line, so if you want to change it for your testing, do it in
+             Makefile.am, not here.
+        -->
         <level type="string" desc="Can be 0-8, or none (turns off logging), fatal, critical, error, warning, notice, information, debug, trace" default="@LOOLWSD_LOGLEVEL@">@LOOLWSD_LOGLEVEL@</level>
+        <most_verbose_level_settable_from_client type="string" desc="A loggingleveloverride message from the client can not set a more verbose log level than this" default="notice">notice</most_verbose_level_settable_from_client>
+        <least_verbose_level_settable_from_client type="string" desc="A loggingleveloverride message from a client can not set a less verbose log level than this" default="fatal">fatal</least_verbose_level_settable_from_client>
         <protocol type="bool" desc="Enable minimal client-site JS protocol logging from the start">@ENABLE_DEBUG_PROTOCOL@</protocol>
         <!-- lokit_sal_log example: Log WebDAV-related messages, that is interesting for debugging Insert - Image operation: "+TIMESTAMP+INFO.ucb.ucp.webdav+WARN.ucb.ucp.webdav"
              See also: https://docs.libreoffice.org/sal/html/sal_log.html -->
@@ -211,5 +219,12 @@
 
     <monitors desc="Addresses of servers we connect to on start for monitoring">
     </monitors>
+
+    <quarantine_files desc="Files are stored here to be examined later in cases of crashes or similar situation." default="false" enable="false">
+        <limit_dir_size_mb desc="Maximum directory size. On exceeding the specified limit, older files will be deleted." default="250" type="uint"></limit_dir_size_mb>
+        <max_versions_to_maintain desc="How many versions of the same file to keep." default="2" type="uint"></max_versions_to_maintain>
+        <path desc="Path to directory under which quarantined files will be stored" type="path" relative="true" default="quarantine"></path>
+        <expiry_min desc="Time in mins after quarantined files will be deleted." type="int" default="30"></expiry_min>
+    </quarantine_files>
 
 </config>
