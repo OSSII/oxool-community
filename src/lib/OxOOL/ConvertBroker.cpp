@@ -24,7 +24,8 @@ ConvertBroker::ConvertBroker(const std::string& uri,
     mpCallback(nullptr),
     mbCallbackIsCalled(false)
 {
-    static const int limit_convert_secs = LOOLWSD::getConfigValue<int>("per_document.limit_convert_secs", 100);
+    static const std::chrono::seconds limit_convert_secs(
+        LOOLWSD::getConfigValue<int>("per_document.limit_convert_secs", 100));
     _limitLifeSeconds = limit_convert_secs;
 }
 

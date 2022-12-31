@@ -20,6 +20,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <utility>
 
 #include <Poco/URI.h>
 
@@ -28,6 +29,7 @@
 #include "Util.hpp"
 #include "net/Socket.hpp"
 #include "net/WebSocketHandler.hpp"
+#include "Storage.hpp"
 
 #include "common/SigUtil.hpp"
 #include "common/Session.hpp"
@@ -40,13 +42,10 @@
 class PrisonerRequestDispatcher;
 class DocumentBroker;
 struct LockContext;
-class StorageBase;
 class TileCache;
 class Message;
 
-#include "LOOLWSD.hpp"
-
-/// A ChildProcess object represents a KIT process that hosts a document and manipulates the
+/// A ChildProcess object represents a Kit process that hosts a document and manipulates the
 /// document using the LibreOfficeKit API. It isn't actually a child of the WSD process, but a
 /// grandchild. The comments loosely talk about "child" anyway.
 
@@ -59,13 +58,11 @@ public:
                  const std::string& jailId,
                  const std::shared_ptr<StreamSocket>& socket,
                  const Poco::Net::HTTPRequest &request) :
-
         WSProcess("ChildProcess", pid, socket, std::make_shared<WebSocketHandler>(socket, request)),
         _jailId(jailId),
         _smapsFD(-1)
     {
     }
-
 
     ChildProcess(ChildProcess&& other) = delete;
 
@@ -126,6 +123,10 @@ public:
 
     /// Called when removed from the DocBrokers list
     virtual void dispose() {}
+
+    /// setup the transfer of a socket into this DocumentBroker poll.
+    void setupTransfer(SocketDisposition &disposition,
+                       SocketDisposition::MoveFunction transferFn);
 
     /// Start processing events
     void startThread();
@@ -219,6 +220,9 @@ public:
         alertAllUsers("error: cmd=" + cmd + " kind=" + kind);
     }
 
+    /// Sets the log level of kit.
+    void setKitLogLevel(const std::string& level);
+
     /// Invalidate the cursor position.
     void invalidateCursor(int x, int y, int w, int h)
     {
@@ -254,7 +258,7 @@ public:
 
     bool isMarkedToDestroy() const { return _markToDestroy || _stop; }
 
-    bool handleInput(const std::vector<char>& payload);
+    virtual bool handleInput(const std::vector<char>& payload);
 
     /// Forward a message from client session to its respective child session.
     bool forwardToChild(const std::string& viewId, const std::string& message);
@@ -377,9 +381,15 @@ private:
     /// Sum the I/O stats from all connected sessions
     void getIOStats(uint64_t &sent, uint64_t &recv);
 
+    /// Returns true iff this is a Convert-To request.
+    /// This is needed primarily for security reasons,
+    /// because we can't trust the given file-path is
+    /// a convert-to request or doctored to look like one.
+    virtual bool isConvertTo() const { return false; }
+
 protected:
     /// Seconds to live for, or 0 forever
-    int64_t _limitLifeSeconds;
+    std::chrono::seconds _limitLifeSeconds;
     std::string _uriOrig;
     /// What type are we: affects priority.
     ChildType _type;
@@ -463,11 +473,29 @@ private:
 };
 
 #if !MOBILEAPP
-class ConvertToBroker final : public DocumentBroker
+class StatelessBatchBroker : public DocumentBroker
+{
+protected:
+    std::shared_ptr<ClientSession> _clientSession;
+
+public:
+    StatelessBatchBroker(const std::string& uri,
+                   const Poco::URI& uriPublic,
+                   const std::string& docKey)
+        : DocumentBroker(ChildType::Batch, uri, uriPublic, docKey)
+    {}
+
+    virtual ~StatelessBatchBroker()
+    {}
+
+    /// Cleanup path and its parent
+    static void removeFile(const std::string &uri);
+};
+
+class ConvertToBroker final : public StatelessBatchBroker
 {
     const std::string _format;
     const std::string _sOptions;
-    std::shared_ptr<ClientSession> _clientSession;
 
 public:
     /// Construct DocumentBroker with URI and docKey
@@ -490,9 +518,45 @@ public:
     /// How many live conversions are running.
     static size_t getInstanceCount();
 
-    /// Cleanup path and its parent
-    static void removeFile(const std::string &uri);
+private:
+    bool isConvertTo() const override { return true; }
 };
+
+class RenderSearchResultBroker final : public StatelessBatchBroker
+{
+    std::shared_ptr<std::vector<char>> _pSearchResultContent;
+    std::vector<char> _aResposeData;
+    std::shared_ptr<StreamSocket> _socket;
+
+public:
+    RenderSearchResultBroker(std::string const& uri,
+                             Poco::URI const& uriPublic,
+                             std::string const& docKey,
+                             std::shared_ptr<std::vector<char>> const& pSearchResultContent);
+
+    virtual ~RenderSearchResultBroker();
+
+    void setResponseSocket(std::shared_ptr<StreamSocket> const & socket)
+    {
+        _socket = socket;
+    }
+
+    /// Execute command(s) and move the socket to this broker
+    bool executeCommand(SocketDisposition& disposition, std::string const& id);
+
+    /// Override method to start executing when the document is loaded
+    void setLoaded() override;
+
+    /// Called when removed from the DocBrokers list
+    void dispose() override;
+
+    /// Override to filter out the data that is returned by a command
+    bool handleInput(const std::vector<char>& payload) override;
+
+    /// How many instances are running.
+    static std::size_t getInstanceCount();
+};
+
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

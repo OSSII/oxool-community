@@ -67,6 +67,8 @@ struct DocCleanupSettings
     size_t getLimitDirtyMem() const { return _limitDirtyMem; }
     void setLimitCpu(size_t limitCpu) { _limitCpu = limitCpu; }
     size_t getLimitCpu() const { return _limitCpu; }
+    void setLostKitGracePeriod(size_t lostKitGracePeriod) { _lostKitGracePeriod = lostKitGracePeriod; }
+    size_t getLostKitGracePeriod() { return _lostKitGracePeriod; }
 
 private:
     bool _enable;
@@ -75,6 +77,7 @@ private:
     size_t _idleTime;
     size_t _limitDirtyMem;
     size_t _limitCpu;
+    size_t _lostKitGracePeriod;
 };
 
 struct DocProcSettings
@@ -133,11 +136,12 @@ class Document
     Document& operator = (const Document &) = delete;
 
 public:
-    Document(std::string docKey, pid_t pid, std::string filename)
+    Document(std::string docKey, pid_t pid, std::string filename, std::string wopiHost)
         : _docKey(std::move(docKey))
         , _pid(pid)
         , _activeViews(0)
         , _filename(std::move(filename))
+        , _wopiHost(std::move(wopiHost))
         , _memoryDirty(0)
         , _lastJiffy(0)
         , _lastCpuPercentage(0)
@@ -168,6 +172,8 @@ public:
     pid_t getPid() const { return _pid; }
 
     std::string getFilename() const { return _filename; }
+
+    std::string getHostName() const { return _wopiHost; }
 
     bool isExpired() const { return _end != 0 && std::time(nullptr) >= _end; }
 
@@ -215,9 +221,9 @@ public:
     void setProcSMapsFD(const int smapsFD) { _procSMaps = fdopen(smapsFD, "r"); }
     bool hasMemDirtyChanged() const { return _hasMemDirtyChanged; }
     void setMemDirtyChanged(bool changeStatus) { _hasMemDirtyChanged = changeStatus; }
-    time_t getBadBehaviorDetectionTime(){ return _badBehaviorDetectionTime; }
+    time_t getBadBehaviorDetectionTime() const { return _badBehaviorDetectionTime; }
     void setBadBehaviorDetectionTime(time_t badBehaviorDetectionTime){ _badBehaviorDetectionTime = badBehaviorDetectionTime;}
-    time_t getAbortTime(){ return _abortTime; }
+    time_t getAbortTime() const { return _abortTime; }
     void setAbortTime(time_t abortTime) { _abortTime = abortTime; }
 
     std::string to_string() const;
@@ -231,11 +237,13 @@ private:
     unsigned _activeViews;
     /// Hosted filename
     std::string _filename;
+
+    std::string _wopiHost;
     /// The dirty (ie. un-shared) memory of the document's Kit process.
     size_t _memoryDirty;
     /// Last noted Jiffy count
     unsigned _lastJiffy;
-    std::chrono::time_point<std::chrono::system_clock> _lastJiffyTime;
+    std::chrono::steady_clock::time_point _lastJiffyTime;
     unsigned _lastCpuPercentage;
 
     std::time_t _start;
@@ -352,7 +360,7 @@ public:
 
     void addDocument(const std::string& docKey, pid_t pid, const std::string& filename,
                      const std::string& sessionId, const std::string& userName, const std::string& userId,
-                     const int smapsFD);
+                     const int smapsFD, const std::string& URI);
 
     void removeDocument(const std::string& docKey, const std::string& sessionId);
     void removeDocument(const std::string& docKey);
@@ -364,7 +372,7 @@ public:
     uint64_t getSentBytesTotal() { return _sentBytesTotal; }
     uint64_t getRecvBytesTotal() { return _recvBytesTotal; }
 
-    double getServerUptime();
+    static double getServerUptimeSecs();
 
     /// Document basic info list sorted by most idle time
     std::vector<DocBasicInfo> getDocumentsSortedByIdle() const;
@@ -375,6 +383,7 @@ public:
     void setDocWopiUploadDuration(const std::string& docKey, const std::chrono::milliseconds wopiUploadDuration);
     void addSegFaultCount(unsigned segFaultCount);
     void setForKitPid(pid_t pid) { _forKitPid = pid; }
+    void addLostKitsTerminated(unsigned lostKitsTerminated);
 
     void getMetrics(std::ostringstream &oss);
 
@@ -386,6 +395,9 @@ public:
     void setDefDocProcSettings(const DocProcSettings& docProcSettings) { _defDocProcSettings = docProcSettings; }
 
     static int getPidsFromProcName(const std::regex& procNameRegEx, std::vector<int> *pids);
+    static int getAssignedKitPids(std::vector<int> *pids);
+    static int getUnassignedKitPids(std::vector<int> *pids);
+    static int getKitPidsFromSystem(std::vector<int> *pids);
 
     std::vector<std::string> getDocumentTokens() const;
 
@@ -428,6 +440,7 @@ private:
     uint64_t _recvBytesTotal = 0;
 
     uint64_t _segFaultCount = 0;
+    uint64_t _lostKitsTerminatedCount = 0;
 
     pid_t _forKitPid = 0;
 

@@ -41,7 +41,6 @@
 using namespace LOOLProtocol;
 
 using Poco::Exception;
-using std::size_t;
 
 Session::Session(const std::shared_ptr<ProtocolHandlerInterface> &protocol,
                  const std::string& name, const std::string& id, bool readOnly) :
@@ -54,7 +53,6 @@ Session::Session(const std::shared_ptr<ProtocolHandlerInterface> &protocol,
     _isCloseFrame(false),
     _isReadOnly(readOnly),
     _isAllowChangeComments(false),
-    _docPassword(""),
     _haveDocPassword(false),
     _isDocPasswordProtected(false),
     _watermarkWhenEditing(false),
@@ -93,14 +91,14 @@ bool Session::sendBinaryFrame(const char *buffer, int length)
 void Session::parseDocOptions(const StringVector& tokens, int& part, std::string& timestamp, std::string& doctemplate)
 {
     // First token is the "load" command itself.
-    size_t offset = 1;
+    std::size_t offset = 1;
     if (tokens.size() > 2 && tokens[1].find("part=") == 0)
     {
         getTokenInteger(tokens[1], "part", part);
         ++offset;
     }
 
-    for (size_t i = offset; i < tokens.size(); ++i)
+    for (std::size_t i = offset; i < tokens.size(); ++i)
     {
         std::string name;
         std::string value;
@@ -231,6 +229,26 @@ void Session::parseDocOptions(const StringVector& tokens, int& part, std::string
         else if (name == "deviceFormFactor")
         {
             _deviceFormFactor = value;
+            ++offset;
+        }
+        else if (name == "spellOnline")
+        {
+            _spellOnline = value;
+            ++offset;
+        }
+        else if (name == "batch")
+        {
+            _batch = value;
+            ++offset;
+        }
+        else if (name == "enableMacrosExecution")
+        {
+            _enableMacrosExecution = value;
+            ++offset;
+        }
+        else if (name == "macroSecurityLevel")
+        {
+            _macroSecurityLevel = value;
             ++offset;
         }
     }
@@ -383,7 +401,7 @@ void Session::getIOStats(uint64_t &sent, uint64_t &recv)
 
 void Session::dumpState(std::ostream& os)
 {
-    os << "\t\tid: " << _id
+    os << "\n\t\tid: " << _id
        << "\n\t\tname: " << _name
        << "\n\t\tdisconnected: " << _disconnected
        << "\n\t\tisActive: " << _isActive

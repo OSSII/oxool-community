@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -11,33 +9,38 @@
 #include <map>
 #include <mutex>
 
+#include "Log.hpp"
 #include "MobileApp.hpp"
 
 #if MOBILEAPP
 
-static std::map<unsigned, DocumentData> idToDocDataMap;
+static std::map<unsigned, DocumentData*> idToDocDataMap;
 static std::mutex idToDocDataMapMutex;
 
-DocumentData &allocateDocumentDataForMobileAppDocId(unsigned docId)
+DocumentData &DocumentData::allocate(unsigned docId)
 {
     const std::lock_guard<std::mutex> lock(idToDocDataMapMutex);
 
     assert(idToDocDataMap.find(docId) == idToDocDataMap.end());
-    idToDocDataMap[docId] = DocumentData();
-    return idToDocDataMap[docId];
+    auto p = new DocumentData();
+    idToDocDataMap[docId] = p;
+    return *p;
 }
 
-DocumentData &getDocumentDataForMobileAppDocId(unsigned docId)
+DocumentData & DocumentData::get(unsigned docId)
 {
     const std::lock_guard<std::mutex> lock(idToDocDataMapMutex);
 
     assert(idToDocDataMap.find(docId) != idToDocDataMap.end());
-    return idToDocDataMap[docId];
+    return *idToDocDataMap[docId];
 }
 
-void deallocateDocumentDataForMobileAppDocId(unsigned docId)
+void DocumentData::deallocate(unsigned docId)
 {
     assert(idToDocDataMap.find(docId) != idToDocDataMap.end());
+    DocumentData &d = get(docId);
+    auto p = idToDocDataMap.find(docId);
+    delete p->second;
     idToDocDataMap.erase(docId);
 }
 

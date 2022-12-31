@@ -297,7 +297,7 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
             std::chrono::system_clock::time_point fileLastModifiedTime;
 
 
-            enum class COOLStatusCode
+            enum class LOOLStatusCode
             {
                 DocChanged = 1010  // Document changed externally in storage
             };
@@ -443,7 +443,7 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
         else if (request.getMethod() == "POST" && Util::endsWith(path.toString(), suffix))
         {
             int i = LocalFileInfo::getIndex(localPath);
-            std::string wopiTimestamp = request.get("X-COOL-WOPI-Timestamp", std::string());
+            std::string wopiTimestamp = request.get("X-LOOL-WOPI-Timestamp", std::string());
             if (wopiTimestamp.empty())
             {
                 wopiTimestamp = request.get("X-LOOL-WOPI-Timestamp", std::string());
@@ -455,10 +455,10 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
                 {
                     http::Response httpResponse(http::StatusLine(409));
                     httpResponse.setBody(
-                        "{\"COOLStatusCode\":" +
-                        std::to_string(static_cast<int>(LocalFileInfo::COOLStatusCode::DocChanged)) + ',' +
                         "{\"LOOLStatusCode\":" +
-                        std::to_string(static_cast<int>(LocalFileInfo::COOLStatusCode::DocChanged)) + '}');
+                        std::to_string(static_cast<int>(LocalFileInfo::LOOLStatusCode::DocChanged)) + ',' +
+                        "{\"LOOLStatusCode\":" +
+                        std::to_string(static_cast<int>(LocalFileInfo::LOOLStatusCode::DocChanged)) + '}');
                     socket->send(httpResponse);
                     return;
                 }

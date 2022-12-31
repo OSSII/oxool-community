@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
-#ifdef __linux
+#ifdef __linux__
 #include <sys/sysmacros.h>
 #endif
 
@@ -40,6 +40,7 @@ bool oxoolmount(const std::string& arg, std::string source, std::string target)
 
 bool bind(const std::string& source, const std::string& target)
 {
+    LOG_DBG("Mounting [" << source << "] -> [" << target << "].");
     Poco::File(target).createDirectory();
     const bool res = oxoolmount("-b", source, target);
     if (res)
@@ -51,6 +52,7 @@ bool bind(const std::string& source, const std::string& target)
 
 bool remountReadonly(const std::string& source, const std::string& target)
 {
+    LOG_DBG("Remounting [" << source << "] -> [" << target << "].");
     Poco::File(target).createDirectory();
     const bool res = oxoolmount("-r", source, target);
     if (res)
@@ -60,14 +62,25 @@ bool remountReadonly(const std::string& source, const std::string& target)
     return res;
 }
 
-bool unmount(const std::string& target)
+/// Unmount a bind-mounted jail directory.
+static bool unmount(const std::string& target)
 {
-    LOG_DBG("Unmounting [" << target << "].");
+    LOG_DBG("Unmounting [" << target << ']');
     const bool res = oxoolmount("-u", "", target);
     if (res)
         LOG_TRC("Unmounted [" << target << "] successfully.");
     else
-        LOG_ERR("Failed to unmount [" << target << "].");
+    {
+        // If bind-mounting is enabled, noisily log failures.
+        // Otherwise, it's a cleanup attempt of earlier mounts,
+        // which may be left-over and now the config has changed.
+        // This happens more often in dev labs than in prod.
+        if (JailUtil::isBindMountingEnabled())
+            LOG_ERR("Failed to unmount [" << target << ']');
+        else
+            LOG_DBG("Failed to unmount [" << target << ']');
+    }
+
     return res;
 }
 
@@ -77,8 +90,8 @@ bool unmount(const std::string& target)
 // kit could have had it removed when falling back to copying.
 // In such cases, we cannot safely know whether the jail was
 // copied or not, since the bind envar will be present and
-// assuming it was mounted would leak them.
-// Alternatively, we if remove the files when mounted
+// assuming it was mounted, would leak them.
+// Alternatively, if we remove the files when mounted
 // we could destroy systemplate if remounting read-only had
 // failed (and it wasn't owned by root).
 constexpr const char* COPIED_JAIL_MARKER_FILE = "delete.me";
@@ -98,7 +111,7 @@ bool isJailCopied(const std::string& root)
     return delFileStat.exists();
 }
 
-bool safeRemoveDir(const std::string& path)
+static bool safeRemoveDir(const std::string& path)
 {
     // Always unmount, just in case.
     unmount(path);
@@ -125,6 +138,9 @@ void removeJail(const std::string& root)
 
     // Unmount the tmp directory. Don't care if we fail.
     const std::string tmpPath = Poco::Path(root, "tmp").toString();
+#ifdef __FreeBSD__
+    unmount(tmpPath + "/dev");
+#endif
     FileUtil::removeFile(tmpPath, true); // Delete tmp contents with prejudice.
     unmount(tmpPath);
 
@@ -132,7 +148,7 @@ void removeJail(const std::string& root)
     unmount(Poco::Path(root, "lo/share/extensions").toString());
 
     // Unmount the loTemplate directory.
-    //FIXME: technically, the loTemplate directory may have any name.
+    // FIXME: technically, the loTemplate directory may have any name.
     unmount(Poco::Path(root, "lo").toString());
 
     // Unmount/delete the jail (sysTemplate).
@@ -155,7 +171,7 @@ void cleanupJails(const std::string& root)
         return;
     }
 
-    //FIXME: technically, the loTemplate directory may have any name.
+    // FIXME: technically, the loTemplate directory may have any name.
     if (FileUtil::Stat(root + "/lo").exists())
     {
         // This is a jail.
@@ -171,11 +187,21 @@ void cleanupJails(const std::string& root)
         for (const auto& jail : jails)
         {
             const Poco::Path path(root, jail);
-            if (jail == "tmp" || jail == "extensions") // Delete tmp with prejeduce.
+            // Postpone deleting "tmp" directory until we clean all the jails
+            // On FreeBSD the "tmp" dir contains a devfs moint point. Normally,
+            // it gets unmounted by oxoolmount during shutdown, but oxoolmount
+            // does nothing if it is called on the non-existing path.
+            // Removing this dir there prevents clean unmounting of devfs later.
+            if (jail == "tmp")
+                continue;
+            // Delete tmp and link cache with prejudice.
+            if (jail == "linkable")
                 FileUtil::removeFile(path.toString(), true);
             else
                 cleanupJails(path.toString());
         }
+        const Poco::Path tmpPath(root, "tmp");
+        FileUtil::removeFile(tmpPath.toString(), true);
     }
 
     // Remove empty directories.
@@ -189,9 +215,11 @@ void setupJails(bool bindMount, const std::string& jailRoot, const std::string& 
 {
     // Start with a clean slate.
     cleanupJails(jailRoot);
-    Poco::File(jailRoot).createDirectories();
+    Poco::File(jailRoot + JAIL_TMP_INCOMING_PATH).createDirectories();
 
     disableBindMounting(); // Clear to avoid surprises.
+
+    // Try to enable bind-mounting if requested (via config).
     if (bindMount)
     {
         // Test mounting to verify it actually works,
@@ -218,8 +246,27 @@ void setupJails(bool bindMount, const std::string& jailRoot, const std::string& 
 // /tmp/dev/ in the jail chroot. See setupRandomDeviceLinks().
 void setupJailDevNodes(const std::string& root)
 {
-    // Create the urandom and random devices
-    Poco::File(Poco::Path(root, "/dev")).createDirectory();
+    if (!FileUtil::isWritable(root))
+    {
+        LOG_WRN("Path [" << root << "] is read-only. Will not create the random device nodes.");
+        return;
+    }
+
+    const auto pathDev = Poco::Path(root, "/dev");
+
+    try
+    {
+        // Create the path first.
+        Poco::File(pathDev).createDirectory();
+    }
+    catch (const std::exception& ex)
+    {
+        LOG_ERR("Failed to create [" << pathDev.toString() << "]: " << ex.what());
+        return;
+    }
+
+#ifndef __FreeBSD__
+    // Create the urandom and random devices.
     if (!Poco::File(root + "/dev/random").exists())
     {
         LOG_DBG("Making /dev/random node in [" << root << "/dev].");
@@ -243,6 +290,16 @@ void setupJailDevNodes(const std::string& root)
             LOG_SYS("mknod(" << root << "/dev/urandom) failed. Mount must not use nodev flag.");
         }
     }
+#else
+    if (!Poco::File(root + "/dev/random").exists())
+    {
+         const bool res = oxoolmount("-d", "", root + "/dev");
+         if (res)
+            LOG_TRC("Mounted devfs hierarchy -> [" << root << "/dev].");
+        else
+            LOG_ERR("Failed to mount devfs -> [" << root << "/dev].");
+    }
+#endif
 }
 
 /// The envar name used to control bind-mounting of systemplate/jails.
@@ -299,6 +356,13 @@ void setupDynamicFiles(const std::string& sysTemplate)
         LinkDynamicFiles = false;
     }
 
+    FileUtil::Stat copiedFileStat(Poco::Path(sysTemplate, "etc/copied").toString());
+    if (copiedFileStat.exists())
+    {
+        // At least one file is copied, we must check for changes before each jail setup.
+        LinkDynamicFiles = false;
+    }
+
     LOG_INF("Systemplate dynamic files in ["
             << sysTemplate << "] "
             << (LinkDynamicFiles ? "are linked and will remain" : "will be copied to keep them")
@@ -308,21 +372,48 @@ void setupDynamicFiles(const std::string& sysTemplate)
 bool updateDynamicFilesImpl(const std::string& sysTemplate)
 {
     LOG_INF("Updating systemplate dynamic files in [" << sysTemplate << "].");
-    for (const auto& srcFilename : DynamicFilePaths)
+    for (const auto& dynFilename : DynamicFilePaths)
     {
+        if (!FileUtil::Stat(dynFilename).exists())
+        {
+            LOG_INF("Dynamic file [" << dynFilename
+                                     << "] does not exist. Some functionality may be affected.");
+            continue;
+        }
+
+        const std::string srcFilename = FileUtil::realpath(dynFilename);
+        if (srcFilename != dynFilename)
+        {
+            LOG_TRC("Dynamic file [" << dynFilename << "] points to real path [" << srcFilename
+                                     << "], which will be used instead.");
+        }
+
         const Poco::File srcFilePath(srcFilename);
         FileUtil::Stat srcStat(srcFilename);
         if (!srcStat.exists())
             continue;
 
-        const std::string dstFilename = Poco::Path(sysTemplate, srcFilename).toString();
+        const std::string dstFilename = Poco::Path(sysTemplate, dynFilename).toString();
         FileUtil::Stat dstStat(dstFilename);
 
         // Is it outdated?
         if (dstStat.isUpToDate(srcStat))
         {
-            LOG_INF("File [" << dstFilename << "] is already up-to-date.");
+            LOG_TRC("File [" << dstFilename << "] is already up-to-date.");
             continue;
+        }
+
+        // Check that sysTemplate is in fact writable to avoid predictable errors.
+        if (!FileUtil::isWritable(sysTemplate))
+        {
+            disableBindMounting(); // We can't mount from incomplete systemplate that can't be updated.
+            LinkDynamicFiles = false;
+            LOG_WRN("The systemplate directory ["
+                    << sysTemplate << "] is read-only, and at least [" << dstFilename
+                    << "] is out-of-date. Will have to copy sysTemplate to jails. To restore "
+                       "optimal performance, make sure the files in ["
+                    << sysTemplate << "/etc] are up-to-date.");
+            return false;
         }
 
         LOG_INF("File [" << dstFilename << "] needs to be updated.");
@@ -331,11 +422,11 @@ bool updateDynamicFilesImpl(const std::string& sysTemplate)
             LOG_INF("Linking [" << srcFilename << "] -> [" << dstFilename << "].");
 
             // Link or copy.
-            if (link(srcFilename, dstFilename.c_str()) == 0)
+            if (link(srcFilename.c_str(), dstFilename.c_str()) == 0)
                 continue;
 
             // Hard-linking failed, try symbolic linking.
-            if (symlink(srcFilename, dstFilename.c_str()) == 0)
+            if (symlink(srcFilename.c_str(), dstFilename.c_str()) == 0)
                 continue;
 
             const int linkerr = errno;
@@ -367,6 +458,9 @@ bool updateDynamicFilesImpl(const std::string& sysTemplate)
                     return false; // No point in trying the remaining files.
                 }
             }
+
+            // Create the 'copied' file so we keep the files up-to-date.
+            Poco::File(Poco::Path(sysTemplate, "etc/copied").toString()).createFile();
         }
     }
 
@@ -382,7 +476,16 @@ bool updateDynamicFiles(const std::string& sysTemplate)
 void setupRandomDeviceLink(const std::string& sysTemplate, const std::string& name)
 {
     const std::string path = sysTemplate + "/dev/";
-    Poco::File(path).createDirectories();
+    try
+    {
+        // Create the path first.
+        Poco::File(path).createDirectories();
+    }
+    catch (const std::exception& ex)
+    {
+        LOG_ERR("Failed to create [" << path << "]: " << ex.what());
+        return;
+    }
 
     const std::string linkpath = path + name;
     const std::string target = "../tmp/dev/" + name;

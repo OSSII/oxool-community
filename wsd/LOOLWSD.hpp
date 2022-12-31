@@ -12,8 +12,10 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cstdio>
 #include <map>
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <string>
 #include <utility>
@@ -25,6 +27,7 @@
 #include <Poco/Util/OptionSet.h>
 #include <Poco/Util/ServerApplication.h>
 
+#include "QuarantineUtil.hpp"
 #include "Util.hpp"
 #include "FileUtil.hpp"
 #include "RequestDetails.hpp"
@@ -38,13 +41,13 @@ class ClipboardCache;
 std::shared_ptr<ChildProcess> getNewChild_Blocks(unsigned mobileAppDocId = 0);
 
 // A WSProcess object in the WSD process represents a descendant process, either the direct child
-// process FORKIT or a grandchild KIT process, with which the WSD process communicates through a
+// process ForKit or a grandchild Kit process, with which the WSD process communicates through a
 // WebSocket.
 class WSProcess
 {
 public:
     /// @param pid is the process ID.
-    /// @param socket is the underlying Sockeet to the process.
+    /// @param socket is the underlying Socket to the process.
     WSProcess(const std::string& name,
               const pid_t pid,
               const std::shared_ptr<StreamSocket>& socket,
@@ -173,6 +176,11 @@ public:
 #endif
     }
 
+protected:
+    std::shared_ptr<WebSocketHandler> getWSHandler() const { return _ws; }
+    std::shared_ptr<Socket> getSocket() const { return _socket; };
+
+private:
     std::string _name;
     pid_t _pid;
     std::shared_ptr<WebSocketHandler> _ws;
@@ -181,16 +189,16 @@ public:
 
 #if !MOBILEAPP
 
-class ForKitProcWSHandler: public WebSocketHandler
+class ForKitProcWSHandler : public WebSocketHandler
 {
 public:
-
-    ForKitProcWSHandler(const std::weak_ptr<StreamSocket>& socket, const Poco::Net::HTTPRequest& request)
-    : WebSocketHandler(socket.lock(), request)
+    ForKitProcWSHandler(const std::weak_ptr<StreamSocket>& socket,
+                        const Poco::Net::HTTPRequest& request)
+        : WebSocketHandler(socket.lock(), request)
     {
     }
 
-    virtual void handleMessage(const std::vector<char> &data) override;
+    virtual void handleMessage(const std::vector<char>& data) override;
 };
 
 class ForKitProcess : public WSProcess
@@ -199,7 +207,7 @@ public:
     ForKitProcess(int pid, std::shared_ptr<StreamSocket>& socket, const Poco::Net::HTTPRequest &request)
         : WSProcess("ForKit", pid, socket, std::make_shared<ForKitProcWSHandler>(socket, request))
     {
-        socket->setHandler(_ws);
+        socket->setHandler(getWSHandler());
     }
 };
 
@@ -221,18 +229,15 @@ public:
     static bool NoCapsForKit;
     static bool NoSeccomp;
     static bool AdminEnabled;
+    static bool UnattendedRun; //< True when run from an unattended test, not interactive.
+    static bool SignalParent;
 #if ENABLE_DEBUG
     static bool SingleKit;
 #endif
     static std::shared_ptr<ForKitProcess> ForKitProc;
     static std::atomic<int> ForKitProcId;
 #endif
-#ifdef FUZZER
-    static bool DummyLOK;
-    static std::string FuzzFileName;
-#endif
     static std::string UserInterface;
-    static unsigned long PdfViewerDPI;
     static std::string ConfigFile;
     static std::string ConfigDir;
     static std::string SysTemplate;
@@ -241,28 +246,34 @@ public:
     static std::string ServerName;
     static std::string FileServerRoot;
     static std::string ServiceRoot; ///< There are installations that need prefixing every page with some path.
+    static std::string TmpFontDir;
     static std::string LOKitVersion;
     static bool EnableTraceEventLogging;
     static FILE *TraceEventFile;
     static void writeTraceEventRecording(const char *data, std::size_t nbytes);
     static void writeTraceEventRecording(const std::string &recording);
     static std::string LogLevel;
+    static std::string MostVerboseLogLevelSettableFromClient;
+    static std::string LeastVerboseLogLevelSettableFromClient;
     static bool AnonymizeUserData;
     static bool CheckLoolUser;
     static bool CleanupOnly;
     static bool IsProxyPrefixEnabled;
     static std::atomic<unsigned> NumConnections;
     static std::unique_ptr<TraceFileWriter> TraceDumper;
+    static std::unordered_map<std::string, std::vector<std::string>> QuarantineMap;
+    static std::string QuarantinePath;
 #if !MOBILEAPP
     static std::unique_ptr<ClipboardCache> SavedClipboards;
 #endif
+
     static std::unordered_set<std::string> EditFileExtensions;
     static std::unordered_set<std::string> ViewWithCommentsFileExtensions;
     static unsigned MaxConnections;
     static unsigned MaxDocuments;
     static std::string OverrideWatermark;
     static std::set<const Poco::Util::AbstractConfiguration*> PluginConfigurations;
-    static std::chrono::time_point<std::chrono::system_clock> StartTime;
+    static std::chrono::steady_clock::time_point StartTime;
 #if MOBILEAPP
 #ifndef IOS
     /// This is used to be able to wait until the lokit main thread has finished (and it is safe to load a new document).
@@ -272,10 +283,11 @@ public:
 
     /// For testing only [!]
     static int getClientPortNumber();
-    /// For testing only [!]
-    static std::vector<int> getKitPids();
     /// For testing only [!] DocumentBrokers are mostly single-threaded with their own thread
     static std::vector<std::shared_ptr<DocumentBroker>> getBrokersTestOnly();
+
+    /// Return a map for fast searches. Used in testing and in admin for cleanup
+    static std::set<pid_t> getKitPids();
 
     static std::string GetConnectionId()
     {
@@ -300,28 +312,33 @@ public:
 #endif
     }
 
+    static std::shared_ptr<TerminatingPoll> getWebServerPoll();
+
     /// Return true if extension is marked as view action in discovery.xml.
     static bool IsViewFileExtension(const std::string& extension)
     {
-#if MOBILEAPP
-        (void) extension;
-        return false; // mark everything editable on mobile
-#else
         std::string lowerCaseExtension = extension;
         std::transform(lowerCaseExtension.begin(), lowerCaseExtension.end(), lowerCaseExtension.begin(), ::tolower);
-        return EditFileExtensions.find(lowerCaseExtension) == EditFileExtensions.end();
+#if MOBILEAPP
+        if (lowerCaseExtension == "pdf")
+            return true; // true for only pdf - it is not editable
+        return false; // mark everything else editable on mobile
+#else
+            return EditFileExtensions.find(lowerCaseExtension) == EditFileExtensions.end();
 #endif
     }
 
     /// Return true if extension is marked as view_comment action in discovery.xml.
     static bool IsViewWithCommentsFileExtension(const std::string& extension)
     {
-#if MOBILEAPP
-        (void) extension;
-        return false; // mark everything editable on mobile
-#else
+
         std::string lowerCaseExtension = extension;
         std::transform(lowerCaseExtension.begin(), lowerCaseExtension.end(), lowerCaseExtension.begin(), ::tolower);
+#if MOBILEAPP
+        if (lowerCaseExtension == "pdf")
+            return true; // true for only pdf - it is not editable
+        return false; // mark everything else editable on mobile
+#else
         return ViewWithCommentsFileExtensions.find(lowerCaseExtension) != ViewWithCommentsFileExtensions.end();
 #endif
     }
@@ -413,6 +430,9 @@ public:
     /// Autosave a given document (currently only called from Admin).
     static void autoSave(const std::string& docKey);
 
+    /// Sets the log level of current kits.
+    static void setLogLevelsOfKits(const std::string& level);
+
     /// Anonymize the basename of filenames, preserving the path and extension.
     static std::string anonymizeUrl(const std::string& url)
     {
@@ -429,10 +449,27 @@ public:
     /// get correct server URL with protocol + port number for this running server
     static std::string getServerURL();
 
-    int innerMain();
-
 protected:
-    void initialize(Poco::Util::Application& self) override;
+    void initialize(Poco::Util::Application& self) override
+    {
+        try
+        {
+            innerInitialize(self);
+        }
+        catch (const Poco::Exception& ex)
+        {
+            LOG_FTL("Failed to initialize LOOLWSD: "
+                    << ex.displayText()
+                    << (ex.nested() ? " (" + ex.nested()->displayText() + ')' : ""));
+            throw; // Nothing further to do.
+        }
+        catch (const std::exception& ex)
+        {
+            LOG_FTL("Failed to initialize LOOLWSD: " << ex.what());
+            throw; // Nothing further to do.
+        }
+    }
+
     void defineOptions(Poco::Util::OptionSet& options) override;
     void handleOption(const std::string& name, const std::string& value) override;
     int main(const std::vector<std::string>& args) override;
@@ -448,6 +485,12 @@ private:
 
     void initializeSSL();
     void displayHelp();
+
+    /// The actual initialize implementation.
+    void innerInitialize(Application& self);
+
+    /// The actual main implementation.
+    int innerMain();
 
     class ConfigValueGetter
     {

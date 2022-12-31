@@ -115,6 +115,7 @@ public:
     }
 
     void start();
+    void stop();
 
     /// Custom poll thread function
     void pollingThread() override;
@@ -132,7 +133,7 @@ public:
     /// Calls with same pid will increment view count, if pid already exists
     void addDoc(const std::string& docKey, pid_t pid, const std::string& filename,
                 const std::string& sessionId, const std::string& userName, const std::string& userId,
-                const int smapsFD);
+                const int smapsFD, const std::string& wopiHost);
 
     /// Decrement view count till becomes zero after which doc is removed
     void rmDoc(const std::string& docKey, const std::string& sessionId);
@@ -151,8 +152,10 @@ public:
 
     unsigned getNetStatsInterval();
 
+    /// Returns the log levels of wsd and forkit & kits.
     std::string getChannelLogLevels();
 
+    /// Sets the specified channel's log level (wsd or forkit and kits).
     void setChannelLogLevel(const std::string& channelName, std::string level);
 
     std::string getLogLines();
@@ -180,12 +183,12 @@ public:
     void scheduleMonitorConnect(const std::string &uri, std::chrono::steady_clock::time_point when);
 
     void sendMetrics(const std::shared_ptr<StreamSocket>& socket, const std::shared_ptr<Poco::Net::HTTPResponse>& response);
-    void sendMetricsAsync(const std::shared_ptr<StreamSocket>& socket, const std::shared_ptr<Poco::Net::HTTPResponse>& response);
 
     void setViewLoadDuration(const std::string& docKey, const std::string& sessionId, std::chrono::milliseconds viewLoadDuration);
     void setDocWopiDownloadDuration(const std::string& docKey, std::chrono::milliseconds wopiDownloadDuration);
     void setDocWopiUploadDuration(const std::string& docKey, const std::chrono::milliseconds uploadDuration);
     void addSegFaultCount(unsigned segFaultCount);
+    void addLostKitsTerminated(unsigned lostKitsTerminated);
 
     void getMetrics(std::ostringstream &metrics);
 
@@ -198,6 +201,7 @@ private:
     void triggerMemoryCleanup(size_t hardModeLimit);
     void notifyDocsMemDirtyChanged();
     void cleanupResourceConsumingDocs();
+    void cleanupLostKits();
 
     /// Round the interval up to multiples of MinStatsIntervalMs.
     /// This is to avoid arbitrarily small intervals that hammer the server.
@@ -221,6 +225,7 @@ private:
     uint64_t _lastRecvCount;
     size_t _totalSysMemKb;
     size_t _totalAvailMemKb;
+    std::string _forkitLogLevel;
 
     struct MonitorConnectRecord
     {

@@ -12,12 +12,10 @@
 #include <atomic>
 #include <cassert>
 #include <memory>
-#include <mutex>
 #include <map>
 #include <ostream>
 #include <type_traits>
 
-#include <Poco/Buffer.h>
 #include <Poco/Path.h>
 #include <Poco/Types.h>
 #include <Poco/JSON/Object.h>
@@ -311,8 +309,6 @@ private:
 
     // Whether websocket received close frame.  Closing Handshake
     std::atomic<bool> _isCloseFrame;
-
-    std::mutex _mutex;
 
     /// Whether the session is opened as readonly
     bool _isReadOnly;

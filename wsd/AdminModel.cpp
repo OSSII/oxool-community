@@ -25,6 +25,7 @@
 #include <Unit.hpp>
 #include <Util.hpp>
 #include <wsd/LOOLWSD.hpp>
+#include <wsd/Exceptions.hpp>
 
 #include <fnmatch.h>
 #include <dirent.h>
@@ -150,10 +151,10 @@ void Document::updateMemoryDirty()
 
 void Document::setLastJiffies(size_t newJ)
 {
-    auto now = std::chrono::system_clock::now();
-    if (_lastJiffy)
-        _lastCpuPercentage = (100 * 1000 * (newJ - _lastJiffy) / ::sysconf(_SC_CLK_TCK))
-                            / std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastJiffyTime).count();
+    const auto now = std::chrono::steady_clock::now();
+    auto sinceMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastJiffyTime).count();
+    if (_lastJiffy && sinceMs > 0)
+        _lastCpuPercentage = (100 * 1000 * (newJ - _lastJiffy) / ::sysconf(_SC_CLK_TCK)) / sinceMs;
     _lastJiffy = newJ;
     _lastJiffyTime = now;
 }
@@ -200,9 +201,6 @@ void Subscriber::unsubscribe(const std::string& command)
 
 void AdminModel::assertCorrectThread() const
 {
-    // Modified by Firefly <firefly@ossii.com.tw>
-    // 不要 crash
-#if 0
     // FIXME: share this code [!]
     const bool sameThread = std::this_thread::get_id() == _owner;
     if (!sameThread)
@@ -211,7 +209,6 @@ void AdminModel::assertCorrectThread() const
         std::this_thread::get_id() << " (" << Util::getThreadId() << ").");
 
     assert(sameThread);
-#endif
 }
 
 AdminModel::~AdminModel()
@@ -511,16 +508,16 @@ void AdminModel::modificationAlert(const std::string& docKey, pid_t pid, bool va
 void AdminModel::addDocument(const std::string& docKey, pid_t pid,
                              const std::string& filename, const std::string& sessionId,
                              const std::string& userName, const std::string& userId,
-                             const int smapsFD)
+                             const int smapsFD, const std::string& wopiHost)
 {
     assertCorrectThread();
-
-    const auto ret = _documents.emplace(docKey, std::unique_ptr<Document>(new Document(docKey, pid, filename)));
+    const auto ret = _documents.emplace(docKey, std::unique_ptr<Document>(new Document(docKey, pid, filename, wopiHost)));
     ret.first->second->setProcSMapsFD(smapsFD);
     ret.first->second->takeSnapshot();
     ret.first->second->addView(sessionId, userName, userId);
     LOG_DBG("Added admin document [" << docKey << "].");
 
+    std::string memoryAllocated;
     std::string encodedUsername;
     std::string encodedFilename;
     std::string encodedUserId;
@@ -543,19 +540,29 @@ void AdminModel::addDocument(const std::string& docKey, pid_t pid,
     {
         if (_memStats.empty())
         {
-            oss << 0;
+            memoryAllocated = "0";
         }
         else
         {
             // Estimate half as much as wsd+forkit.
-            oss << _memStats.front() / 2;
+            memoryAllocated = std::to_string(_memStats.front() / 2);
         }
     }
     else
     {
-        oss << _documents.begin()->second->getMemoryDirty();
+        memoryAllocated = std::to_string(_documents.begin()->second->getMemoryDirty());
     }
 
+    oss << memoryAllocated << ' ' << wopiHost;
+    if (LOOLWSD::getConfigValue<bool>("logging.docstats", false))
+    {
+        std::string docstats = "docstats : adding a document : " + filename
+                            + ", created by : " + LOOLWSD::anonymizeUsername(userName)
+                            + ", using WopiHost : " + LOOLWSD::anonymizeUrl(wopiHost)
+                            + ", allocating memory of : " + memoryAllocated;
+
+        LOG_ANY(docstats);
+    }
     notify(oss.str());
 }
 
@@ -745,13 +752,14 @@ void AdminModel::cleanupResourceConsumingDocs()
                     else
                         LOG_ERR("Cannot " << (doc->getAbortTime() ? "kill" : "abort") << " resource consuming doc [" << doc->getDocKey() << "]");
                     if (!doc->getAbortTime())
-                        doc->setAbortTime(time_t(nullptr));
+                        doc->setAbortTime(std::time(nullptr));
                 }
             }
             else if (doc->getBadBehaviorDetectionTime())
             {
                 doc->setBadBehaviorDetectionTime(0);
-                LOG_WRN("Removed doc [" << doc->getDocKey() << "] from resource consuming monitoring list");
+                LOG_WRN("Removed doc [" << doc->getDocKey() << "] from resource consuming monitoring list: idle="
+                        << idleTime << " s, memory=" << memDirty << " KB, CPU=" << cpuPercentage << "%.");
             }
         }
     }
@@ -762,7 +770,6 @@ std::string AdminModel::getDocuments() const
     assertCorrectThread();
 
     std::ostringstream oss;
-    std::map<std::string, View> viewers;
     oss << '{' << "\"documents\"" << ':' << '[';
     std::string separator1;
     for (const auto& it: _documents)
@@ -775,13 +782,14 @@ std::string AdminModel::getDocuments() const
                 << "\"pid\"" << ':' << it.second->getPid() << ','
                 << "\"docKey\"" << ':' << '"' << it.second->getDocKey() << '"' << ','
                 << "\"fileName\"" << ':' << '"' << encodedFilename << '"' << ','
+                << "\"wopiHost\"" << ':' << '"' << it.second -> getHostName() << '"' << ','
                 << "\"activeViews\"" << ':' << it.second->getActiveViews() << ','
                 << "\"memory\"" << ':' << it.second->getMemoryDirty() << ','
                 << "\"elapsedTime\"" << ':' << it.second->getElapsedTime() << ','
                 << "\"idleTime\"" << ':' << it.second->getIdleTime() << ','
                 << "\"modified\"" << ':' << '"' << (it.second->getModifiedStatus() ? "Yes" : "No") << '"' << ','
                 << "\"views\"" << ':' << '[';
-            viewers = it.second->getViews();
+            std::map<std::string, View> viewers = it.second->getViews();
             std::string separator;
             for(const auto& viewIt: viewers)
             {
@@ -844,11 +852,12 @@ void AdminModel::updateLastActivityTime(const std::string& docKey)
     }
 }
 
-double AdminModel::getServerUptime()
+double AdminModel::getServerUptimeSecs()
 {
-    auto currentTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> uptime = currentTime - LOOLWSD::StartTime;
-    return uptime.count();
+    const auto currentTime = std::chrono::steady_clock::now();
+    const std::chrono::milliseconds uptime
+        = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - LOOLWSD::StartTime);
+    return uptime.count() / 1000.0; // Convert to seconds and fractions.
 }
 
 void AdminModel::setViewLoadDuration(const std::string& docKey, const std::string& sessionId, std::chrono::milliseconds viewLoadDuration)
@@ -877,6 +886,11 @@ void AdminModel::addSegFaultCount(unsigned segFaultCount)
     _segFaultCount += segFaultCount;
 }
 
+void AdminModel::addLostKitsTerminated(unsigned lostKitsTerminated)
+{
+    _lostKitsTerminatedCount += lostKitsTerminated;
+}
+
 int filterNumberName(const struct dirent *dir)
 {
     return !fnmatch("[0-9]*", dir->d_name, 0);
@@ -893,9 +907,6 @@ int AdminModel::getPidsFromProcName(const std::regex& procNameRegEx, std::vector
 
     std::string comm;
     char line[256] = { 0 }; //Here we need only 16 bytes but for safety reasons we use file name max length
-
-    if (pids != NULL)
-        pids->clear();
 
     while (n--)
     {
@@ -924,6 +935,24 @@ int AdminModel::getPidsFromProcName(const std::regex& procNameRegEx, std::vector
     free(namelist);
 
     return pidCount;
+}
+
+int AdminModel::getAssignedKitPids(std::vector<int> *pids)
+{
+    return getPidsFromProcName(std::regex("kitbroker_.*"), pids);
+}
+
+int AdminModel::getUnassignedKitPids(std::vector<int> *pids)
+{
+    return getPidsFromProcName(std::regex("kit_spare_.*"), pids);
+}
+
+int AdminModel::getKitPidsFromSystem(std::vector<int> *pids)
+{
+    int count = getAssignedKitPids(pids);
+    count += getUnassignedKitPids(pids);
+
+    return count;
 }
 
 class AggregateStats
@@ -1002,6 +1031,10 @@ public:
 
 struct DocumentAggregateStats
 {
+    DocumentAggregateStats()
+    : _resConsCount(0), _resConsAbortCount(0), _resConsAbortPendingCount(0)
+    {}
+
     void Update(const Document &d, bool active)
     {
         _kitUsedMemory.Update(d.getMemoryDirty() * 1024, active);
@@ -1017,6 +1050,19 @@ struct DocumentAggregateStats
         //View load duration
         for (const auto& v : d.getViews())
             _viewLoadDuration.Update(v.second.getLoadDuration().count(), active);
+
+        if (d.getBadBehaviorDetectionTime())
+        {
+            if (active)
+                _resConsCount ++;
+        }
+        if (d.getAbortTime())
+        {
+            if (active)
+                _resConsAbortPendingCount ++;
+            else
+                _resConsAbortCount ++;
+        }
     }
 
     ActiveExpiredStats _kitUsedMemory;
@@ -1029,6 +1075,10 @@ struct DocumentAggregateStats
     ActiveExpiredStats _wopiDownloadDuration;
     ActiveExpiredStats _wopiUploadDuration;
     ActiveExpiredStats _viewLoadDuration;
+
+    int _resConsCount;
+    int _resConsAbortCount;
+    int _resConsAbortPendingCount;
 };
 
 struct KitProcStats
@@ -1057,8 +1107,8 @@ void AdminModel::CalcDocAggregateStats(DocumentAggregateStats& stats)
 void CalcKitStats(KitProcStats& stats)
 {
     std::vector<int> childProcs;
-    stats.unassignedCount = AdminModel::getPidsFromProcName(std::regex("kit_spare_[0-9]*"), &childProcs);
-    stats.assignedCount = AdminModel::getPidsFromProcName(std::regex("kit_[0-9]*"), &childProcs);
+    stats.unassignedCount = AdminModel::getUnassignedKitPids(&childProcs);
+    stats.assignedCount = AdminModel::getAssignedKitPids(&childProcs);
     for (int& pid : childProcs)
     {
         stats.UpdateAggregateStats(pid);
@@ -1100,9 +1150,15 @@ void AdminModel::getMetrics(std::ostringstream &oss)
     oss << "kit_unassigned_count " << kitStats.unassignedCount << std::endl;
     oss << "kit_assigned_count " << kitStats.assignedCount << std::endl;
     oss << "kit_segfault_count " << _segFaultCount << std::endl;
+    oss << "kit_lost_terminated_count " << _lostKitsTerminatedCount << std::endl;
     PrintKitAggregateMetrics(oss, "thread_count", "", kitStats._threadCount);
     PrintKitAggregateMetrics(oss, "memory_used", "bytes", docStats._kitUsedMemory._active);
     PrintKitAggregateMetrics(oss, "cpu_time", "seconds", kitStats._cpuTime);
+    oss << std::endl;
+
+    oss << "document_resource_consuming_count " << docStats._resConsCount << std::endl;
+    oss << "document_resource_consuming_abort_started_count " << docStats._resConsAbortPendingCount << std::endl;
+    oss << "document_resource_consuming_aborted_count " << docStats._resConsAbortCount << std::endl;
     oss << std::endl;
 
     PrintDocActExpMetrics(oss, "views_all_count", "", docStats._viewsCount);
@@ -1114,13 +1170,22 @@ void AdminModel::getMetrics(std::ostringstream &oss)
     oss << std::endl;
     PrintDocActExpMetrics(oss, "sent_to_clients", "bytes", docStats._bytesSentToClients);
     oss << std::endl;
-    PrintDocActExpMetrics(oss, "received_from_client", "bytes", docStats._bytesRecvFromClients);
+    PrintDocActExpMetrics(oss, "received_from_clients", "bytes", docStats._bytesRecvFromClients);
     oss << std::endl;
     PrintDocActExpMetrics(oss, "wopi_upload_duration", "milliseconds", docStats._wopiUploadDuration);
     oss << std::endl;
     PrintDocActExpMetrics(oss, "wopi_download_duration", "milliseconds", docStats._wopiDownloadDuration);
     oss << std::endl;
     PrintDocActExpMetrics(oss, "view_load_duration", "milliseconds", docStats._viewLoadDuration);
+
+    oss << std::endl;
+    oss << "error_storage_space_low " << StorageSpaceLowException::count << "\n";
+    oss << "error_storage_connection " << StorageConnectionException::count << "\n";
+    oss << "error_bad_request " << (BadRequestException::count - BadArgumentException::count) << "\n";
+    oss << "error_bad_argument " << BadArgumentException::count << "\n";
+    oss << "error_unauthorized_request " << UnauthorizedRequestException::count << "\n";
+    oss << "error_service_unavailable " << ServiceUnavailableException::count << "\n";
+    oss << "error_parse_error " << ParseError::count << "\n";
 }
 
 std::set<pid_t> AdminModel::getDocumentPids() const

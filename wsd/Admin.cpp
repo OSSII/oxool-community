@@ -450,7 +450,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
         sendTextFrame("recv_bytes " + std::to_string(model.getRecvBytesTotal() / 1024));
 
     else if (tokens.equals(0, "uptime"))
-        sendTextFrame("uptime " + std::to_string(model.getServerUptime()));
+        sendTextFrame("uptime " + std::to_string(model.getServerUptimeSecs()));
 
     else if (tokens.equals(0, "log_lines"))
         sendTextFrame("log_lines " + _admin->getLogLines());
@@ -469,16 +469,16 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
             }
             else
             {
-                LOG_WRN("Invalid PID to kill (not a document pid)");
+                LOG_ERR("Invalid PID to kill (not a document pid)");
             }
         }
         catch (std::invalid_argument& exc)
         {
-            LOG_WRN("Invalid PID to kill (invalid argument): " << tokens[1]);
+            LOG_ERR("Invalid PID to kill (invalid argument): " << tokens[1]);
         }
         catch (std::out_of_range& exc)
         {
-            LOG_WRN("Invalid PID to kill (out of range): " << tokens[1]);
+            LOG_ERR("Invalid PID to kill (out of range): " << tokens[1]);
         }
     }
     else if (tokens.equals(0, "settings"))
@@ -507,7 +507,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
     }
     else if (tokens.equals(0, "shutdown"))
     {
-        LOG_INF("Shutdown requested by admin.");
+        LOG_INF("Setting ShutdownRequestFlag: Shutdown requested by admin.");
         SigUtil::requestShutdown();
         return;
     }
@@ -523,7 +523,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
             }
             catch (const std::exception& exc)
             {
-                LOG_WRN("Invalid setting value: " << setting[1] <<
+                LOG_ERR("Invalid setting value: " << setting[1] <<
                         " for " << setting[0]);
                 return;
             }
@@ -1212,9 +1212,9 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
 AdminSocketHandler::AdminSocketHandler(Admin* adminManager,
                                        const std::weak_ptr<StreamSocket>& socket,
                                        const Poco::Net::HTTPRequest& request)
-    : WebSocketHandler(socket.lock(), request),
-      _admin(adminManager),
-      _isAuthenticated(false)
+    : WebSocketHandler(socket.lock(), request)
+    , _admin(adminManager)
+    , _isAuthenticated(false)
 {
     // Different session id pool for admin sessions (?)
     _sessionId = Util::decodeId(LOOLWSD::GetConnectionId());
@@ -1275,7 +1275,7 @@ bool AdminSocketHandler::handleInitialRequest(
     const std::string& requestURI = request.getURI();
     StringVector pathTokens(StringVector::tokenize(requestURI, '/'));
 
-    if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
+    if (request.has("Upgrade") && Util::iequal(request["Upgrade"], "websocket"))
     {
         Admin &admin = Admin::instance();
         auto handler = std::make_shared<AdminSocketHandler>(&admin, socketWeak, request);
@@ -1407,6 +1407,8 @@ void Admin::pollingThread()
             if (cleanupWait <= MinStatsIntervalMs / 2) // Close enough
             {
                 cleanupResourceConsumingDocs();
+                if (_defDocProcSettings.getCleanupSettings().getLostKitGracePeriod())
+                    cleanupLostKits();
 
                 cleanupWait += _cleanupIntervalMs;
                 lastCleanup = now;
@@ -1428,7 +1430,7 @@ void Admin::pollingThread()
         const auto timeout = std::chrono::milliseconds(capAndRoundInterval(
             std::min(std::min(std::min(cpuWait, memWait), netWait), cleanupWait)));
         LOG_TRC("Admin poll for " << timeout);
-        poll(timeout * 1000); // continue with ms for admin, settings etc.
+        poll(timeout); // continue with ms for admin, settings etc.
     }
 }
 
@@ -1438,9 +1440,9 @@ void Admin::modificationAlert(const std::string& dockey, pid_t pid, bool value){
 
 void Admin::addDoc(const std::string& docKey, pid_t pid, const std::string& filename,
                    const std::string& sessionId, const std::string& userName, const std::string& userId,
-                   const int smapsFD)
+                   const int smapsFD, const std::string& wopiHost)
 {
-    addCallback([=] { _model.addDocument(docKey, pid, filename, sessionId, userName, userId, smapsFD); });
+    addCallback([=] { _model.addDocument(docKey, pid, filename, sessionId, userName, userId, smapsFD, wopiHost); });
 }
 
 void Admin::rmDoc(const std::string& docKey, const std::string& sessionId)
@@ -1523,9 +1525,9 @@ unsigned Admin::getNetStatsInterval()
 std::string Admin::getChannelLogLevels()
 {
     unsigned int wsdLogLevel = Log::logger().get("wsd").getLevel();
-
     std::string result = "wsd=" + levelList[wsdLogLevel];
-    result += " kit=" + levelList[Log::logger().get("kit").getLevel()];
+
+    result += " kit=" + (_forkitLogLevel.empty() != true ? _forkitLogLevel: levelList[wsdLogLevel]);
 
     return result;
 }
@@ -1534,22 +1536,20 @@ void Admin::setChannelLogLevel(const std::string& channelName, std::string level
 {
     assertCorrectThread();
 
-    if (std::find(std::begin(levelList), std::end(levelList), level) == std::end(levelList))
-    {
-        level = "trace";
-    }
-
     // Get the list of channels..
     std::vector<std::string> nameList;
     Log::logger().names(nameList);
 
-    for (size_t i = 0; i < nameList.size(); i++)
+    if (std::find(std::begin(levelList), std::end(levelList), level) == std::end(levelList))
+        level = "debug";
+
+    if (channelName == "wsd")
+        Log::logger().get("wsd").setLevel(level);
+    else if (channelName == "kit")
     {
-        if (nameList[i] == channelName)
-        {
-            Log::logger().get(nameList[i]).setLevel(level);
-            break;
-        }
+        LOOLWSD::setLogLevelsOfKits(level); // For current kits.
+        LOOLWSD::sendMessageToForKit("setloglevel " + level); // For forkit and future kits.
+        _forkitLogLevel = level; // We will remember this setting rather than asking forkit its loglevel.
     }
 }
 
@@ -1632,6 +1632,11 @@ void Admin::addSegFaultCount(unsigned segFaultCount)
     addCallback([=]{ _model.addSegFaultCount(segFaultCount); });
 }
 
+void Admin::addLostKitsTerminated(unsigned lostKitsTerminated)
+{
+    addCallback([=]{ _model.addLostKitsTerminated(lostKitsTerminated); });
+}
+
 void Admin::notifyForkit()
 {
     std::ostringstream oss;
@@ -1646,7 +1651,7 @@ void Admin::notifyForkit()
 void Admin::triggerMemoryCleanup(const size_t totalMem)
 {
     // Trigger mem cleanup when we are consuming too much memory (as configured by sysadmin)
-    const auto memLimit = LOOLWSD::getConfigValue<double>("memproportion", 0.0);
+    static const double memLimit = LOOLWSD::getConfigValue<double>("memproportion", 0.0);
     if (memLimit == 0.0 || _totalSysMemKb == 0)
     {
         LOG_TRC("Total memory consumed: " << totalMem <<
@@ -1701,6 +1706,57 @@ void Admin::cleanupResourceConsumingDocs()
     _model.cleanupResourceConsumingDocs();
 }
 
+void Admin::cleanupLostKits()
+{
+    static std::map<pid_t, std::time_t> mapKitsLost;
+    std::set<pid_t> internalKitPids;
+    std::vector<int> kitPids;
+    int pid;
+    unsigned lostKitsTerminated = 0;
+    size_t gracePeriod = _defDocProcSettings.getCleanupSettings().getLostKitGracePeriod();
+
+    internalKitPids = LOOLWSD::getKitPids();
+    AdminModel::getKitPidsFromSystem(&kitPids);
+
+    for (auto itProc = kitPids.begin(); itProc != kitPids.end(); itProc ++)
+    {
+        pid = *itProc;
+        if (internalKitPids.find(pid) == internalKitPids.end())
+        {
+            // Check if this is our kit process (forked from our ForKit process)
+            if (Util::getStatFromPid(pid, 3) == (size_t)_forKitPid)
+                mapKitsLost.insert(std::pair<pid_t, std::time_t>(pid, std::time(nullptr)));
+        }
+        else
+            mapKitsLost.erase(pid);
+    }
+
+    for (auto itLost = mapKitsLost.begin(); itLost != mapKitsLost.end();)
+    {
+        if (std::time(nullptr) - itLost->second > (time_t)gracePeriod)
+        {
+            pid = itLost->first;
+            if (::kill(pid, 0) == 0)
+            {
+                if (::kill(pid, SIGKILL) == -1)
+                    LOG_ERR("Detected lost kit [" << pid << "]. Failed to send SIGKILL.");
+                else
+                {
+                    lostKitsTerminated ++;
+                    LOG_ERR("Detected lost kit [" << pid << "]. Sent SIGKILL for termination.");
+                }
+            }
+
+            itLost = mapKitsLost.erase(itLost);
+        }
+        else
+            itLost ++;
+    }
+
+    if (lostKitsTerminated)
+        Admin::instance().addLostKitsTerminated(lostKitsTerminated);
+}
+
 void Admin::dumpState(std::ostream& os)
 {
     // FIXME: be more helpful ...
@@ -1740,7 +1796,7 @@ public:
 
     void onDisconnect() override
     {
-        LOG_WRN("Monitor " << _uri << " dis-connected, re-trying in 20 seconds");
+        LOG_ERR("Monitor " << _uri << " dis-connected, re-trying in 20 seconds");
         Admin::instance().scheduleMonitorConnect(_uri, std::chrono::steady_clock::now() + std::chrono::seconds(20));
     }
 };
@@ -1786,11 +1842,6 @@ void Admin::sendMetrics(const std::shared_ptr<StreamSocket>& socket, const std::
     socket->shutdown();
 }
 
-void Admin::sendMetricsAsync(const std::shared_ptr<StreamSocket>& socket, const std::shared_ptr<Poco::Net::HTTPResponse>& response)
-{
-    addCallback([this, socket, response]{ sendMetrics(socket, response); });
-}
-
 void Admin::start()
 {
     bool haveMonitors = false;
@@ -1819,6 +1870,11 @@ void Admin::start()
         LOG_TRC("No monitors configured.");
 
     startThread();
+}
+
+void Admin::stop()
+{
+    joinThread();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

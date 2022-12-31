@@ -12,6 +12,7 @@
 #include "ClientSession.hpp"
 
 #include <fstream>
+#include <ios>
 #include <sstream>
 #include <memory>
 #include <unordered_map>
@@ -22,16 +23,17 @@
 
 #include "DocumentBroker.hpp"
 #include "LOOLWSD.hpp"
-#include "Storage.hpp"
 #include <common/Common.hpp>
 #include <common/Log.hpp>
 #include <common/Protocol.hpp>
 #include <common/Clipboard.hpp>
 #include <common/Session.hpp>
-#include <common/Unit.hpp>
+#include <common/TraceEvent.hpp>
 #include <common/Util.hpp>
 
-#include <OxOOL/HttpHelper.h>
+#if !MOBILEAPP
+#include <net/HttpHelper.hpp>
+#endif
 
 using namespace LOOLProtocol;
 
@@ -71,7 +73,8 @@ ClientSession::ClientSession(
     _tileHeightTwips(0),
     _kitViewId(-1),
     _serverURL(requestDetails),
-    _isTextDocument(false)
+    _isTextDocument(false),
+    _lastSentFormFielButtonMessage("")
 {
     const std::size_t curConnections = ++LOOLWSD::NumConnections;
     LOG_INF("ClientSession ctor [" << getName() << "] for URI: [" << _uriPublic.toString()
@@ -94,6 +97,17 @@ ClientSession::ClientSession(
 
     // get timestamp set
     setState(SessionState::DETACHED);
+
+    // Emit metadata Trace Events for the synthetic pid used for the Trace Events coming in from the
+    // client's lool, and for its dummy thread.
+    TraceEvent::emitOneRecordingIfEnabled("{\"name\":\"process_name\",\"ph\":\"M\",\"args\":{\"name\":\""
+                                          "lool-" + id
+                                          + "\"},\"pid\":"
+                                          + std::to_string(getpid() + SYNTHETIC_OXOOL_PID_OFFSET)
+                                          + ",\"tid\":1},\n");
+    TraceEvent::emitOneRecordingIfEnabled("{\"name\":\"thread_name\",\"ph\":\"M\",\"args\":{\"name\":\"JS\"},\"pid\":"
+                                          + std::to_string(getpid() + SYNTHETIC_OXOOL_PID_OFFSET)
+                                          + ",\"tid\":1},\n");
 }
 
 // Can't take a reference in the constructor.
@@ -113,30 +127,16 @@ ClientSession::~ClientSession()
     GlobalSessionMap.erase(getId());
 }
 
-static const char *stateToString(ClientSession::SessionState s)
-{
-    switch (s)
-    {
-    case ClientSession::SessionState::DETACHED:        return "detached";
-    case ClientSession::SessionState::LOADING:         return "loading";
-    case ClientSession::SessionState::LIVE:            return "live";
-    case ClientSession::SessionState::WAIT_DISCONNECT: return "wait_disconnect";
-    }
-    return "invalid";
-}
-
 void ClientSession::setState(SessionState newState)
 {
-    LOG_TRC("ClientSession: transition from " << stateToString(_state) <<
-            " to " << stateToString(newState));
+    LOG_TRC(getName() << ": transition from " << name(_state) << " to " << name(newState));
 
     // we can get incoming messages while our disconnection is in transit.
     if (_state == SessionState::WAIT_DISCONNECT)
     {
         if (newState != SessionState::WAIT_DISCONNECT)
-            LOG_WRN("Unusual race - attempts to transition from " <<
-                    stateToString(_state) << " to " <<
-                    stateToString(newState));
+            LOG_WRN("Unusual race - attempts to transition from " << name(_state) << " to "
+                                                                  << name(newState));
         return;
     }
 
@@ -241,10 +241,8 @@ bool ClientSession::matchesClipboardKeys(const std::string &/*viewId*/, const st
     }
 
     // FIXME: check viewId for paranoia if we can.
-    for (auto &it : _clipboardKeys)
-        if (it == tag)
-            return true;
-    return false;
+    return std::any_of(std::begin(_clipboardKeys), std::end(_clipboardKeys),
+                       [&tag](const std::string& it) { return it == tag; });
 }
 
 
@@ -264,14 +262,9 @@ void ClientSession::handleClipboardRequest(DocumentBroker::ClipboardRequest     
             return; // the getclipboard already completed.
         if (type == DocumentBroker::CLIP_REQUEST_SET)
         {
-            std::ostringstream oss;
-            oss << "HTTP/1.1 400 Bad Request\r\n"
-                << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                << "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
-                << "Content-Length: 0\r\n"
-                << "\r\n";
-            socket->send(oss.str());
-            socket->shutdown();
+            #if !MOBILEAPP
+            HttpHelper::sendErrorAndShutdown(400, socket);
+            #endif
         }
         else // will be handled during shutdown
         {
@@ -298,7 +291,8 @@ void ClientSession::handleClipboardRequest(DocumentBroker::ClipboardRequest     
                 << "Content-Length: 0\r\n"
                 << "\r\n";
             socket->send(oss.str());
-            socket->shutdown();
+            socket->closeConnection(); // Shutdown socket.
+            socket->ignoreInput();
             return;
         }
 
@@ -312,6 +306,7 @@ void ClientSession::handleClipboardRequest(DocumentBroker::ClipboardRequest     
         LOG_TRC("Session [" << getId() << "] sending setclipboard");
         if (data.get())
         {
+            preProcessSetClipboardPayload(*data);
             docBroker->forwardToChild(getId(), "setclipboard\n" + *data);
 
             // FIXME: work harder for error detection ?
@@ -326,14 +321,9 @@ void ClientSession::handleClipboardRequest(DocumentBroker::ClipboardRequest     
         }
         else
         {
-            std::ostringstream oss;
-            oss << "HTTP/1.1 400 Bad Request\r\n"
-                << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                << "User-Agent: " << WOPI_AGENT_STRING << "\r\n"
-                << "Content-Length: 0\r\n"
-                << "\r\n";
-            socket->send(oss.str());
-            socket->shutdown();
+            #if !MOBILEAPP
+            HttpHelper::sendErrorAndShutdown(400, socket);
+            #endif
         }
     }
 }
@@ -512,7 +502,7 @@ bool ClientSession::_handleInput(const char *buffer, int length)
                     // microseconds since the epoch.
                     _performanceCounterEpoch = ts * 1000 - (uint64_t)(counter * 1000);
                     LOG_INF("Client timestamps: Date.now():" << ts <<
-                    ", performance.now():" << counter
+                            ", performance.now():" << counter
                             << " => " << _performanceCounterEpoch);
                 }
             }
@@ -539,7 +529,7 @@ bool ClientSession::_handleInput(const char *buffer, int length)
         return true;
     }
 
-    if (tokens.equals(0, "jserror"))
+    else if (tokens.equals(0, "jserror") || tokens.equals(0, "jsexception"))
     {
         LOG_ERR(std::string(buffer, length));
         return true;
@@ -673,7 +663,8 @@ bool ClientSession::_handleInput(const char *buffer, int length)
     }
     else if (tokens.equals(0, "savetostorage"))
     {
-        int force = 0;
+        // By default savetostorage implies forcing.
+        int force = 1;
         if (tokens.size() > 1)
             getTokenInteger(tokens[1], "force", force);
 
@@ -1008,6 +999,11 @@ bool ClientSession::loadDocument(const char* /*buffer*/, int /*length*/,
             oss << " deviceFormFactor=" << getDeviceFormFactor();
         }
 
+        if (!getSpellOnline().empty())
+        {
+            oss << " spellOnline=" << getSpellOnline();
+        }
+
         // 有浮水印
         if (hasWatermark())
         {
@@ -1069,6 +1065,11 @@ bool ClientSession::loadDocument(const char* /*buffer*/, int /*length*/,
             oss << " template=" << _wopiFileInfo->getTemplateSource();
         }
 
+        if (!getBatchMode().empty())
+        {
+            oss << " batch=" << getBatchMode();
+        }
+
         return forwardToChild(oss.str(), docBroker);
     }
     catch (const Poco::SyntaxException&)
@@ -1105,11 +1106,14 @@ bool ClientSession::sendFontRendering(const char *buffer, int length, const Stri
 
     getTokenString(tokens[2], "char", text);
 
-    TileCache::Tile cachedTile = docBroker->tileCache().lookupCachedStream(TileCache::StreamType::Font, font+text);
-    if (cachedTile)
+    if (docBroker->hasTileCache())
     {
-        const std::string response = "renderfont: " + tokens.cat(' ', 1) + '\n';
-        return sendTile(response, cachedTile);
+        TileCache::Tile cachedTile = docBroker->tileCache().lookupCachedStream(TileCache::StreamType::Font, font+text);
+        if (cachedTile)
+        {
+            const std::string response = "renderfont: " + tokens.cat(' ', 1) + '\n';
+            return sendTile(response, cachedTile);
+        }
     }
 
     return forwardToChild(std::string(buffer, length), docBroker);
@@ -1313,6 +1317,8 @@ void ClientSession::writeQueuedMessages(std::size_t capacity)
 }
 
 // NB. also see loleaflet/src/map/Clipboard.js that does this in JS for stubs.
+// See also ClientSession::preProcessSetClipboardPayload() which removes the
+// <meta name="origin"...>  tag added here.
 void ClientSession::postProcessCopyPayload(const std::shared_ptr<Message>& payload)
 {
     // Insert our meta origin if we can
@@ -1394,7 +1400,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                     return true;
                 }
             }
-            catch(const std::exception& exception)
+            catch (const std::exception& exception)
             {
                 LOG_ERR("unocommandresult parsing failure: " << exception.what());
             }
@@ -1413,7 +1419,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         {
             if (errorCommand == "load")
             {
-                LOG_WRN("Document load failed: " << errorKind);
+                LOG_ERR("Document load failed: " << errorKind);
                 if (errorKind == "passwordrequired:to-view" ||
                     errorKind == "passwordrequired:to-modify" ||
                     errorKind == "wrongpassword")
@@ -1463,7 +1469,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             }
             else
             {
-                LOG_WRN(errorCommand << " error failure: " << errorKind);
+                LOG_ERR(errorCommand << " error failure: " << errorKind);
             }
         }
     }
@@ -1527,7 +1533,12 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         // Prepend the jail path in the normal (non-nocaps) case
         if (resultURL.getScheme() == "file" && !LOOLWSD::NoCapsForKit)
         {
-            std::string relative(resultURL.getPath());
+            std::string relative;
+            if (isConvertTo)
+                Poco::URI::decode(resultURL.getPath(), relative);
+            else
+                relative = resultURL.getPath();
+
             if (relative.size() > 0 && relative[0] == '/')
                 relative = relative.substr(1);
 
@@ -1535,11 +1546,18 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             const Path path(docBroker->getJailRoot(), relative);
             if (Poco::File(path).exists())
             {
-                // Encode path for special characters (i.e '%') since Poco::URI::setPath implicitly decodes the input param
-                std::string encodedPath;
-                Poco::URI::encode(path.toString(), "", encodedPath);
+                if (!isConvertTo)
+                {
+                    // Encode path for special characters (i.e '%') since Poco::URI::setPath implicitly decodes the input param
+                    std::string encodedPath;
+                    Poco::URI::encode(path.toString(), "", encodedPath);
 
-                resultURL.setPath(encodedPath);
+                    resultURL.setPath(encodedPath);
+                }
+                else
+                {
+                    resultURL.setPath(path.toString());
+                }
             }
             else
             {
@@ -1579,7 +1597,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                 if (!fileName.empty())
                     response.set("Content-Disposition", "attachment; filename=\"" + fileName + '"');
 
-                OxOOL::HttpHelper::sendFileAndShutdown(_saveAsSocket, encodedFilePath, mimeType, &response);
+                HttpHelper::sendFileAndShutdown(_saveAsSocket, encodedFilePath, mimeType, &response);
             }
 
             // Conversion is done, cleanup this fake session.
@@ -1652,8 +1670,9 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         // 'download' and/or providing our helpful / user page.
 
         // for now just for remote sockets.
-        LOG_TRC("Got clipboard content of size " << payload->size() << " to send to " <<
-                _clipSockets.size() << " sockets in state " << stateToString(_state));
+        LOG_TRC("Got clipboard content of size " << payload->size() << " to send to "
+                                                 << _clipSockets.size() << " sockets in state "
+                                                 << name(_state));
 
         postProcessCopyPayload(payload);
 
@@ -1703,6 +1722,12 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         LOG_INF("End of disconnection handshake for " << getId());
         docBroker->finalRemoveSession(getId());
         return true;
+    }
+    else if (tokens.equals(0, "formfieldbutton:")) {
+        // Do not send redundant messages
+        if (_lastSentFormFielButtonMessage == firstLine)
+            return true;
+        _lastSentFormFielButtonMessage = firstLine;
     }
 
     if (!isDocPasswordProtected())
@@ -1876,9 +1901,8 @@ void ClientSession::enqueueSendMessage(const std::shared_ptr<Message>& data)
     LOG_CHECK_RET(docBroker && "Null DocumentBroker instance", );
     docBroker->assertCorrectThread();
 
-    const std::string command = data->firstToken();
     std::unique_ptr<TileDesc> tile;
-    if (command == "tile:")
+    if (data->firstTokenMatches("tile:"))
     {
         // Avoid sending tile if it has the same wireID as the previously sent tile
         tile = Util::make_unique<TileDesc>(TileDesc::parse(data->firstLine()));
@@ -1919,12 +1943,13 @@ void ClientSession::removeOutdatedTilesOnFly()
     while(!_tilesOnFly.empty() && continueLoop)
     {
         auto tileIter = _tilesOnFly.begin();
-        double elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tileIter->second).count();
-        if(elapsedTimeMs > TILE_ROUNDTRIP_TIMEOUT_MS)
+        const auto elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now() - tileIter->second);
+        if (elapsedTimeMs > std::chrono::milliseconds(TILE_ROUNDTRIP_TIMEOUT_MS))
         {
             LOG_WRN("Tracker tileID " << tileIter->first << " was dropped because of time out ("
                                       << elapsedTimeMs
-                                      << " ms). Tileprocessed message did not arrive in time.");
+                                      << "). Tileprocessed message did not arrive in time.");
             _tilesOnFly.erase(tileIter);
         }
         else
@@ -1956,7 +1981,8 @@ Util::Rectangle ClientSession::getNormalizedVisibleArea() const
 
 void ClientSession::onDisconnect()
 {
-    LOG_INF(getName() << " Disconnected, current number of connections: " << LOOLWSD::NumConnections);
+    LOG_INF(getName() << ": Disconnected, current global number of connections (inclusive): "
+                      << LOOLWSD::NumConnections);
 
     const std::shared_ptr<DocumentBroker> docBroker = getDocumentBroker();
     LOG_CHECK_RET(docBroker && "Null DocumentBroker instance", );
@@ -1969,27 +1995,28 @@ void ClientSession::onDisconnect()
     try
     {
         // Connection terminated. Destroy session.
-        LOG_DBG(getName() << " on docKey [" << docKey << "] terminated. Cleaning up.");
+        LOG_DBG(getName() << ": on docKey [" << docKey << "] terminated. Cleaning up.");
 
         docBroker->removeSession(getId());
     }
     catch (const UnauthorizedRequestException& exc)
     {
-        LOG_ERR("Error in client request handler: " << exc.toString());
+        LOG_ERR(getName() << ": Error in client request handler: " << exc.toString());
         const std::string status = "error: cmd=internal kind=unauthorized";
-        LOG_TRC("Sending to Client [" << status << "].");
+        LOG_TRC(getName() << ": Sending to Client [" << status << "].");
         sendMessage(status);
+        // We are disconnecting, no need to close the socket here.
     }
     catch (const std::exception& exc)
     {
-        LOG_ERR("Error in client request handler: " << exc.what());
+        LOG_ERR(getName() << ": Error in client request handler: " << exc.what());
     }
 
     try
     {
         if (isCloseFrame())
         {
-            LOG_TRC("Normal close handshake.");
+            LOG_TRC(getName() << ": Normal close handshake.");
             // Client initiated close handshake
             // respond with close frame
             shutdownNormal();
@@ -1997,20 +2024,20 @@ void ClientSession::onDisconnect()
         else if (!SigUtil::getShutdownRequestFlag())
         {
             // something wrong, with internal exceptions
-            LOG_TRC("Abnormal close handshake.");
+            LOG_TRC(getName() << ": Abnormal close handshake.");
             closeFrame();
             shutdownGoingAway();
         }
         else
         {
-            LOG_TRC("Server recycling.");
+            LOG_TRC(getName() << ": Server recycling.");
             closeFrame();
             shutdownGoingAway();
         }
     }
     catch (const std::exception& exc)
     {
-        LOG_WRN(getName() << ": Exception while closing socket for docKey [" << docKey << "]: " << exc.what());
+        LOG_ERR(getName() << ": Exception while closing socket for docKey [" << docKey << "]: " << exc.what());
     }
 }
 
@@ -2018,9 +2045,13 @@ void ClientSession::dumpState(std::ostream& os)
 {
     Session::dumpState(os);
 
-    os << "\t\tisReadOnly: " << isReadOnly()
+    os << "\t\tisLive: " << isLive()
+       << "\n\t\tisViewLoaded: " << isViewLoaded()
+       << "\n\t\tisReadOnly: " << isReadOnly()
+       << "\n\t\tisAllowChangeComments: " << isAllowChangeComments()
+       << "\n\t\tisWritable: " << isWritable()
        << "\n\t\tisDocumentOwner: " << isDocumentOwner()
-       << "\n\t\tstate: " << stateToString(_state)
+       << "\n\t\tstate: " << name(_state)
        << "\n\t\tkeyEvents: " << _keyEvents
 //       << "\n\t\tvisibleArea: " << _clientVisibleArea
        << "\n\t\tclientSelectedPart: " << _clientSelectedPart
@@ -2065,6 +2096,13 @@ void ClientSession::handleTileInvalidation(const std::string& message,
        _tileWidthTwips == 0 || _tileHeightTwips == 0 ||
        (_clientSelectedPart == -1 && !_isTextDocument))
     {
+        return;
+    }
+
+    // While saving / shutting down we can get big invalidatiions: ignore them
+    if (isCloseFrame())
+    {
+        LOG_TRC("Session [" << getId() << "] ignoring invalidation during close: '" << message);
         return;
     }
 
@@ -2241,6 +2279,30 @@ void ClientSession::traceTileBySend(const TileDesc& tile, bool deduplicated)
     // Record that the tile is sent
     if (!deduplicated)
         addTileOnFly(tile);
+}
+
+// This removes the <meta name="origin" ...> tag which was added in
+// ClientSession::postProcessCopyPayload(), else the payload parsing
+// in ChildSession::setClipboard() will fail.
+// To see why, refer
+// 1. ChildSession::getClipboard() where the data for various
+//    flavours along with flavour-type and length fields are packed into the payload.
+// 2. The clipboard payload parsing code in ClipboardData::read().
+void ClientSession::preProcessSetClipboardPayload(std::string& payload)
+{
+    std::size_t start = payload.find("<meta name=\"origin\" content=\"");
+    if (start != std::string::npos)
+    {
+        std::size_t end = payload.find("\"/>\n", start);
+        if (end == std::string::npos)
+        {
+            LOG_DBG("Found unbalanced <meta name=\"origin\".../> tag in setclipboard payload.");
+            return;
+        }
+
+        std::size_t len = end - start + 4;
+        payload.erase(start, len);
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

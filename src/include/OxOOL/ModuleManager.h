@@ -137,6 +137,7 @@ public:
     }
 
     void start() { startThread(); }
+    void stop() { joinThread(); }
 
     void pollingThread() override;
 

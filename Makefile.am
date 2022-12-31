@@ -120,12 +120,14 @@ oxoolwsd_sources = common/Crypto.cpp \
                   wsd/LOOLWSD.cpp \
                   wsd/ClientSession.cpp \
                   wsd/FileServer.cpp \
+                  wsd/ProxyRequestHandler.cpp \
                   wsd/FileServerUtil.cpp \
                   wsd/RequestDetails.cpp \
                   wsd/Storage.cpp \
                   wsd/HostUtil.cpp \
                   wsd/TileCache.cpp \
-                  wsd/ProofKey.cpp
+                  wsd/ProofKey.cpp \
+                  wsd/QuarantineUtil.cpp
 
 oxoolwsd_json = $(patsubst %.cpp,%.cmd,$(oxoolwsd_sources))
 
@@ -203,6 +205,7 @@ wsd_headers = wsd/Admin.hpp \
               wsd/ProxyProtocol.hpp \
               wsd/Exceptions.hpp \
               wsd/FileServer.hpp \
+              wsd/ProxyRequestHandler.hpp \
               wsd/LOOLWSD.hpp \
               wsd/ProofKey.hpp \
               wsd/RequestDetails.hpp \
@@ -213,6 +216,7 @@ wsd_headers = wsd/Admin.hpp \
               wsd/TileDesc.hpp \
               wsd/TraceFile.hpp \
               wsd/UserMessages.hpp \
+              wsd/QuarantineUtil.hpp \
               wsd/HostUtil.hpp
 
 shared_headers = common/Common.hpp \

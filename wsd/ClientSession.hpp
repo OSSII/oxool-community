@@ -44,12 +44,12 @@ public:
 
     void setLockFailed(const std::string& sReason);
 
-    enum SessionState {
-        DETACHED,        // initial
-        LOADING,         // attached to a DocBroker & waiting for load
-        LIVE,            // Document is loaded & editable or viewable.
-        WAIT_DISCONNECT  // closed and waiting for Kit's disconnected message
-    };
+    STATE_ENUM(SessionState,
+               DETACHED, // initial
+               LOADING, // attached to a DocBroker & waiting for load
+               LIVE, // Document is loaded & editable or viewable.
+               WAIT_DISCONNECT // closed and waiting for Kit's disconnected message
+    );
 
     /// Returns true if this session has loaded a view (i.e. we got status message).
     bool isViewLoaded() const { return _state == SessionState::LIVE; }
@@ -62,6 +62,13 @@ public:
 
     void setDocumentOwner(const bool documentOwner) { _isDocumentOwner = documentOwner; }
     bool isDocumentOwner() const { return _isDocumentOwner; }
+
+    /// Returns true iff the view is loaded and not disconnected
+    /// from either the client or the Kit.
+    bool isLive() const { return _state == SessionState::LIVE && !isCloseFrame(); }
+
+    /// Returns true iff the view is either not readonly or can change comments.
+    bool isWritable() const { return !isReadOnly() || isAllowChangeComments(); }
 
     /// Handle kit-to-client message.
     bool handleKitToClientMessage(const char* data, const int size);
@@ -77,9 +84,13 @@ public:
 
     bool sendBinaryFrame(const char* buffer, int length) override
     {
-        auto payload = std::make_shared<Message>(buffer, length, Message::Dir::Out);
-        enqueueSendMessage(payload);
-        return true;
+        if (!isCloseFrame())
+        {
+            enqueueSendMessage(std::make_shared<Message>(buffer, length, Message::Dir::Out));
+            return true;
+        }
+
+        return false;
     }
 
     bool sendTile(const std::string &header, const TileCache::Tile &tile)
@@ -96,9 +107,13 @@ public:
 
     bool sendTextFrame(const char* buffer, const int length) override
     {
-        auto payload = std::make_shared<Message>(buffer, length, Message::Dir::Out);
-        enqueueSendMessage(payload);
-        return true;
+        if (!isCloseFrame())
+        {
+            enqueueSendMessage(std::make_shared<Message>(buffer, length, Message::Dir::Out));
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -234,7 +249,7 @@ private:
 
     void dumpState(std::ostream& os) override;
 
-    /// Handle invalidation message comming from a kit and transfer it to a tile request.
+    /// Handle invalidation message coming from a kit and transfer it to a tile request.
     void handleTileInvalidation(const std::string& message,
                                 const std::shared_ptr<DocumentBroker>& docBroker);
 
@@ -242,6 +257,10 @@ private:
 
     /// If this session is read-only because of failed lock, try to unlock and make it read-write.
     bool attemptLock(const std::shared_ptr<DocumentBroker>& docBroker);
+
+    /// Removes the <meta name="origin" ...> tag which was added in
+    /// ClientSession::postProcessCopyPayload().
+    static void preProcessSetClipboardPayload(std::string& payload);
 
 private:
     std::weak_ptr<DocumentBroker> _docBroker;
@@ -322,11 +341,11 @@ private:
     /// Time when loading of view started
     std::chrono::steady_clock::time_point _viewLoadStart;
 
-    /// Store last sent payload of form field button, so we can filter out redundant messages.
-    std::string _lastSentFormFielButtonMessage;
-
     /// Secure session id token for proxyprotocol authentication
     std::string _proxyAccess;
+
+    /// Store last sent payload of form field button, so we can filter out redundant messages.
+    std::string _lastSentFormFielButtonMessage;
 
     /// Epoch of the client's performance.now() function, as microseconds sinze Unix epoch
     uint64_t _performanceCounterEpoch;

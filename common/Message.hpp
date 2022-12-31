@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,12 +8,15 @@
 #pragma once
 
 #include <atomic>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <functional>
 
 #include "Protocol.hpp"
+#include "StringVector.hpp"
 #include "Log.hpp"
+#include "Util.hpp"
 
 /// The payload type used to send/receive data.
 class Message
@@ -30,14 +31,12 @@ public:
     Message(const std::string& message,
             const enum Dir dir) :
         _forwardToken(getForwardToken(message.data(), message.size())),
-        _data(skipWhitespace(message.data() + _forwardToken.size()), message.data() + message.size()),
+        _data(copyDataAfterOffset(message.data(), message.size(), _forwardToken.size())),
         _tokens(StringVector::tokenize(_data.data(), _data.size())),
         _id(makeId(dir)),
-        _firstLine(LOOLProtocol::getFirstLine(_data.data(), _data.size())),
-        _abbr(_id + ' ' + LOOLProtocol::getAbbreviatedMessage(_data.data(), _data.size())),
         _type(detectType())
     {
-        LOG_TRC("Message " << _abbr);
+        LOG_TRC("Message " << abbr());
     }
 
     /// Construct a message from a string with type and
@@ -47,17 +46,13 @@ public:
             const enum Dir dir,
             const size_t reserve) :
         _forwardToken(getForwardToken(message.data(), message.size())),
-        _data(std::max(reserve, message.size())),
+        _data(copyDataAfterOffset(message.data(), message.size(), _forwardToken.size())),
         _tokens(StringVector::tokenize(message.data() + _forwardToken.size(), message.size() - _forwardToken.size())),
         _id(makeId(dir)),
-        _firstLine(LOOLProtocol::getFirstLine(message)),
-        _abbr(_id + ' ' + LOOLProtocol::getAbbreviatedMessage(message)),
         _type(detectType())
     {
-        _data.resize(message.size());
-        const char* offset = skipWhitespace(message.data() + _forwardToken.size());
-        std::memcpy(_data.data(), offset, message.size() - (offset - message.data()));
-        LOG_TRC("Message " << _abbr);
+        _data.reserve(std::max(reserve, message.size()));
+        LOG_TRC("Message " << abbr());
     }
 
     /// Construct a message from a character array with type.
@@ -66,14 +61,12 @@ public:
             const size_t len,
             const enum Dir dir) :
         _forwardToken(getForwardToken(p, len)),
-        _data(skipWhitespace(p + _forwardToken.size()), p + len),
+        _data(copyDataAfterOffset(p, len, _forwardToken.size())),
         _tokens(StringVector::tokenize(_data.data(), _data.size())),
         _id(makeId(dir)),
-        _firstLine(LOOLProtocol::getFirstLine(_data.data(), _data.size())),
-        _abbr(_id + ' ' + LOOLProtocol::getAbbreviatedMessage(_data.data(), _data.size())),
         _type(detectType())
     {
-        LOG_TRC("Message " << _abbr);
+        LOG_TRC("Message " << abbr());
     }
 
     size_t size() const { return _data.size(); }
@@ -82,8 +75,24 @@ public:
     const StringVector& tokens() const { return _tokens; }
     const std::string& forwardToken() const { return _forwardToken; }
     std::string firstToken() const { return _tokens[0]; }
-    const std::string& firstLine() const { return _firstLine; }
+    bool firstTokenMatches(const std::string& target) const { return _tokens[0] == target; }
     std::string operator[](size_t index) const { return _tokens[index]; }
+
+    /// Find a subarray in the raw message.
+    int find(const char* sub, const std::size_t subLen) const
+    {
+        return Util::findSubArray(&_data[0], _data.size(), sub, subLen);
+    }
+
+    /// Returns true iff the subarray exists in the raw message.
+    bool contains(const char* p, const std::size_t len) const { return find(p, len) >= 0; }
+
+    const std::string& firstLine()
+    {
+        assignFirstLineIfEmpty();
+        return _firstLine;
+    }
+
 
     bool getTokenInteger(const std::string& name, int& value)
     {
@@ -91,7 +100,9 @@ public:
     }
 
     /// Return the abbreviated message for logging purposes.
-    const std::string& abbr() const { return _abbr; }
+    std::string abbr() const {
+        return _id + ' ' + LOOLProtocol::getAbbreviatedMessage(_data.data(), _data.size());
+    }
     const std::string& id() const { return _id; }
 
     /// Returns the json part of the message, if any.
@@ -120,11 +131,12 @@ public:
     /// Allows some in-line re-writing of the message
     void rewriteDataBody(const std::function<bool (std::vector<char> &)>& func)
     {
+        // Make sure _firstLine is assigned before we change _data
+        assignFirstLineIfEmpty();
         if (func(_data))
         {
             // Check - just the body.
             assert(_firstLine == LOOLProtocol::getFirstLine(_data.data(), _data.size()));
-            assert(_abbr == _id + ' ' + LOOLProtocol::getAbbreviatedMessage(_data.data(), _data.size()));
             assert(_type == detectType());
         }
     }
@@ -138,6 +150,14 @@ private:
         return (dir == Dir::In ? 'i' : 'o') + std::to_string(++Counter);
     }
 
+    void assignFirstLineIfEmpty()
+    {
+        if(_firstLine.empty())
+        {
+            _firstLine = LOOLProtocol::getFirstLine(_data.data(), _data.size());
+        }
+    }
+
     Type detectType() const
     {
         if (_tokens.equals(0, "tile:") ||
@@ -148,7 +168,7 @@ private:
             return Type::Binary;
         }
 
-        if (_data[_data.size() - 1] == '}')
+        if (_data.size() > 0 && _data[_data.size() - 1] == '}')
         {
             return Type::JSON;
         }
@@ -163,14 +183,21 @@ private:
         return (forward.find('-') != std::string::npos ? forward : std::string());
     }
 
-    const char* skipWhitespace(const char* p)
+    std::vector<char> copyDataAfterOffset(const char *p, size_t len, size_t fromOffset)
     {
-        while (p && *p == ' ')
-        {
-            ++p;
-        }
+        if (!p || fromOffset >= len)
+            return std::vector<char>();
 
-        return p;
+        size_t i;
+        for (i = fromOffset; i < len; ++i)
+        {
+            if (p[i] != ' ')
+                break;
+        }
+        if (i < len)
+            return std::vector<char>(p + i, p + len);
+        else
+            return std::vector<char>();
     }
 
 private:
@@ -178,8 +205,7 @@ private:
     std::vector<char> _data;
     const StringVector _tokens;
     const std::string _id;
-    const std::string _firstLine;
-    const std::string _abbr;
+    std::string _firstLine;
     const Type _type;
 };
 
