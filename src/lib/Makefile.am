@@ -24,4 +24,5 @@ libOxOOL_la_SOURCES = \
 	OxOOL/L10NTranslator.cpp \
 	OxOOL/XMLConfig.cpp \
 	OxOOL/ConvertBroker.cpp \
+	OxOOL/Util.cpp \
 	OxOOL/Module/Base.cpp
