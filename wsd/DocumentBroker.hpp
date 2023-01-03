@@ -94,6 +94,7 @@ class ClientSession;
 
 class DocumentBroker : public std::enable_shared_from_this<DocumentBroker>
 {
+    friend class previewDocumentBroker;
     class DocumentBrokerPoll;
 
     void setupPriorities();
