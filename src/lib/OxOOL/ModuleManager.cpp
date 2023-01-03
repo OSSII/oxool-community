@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <config.h>
 #include <OxOOL/ModuleManager.h>
 #include <OxOOL/XMLConfig.h>
 #include <OxOOL/HttpHelper.h>
@@ -547,8 +546,8 @@ ModuleManager::createConvertBroker(const std::string& fromFile,
                                    const std::string& saveAsOptions)
 {
     std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
-    Poco::URI uriPublic = DocumentBroker::sanitizeURI(fromFile);
-    const std::string docKey = DocumentBroker::getDocKey(uriPublic);
+    Poco::URI uriPublic = RequestDetails::sanitizeURI(fromFile);
+    const std::string docKey = RequestDetails::getDocKey(uriPublic);
     auto docBroker = std::make_shared<ConvertBroker>(fromFile, uriPublic, docKey,
                                                      toFormat, saveAsOptions);
     mpDocBrokers[docKey] = docBroker;

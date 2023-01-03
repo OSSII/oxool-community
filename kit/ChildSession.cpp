@@ -54,8 +54,6 @@
 #include <Clipboard.hpp>
 #include <string>
 
-#define RENAME_TO_UPLOAD 0
-
 using Poco::JSON::Object;
 using Poco::JSON::Parser;
 using Poco::URI;
@@ -769,7 +767,6 @@ bool ChildSession::loadDocument(const StringVector& tokens)
         }
 
 #if !MOBILEAPP
-#if RENAME_TO_UPLOAD
             // Create the 'upload' file so DocBroker picks up and uploads.
             const std::string oldName = Poco::URI(url).getPath();
             const std::string newName = oldName + TO_UPLOAD_SUFFIX;
@@ -782,7 +779,6 @@ bool ChildSession::loadDocument(const StringVector& tokens)
             {
                 LOG_TRC("Renamed [" << oldName << "] to [" << newName << ']');
             }
-#endif
 #endif //!MOBILEAPP
     }
 
@@ -2932,7 +2928,6 @@ void ChildSession::loKitCallback(const int type, const std::string& payload)
         if (!commandName.isEmpty() && commandName.toString() == ".uno:Save")
         {
 #if !MOBILEAPP
-#if RENAME_TO_UPLOAD
             // Create the 'upload' file regardless of success or failure,
             // because we don't know if the last upload worked or not.
             // DocBroker will have to decide to upload or skip.
@@ -2950,7 +2945,6 @@ void ChildSession::loKitCallback(const int type, const std::string& payload)
             {
                 LOG_TRC("Renamed [" << oldName << "] to [" << newName << ']');
             }
-#endif
 #else // MOBILEAPP
             // After the document has been saved (into the temporary copy that we set up in
             // -[CODocument loadFromContents:ofType:error:]), save it also using the system API so

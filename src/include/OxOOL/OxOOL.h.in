@@ -12,8 +12,9 @@ namespace ENV
 
     const std::string Version = "@VERSION@";
     const std::string VersionHash = "@LOOLWSD_VERSION_HASH@";
-    const std::string WopiAgentString = "OxOOL WOPI Agent " + Version;
     const std::string HttpAgentString = "OxOOL HTTP Agent " + Version;
+    const std::string WopiAgentString = HttpAgentString;
+    const std::string HttpServerString = "OxOOL HTTP Server " + Version;
     const std::string ModuleDir = "@LOOLWSD_MODULE_DIR@";
     const std::string ModuleConfigDir = "@LOOLWSD_MODULE_CONFIG_DIR@";
     const std::string ModuleDataDir = "@LOOLWSD_MODULE_DATA_DIR@";

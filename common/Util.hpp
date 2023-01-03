@@ -1,7 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
 /*
- * This file is part of the LibreOffice project.
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -147,12 +145,6 @@ namespace Util
     std::string encodeId(const std::uint64_t number, const int padding = 5);
     /// Decode an integral ID from a string.
     std::uint64_t decodeId(const std::string& str);
-
-    /// 以 AES 256 加密字串
-    std::string encryptAES256(const std::string& text, const std::string& password="");
-
-    /// 以 AES 256 解密字串
-    std::string decryptAES256(const std::string& text, const std::string& password="");
 
     bool windowingAvailable();
 
@@ -1151,9 +1143,6 @@ int main(int argc, char**argv)
 
     //// Return time in HTTP format.
     std::string getHttpTime(std::chrono::system_clock::time_point time);
-
-    //// Return timestamp of file
-    std::chrono::system_clock::time_point getFileTimestamp(const std::string& str_path);
 
     //// Return time in ISO8061 fraction format
     std::string getIso8601FracformatTime(std::chrono::system_clock::time_point time);

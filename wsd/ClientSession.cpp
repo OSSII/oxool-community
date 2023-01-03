@@ -80,17 +80,6 @@ ClientSession::ClientSession(
     LOG_INF("ClientSession ctor [" << getName() << "] for URI: [" << _uriPublic.toString()
                                    << "], current number of connections: " << curConnections);
 
-    for (const auto& param : _uriPublic.getQueryParameters())
-    {
-        if (param.first == "reuse_cookies")
-        {
-            // Cache the cookies to avoid re-parsing the URI again.
-            _cookies = param.second;
-            LOG_INF("ClientSession [" << getName() << "] has cookies: [" << _cookies << "].");
-            break;
-        }
-    }
-
     // populate with random values.
     for (auto it : _clipboardKeys)
         rotateClipboardKey(false);
@@ -465,6 +454,16 @@ bool ClientSession::_handleInput(const char *buffer, int length)
         // Keep track of timestamps of incoming client messages that indicate user activity.
         updateLastActivityTime();
         docBroker->updateLastActivityTime();
+        if (LOOLProtocol::tokenIndicatesDocumentModification(tokens[0]))
+        {
+            docBroker->updateLastModifyingActivityTime();
+        }
+
+        if (isWritable() && isViewLoaded())
+        {
+            assert(!inWaitDisconnected() && "A writable view can't be waiting disconnection.");
+            docBroker->updateEditingSessionId(getId());
+        }
     }
     if (tokens.equals(0, "loolclient"))
     {
@@ -668,7 +667,10 @@ bool ClientSession::_handleInput(const char *buffer, int length)
         if (tokens.size() > 1)
             getTokenInteger(tokens[1], "force", force);
 
-        docBroker->saveToStorage(getId(), true, "" /* This is irrelevant when success is true*/, true);
+        // The savetostorage command is really only used to resolve save conflicts
+        // and it seems to always have force=1. However, we should still honor the
+        // contract and do as told, not as we expect the API to be used. Use force if provided.
+        docBroker->uploadToStorage(getId(), force);
     }
     else if (tokens.equals(0, "clientvisiblearea"))
     {
@@ -832,9 +834,17 @@ bool ClientSession::_handleInput(const char *buffer, int length)
             sendTextFrameAndLogError("error: cmd=renamefile kind=syntax");
             return false;
         }
+
         std::string wopiFilename;
         Poco::URI::decode(encodedWopiFilename, wopiFilename);
-        docBroker->saveAsToStorage(getId(), "", wopiFilename, true);
+        const std::string error =
+            docBroker->handleRenameFileCommand(getId(), std::move(wopiFilename));
+        if (!error.empty())
+        {
+            sendTextFrameAndLogError(error);
+            return false;
+        }
+
         return true;
     }
     else if (tokens.equals(0, "dialogevent") ||
@@ -842,6 +852,95 @@ bool ClientSession::_handleInput(const char *buffer, int length)
              tokens.equals(0, "sallogoverride"))
     {
         return forwardToChild(firstLine, docBroker);
+    }
+    else if (tokens.equals(0, "loggingleveloverride"))
+    {
+        if (tokens.size() > 0)
+        {
+            // Note that these LOG_INF() messages won't necessarily show up if the current logging
+            // level is higher, of course.
+            if (tokens.equals(1, "default"))
+            {
+                LOG_INF("Thread-local logging level being set to default ["
+                        << Log::getLevel()
+                        << "]");
+                Log::setThreadLocalLogLevel(Log::getLevel());
+            }
+            else
+            {
+                try
+                {
+                    auto leastVerboseAllowed = Poco::Logger::parseLevel(LOOLWSD::LeastVerboseLogLevelSettableFromClient);
+                    auto mostVerboseAllowed = Poco::Logger::parseLevel(LOOLWSD::MostVerboseLogLevelSettableFromClient);
+
+                    if (tokens.equals(1, "verbose"))
+                    {
+                        LOG_INF("Client sets thread-local logging level to the most verbose allowed ["
+                                << LOOLWSD::MostVerboseLogLevelSettableFromClient
+                                << "]");
+                        Log::setThreadLocalLogLevel(LOOLWSD::MostVerboseLogLevelSettableFromClient);
+                        LOG_INF("Thread-local logging level was set to ["
+                                << LOOLWSD::MostVerboseLogLevelSettableFromClient
+                                << "]");
+                    }
+                    else if (tokens.equals(1, "terse"))
+                    {
+                        LOG_INF("Client sets thread-local logging level to the least verbose allowed ["
+                                << LOOLWSD::LeastVerboseLogLevelSettableFromClient
+                                << "]");
+                        Log::setThreadLocalLogLevel(LOOLWSD::LeastVerboseLogLevelSettableFromClient);
+                        LOG_INF("Thread-local logging level was set to ["
+                                << LOOLWSD::LeastVerboseLogLevelSettableFromClient
+                                << "]");
+                    }
+                    else
+                    {
+                        auto level = Poco::Logger::parseLevel(tokens[1]);
+                        // Note that numerically the higher priority levels are lower in value.
+                        if (level >= leastVerboseAllowed && level <= mostVerboseAllowed)
+                        {
+                            LOG_INF("Thread-local logging level being set to ["
+                                    << tokens[1]
+                                    << "]");
+                            Log::setThreadLocalLogLevel(tokens[1]);
+                        }
+                        else
+                        {
+                            LOG_WRN("Client tries to set logging level to ["
+                                    << tokens[1]
+                                    << "] which is outside of bounds ["
+                                    << LOOLWSD::LeastVerboseLogLevelSettableFromClient << ","
+                                    << LOOLWSD::MostVerboseLogLevelSettableFromClient << "]");
+                        }
+                    }
+                }
+                catch (const Poco::Exception &e)
+                {
+                    LOG_WRN("Exception while handling loggingleveloverride message: " << e.message());
+                }
+            }
+        }
+    }
+    else if (tokens.equals(0, "traceeventrecording"))
+    {
+        if (LOOLWSD::getConfigValue<bool>("trace_event[@enable]", false))
+        {
+            if (tokens.size() > 0)
+            {
+                if (tokens.equals(1, "start"))
+                {
+                    TraceEvent::startRecording();
+                    LOG_INF("Trace Event recording in this WSD process turned on (might have been on already)");
+                }
+                else if (tokens.equals(1, "stop"))
+                {
+                    TraceEvent::stopRecording();
+                    LOG_INF("Trace Event recording in this WSD process turned off (might have been off already)");
+                }
+            }
+            forwardToChild(firstLine, docBroker);
+        }
+        return true;
     }
     else if (tokens.equals(0, "completefunction"))
     {
@@ -1392,7 +1491,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                     }
 
                     // Save to Storage and log result.
-                    docBroker->saveToStorage(getId(), success, result);
+                    docBroker->handleSaveResponse(getId(), success, result);
 
                     if (!isCloseFrame())
                         forwardToClient(payload);
@@ -1444,28 +1543,6 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
                     }
                     return false;
                 }
-            }
-            else if (errorCommand == "saveas")
-            {
-                if (isConvertTo)
-                {
-                    Poco::Net::HTTPResponse response;
-                    response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NO_CONTENT);
-                    response.set("X-ERROR-KIND", errorKind);
-                    _saveAsSocket->send(response);
-
-                    // Conversion failed, cleanup fake session.
-                    LOG_TRC("Removing save-as ClientSession after conversion error.");
-                    // Remove us.
-                    docBroker->removeSession(getId());
-                    // Now terminate.
-                    docBroker->stop("Aborting saveas handler.");
-                }
-                else
-                {
-                    forwardToClient(payload);
-                }
-                return false;
             }
             else
             {
@@ -1576,7 +1653,7 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             {
                 // this also sends the saveas: result
                 LOG_TRC("Save-as path: " << resultURL.getPath());
-                docBroker->saveAsToStorage(getId(), resultURL.getPath(), wopiFilename, false);
+                docBroker->uploadAsToStorage(getId(), resultURL.getPath(), wopiFilename, false);
             }
             else
                 sendTextFrameAndLogError("error: cmd=storage kind=savefailed");
@@ -1588,16 +1665,14 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             if (!resultURL.getPath().empty())
             {
                 const std::string mimeType = "application/octet-stream";
-                std::string encodedFilePath;
-                Poco::URI::encode(resultURL.getPath(), "", encodedFilePath);
-                LOG_TRC("Sending file: " << encodedFilePath);
+                LOG_TRC("Sending file: " << resultURL.getPath());
 
                 const std::string fileName = Poco::Path(resultURL.getPath()).getFileName();
                 Poco::Net::HTTPResponse response;
                 if (!fileName.empty())
                     response.set("Content-Disposition", "attachment; filename=\"" + fileName + '"');
 
-                HttpHelper::sendFileAndShutdown(_saveAsSocket, encodedFilePath, mimeType, &response);
+                HttpHelper::sendFileAndShutdown(_saveAsSocket, resultURL.getPath(), mimeType, &response);
             }
 
             // Conversion is done, cleanup this fake session.
@@ -1736,9 +1811,14 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
         {
             assert(false && "Tile traffic should go through the DocumentBroker-LoKit WS.");
         }
+        else if (tokens.equals(0, "jsdialog:") && _state == ClientSession::SessionState::LOADING)
+        {
+            docBroker->setInteractive(true);
+        }
         else if (tokens.equals(0, "status:"))
         {
             setState(ClientSession::SessionState::LIVE);
+            docBroker->setInteractive(false);
             docBroker->setLoaded();
 
 #if !MOBILEAPP
@@ -1748,9 +1828,9 @@ bool ClientSession::handleKitToClientMessage(const char* buffer, const int lengt
             // Wopi post load actions
             if (_wopiFileInfo && !_wopiFileInfo->getTemplateSource().empty())
             {
-                std::string result;
-                LOG_DBG("Saving template [" << _wopiFileInfo->getTemplateSource() << "] to storage");
-                docBroker->saveToStorage(getId(), true, result);
+                LOG_DBG("Uploading template [" << _wopiFileInfo->getTemplateSource()
+                                               << "] to storage after loading.");
+                docBroker->uploadAfterLoadingTemplate(getId());
             }
 
             for(auto &token : tokens)

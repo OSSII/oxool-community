@@ -13,11 +13,14 @@
 
 #include <csignal>
 #include <sys/poll.h>
-#ifdef __linux
+#ifdef __linux__
 #  include <sys/prctl.h>
 #  include <sys/syscall.h>
 #  include <sys/vfs.h>
 #  include <sys/resource.h>
+#elif defined __FreeBSD__
+#  include <sys/resource.h>
+#  include <sys/thr.h>
 #elif defined IOS
 #import <Foundation/Foundation.h>
 #endif
@@ -44,6 +47,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <limits>
 
 #include <Poco/Base64Encoder.h>
 #include <Poco/HexBinaryEncoder.h>
@@ -55,20 +59,12 @@
 #include <Poco/JSON/Parser.h>
 #include <Poco/RandomStream.h>
 #include <Poco/TemporaryFile.h>
-#include <Poco/Timestamp.h>
-#include <Poco/DateTimeFormat.h>
 #include <Poco/Util/Application.h>
-#include <Poco/Crypto/Crypto.h>
-#include <Poco/Crypto/Cipher.h>
-#include <Poco/Crypto/CipherKey.h>
-#include <Poco/Crypto/CipherFactory.h>
 
 #include "Common.hpp"
 #include "Log.hpp"
 #include "Protocol.hpp"
-#include "Util.hpp"
-
-using std::size_t;
+#include "TraceEvent.hpp"
 
 namespace Util
 {
@@ -99,7 +95,7 @@ namespace Util
             return _rng();
         }
 
-        std::vector<char> getBytes(const size_t length)
+        std::vector<char> getBytes(const std::size_t length)
         {
             std::vector<char> v(length);
             _randBuf.readFromDevice(v.data(), v.size());
@@ -107,16 +103,18 @@ namespace Util
         }
 
         /// Generate a string of random characters.
-        std::string getHexString(const size_t length)
+        std::string getHexString(const std::size_t length)
         {
             std::stringstream ss;
             Poco::HexBinaryEncoder hex(ss);
+            hex.rdbuf()->setLineLength(0); // Don't insert line breaks.
             hex.write(getBytes(length).data(), length);
+            hex.close(); // Flush.
             return ss.str().substr(0, length);
         }
 
         /// Generate a string of harder random characters.
-        std::string getHardRandomHexString(const size_t length)
+        std::string getHardRandomHexString(const std::size_t length)
         {
             std::stringstream ss;
             Poco::HexBinaryEncoder hex(ss);
@@ -127,18 +125,21 @@ namespace Util
             int len = 0;
             if (fd < 0 ||
                 (len = read(fd, random.data(), length)) < 0 ||
-                size_t(len) < length)
+                std::size_t(len) < length)
             {
                 LOG_ERR("failed to read " << length << " hard random bytes, got " << len << " for hash: " << errno);
             }
             close(fd);
+
+            hex.rdbuf()->setLineLength(0); // Don't insert line breaks.
             hex.write(random.data(), length);
+            hex.close(); // Flush.
             return ss.str().substr(0, length);
         }
 
         /// Generates a random string in Base64.
         /// Note: May contain '/' characters.
-        std::string getB64String(const size_t length)
+        std::string getB64String(const std::size_t length)
         {
             std::stringstream ss;
             Poco::Base64Encoder b64(ss);
@@ -146,7 +147,7 @@ namespace Util
             return ss.str().substr(0, length);
         }
 
-        std::string getFilename(const size_t length)
+        std::string getFilename(const std::size_t length)
         {
             std::string s = getB64String(length * 2);
             s.erase(std::remove_if(s.begin(), s.end(),
@@ -240,11 +241,9 @@ namespace Util
         }
 
         // Create a vector of zero-terminated strings.
-        std::vector<std::string> argStrings(args.size());
+        std::vector<std::string> argStrings;
         for (const auto& arg : args)
-        {
-            argStrings.emplace_back(args.getParam(arg));
-        }
+            argStrings.push_back(args.getParam(arg));
 
         std::vector<char *> params;
         params.push_back(const_cast<char *>(cmd.c_str()));
@@ -273,7 +272,7 @@ namespace Util
 
             int ret = execvp(params[0], &params[0]);
             if (ret < 0)
-                std::cerr << "Failed to exec command '" << cmd << "' with error '" << strerror(errno) << "'\n";
+                LOG_SFL("Failed to exec command '" << cmd << '\'');
             Log::shutdown();
             _exit(42);
         }
@@ -304,32 +303,6 @@ namespace Util
         return id;
     }
 
-    std::string encryptAES256(const std::string& text, const std::string& password)
-    {
-        std::string insurePassword = password.size() == 0 ? "80542203" : password;
-        // 縮放大小為 32 bytes(256 bits)，不足的話補 '0'，太長就縮短
-        insurePassword.resize(32, '0');
-        const std::string ivString("80542203805422038054220380542203");
-        Poco::Crypto::Cipher::ByteVec iv{ivString.begin(), ivString.end()};
-        Poco::Crypto::Cipher::ByteVec passwordKey{ insurePassword.begin(), insurePassword.end() };
-        Poco::Crypto::CipherKey key("aes-256-cbc", passwordKey, iv);
-        Poco::Crypto::Cipher::Ptr cipher = Poco::Crypto::CipherFactory::defaultFactory().createCipher(key);
-        return cipher->encryptString(text, Poco::Crypto::Cipher::ENC_BASE64);
-    }
-
-    std::string decryptAES256(const std::string& text, const std::string& password)
-    {
-        std::string insurePassword = password.size() == 0 ? "80542203" : password;
-        // 縮放大小為 32 bytes(256 bits)，不足的話補 '0'，太長就縮短
-        insurePassword.resize(32, '0');
-        const std::string ivString("80542203805422038054220380542203");
-        Poco::Crypto::Cipher::ByteVec iv{ ivString.begin(), ivString.end() };
-        Poco::Crypto::Cipher::ByteVec passwordKey{ insurePassword.begin(), insurePassword.end() };
-        Poco::Crypto::CipherKey key("aes-256-cbc", passwordKey, iv);
-        Poco::Crypto::Cipher::Ptr pCipherAES256 = Poco::Crypto::CipherFactory::defaultFactory().createCipher(key);
-        return pCipherAES256->decryptString(text, Poco::Crypto::Cipher::ENC_BASE64);
-    }
-
     bool windowingAvailable()
     {
         return std::getenv("DISPLAY") != nullptr;
@@ -339,7 +312,7 @@ namespace Util
 
     static const char *startsWith(const char *line, const char *tag)
     {
-        size_t len = std::strlen(tag);
+        std::size_t len = std::strlen(tag);
         if (!strncmp(line, tag, len))
         {
             while (!isdigit(line[len]) && line[len] != '\0')
@@ -377,9 +350,9 @@ namespace Util
         return ss.str();
     }
 
-    size_t getTotalSystemMemoryKb()
+    std::size_t getTotalSystemMemoryKb()
     {
-        size_t totalMemKb = 0;
+        std::size_t totalMemKb = 0;
         FILE* file = fopen("/proc/meminfo", "r");
         if (file != nullptr)
         {
@@ -398,10 +371,10 @@ namespace Util
         return totalMemKb;
     }
 
-    std::pair<size_t, size_t> getPssAndDirtyFromSMaps(FILE* file)
+    std::pair<std::size_t, std::size_t> getPssAndDirtyFromSMaps(FILE* file)
     {
-        size_t numPSSKb = 0;
-        size_t numDirtyKb = 0;
+        std::size_t numPSSKb = 0;
+        std::size_t numDirtyKb = 0;
         if (file)
         {
             rewind(file);
@@ -426,7 +399,7 @@ namespace Util
 
     std::string getMemoryStats(FILE* file)
     {
-        const std::pair<size_t, size_t> pssAndDirtyKb = getPssAndDirtyFromSMaps(file);
+        const std::pair<std::size_t, std::size_t> pssAndDirtyKb = getPssAndDirtyFromSMaps(file);
         std::ostringstream oss;
         oss << "procmemstats: pid=" << getpid()
             << " pss=" << pssAndDirtyKb.first
@@ -435,7 +408,7 @@ namespace Util
         return oss.str();
     }
 
-    size_t getMemoryUsagePSS(const pid_t pid)
+    std::size_t getMemoryUsagePSS(const pid_t pid)
     {
         if (pid > 0)
         {
@@ -443,7 +416,7 @@ namespace Util
             FILE* fp = fopen(cmd.c_str(), "r");
             if (fp != nullptr)
             {
-                const size_t pss = getPssAndDirtyFromSMaps(fp).first;
+                const std::size_t pss = getPssAndDirtyFromSMaps(fp).first;
                 fclose(fp);
                 return pss;
             }
@@ -452,10 +425,10 @@ namespace Util
         return 0;
     }
 
-    size_t getMemoryUsageRSS(const pid_t pid)
+    std::size_t getMemoryUsageRSS(const pid_t pid)
     {
         static const int pageSizeBytes = getpagesize();
-        size_t rss = 0;
+        std::size_t rss = 0;
 
         if (pid > 0)
         {
@@ -467,11 +440,11 @@ namespace Util
         return 0;
     }
 
-    size_t getCpuUsage(const pid_t pid)
+    std::size_t getCpuUsage(const pid_t pid)
     {
         if (pid > 0)
         {
-            size_t totalJiffies = 0;
+            std::size_t totalJiffies = 0;
             totalJiffies += getStatFromPid(pid, 13);
             totalJiffies += getStatFromPid(pid, 14);
             return totalJiffies;
@@ -479,7 +452,7 @@ namespace Util
         return 0;
     }
 
-    size_t getStatFromPid(const pid_t pid, int ind)
+    std::size_t getStatFromPid(const pid_t pid, int ind)
     {
         if (pid > 0)
         {
@@ -492,7 +465,7 @@ namespace Util
                 {
                     const std::string s(line);
                     int index = 1;
-                    size_t pos = s.find(' ');
+                    std::size_t pos = s.find(' ');
                     while (pos != std::string::npos)
                     {
                         if (index == ind)
@@ -514,20 +487,22 @@ namespace Util
         int res = setpriority(PRIO_PROCESS, pid, prio);
         LOG_TRC("Lowered kit [" << (int)pid << "] priority: " << prio << " with result: " << res);
 
+#ifdef __linux__
         // rely on Linux thread-id priority setting to drop this thread' priority
         pid_t tid = getThreadId();
         res = setpriority(PRIO_PROCESS, tid, prio);
         LOG_TRC("Lowered own thread [" << (int)tid << "] priority: " << prio << " with result: " << res);
+#endif
     }
 
-#endif
+#endif // !MOBILEAPP
 
     std::string replace(std::string result, const std::string& a, const std::string& b)
     {
-        const size_t aSize = a.size();
+        const std::size_t aSize = a.size();
         if (aSize > 0)
         {
-            const size_t bSize = b.size();
+            const std::size_t bSize = b.size();
             std::string::size_type pos = 0;
             while ((pos = result.find(a, pos)) != std::string::npos)
             {
@@ -564,21 +539,30 @@ namespace Util
         // Set the new name.
         strncpy(ThreadName, s.c_str(), sizeof(ThreadName) - 1);
         ThreadName[sizeof(ThreadName) - 1] = '\0';
-#ifdef __linux
+#ifdef __linux__
         if (prctl(PR_SET_NAME, reinterpret_cast<unsigned long>(s.c_str()), 0, 0, 0) != 0)
             LOG_SYS("Cannot set thread name of "
                     << getThreadId() << " (" << std::hex << std::this_thread::get_id() << std::dec
                     << ") of process " << getpid() << " currently " << knownAs << " to [" << s
-                    << "].");
+                    << ']');
         else
             LOG_INF("Thread " << getThreadId() << " (" << std::hex << std::this_thread::get_id()
                               << std::dec << ") of process " << getpid() << " formerly " << knownAs
-                              << " is now called [" << s << "].");
+                              << " is now called [" << s << ']');
 #elif defined IOS
         [[NSThread currentThread] setName:[NSString stringWithUTF8String:ThreadName]];
-        LOG_INF("Thread " << getThreadId() <<
-                ") is now called [" << s << "].");
+        LOG_INF("Thread " << getThreadId() << ") is now called [" << s << ']');
 #endif
+
+        // Emit a metadata Trace Event identifying this thread. This will invoke a different function
+        // depending on which executable this is in.
+        TraceEvent::emitOneRecordingIfEnabled("{\"name\":\"thread_name\",\"ph\":\"M\",\"args\":{\"name\":\""
+                                              + s
+                                              + "\"},\"pid\":"
+                                              + std::to_string(getpid())
+                                              + ",\"tid\":"
+                                              + std::to_string(Util::getThreadId())
+                                              + "},\n");
     }
 
     const char *getThreadName()
@@ -586,7 +570,7 @@ namespace Util
         // Main process and/or not set yet.
         if (ThreadName[0] == '\0')
         {
-#ifdef __linux
+#ifdef __linux__
             // prctl(2): The buffer should allow space for up to 16 bytes; the returned string will be null-terminated.
             if (prctl(PR_GET_NAME, reinterpret_cast<unsigned long>(ThreadName), 0, 0, 0) != 0)
                 strncpy(ThreadName, "<noid>", sizeof(ThreadName) - 1);
@@ -601,21 +585,30 @@ namespace Util
         return ThreadName;
     }
 
-#ifdef __linux
+#if defined __linux__
     static thread_local pid_t ThreadTid = 0;
 
     pid_t getThreadId()
 #else
-    std::thread::id getThreadId()
+    static thread_local long ThreadTid = 0;
+
+    long getThreadId()
 #endif
     {
         // Avoid so many redundant system calls
-#ifdef __linux
+#if defined __linux__
         if (!ThreadTid)
             ThreadTid = ::syscall(SYS_gettid);
         return ThreadTid;
+#elif defined __FreeBSD__
+        if (!ThreadTid)
+            thr_self(&ThreadTid);
+        return ThreadTid;
 #else
-        return std::this_thread::get_id();
+        static long threadCounter = 1;
+        if (!ThreadTid)
+            ThreadTid = threadCounter++;
+        return ThreadTid;
 #endif
     }
 
@@ -792,7 +785,7 @@ namespace Util
         // Prepend with count to make it unique within a single process instance,
         // in case we get collisions (which we will, eventually). N.B.: Identical
         // strings likely to have different prefixes when logged in WSD process vs. Kit.
-        const std::string res
+        std::string res
             = '#' + Util::encodeId(AnonymizationCounter++, 0) + '#' + Util::encodeId(hash, 0) + '#';
         mapAnonymized(text, res);
         return res;
@@ -841,28 +834,18 @@ namespace Util
         return http_time;
     }
 
-    size_t findInVector(const std::vector<char>& tokens, const char *cstring)
+    std::size_t findInVector(const std::vector<char>& tokens, const char *cstring)
     {
         assert(cstring);
-        for (size_t i = 0; i < tokens.size(); ++i)
+        for (std::size_t i = 0; i < tokens.size(); ++i)
         {
-            size_t j;
+            std::size_t j;
             for (j = 0; i + j < tokens.size() && cstring[j] != '\0' && tokens[i + j] == cstring[j]; ++j)
                 ;
             if (cstring[j] == '\0')
                 return i;
         }
         return std::string::npos;
-    }
-
-    std::chrono::system_clock::time_point getFileTimestamp(const std::string& str_path)
-    {
-        struct stat file;
-        stat(str_path.c_str(), &file);
-        std::chrono::seconds ns{file.st_mtime};
-        std::chrono::system_clock::time_point mod_time_point{ns};
-
-        return mod_time_point;
     }
 
     std::string getIso8601FracformatTime(std::chrono::system_clock::time_point time){
@@ -930,9 +913,16 @@ namespace Util
         }
 
         char* end = nullptr;
-        const size_t us = strtoul(trailing + 1, &end, 10); // Skip the '.' and read as integer.
+        const std::size_t us = strtoul(trailing + 1, &end, 10); // Skip the '.' and read as integer.
+
+        std::size_t denominator = 1;
+        for (const char* i = trailing + 1; i != end; i++)
+        {
+            denominator *= 10;
+        }
+
         const std::size_t seconds_us = us * std::chrono::system_clock::period::den
-                                       / std::chrono::system_clock::period::num / 1000000;
+                                       / std::chrono::system_clock::period::num / denominator;
 
         timestamp += std::chrono::system_clock::duration(seconds_us);
 
@@ -976,7 +966,7 @@ namespace Util
 
         for (std::vector<std::string>::iterator it = sVector.begin(); it != sVector.end(); it++)
         {
-            size_t delimiterPosition = 0;
+            std::size_t delimiterPosition = 0;
             delimiterPosition = (*it).find(delimiter, 0);
             if (delimiterPosition != std::string::npos)
             {
@@ -1049,52 +1039,6 @@ namespace Util
         }
     #endif
 
-    StringVector tokenizeAnyOf(const std::string& s, const char* delimiters)
-    {
-        // trim from the end so that we do not have to check this exact case
-        // later
-        std::size_t length = s.length();
-        while (length > 0 && s[length - 1] == ' ')
-            --length;
-
-        if (length == 0)
-            return StringVector();
-
-        std::size_t delimitersLength = std::strlen(delimiters);
-        std::size_t start = 0;
-
-        std::vector<StringToken> tokens;
-        tokens.reserve(16);
-
-        while (start < length)
-        {
-            // ignore the leading whitespace
-            while (start < length && s[start] == ' ')
-                ++start;
-
-            // anything left?
-            if (start == length)
-                break;
-
-            std::size_t end = s.find_first_of(delimiters, start, delimitersLength);
-            if (end == std::string::npos)
-                end = length;
-
-            // trim the trailing whitespace
-            std::size_t trimEnd = end;
-            while (start < trimEnd && s[trimEnd - 1] == ' ')
-                --trimEnd;
-
-            // add only non-empty tokens
-            if (start < trimEnd)
-                tokens.emplace_back(start, trimEnd - start);
-
-            start = end + 1;
-        }
-
-        return StringVector(s, std::move(tokens));
-    }
-
     int safe_atoi(const char* p, int len)
     {
         long ret{};
@@ -1151,38 +1095,6 @@ namespace Util
         std::_Exit(code);
     }
 
-    std::string getValue(const std::map<std::string, std::string>& map, const std::string& subject)
-    {
-        if (map.find(subject) != map.end())
-        {
-            return map.at(subject);
-        }
-
-        // Not a perfect match, try regex.
-        for (const auto& value : map)
-        {
-            try
-            {
-                // Not performance critical to warrant caching.
-                Poco::RegularExpression re(value.first, Poco::RegularExpression::RE_CASELESS);
-                Poco::RegularExpression::Match reMatch;
-
-                // Must be a full match.
-                if (re.match(subject, reMatch) && reMatch.offset == 0 &&
-                    reMatch.length == subject.size())
-                {
-                    return value.second;
-                }
-            }
-            catch (const std::exception& exc)
-            {
-                // Nothing to do; skip.
-            }
-        }
-
-        return std::string();
-    }
-
     bool matchRegex(const std::set<std::string>& set, const std::string& subject)
     {
         if (set.find(subject) != set.end())
@@ -1213,6 +1125,38 @@ namespace Util
         }
 
         return false;
+    }
+
+    std::string getValue(const std::map<std::string, std::string>& map, const std::string& subject)
+    {
+        if (map.find(subject) != map.end())
+        {
+            return map.at(subject);
+        }
+
+        // Not a perfect match, try regex.
+        for (const auto& value : map)
+        {
+            try
+            {
+                // Not performance critical to warrant caching.
+                Poco::RegularExpression re(value.first, Poco::RegularExpression::RE_CASELESS);
+                Poco::RegularExpression::Match reMatch;
+
+                // Must be a full match.
+                if (re.match(subject, reMatch) && reMatch.offset == 0 &&
+                    reMatch.length == subject.size())
+                {
+                    return value.second;
+                }
+            }
+            catch (const std::exception& exc)
+            {
+                // Nothing to do; skip.
+            }
+        }
+
+        return std::string();
     }
 
     std::string getValue(const std::set<std::string>& set, const std::string& subject)

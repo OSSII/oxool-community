@@ -46,6 +46,8 @@
 
 #include <common/SigUtil.hpp>
 
+#include <OxOOL/Util.h>
+
 using namespace LOOLProtocol;
 
 using Poco::Net::HTTPResponse;
@@ -1153,7 +1155,7 @@ void AdminSocketHandler::handleMessage(const std::vector<char> &payload)
                 // 2. 通知 client 端，私鑰有效
                 sendTextFrame("checkSSLFileValid");
                 // 3. 通知 client 加密過的私鑰密碼
-                sendTextFrame("PrivateKeyPassword:" + Util::encryptAES256(password));
+                sendTextFrame("PrivateKeyPassword:" + OxOOL::Util::encryptAES256(password));
             }
         }
     }

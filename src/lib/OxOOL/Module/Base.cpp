@@ -10,6 +10,7 @@
 #include <OxOOL/HttpHelper.h>
 #include <OxOOL/L10NTranslator.h>
 #include <OxOOL/ModuleManager.h>
+#include <OxOOL/Util.h>
 
 #include <wsd/ServerURL.hpp>
 #include <wsd/FileServer.hpp>
@@ -290,8 +291,8 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     // No referrer-policy
     response.add("Referrer-Policy", "no-referrer");
     response.add("X-Content-Type-Options", "nosniff");
-    response.set("User-Agent", OxOOL::ENV::HttpAgentString);
-    response.set("Date", Util::getHttpTimeNow());
+    response.set("Server", OxOOL::ENV::HttpServerString);
+    response.set("Date", OxOOL::Util::getHttpTimeNow());
 
     response.setContentType("text/html");
     response.setChunkedTransferEncoding(false);

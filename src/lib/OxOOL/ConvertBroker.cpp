@@ -1,6 +1,4 @@
 
-#include <config.h>
-
 #include <Poco/URI.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
@@ -46,7 +44,7 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
         return false;
 
     // addCallback 前，要先進入執行緒
-    startThread();
+    //startThread();
 
     addCallback([this, socket]()
     {

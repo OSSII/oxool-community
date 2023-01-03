@@ -115,6 +115,7 @@ using Poco::Net::PartHandler;
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/Util/XMLConfiguration.h>
 
+#include <OxOOL/Util.h>
 #include <OxOOL/HttpHelper.h>
 #include <OxOOL/ModuleManager.h>
 
@@ -1773,7 +1774,7 @@ void LOOLWSD::initializeSSL()
         // 如果安全密碼非空白，解密後再放到 sslPrivateKeyPassword
         if (!encryptedKey.empty())
         {
-            sslPrivateKeyPassword = Util::decryptAES256(encryptedKey);
+            sslPrivateKeyPassword = OxOOL::Util::decryptAES256(encryptedKey);
         }
     }
     else if (config().has("ssl.password")) // 明碼儲存
@@ -2354,7 +2355,7 @@ static std::shared_ptr<DocumentBroker>
         docBroker = it->second;
 
         // Destroying the document? Let the client reconnect.
-        if (docBroker->isMarkedToDestroy())
+        if (docBroker->isUnloading())
         {
             LOG_WRN("DocBroker with docKey ["
                     << docKey << "] is unloading. Rejecting client request to load.");
@@ -2423,6 +2424,8 @@ public:
     ~PrisonerRequestDispatcher()
     {
         LOG_TRC("~PrisonerRequestDispatcher");
+
+        // Notify the broker that we're done.
         onDisconnect();
     }
 
@@ -2448,8 +2451,7 @@ private:
         if (docBroker)
         {
             std::unique_lock<std::mutex> lock = docBroker->getLock();
-            docBroker->assertCorrectThread();
-            docBroker->stop("docisdisconnected");
+            docBroker->disconnectedFromKit();
         }
     }
 
@@ -2658,7 +2660,7 @@ public:
         }
         return hosts.match(address);
     }
-    static bool allowConvertTo(const std::string &address, const Poco::Net::HTTPRequest& request)
+    static bool allowConvertTo(const std::string& address, const Poco::Net::HTTPRequest& request)
     {
         std::string addressToCheck = address;
         std::string hostToCheck = request.getHost();
@@ -2994,10 +2996,8 @@ private:
         httpResponse.set("Last-Modified", Util::getHttpTimeNow());
         httpResponse.set("Connection", "close");
         httpResponse.writeData(socket->getOutBuffer());
-
         if (requestDetails.isGet())
             socket->send(responseString);
-
         socket->flush();
         socket->shutdown();
         LOG_INF("Sent / response successfully.");
@@ -3141,7 +3141,7 @@ private:
             return;
         }
 
-        const auto docKey = DocumentBroker::getDocKey(DocumentBroker::sanitizeURI(WOPISrc));
+        const auto docKey = RequestDetails::getDocKey(WOPISrc);
 
         std::shared_ptr<DocumentBroker> docBroker;
         {
@@ -3178,12 +3178,12 @@ private:
                     LOG_ERR("Invalid zero size set clipboard content");
             }
             // Do things in the right thread.
-                    LOG_TRC("Move clipboard request " << tag << " to docbroker thread with data: " <<
-                            (data ? data->length() : 0) << " bytes");
+            LOG_TRC("Move clipboard request " << tag << " to docbroker thread with data: " <<
+                    (data ? data->length() : 0) << " bytes");
             docBroker->setupTransfer(disposition, [=] (const std::shared_ptr<Socket> &moveSocket)
-                        {
-                            auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
-                            docBroker->handleClipboardRequest(type, streamSocket, viewId, tag, data);
+                {
+                    auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
+                    docBroker->handleClipboardRequest(type, streamSocket, viewId, tag, data);
                 });
             LOG_TRC("queued clipboard command " << type << " on docBroker fetch");
         }
@@ -3271,7 +3271,7 @@ private:
             if (!fromPath.empty() && !format.empty())
             {
                 Poco::URI uriPublic = RequestDetails::sanitizeURI(fromPath);
-                const std::string docKey = DocumentBroker::getDocKey(uriPublic);
+                const std::string docKey = RequestDetails::getDocKey(uriPublic);
 
                 std::string options;
                 if (form.has("options"))
@@ -3339,7 +3339,7 @@ private:
 
                 // Validate the docKey
                 const std::string decodedUri = requestDetails.getDocumentURI();
-                const std::string docKey = DocumentBroker::getDocKey(DocumentBroker::sanitizeURI(decodedUri));
+                const std::string docKey = RequestDetails::getDocKey(decodedUri);
 
                 std::unique_lock<std::mutex> docBrokersLock(DocBrokersMutex);
                 auto docBrokerIt = DocBrokers.find(docKey);
@@ -3383,7 +3383,7 @@ private:
 
             // 1. Validate the dockey
             const std::string decodedUri = requestDetails.getDocumentURI();
-            const std::string docKey = DocumentBroker::getDocKey(DocumentBroker::sanitizeURI(decodedUri));
+            const std::string docKey = RequestDetails::getDocKey(decodedUri);
 
             std::unique_lock<std::mutex> docBrokersLock(DocBrokersMutex);
             auto docBrokerIt = DocBrokers.find(docKey);
@@ -3411,7 +3411,7 @@ private:
             {
                 LOG_INF("HTTP request for: " << filePathAnonym);
 
-                const std::string fileName = filePath.getFileName();
+                const std::string& fileName = filePath.getFileName();
                 const Poco::URI postRequestUri(request.getURI());
                 const Poco::URI::QueryParameters postRequestQueryParams = postRequestUri.getQueryParameters();
 
@@ -3510,10 +3510,8 @@ private:
         const std::string url = requestDetails.getLegacyDocumentURI();
 
         LOG_INF("URL [" << url << "] for Proxy request.");
-        const auto uriPublic = DocumentBroker::sanitizeURI(url);
-        LOG_INF("URI [" << uriPublic.getPath() << "].");
-        const auto docKey = DocumentBroker::getDocKey(uriPublic);
-        LOG_INF("DocKey [" << docKey << "].");
+        const auto uriPublic = RequestDetails::sanitizeURI(url);
+        const auto docKey = RequestDetails::getDocKey(uriPublic);
         const std::string fileId = Util::getFilenameFromURL(docKey);
         Util::mapAnonymized(fileId, fileId); // Identity mapping, since fileId is already obfuscated
 
@@ -3541,53 +3539,35 @@ private:
         {
             // need to move into the DocumentBroker context before doing session lookup / creation etc.
             std::string id = _id;
-            disposition.setMove([docBroker, id, uriPublic,
-                                 isReadOnly, requestDetails]
-                                (const std::shared_ptr<Socket> &moveSocket)
+            docBroker->setupTransfer(disposition, [docBroker, id, uriPublic,
+                                     isReadOnly, requestDetails]
+                                    (const std::shared_ptr<Socket> &moveSocket)
                 {
-                    LOG_TRC("Setting up docbroker thread for " << docBroker->getDocKey());
-                    // Make sure the thread is running before adding callback.
-                    docBroker->startThread();
+                    // Now inside the document broker thread ...
+                    LOG_TRC("In the docbroker thread for " << docBroker->getDocKey());
 
-                    // We no longer own this socket.
-                    moveSocket->setThreadOwner(std::thread::id());
-
-                    docBroker->addCallback([docBroker, id, uriPublic, isReadOnly,
-                                            requestDetails, moveSocket]()
-                        {
-                            // Now inside the document broker thread ...
-                            LOG_TRC("In the docbroker thread for " << docBroker->getDocKey());
-
-                            auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
-                            try
-                            {
-                                docBroker->handleProxyRequest(
-                                    id, uriPublic, isReadOnly,
-                                    requestDetails, streamSocket);
-                                return;
-                            }
-                            catch (const UnauthorizedRequestException& exc)
-                            {
-                                LOG_ERR("Unauthorized Request while loading session for " << docBroker->getDocKey() << ": " << exc.what());
-                            }
-                            catch (const StorageConnectionException& exc)
-                            {
-                                LOG_ERR("Error while loading : " << exc.what());
-                            }
-                            catch (const std::exception& exc)
-                            {
-                                LOG_ERR("Error while loading : " << exc.what());
-                            }
-                            // badness occurred:
-                            std::ostringstream oss;
-                            oss << "HTTP/1.1 400\r\n"
-                                << "Date: " << Util::getHttpTimeNow() << "\r\n"
-                                << "User-Agent: LOOLWSD WOPI Agent\r\n"
-                                << "Content-Length: 0\r\n"
-                                << "\r\n";
-                            streamSocket->send(oss.str());
-                            streamSocket->shutdown();
-                        });
+                    auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
+                    try
+                    {
+                        docBroker->handleProxyRequest(
+                            id, uriPublic, isReadOnly,
+                            requestDetails, streamSocket);
+                        return;
+                    }
+                    catch (const UnauthorizedRequestException& exc)
+                    {
+                        LOG_ERR("Unauthorized Request while loading session for " << docBroker->getDocKey() << ": " << exc.what());
+                    }
+                    catch (const StorageConnectionException& exc)
+                    {
+                        LOG_ERR("Error while loading : " << exc.what());
+                    }
+                    catch (const std::exception& exc)
+                    {
+                        LOG_ERR("Error while loading : " << exc.what());
+                    }
+                    // badness occurred:
+                    HttpHelper::sendErrorAndShutdown(400, streamSocket);
                 });
         }
         else
@@ -3629,10 +3609,8 @@ private:
             }
 
             LOG_INF("URL [" << url << "] for WS Request.");
-            const auto uriPublic = DocumentBroker::sanitizeURI(url);
-            LOG_INF("URI [" << uriPublic.getPath() << "].");
-            const auto docKey = DocumentBroker::getDocKey(uriPublic);
-            LOG_INF("DocKey [" << docKey << "].");
+            const auto uriPublic = RequestDetails::sanitizeURI(url);
+            const auto docKey = RequestDetails::getDocKey(uriPublic);
             const std::string fileId = Util::getFilenameFromURL(docKey);
             Util::mapAnonymized(fileId, fileId); // Identity mapping, since fileId is already obfuscated
 
@@ -3671,62 +3649,58 @@ private:
                 {
                     clientSession->setClientAddr(socket->clientAddress());
                     // Transfer the client socket to the DocumentBroker when we get back to the poll:
-                    disposition.setMove([docBroker, clientSession, ws]
-                                        (const std::shared_ptr<Socket> &moveSocket)
+                    docBroker->setupTransfer(disposition, [docBroker, clientSession, ws]
+                                            (const std::shared_ptr<Socket> &moveSocket)
                     {
-                        // Make sure the thread is running before adding callback.
-                        docBroker->startThread();
-
-                        // We no longer own this socket.
-                        moveSocket->setThreadOwner(std::thread::id());
-
-                        docBroker->addCallback([docBroker, moveSocket, clientSession, ws]()
+                        try
                         {
-                            try
-                            {
-                                auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
+                            auto streamSocket = std::static_pointer_cast<StreamSocket>(moveSocket);
 
-                                // Set WebSocketHandler's socket after its construction for shared_ptr goodness.
-                                streamSocket->setHandler(ws);
+                            // Set WebSocketHandler's socket after its construction for shared_ptr goodness.
+                            streamSocket->setHandler(ws);
 
-                                LOG_DBG("Socket #" << moveSocket->getFD() << " handler is " << clientSession->getName());
-                                // Move the socket into DocBroker.
-                                docBroker->addSocketToPoll(moveSocket);
+                            LOG_DBG('#' << moveSocket->getFD() << " handler is " << clientSession->getName());
 
-                                // Add and load the session.
-                                docBroker->addSession(clientSession);
+                            // Add and load the session.
+                            docBroker->addSession(clientSession);
 
-                                LOOLWSD::checkDiskSpaceAndWarnClients(true);
-                                // Users of development versions get just an info
-                                // when reaching max documents or connections
-                                LOOLWSD::checkSessionLimitsAndWarnClients();
+                            LOOLWSD::checkDiskSpaceAndWarnClients(true);
+                            // Users of development versions get just an info
+                            // when reaching max documents or connections
+                            LOOLWSD::checkSessionLimitsAndWarnClients();
 
-                                sendLoadResult(clientSession, true, "");
-                            }
-                            catch (const UnauthorizedRequestException& exc)
-                            {
-                                LOG_ERR("Unauthorized Request while loading session for " << docBroker->getDocKey() << ": " << exc.what());
-                                sendLoadResult(clientSession, false, "Unauthorized Request");
-                                const std::string msg = "error: cmd=internal kind=unauthorized";
-                                clientSession->sendMessage(msg);
-                            }
-                            catch (const StorageConnectionException& exc)
-                            {
-                                sendLoadResult(clientSession, false, exc.what());
-                                // Alert user about failed load
-                                const std::string msg = "error: cmd=storage kind=loadfailed";
-                                clientSession->sendMessage(msg);
-                            }
-                            catch (const std::exception& exc)
-                            {
-                                LOG_ERR("Error while loading : " << exc.what());
-
-                                // Alert user about failed load
-                                const std::string msg = "error: cmd=storage kind=loadfailed";
-                                clientSession->sendMessage(msg);
-                                sendLoadResult(clientSession, false, exc.what());
-                            }
-                        });
+                            sendLoadResult(clientSession, true, "");
+                        }
+                        catch (const UnauthorizedRequestException& exc)
+                        {
+                            LOG_ERR("Unauthorized Request while starting session on "
+                                    << docBroker->getDocKey() << " for socket #"
+                                    << moveSocket->getFD()
+                                    << ". Terminating connection. Error: " << exc.what());
+                            const std::string msg = "error: cmd=internal kind=unauthorized";
+                            ws->shutdown(WebSocketHandler::StatusCodes::POLICY_VIOLATION, msg);
+                            moveSocket->ignoreInput();
+                        }
+                        catch (const StorageConnectionException& exc)
+                        {
+                            LOG_ERR("Storage error while starting session on "
+                                    << docBroker->getDocKey() << " for socket #"
+                                    << moveSocket->getFD()
+                                    << ". Terminating connection. Error: " << exc.what());
+                            const std::string msg = "error: cmd=storage kind=loadfailed";
+                            ws->shutdown(WebSocketHandler::StatusCodes::POLICY_VIOLATION, msg);
+                            moveSocket->ignoreInput();
+                        }
+                        catch (const std::exception& exc)
+                        {
+                            LOG_ERR("Error while starting session on "
+                                    << docBroker->getDocKey() << " for socket #"
+                                    << moveSocket->getFD()
+                                    << ". Terminating connection. Error: " << exc.what());
+                            const std::string msg = "error: cmd=storage kind=loadfailed";
+                            ws->shutdown(WebSocketHandler::StatusCodes::POLICY_VIOLATION, msg);
+                            moveSocket->ignoreInput();
+                        }
                     });
                 }
                 else
@@ -3954,6 +3928,8 @@ class LOOLWSDServer
 {
     LOOLWSDServer(LOOLWSDServer&& other) = delete;
     const LOOLWSDServer& operator=(LOOLWSDServer&& other) = delete;
+    // allocate port & hold temporarily.
+    std::shared_ptr<ServerSocket> _serverSocket;
 public:
     LOOLWSDServer() :
         _acceptPoll("accept_poll")
@@ -3965,8 +3941,6 @@ public:
         stop();
     }
 
-    // allocate port & hold temporarily.
-    std::shared_ptr<ServerSocket> _serverSocket;
     void findClientPort()
     {
         _serverSocket = findServerPort(ClientPortNumber);
@@ -4354,15 +4328,10 @@ int LOOLWSD::innerMain()
     }
 #endif
 
-    // Reset the child-spawn timeout to the default, now that we're set.
-    ChildSpawnTimeoutMs = CHILD_TIMEOUT_MS;
-
     const auto startStamp = std::chrono::steady_clock::now();
 
     while (!SigUtil::getTerminationFlag() && !SigUtil::getShutdownRequestFlag())
     {
-        //UnitWSD::get().invokeTest();
-
         // This timeout affects the recovery time of prespawned children.
         std::chrono::microseconds waitMicroS = SocketPoll::DefaultPollTimeoutMicroS * 4;
 
@@ -4384,7 +4353,6 @@ int LOOLWSD::innerMain()
         const auto timeNow = std::chrono::steady_clock::now();
         const std::chrono::milliseconds timeSinceStartMs
             = std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - startStamp);
-
         // Unit test timeout
         if (UnitWSD::isUnitTesting())
         {
@@ -4560,31 +4528,31 @@ void LOOLWSD::cleanup()
         WebServerPoll.reset();
 
 #if !MOBILEAPP
-    SavedClipboards.reset();
+        SavedClipboards.reset();
 
-    FileServerRequestHandler::uninitialize();
-    JWTAuth::cleanup();
+        FileServerRequestHandler::uninitialize();
+        JWTAuth::cleanup();
 
 #if ENABLE_SSL
-    // Finally, we no longer need SSL.
-    if (LOOLWSD::isSSLEnabled())
-    {
-        Poco::Net::uninitializeSSL();
-        Poco::Crypto::uninitializeCrypto();
-        ssl::Manager::uninitializeClientContext();
-        ssl::Manager::uninitializeServerContext();
-    }
+        // Finally, we no longer need SSL.
+        if (LOOLWSD::isSSLEnabled())
+        {
+            Poco::Net::uninitializeSSL();
+            Poco::Crypto::uninitializeCrypto();
+            ssl::Manager::uninitializeClientContext();
+            ssl::Manager::uninitializeServerContext();
+        }
 #endif
 #endif
 
-    TraceDumper.reset();
+        TraceDumper.reset();
 
-    Socket::InhibitThreadChecks = true;
-    SocketPoll::InhibitThreadChecks = true;
+        Socket::InhibitThreadChecks = true;
+        SocketPoll::InhibitThreadChecks = true;
 
-    // Delete these while the static Admin instance is still alive.
-    std::lock_guard<std::mutex> docBrokersLock(DocBrokersMutex);
-    DocBrokers.clear();
+        // Delete these while the static Admin instance is still alive.
+        std::lock_guard<std::mutex> docBrokersLock(DocBrokersMutex);
+        DocBrokers.clear();
     }
     catch (const std::exception& ex)
     {
