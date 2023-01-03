@@ -209,11 +209,10 @@ L.Map.include({
 			'.uno:SaveAs': !wopi.UserCanNotWriteRelative, // 另存新檔
 			'ShareAs': wopi.EnableShare, // 分享
 			'insertgraphicremote': wopi.EnableInsertRemoteImage, // 插入雲端圖片
-			'runmacro': window.enableMacrosExecution === 'true', // 執行巨集
+			'.uno:RunMacro': window.enableMacrosExecution === 'true', // 執行巨集
 			'rev-history': L.Params.revHistoryEnabled, // 修訂紀錄
 			'Rev-History': L.Params.revHistoryEnabled, // 修訂紀錄
 			'closedocument': L.Params.closeButtonEnabled, // 關閉文件
-			'latestupdates': window.enableWelcomeMessage, // 檢查更新
 			'changesmenu': !wopi.HideChangeTrackingControls,
 
 			'.uno:Presentation': !wopi.HideExportOption, // 從第一張投影片開始播放
