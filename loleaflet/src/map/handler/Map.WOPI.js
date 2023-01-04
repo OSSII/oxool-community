@@ -28,6 +28,7 @@ L.Map.WOPI = L.Handler.extend({
 	CallPythonScriptSource: null,
 	SupportsRename: false,
 	UserCanRename: false,
+	UserCanWrite: false,
 	DocumentOwner: false, // 是否為文件擁有者
 	UserExtraInfo: {}, // 額外的使用者資訊
 
@@ -118,6 +119,11 @@ L.Map.WOPI = L.Handler.extend({
 		this.SupportsRename = !!wopiInfo['SupportsRename'];
 		this.UserCanRename = !!wopiInfo['UserCanRename'];
 		this.EnableShare = !!wopiInfo['EnableShare'];
+		this.UserCanWrite = !!wopiInfo['UserCanWrite'];
+		if (this.UserCanWrite)
+			window.docPermission = 'edit';
+		else
+			window.docPermission = 'readonly';
 		this.DocumentOwner = (wopiInfo['DocumentOwner'] === true);
 		this.UserExtraInfo = (wopiInfo['UserExtraInfo'] !== undefined) ? wopiInfo['UserExtraInfo'] : {};
 		if (wopiInfo['HideUserList'])
