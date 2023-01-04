@@ -247,6 +247,9 @@ public:
     void setupTransfer(SocketDisposition &disposition,
                        SocketDisposition::MoveFunction transferFn);
 
+    /// Start processing events
+    void startThread();
+
     /// Flag for termination. Note that this doesn't save any unsaved changes in the document
     void stop(const std::string& reason);
 

@@ -175,6 +175,11 @@ void DocumentBroker::setupTransfer(SocketDisposition &disposition,
     disposition.setTransfer(*_poll, std::move(transferFn));
 }
 
+void DocumentBroker::startThread()
+{
+    _poll->startThread();
+}
+
 void DocumentBroker::assertCorrectThread() const
 {
     _poll->assertCorrectThread();
