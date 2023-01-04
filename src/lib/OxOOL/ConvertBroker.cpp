@@ -7,6 +7,8 @@
 
 #include <net/Socket.hpp>
 #include <wsd/RequestDetails.hpp>
+#include <wsd/DocumentBroker.hpp>
+#include <wsd/ClientSession.hpp>
 
 namespace OxOOL
 {
@@ -15,12 +17,12 @@ ConvertBroker::ConvertBroker(const std::string& uri,
                              const Poco::URI& uriPublic,
                              const std::string& docKey,
                              const std::string& toFormat,
-                             const std::string& saveAsOptions) :
-    DocumentBroker(ChildType::Batch, uri, uriPublic, docKey),
-    maFormat(toFormat),
-    maSaveAsOptions(saveAsOptions),
-    mpCallback(nullptr),
-    mbCallbackIsCalled(false)
+                             const std::string& saveAsOptions)
+    : StatelessBatchBroker(uri, uriPublic, docKey)
+    , maFormat(toFormat)
+    , maSaveAsOptions(saveAsOptions)
+    , mpCallback(nullptr)
+    , mbCallbackIsCalled(false)
 {
     static const std::chrono::seconds limit_convert_secs(
         LOOLWSD::getConfigValue<int>("per_document.limit_convert_secs", 100));
@@ -44,7 +46,7 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
         return false;
 
     // addCallback 前，要先進入執行緒
-    //startThread();
+    startThread();
 
     addCallback([this, socket]()
     {
@@ -56,12 +58,22 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
         // Load the document manually and request saving in the target format.
         std::string encodedFrom;
         Poco::URI::encode(getPublicUri().getPath(), "", encodedFrom);
-        sendMessageToKit("load url=" + encodedFrom);
+        // add batch mode, no interactive dialogs
+        sendMessageToKit("load url=" + encodedFrom + " batch=true");
 
         // 載入完畢後會觸發 setLoaded()
     });
 
     return true;
+}
+
+void ConvertBroker::dispose()
+{
+    if (!_uriOrig.empty())
+    {
+        StatelessBatchBroker::removeFile(_uriOrig);
+        _uriOrig.clear();
+    }
 }
 
 void ConvertBroker::setLoaded()
@@ -108,36 +120,11 @@ void ConvertBroker::sendMessageToKit(const std::string& command)
     mpClientSession->handleMessage(message);
 }
 
-void ConvertBroker::dispose()
-{
-    if (!_uriOrig.empty())
-    {
-        removeFile(_uriOrig);
-        _uriOrig.clear();
-    }
-}
-
 ConvertBroker::~ConvertBroker()
 {
     // Calling a virtual function from a dtor
     // is only valid if there are no inheritors.
     dispose();
-}
-
-void ConvertBroker::removeFile(const std::string &uriOrig)
-{
-    if (!uriOrig.empty())
-    {
-        try
-        {
-            // 移除暫存檔案及目錄
-            Poco::Path path = uriOrig;
-            Poco::File(path).remove();
-            Poco::File(path.makeParent()).remove();
-        } catch (const std::exception &ex) {
-            LOG_ERR("Error while removing conversion temporary: '" << uriOrig << "' - " << ex.what());
-        }
-    }
 }
 
 } // namespace OxOOL

@@ -12,7 +12,7 @@
 namespace OxOOL
 {
 
-class ConvertBroker : public DocumentBroker
+class ConvertBroker final : public StatelessBatchBroker
 {
 public:
     /// Construct DocumentBroker with URI and docKey
@@ -47,6 +47,9 @@ public:
     /// 文件載入完成，觸發這個函數
     void setLoaded() override;
 
+    /// Called when removed from the DocBrokers list
+    void dispose() override;
+
     /// @brief 另存新檔，並傳送給 client
     void saveAsDocument();
 
@@ -54,11 +57,11 @@ public:
     /// @param command
     void sendMessageToKit(const std::string& command);
 
-    /// Called when removed from the DocBrokers list
-    void dispose() override;
-
     /// Cleanup path and its parent
     void removeFile(const std::string &uri);
+
+private:
+    bool isConvertTo() const override { return true; }
 
 private:
     const std::string maFormat;
