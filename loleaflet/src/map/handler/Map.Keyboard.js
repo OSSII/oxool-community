@@ -142,7 +142,105 @@ L.Map.Keyboard = L.Handler.extend({
 	keyCodes: {
 		pageUp:   33,
 		pageDown: 34,
-		enter:    13
+		enter:    13,
+		BACKSPACE:8,
+		TAB:      9,
+		SPACE :   32,
+		SHIFT:    16, // shift		: UNKOWN
+		CTRL:     17, // ctrl		: UNKOWN
+		ALT:      18, // alt		: UNKOWN
+		PAUSE:    19, // pause/break	: UNKOWN
+		CAPSLOCK: 20, // caps lock	: UNKOWN,
+		END:      35,
+		HOME:     36,
+		LEFT:     37,
+		UP:       38,
+		RIGHT:    39,
+		DOWN:     40,
+		INSERT:   45,
+		DELETE:   46,
+		NUM0:     [48,96], // two values because of different mapping in mac and windows for same keys
+		NUM1:     [49,97],
+		NUM2:     [50,98],
+		NUM3:     [51,99],
+		NUM4:     [52,100],
+		NUM5:     [53,101],
+		NUM6:     [54,102],
+		NUM7:     [55,103],
+		NUM8:     [56,103],
+		NUM9:     [57,104],
+		A:        65,
+		B:        66,
+		C:        [67,99],
+		//c:        99,
+		D:        68,
+		E:        69,
+		//f:        70, no need for separate as for Windows it will remain the same
+		F:        70,
+		G:        71,
+		H:        72,
+		I:        73,
+		J:        74,
+		K:        75,
+		L:        76,
+		M:        77,
+		N:        78,
+		O:        79,
+		P:        80,
+		Q:        81,
+		R:        82,
+		S:        83,
+		T:        84,
+		U:        85,
+		V:        [86,118],
+		//v:        118, // this is for MAC as the value of v changes when we press keydown
+		W:        87,
+		X:        [88,120],
+		//x:        120, // this is for MAC as the value of x changes when we press keydown
+		Y:        89,
+		Z:        90,
+		LEFTWINDOWKEY :    [91,91], // left window key	: UNKOWN  and also for MAC
+		RIGHTWINDOWKEY:    [92,93], // right window key	: UNKOWN  and also for MAC
+		SELECTKEY:         93, // select key	: UNKOWN
+		// NUM0:     96,
+		// NUM1:     97,
+		// NUM2:     98,
+		// NUM3:     99,
+		// NUM4:     100,
+		// NUM5:     101,
+		// NUM6:     102,
+		// NUM7:     103,
+		// NUM8:     104,
+		MULTIPLY:    106,
+		ADD:         107,
+		//SUBTRACT:    109,
+		DECIMAL:     110,
+		DIVIDE:      111,
+		F1:       112,
+		F2:       113,
+		F3:       114,
+		F4:       115,
+		F5:       116,
+		F6:       117,
+		F7:       118,
+		F8:       119,
+		F9:       120,
+		F10:      121,
+		F11:      122,
+		NUMLOCK:  144,
+		SCROLLLOCK:   145,
+		SUBTRACT:     [109,173,189],
+		SEMICOLON:    186,
+		EQUAL:        187,
+		COMMA:        188,
+		//SUBTRACT:     189,
+		PERIOD:       190, // period		: UNKOWN
+		FORWARDSLASH: 191, // forward slash	: UNKOWN
+		GRAVEACCENT:  192, // grave accent	: UNKOWN
+		OPENBRACKET:  219, // open bracket	: UNKOWN
+		BACKSLASH:    220, // back slash	: UNKOWN
+		CLOSEBRACKET: 221, // close bracket	: UNKOWN
+		SINGLEQUOTE : 222  // single quote	: UNKOWN
 	},
 
 	navigationKeyCodes: {
@@ -180,7 +278,7 @@ L.Map.Keyboard = L.Handler.extend({
 
 	_ignoreKeyEvent: function(ev) {
 		var shift = ev.shiftKey ? UNOModifier.SHIFT : 0;
-		if (shift && (ev.keyCode === 45 || ev.keyCode === 46)) {
+		if (shift && (ev.keyCode === this.keyCodes.INSERT || ev.keyCode === this.keyCodes.DELETE)) {
 			// don't handle shift+insert, shift+delete
 			// These are converted to 'cut', 'paste' events which are
 			// automatically handled by us, so avoid double-handling
@@ -243,7 +341,7 @@ L.Map.Keyboard = L.Handler.extend({
 		if (this._map._docLayer)
 			if (ev.shiftKey && ev.type === 'keydown')
 				this._map._docLayer.shiftKeyPressed = true;
-			else if (ev.keyCode === 16 && ev.type === 'keyup')
+			else if (ev.keyCode === this.keyCodes.SHIFT && ev.type === 'keyup')
 				this._map._docLayer.shiftKeyPressed = false;
 		if (completeEvent)
 			completeEvent.finish();
@@ -317,8 +415,10 @@ L.Map.Keyboard = L.Handler.extend({
 		var charCode = ev.charCode;
 		var keyCode = ev.keyCode;
 
+		var DEFAULT = 0;
+
 		if ((this.modifier == UNOModifier.ALT || this.modifier == UNOModifier.SHIFT + UNOModifier.ALT) &&
-		    keyCode >= 48) {
+			keyCode >= this.keyCodes.NUM0[DEFAULT]) {
 			// Presumably a Mac or iOS client accessing a "special character". Just ignore the alt modifier.
 			// But don't ignore it for Alt + non-printing keys.
 			this.modifier -= alt;
@@ -329,7 +429,7 @@ L.Map.Keyboard = L.Handler.extend({
 
 		if (this.modifier) {
 			unoKeyCode |= this.modifier;
-			if (ev.type !== 'keyup' && (this.modifier !== shift || (keyCode === 32 && !this._map._isCursorVisible))) {
+			if (ev.type !== 'keyup' && (this.modifier !== shift || (keyCode === this.keyCodes.SPACE && !this._map._isCursorVisible))) {
 				if (keyEventFn) {
 					keyEventFn('input', charCode, unoKeyCode);
 					ev.preventDefault();
@@ -381,23 +481,23 @@ L.Map.Keyboard = L.Handler.extend({
 					// was handled as textinput
 				}
 			}
-			if (keyCode === 9) {
+			if (keyCode === this.keyCodes.TAB) {
 				// tab would change focus to other DOM elements
 				ev.preventDefault();
 			}
 		}
-		else if (!this.modifier && (keyCode === 33 || keyCode === 34) && ev.type === 'keydown') {
+		else if (!this.modifier && (keyCode === this.keyCodes.pageUp || keyCode === this.keyCodes.pageDown) && ev.type === 'keydown') {
 			if (this._map._docLayer._docType === 'presentation' || this._map._docLayer._docType === 'drawing') {
-				var partToSelect = keyCode === 33 ? 'prev' : 'next';
+				var partToSelect = keyCode === this.keyCodes.pageUp ? 'prev' : 'next';
 				this._map._docLayer._preview._scrollViewByDirection(partToSelect);
 				if (app.file.fileBasedView)
 					this._map._docLayer._checkSelectedPart();
 			}
 			return;
 		}
-		else if (!this.modifier && (keyCode === 35 || keyCode === 36) && ev.type === 'keydown') {
+		else if (!this.modifier && (keyCode === this.keyCodes.END || keyCode === this.keyCodes.HOME) && ev.type === 'keydown') {
 			if (this._map._docLayer._docType === 'drawing' && app.file.fileBasedView === true) {
-				partToSelect = keyCode === 36 ? 0 : this._map._docLayer._parts -1;
+				partToSelect = keyCode === this.keyCodes.HOME ? 0 : this._map._docLayer._parts -1;
 				this._map._docLayer._preview._scrollViewToPartPosition(partToSelect);
 				this._map._docLayer._checkSelectedPart();
 			}
@@ -446,7 +546,7 @@ L.Map.Keyboard = L.Handler.extend({
 		}
 
 		// 指按下 Shift / Control / Alt 未配合其他按鍵
-		if (e.keyCode === 16 || e.keyCode === 17 || e.keyCode === 18) {
+		if (e.keyCode === this.keyCodes.SHIFT || e.keyCode === this.keyCodes.CTRL || e.keyCode === this.keyCodes.ALT) {
 			return true;
 		}
 
