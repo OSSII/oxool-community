@@ -770,10 +770,7 @@ input[type='number']:hover::-webkit-outer-spin-button {
 #MacroSelectorDialog #categories > tbody > ul > li > ul .ui-treeview-expandable.selected > .ui-treeview::before {
 	/* visibility: hidden; hide when javascript sets properly expanders*/
 }
-#MacroSelectorDialog #categories .ui-treeview-entry.selected, .ui-listview-entry, .ui-listview-entry.selected {
-	background-color: var(--color-background-dark);
-	color: var(--color-text-dark);
-}
+
 #MacroSelectorDialog #categories .ui-treeview-entry:hover, .ui-treeview-entry.selected:hover, .ui-listview-entry:hover, .ui-listview-entry.selected:hover {
 	background-color: var(--color-background-darker);
 	color: var(--color-text-darker);
