@@ -170,7 +170,7 @@ class Comment {
 			this.createTrackChangeButtons();
 		}
 
-		if (this.sectionProperties.noMenu !== true && (this.map.isEditModeForComments() || this.map.isEditMode())) {
+		if (this.sectionProperties.noMenu !== true && (this.map.isPermissionEditForComments() || this.map.isEditMode())) {
 			this.createMenu();
 		}
 

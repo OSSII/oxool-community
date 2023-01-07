@@ -280,7 +280,7 @@ L.Map.include({
 	},
 
 	// If user has write access he can always add comments
-	isEditModeForComments: function() {
+	isPermissionEditForComments: function() {
 		return this.canUserWrite();
 	},
 

@@ -5135,7 +5135,7 @@ L.CanvasTileLayer = L.Layer.extend({
 				children : []
 			};
 
-			if (this._map.isEditModeForComments())
+			if (this._map.isPermissionEditForComments())
 				menuStructure['customTitle'] = customTitleBar;
 		}
 

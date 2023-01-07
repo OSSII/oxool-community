@@ -2328,7 +2328,7 @@ L.Control.JSDialogBuilder = L.Control.extend({
 		var textNode = L.DomUtil.create('figcaption', 'empty-comment-wizard', emptyCommentWizard);
 		textNode.innerText = data.text;
 		L.DomUtil.create('br', 'empty-comment-wizard', textNode);
-		if (this.map.isEditModeForComments()) {
+		if (this.map.isPermissionEditForComments()) {
 			var linkNode = L.DomUtil.create('div', 'empty-comment-wizard-link', textNode);
 			linkNode.innerText = _('Insert Comment');
 			linkNode.onclick = builder.map.insertComment.bind(builder.map);

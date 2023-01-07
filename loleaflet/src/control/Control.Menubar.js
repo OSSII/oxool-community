@@ -799,7 +799,7 @@ L.Control.Menubar = L.Control.extend({
 		} else if (id === 'saveas') {
 			this._map.openSaveAs();
 		} else if (id === 'savecomments') {
-			if (this._map.isEditModeForComments()) {
+			if (this._map.isPermissionEditForComments()) {
 				this._map.fire('postMessage', {msgId: 'UI_Save'});
 				if (!this._map._disableDefaultAction['UI_Save']) {
 					this._map.save(false, false);
@@ -974,7 +974,7 @@ L.Control.Menubar = L.Control.extend({
 				return false;
 			case 'insertcomment':
 			case 'savecomments':
-				if (!this._map.isEditModeForComments()) {
+				if (!this._map.isPermissionEditForComments()) {
 					return false;
 				}
 			}
