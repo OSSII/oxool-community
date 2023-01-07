@@ -519,7 +519,7 @@ L.Control.Ruler = L.Control.extend({
 	},
 
 	_initiateIndentationDrag: function(e) {
-		if (window.ThisIsTheiOSApp && !this._map.isPermissionEdit())
+		if (window.ThisIsTheiOSApp && !this._map.isEditMode())
 			return;
 
 		this._map.rulerActive = true;
@@ -546,7 +546,7 @@ L.Control.Ruler = L.Control.extend({
 			e.clientX = e.touches[0].clientX;
 		}
 
-		if (window.ThisIsTheiOSApp && !this._map.isPermissionEdit())
+		if (window.ThisIsTheiOSApp && !this._map.isEditMode())
 			return;
 
 		this._map.rulerActive = true;

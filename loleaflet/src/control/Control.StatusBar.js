@@ -237,7 +237,7 @@ L.Control.StatusBar = L.Control.extend({
 		var map = this.map;
 		var statusbar = this._bar;
 		var docType = this.map.getDocType();
-		var isReadOnly = !map.isPermissionEdit();
+		var isReadOnly = !map.isEditMode();
 
 		var languageStatus = function(e) {
 			var id = 'LanguageStatus';
@@ -514,7 +514,7 @@ L.Control.StatusBar = L.Control.extend({
 		// 監控狀態列顯示與否
 		this.map.stateChangeHandler.on('.uno:StatusBarVisible', function(e) {
 			// 編輯模式才可以顯示/隱藏狀態列
-			if (this.map.isPermissionEdit()) {
+			if (this.map.isEditMode()) {
 				if (e.checked()) {
 					this.map.uiManager.showStatusBar();
 				} else {
@@ -548,7 +548,7 @@ L.Control.StatusBar = L.Control.extend({
 	},
 
 	_checkStatusPermission: function() {
-		var isReadOnly = !this._map.isPermissionEdit();
+		var isReadOnly = !this._map.isEditMode();
 		var docType = this._map.getDocType();
 		// 更新編輯權限顯示
 		$('#PermissionMode').parent().html(this._getPermissionModeHtml(isReadOnly));

@@ -329,7 +329,7 @@ L.Map.Keyboard = L.Handler.extend({
 	// any 'beforeinput', 'keypress' and 'input' events that would add
 	// printable characters. Those are handled by TextInput.js.
 	_onKeyDown: function (ev) {
-		if (this._map.uiManager.isUIBlocked() || this._map.isPermissionReadOnly())
+		if (this._map.uiManager.isUIBlocked() || this._map.isReadOnlyMode())
 			return;
 
 		var completeEvent = app.socket.createCompleteTraceEvent('L.Map.Keyboard._onKeyDown', { type: ev.type, charCode: ev.charCode });
@@ -439,7 +439,7 @@ L.Map.Keyboard = L.Handler.extend({
 			}
 		}
 
-		if (this._map.isPermissionEdit()) {
+		if (this._map.isEditMode()) {
 			docLayer._resetPreFetching();
 
 			if (this._ignoreKeyEvent(ev)) {

@@ -2326,7 +2326,7 @@ L.CanvasTileLayer = L.Layer.extend({
 
 		var oldCursorXY = this._cellCursorXY.clone();
 
-		if (textMsg.match('EMPTY') || !this._map.isPermissionEdit()) {
+		if (textMsg.match('EMPTY') || !this._map.isEditMode()) {
 			this._cellCursorTwips = new L.Bounds(new L.Point(0, 0), new L.Point(0, 0));
 			this._cellCursor = L.LatLngBounds.createDefault();
 			this._cellCursorXY = new L.Point(-1, -1);
@@ -2508,7 +2508,7 @@ L.CanvasTileLayer = L.Layer.extend({
 			this._showURLPopUp(cursorPos, obj.hyperlink.link);
 		}
 
-		if (!this._map.editorHasFocus() && this._map._isCursorVisible && (modifierViewId === this._viewId) && (this._map.isPermissionEdit())) {
+		if (!this._map.editorHasFocus() && this._map._isCursorVisible && (modifierViewId === this._viewId) && (this._map.isEditMode())) {
 			// Regain cursor if we had been out of focus and now have input.
 			// Unless the focus is in the Calc Formula-Bar, don't steal the focus.
 			if (!this._map.calcInputBarHasFocus())
@@ -3262,7 +3262,7 @@ L.CanvasTileLayer = L.Layer.extend({
 	_onTextSelectionEndMsg: function (textMsg) {
 		var rectangles = this._getTextSelectionRectangles(textMsg);
 
-		if (rectangles.length && this._map.isPermissionEdit()) {
+		if (rectangles.length && this._map.isEditMode()) {
 			var topLeftTwips = rectangles[0].getTopLeft();
 			var bottomRightTwips = rectangles[0].getBottomRight();
 			var oldSelection = this._textSelectionEnd;
@@ -3281,7 +3281,7 @@ L.CanvasTileLayer = L.Layer.extend({
 	_onTextSelectionStartMsg: function (textMsg) {
 		var rectangles = this._getTextSelectionRectangles(textMsg);
 
-		if (rectangles.length && this._map.isPermissionEdit()) {
+		if (rectangles.length && this._map.isEditMode()) {
 			var topLeftTwips = rectangles[0].getTopLeft();
 			var bottomRightTwips = rectangles[0].getBottomRight();
 			var oldSelection = this._textSelectionStart;
@@ -3309,7 +3309,7 @@ L.CanvasTileLayer = L.Layer.extend({
 	_onCellSelectionAreaMsg: function (textMsg) {
 		var autofillMarkerSection = app.sectionContainer.getSectionWithName(L.CSections.AutoFillMarker.name);
 		var strTwips = textMsg.match(/\d+/g);
-		if (strTwips != null && this._map.isPermissionEdit()) {
+		if (strTwips != null && this._map.isEditMode()) {
 			var topLeftTwips = new L.Point(parseInt(strTwips[0]), parseInt(strTwips[1]));
 			var offset = new L.Point(parseInt(strTwips[2]), parseInt(strTwips[3]));
 			var bottomRightTwips = topLeftTwips.add(offset);
@@ -3344,7 +3344,7 @@ L.CanvasTileLayer = L.Layer.extend({
 
 	_onCellAutoFillAreaMsg: function (textMsg) {
 		var strTwips = textMsg.match(/\d+/g);
-		if (strTwips != null && this._map.isPermissionEdit()) {
+		if (strTwips != null && this._map.isEditMode()) {
 			var topLeftTwips = new L.Point(parseInt(strTwips[0]), parseInt(strTwips[1]));
 			var offset = new L.Point(parseInt(strTwips[2]), parseInt(strTwips[3]));
 
@@ -3435,7 +3435,7 @@ L.CanvasTileLayer = L.Layer.extend({
 	},
 
 	_mapOnError: function (e) {
-		if (e.msg && this._map.isPermissionEdit()) {
+		if (e.msg && this._map.isEditMode()) {
 			this._map.setPermission('view');
 		}
 	},
@@ -3722,7 +3722,7 @@ L.CanvasTileLayer = L.Layer.extend({
 	// enable or disable blinking cursor and  the cursor overlay depending on
 	// the state of the document (if the falgs are set)
 	_updateCursorAndOverlay: function (/*update*/) {
-		if (this._map.isPermissionEdit()
+		if (this._map.isEditMode()
 		&& this._map._isCursorVisible   // only when LOK has told us it is ok
 		&& this._map.editorHasFocus()   // not when document is not focused
 		&& !this._map.isSearching()  	// not when searching within the doc
@@ -4299,7 +4299,7 @@ L.CanvasTileLayer = L.Layer.extend({
 				this._map.removeLayer(this._graphicMarker);
 			}
 
-			if (!this._map.isPermissionEdit()) {
+			if (!this._map.isEditMode()) {
 				return;
 			}
 
@@ -5135,7 +5135,7 @@ L.CanvasTileLayer = L.Layer.extend({
 				children : []
 			};
 
-			if (this._map.isPermissionEditForComments())
+			if (this._map.isEditModeForComments())
 				menuStructure['customTitle'] = customTitleBar;
 		}
 
@@ -6851,7 +6851,7 @@ L.TilesPreFetcher = L.Class.extend({
 		var center = this._map.getCenter();
 		var zoom = this._map.getZoom();
 		var part = this._docLayer._selectedPart;
-		var hasEditPerm = this._map.isPermissionEdit();
+		var hasEditPerm = this._map.isEditMode();
 
 		if (this._zoom === undefined) {
 			this._zoom = zoom;

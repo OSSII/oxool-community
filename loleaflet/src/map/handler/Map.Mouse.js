@@ -159,7 +159,7 @@ L.Map.Mouse = L.Handler.extend({
 				mousePos.x = Math.trunc(mousePos.x);
 				mousePos.y = Math.trunc(mousePos.y);
 				var timeOut = 250;
-				if (this._map.isPermissionEdit()) {
+				if (this._map.isEditMode()) {
 					timeOut = 0;
 				}
 				this._mouseEventsQueue.push(L.bind(function() {

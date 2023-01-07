@@ -738,7 +738,7 @@ L.Map.include({
 	closeDocument: function() {
 		var map = this;
 		// 文件在可編輯狀態，且有強制寫入或文件已修改過
-		if (map._active === true && map.isPermissionEdit() && (map.forceCellCommit() || map._everModified)) {
+		if (map._active === true && map.isEditMode() && (map.forceCellCommit() || map._everModified)) {
 			// 超過一人在編輯(共編模式)，不存檔，直接結束
 			if (map.getViewCount() > 1) {
 				window.app.console.debug('Co-editing mode, do not save this file.');
@@ -780,7 +780,7 @@ L.Map.include({
 		var map = this;
 		var isModified = false;
 		// 如果是試算表，檢查儲存格是否在輸入狀態
-		if (map.isPermissionEdit()
+		if (map.isEditMode()
 			&& map.getDocType() === 'spreadsheet'
 			&& this._hasForceCellCommit !== true) {
 

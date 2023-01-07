@@ -88,7 +88,7 @@ L.Control.AlternativeCommand = L.Control.extend({
 		 */
 		'.uno:Save': function() {
 			// Save only when not read-only.
-			if (!this._map.isPermissionReadOnly()) {
+			if (!this._map.isReadOnlyMode()) {
 				this._map.fire('postMessage', {msgId: 'UI_Save'});
 				if (!this._map._disableDefaultAction['UI_Save']) {
 					this._map.save(false, false);

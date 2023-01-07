@@ -628,7 +628,7 @@ function getColorPickerData(type) {
 }
 
 function onColorPick(id, color) {
-	if (!map.isPermissionEdit()) {
+	if (!map.isEditMode()) {
 		return;
 	}
 
@@ -874,7 +874,7 @@ function processStateChangedCommand(commandName, state) {
 		// 而且這個 item 沒有自訂處理狀態
 		if (item.stateChange === undefined) {
 			window.app.console.debug('toolbar id:%s has no statechange', id);
-			var editMode = map.isPermissionEdit(); // 編輯模式
+			var editMode = map.isEditMode(); // 編輯模式
 			toolbar.set(id, {
 				disabled: editMode ? (state === 'disabled') : true,
 				checked: editMode ? (state === 'true') : false

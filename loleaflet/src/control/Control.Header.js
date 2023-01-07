@@ -88,7 +88,7 @@ L.Control.Header = L.Class.extend({
 	},
 
 	onLongPress: function () {
-		if (this._map.isPermissionEdit()) {
+		if (this._map.isEditMode()) {
 			window.contextMenuWizard = true;
 			this._map.fire('mobilewizard', {data: this._menuData});
 		}
@@ -390,7 +390,7 @@ L.Control.Header = L.Class.extend({
 
 	onMouseEnter: function () {
 		// 可編輯狀態才能有右鍵選單
-		if (this._map.isPermissionEdit()) {
+		if (this._map.isEditMode()) {
 			L.DomUtil.setStyle(this.containerObject.canvas, 'cursor', this._cursor);
 			this._bindContextMenu();
 		}
