@@ -1443,7 +1443,7 @@ bool ChildSession::insertPicture(const StringVector& tokens, bool isChange)
 
 bool ChildSession::extTextInputEvent(const StringVector& tokens)
 {
-    int id = -1;
+    int id = -1, type = -1;
     std::string text;
     bool error = false;
 
@@ -1451,8 +1451,15 @@ bool ChildSession::extTextInputEvent(const StringVector& tokens)
         error = true;
     else if (!getTokenInteger(tokens[1], "id", id) || id < 0)
         error = true;
-    else {
-        error = !getTokenString(tokens[2], "text", text);
+    else
+    {
+        // back-compat 'type'
+        if (getTokenKeyword(tokens[2], "type",
+                            {{"input", LOK_EXT_TEXTINPUT}, {"end", LOK_EXT_TEXTINPUT_END}},
+                            type))
+            error = !getTokenString(tokens[3], "text", text);
+        else // normal path:
+            error = !getTokenString(tokens[2], "text", text);
     }
 
     if (error)
@@ -1465,8 +1472,15 @@ bool ChildSession::extTextInputEvent(const StringVector& tokens)
     URI::decode(text, decodedText);
 
     getLOKitDocument()->setView(_viewId);
-    getLOKitDocument()->postWindowExtTextInputEvent(id, LOK_EXT_TEXTINPUT, decodedText.c_str());
-    getLOKitDocument()->postWindowExtTextInputEvent(id, LOK_EXT_TEXTINPUT_END, decodedText.c_str());
+    if (type >= 0)
+    {
+        getLOKitDocument()->postWindowExtTextInputEvent(id, type, decodedText.c_str());
+    }
+    else
+    {
+        getLOKitDocument()->postWindowExtTextInputEvent(id, LOK_EXT_TEXTINPUT, decodedText.c_str());
+        getLOKitDocument()->postWindowExtTextInputEvent(id, LOK_EXT_TEXTINPUT_END, decodedText.c_str());
+    }
 
     return true;
 }
