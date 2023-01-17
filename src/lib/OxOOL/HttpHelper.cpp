@@ -46,6 +46,26 @@ bool isPOST(const Poco::Net::HTTPRequest& request)
     return request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST;
 }
 
+bool isPUT(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT;
+}
+
+bool isDELETE(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_DELETE;
+}
+
+bool isOPTIONS(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_OPTIONS;
+}
+
+bool isPATCH(const Poco::Net::HTTPRequest& request)
+{
+    return request.getMethod() == Poco::Net::HTTPRequest::HTTP_PATCH;
+}
+
 void sendResponse(const std::shared_ptr<StreamSocket>& socket,
                   const std::string& body,
                   Poco::Net::HTTPResponse::HTTPStatus statusCode,

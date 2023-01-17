@@ -42,6 +42,26 @@ bool isGET(const Poco::Net::HTTPRequest& request);
 /// @return true - 是
 bool isPOST(const Poco::Net::HTTPRequest& request);
 
+/// @brief 檢查 request 方法是否爲 PUT
+/// @param request
+/// @return true - 是
+bool isPUT(const Poco::Net::HTTPRequest& request);
+
+/// @brief 檢查 request 方法是否爲 DELETE
+/// @param request
+/// @return true - 是
+bool isDELETE(const Poco::Net::HTTPRequest& request);
+
+/// @brief 檢查 request 方法是否爲 OPTIONS
+/// @param request
+/// @return true - 是
+bool isOPTIONS(const Poco::Net::HTTPRequest& request);
+
+/// @brief 檢查 request 方法是否爲 PATCH
+/// @param request
+/// @return true - 是
+bool isPATCH(const Poco::Net::HTTPRequest& request);
+
 /// Write headers and body for a response.
 void sendResponse(const std::shared_ptr<StreamSocket>& socket,
                   const std::string& body = std::string(),
