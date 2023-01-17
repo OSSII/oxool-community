@@ -698,7 +698,7 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
     // 檔案已經載入過了
     if (alreadyLoaded(moduleFile))
     {
-        LOG_DBG("Warning! '" << moduleFile << "' already loaded.");
+        LOG_WRN("Warning! '" << moduleFile << "' already loaded.");
         return nullptr;
     }
 
@@ -716,12 +716,12 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
         }
         else
         {
-            LOG_DBG("Symbol error: " << dlsym_error);
+            LOG_ERR("Symbol error: " << dlsym_error);
         }
     }
     else
     {
-        LOG_DBG("Module load fail!(" << dlerror() << ")");
+        LOG_ERR("Module load fail!(" << dlerror() << ")");
     }
 
     if (handle)
