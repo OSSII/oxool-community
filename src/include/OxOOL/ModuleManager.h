@@ -183,15 +183,6 @@ public:
                                      const std::weak_ptr<StreamSocket> &socket,
                                      const Poco::Net::HTTPRequest& request);
 
-    // 建立 Convert broker
-    std::shared_ptr<ConvertBroker>
-    createConvertBroker(const std::string& fromFile,
-                        const std::string& toFormat,
-                        const std::string& saveAsOptions = std::string());
-
-    /// @brief 清理用完的 Document Brokers
-    void cleanupDocBrokers();
-
     /// @brief 清理已經不工作的 agents (代理執行緒一旦超時，就會結束執行緒，並觸發這個函式)
     void cleanupDeadAgents();
 
@@ -233,9 +224,6 @@ private:
 
     std::mutex mAgentsMutex;
     std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
-
-    std::mutex mBrokersMutex;
-    std::map<std::string, std::shared_ptr<DocumentBroker>> mpDocBrokers;
 };
 
 } // namespace OxOOL

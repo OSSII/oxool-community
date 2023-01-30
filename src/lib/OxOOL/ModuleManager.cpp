@@ -204,8 +204,9 @@ void ModuleAgent::pollingThread()
     // 執行緒已經結束，觸發清理程序
     OxOOL::ModuleManager &manager = OxOOL::ModuleManager::instance();
     manager.cleanupDeadAgents();
-    // 觸發 ModuleManager 清理用完的 DocumentBroker
-    manager.cleanupDocBrokers();
+
+    // 觸發 ConvertBroker 清理程序
+    OxOOL::ConvertBroker::cleanup();
 }
 
 void ModuleAgent::startRunning()
@@ -243,8 +244,8 @@ void ModuleAgent::stopRunning()
 
 void ModuleAgent::purge()
 {
-    // 觸發 ModuleManager 清理用完的 DocumentBroker
-    OxOOL::ModuleManager::instance().cleanupDocBrokers();
+    // 觸發 ConvertBroker 清理程序
+    OxOOL::ConvertBroker::cleanup();
 
     mpSavedModule = nullptr;
     mpSavedSocket = nullptr;
@@ -538,50 +539,6 @@ bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
     // 回應錯誤 http status code.
     OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, socket);
     return false;
-}
-
-std::shared_ptr<ConvertBroker>
-ModuleManager::createConvertBroker(const std::string& fromFile,
-                                   const std::string& toFormat,
-                                   const std::string& saveAsOptions)
-{
-    std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
-    Poco::URI uriPublic = RequestDetails::sanitizeURI(fromFile);
-    const std::string docKey = RequestDetails::getDocKey(uriPublic);
-    auto docBroker = std::make_shared<ConvertBroker>(fromFile, uriPublic, docKey,
-                                                     toFormat, saveAsOptions);
-    mpDocBrokers[docKey] = docBroker;
-
-    return docBroker;
-}
-
-void ModuleManager::cleanupDocBrokers()
-{
-    // 交給 module manager thread 執行清理工作，避免搶走 main thread
-    addCallback([this]()
-    {
-        std::unique_lock<std::mutex> brokersLock(mBrokersMutex);
-        // 有 agents 才進行清理工作
-        if (const int beforeClean = mpDocBrokers.size(); beforeClean > 0)
-        {
-            for (auto it = mpDocBrokers.begin(); it != mpDocBrokers.end();)
-            {
-                std::shared_ptr<DocumentBroker> docBroker = it->second;
-                if (!docBroker->isAlive())
-                {
-                    docBroker->dispose();
-                    it = mpDocBrokers.erase(it);
-                    continue;
-                }
-                else
-                {
-                    ++it;
-                }
-            }
-            const int afterClean = mpDocBrokers.size();
-            LOG_DBG("Clean " << beforeClean - afterClean << " Document Broker, leaving " << afterClean << ".");
-        }
-    });
 }
 
 void ModuleManager::cleanupDeadAgents()

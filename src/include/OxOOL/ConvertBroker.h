@@ -7,7 +7,9 @@
 #include <Poco/URI.h>
 
 #include <wsd/DocumentBroker.hpp>
-#include <wsd/ClientSession.hpp>
+
+class StreamSocket;
+class ClientSession;
 
 namespace OxOOL
 {
@@ -28,10 +30,6 @@ public:
     /// @brief 文件載入完畢後，可介入後續處理，若未自訂 callback，則會自動執行 saveAsDocument()
     /// @param fn - 自訂的 callback 函數
     void loadedCallback(const CallbackFn& fn) { mpCallback = fn; mbCallbackIsCalled = false; }
-
-    /// @brief 取得 Client seccion
-    /// @return Client seccion
-    std::shared_ptr<ClientSession> getClientSession() const { return mpClientSession ; }
 
     /// @brief 以唯讀模式載入文件
     /// @param socket
@@ -57,8 +55,17 @@ public:
     /// @param command
     void sendMessageToKit(const std::string& command);
 
-    /// Cleanup path and its parent
-    void removeFile(const std::string &uri);
+    /// @brief 建立 Convert broker
+    /// @param fromFile
+    /// @param toFormat
+    /// @param saveAsOptions
+    /// @return
+    static std::shared_ptr<ConvertBroker> create(const std::string& fromFile,
+                                                 const std::string& toFormat,
+                                                 const std::string& saveAsOptions = std::string());
+
+    /// @brief 清理用完的 Convert Brokers
+    static void cleanup();
 
 private:
     bool isConvertTo() const override { return true; }
@@ -69,7 +76,6 @@ private:
 
     CallbackFn mpCallback;
     bool mbCallbackIsCalled;
-    std::shared_ptr<ClientSession> mpClientSession;
 };
 
 } // namespace OxOOL

@@ -5,10 +5,14 @@
 
 #include <OxOOL/ConvertBroker.h>
 
+#include <common/Log.hpp>
 #include <net/Socket.hpp>
 #include <wsd/RequestDetails.hpp>
 #include <wsd/DocumentBroker.hpp>
 #include <wsd/ClientSession.hpp>
+
+static std::mutex BrokersMutex;
+static std::map<std::string, std::shared_ptr<DocumentBroker>> Brokers;
 
 namespace OxOOL
 {
@@ -38,11 +42,11 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
     // FIXME: associate this with moveSocket (?)
     std::shared_ptr<ProtocolHandlerInterface> nullPtr;
     RequestDetails requestDetails("convert-broker");
-    mpClientSession = std::make_shared<ClientSession>(nullPtr, id, docBroker,
+    _clientSession = std::make_shared<ClientSession>(nullPtr, id, docBroker,
         getPublicUri(), isReadOnly, requestDetails);
-    mpClientSession->construct();
+    _clientSession->construct();
 
-    if (!mpClientSession)
+    if (!_clientSession)
         return false;
 
     // addCallback 前，要先進入執行緒
@@ -50,10 +54,10 @@ bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, co
 
     addCallback([this, socket]()
     {
-        mpClientSession->setSaveAsSocket(socket);
+        _clientSession->setSaveAsSocket(socket);
 
         // First add and load the session.
-        addSession(mpClientSession);
+        addSession(_clientSession);
 
         // Load the document manually and request saving in the target format.
         std::string encodedFrom;
@@ -117,7 +121,7 @@ void ConvertBroker::saveAsDocument()
 void ConvertBroker::sendMessageToKit(const std::string& command)
 {
     std::vector<char> message(command.begin(), command.end());
-    mpClientSession->handleMessage(message);
+    _clientSession->handleMessage(message);
 }
 
 ConvertBroker::~ConvertBroker()
@@ -125,6 +129,49 @@ ConvertBroker::~ConvertBroker()
     // Calling a virtual function from a dtor
     // is only valid if there are no inheritors.
     dispose();
+}
+
+std::shared_ptr<ConvertBroker>
+ConvertBroker::create(const std::string& fromFile,
+                      const std::string& toFormat,
+                      const std::string& saveAsOptions)
+{
+    std::unique_lock<std::mutex> brokersLock(BrokersMutex);
+    Poco::URI uriPublic = RequestDetails::sanitizeURI(fromFile);
+    const std::string docKey = RequestDetails::getDocKey(uriPublic);
+    auto docBroker = std::make_shared<ConvertBroker>(fromFile, uriPublic, docKey,
+                                                     toFormat, saveAsOptions);
+    Brokers.emplace(docKey, docBroker);
+
+    return docBroker;
+}
+
+void ConvertBroker::cleanup()
+{
+    std::thread([&]
+    {
+        std::unique_lock<std::mutex> brokersLock(BrokersMutex);
+        // 有 Brokers 才進行清理工作
+        if (const int beforeClean = Brokers.size(); beforeClean > 0)
+        {
+            for (auto it = Brokers.begin(); it != Brokers.end();)
+            {
+                std::shared_ptr<DocumentBroker> docBroker = it->second;
+                if (!docBroker->isAlive())
+                {
+                    docBroker->dispose();
+                    it = Brokers.erase(it);
+                    continue;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+            const int afterClean = Brokers.size();
+            LOG_DBG("Clean " << beforeClean - afterClean << " Convert Broker, leaving " << afterClean << ".");
+        }
+    }).detach();
 }
 
 } // namespace OxOOL
