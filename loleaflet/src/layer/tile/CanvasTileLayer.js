@@ -1535,6 +1535,10 @@ L.CanvasTileLayer = L.Layer.extend({
 		else if (textMsg.startsWith('warning:')) {
 			this._onWarningMsg(textMsg);
 		}
+		// 顯示公告訊息
+		else if (textMsg.startsWith('announce:')) {
+			this._onAnnounceMsg(textMsg);
+		}
 		else if (textMsg.startsWith('getchildid:')) {
 			this._onGetChildIdMsg(textMsg);
 		}
@@ -2038,6 +2042,34 @@ L.CanvasTileLayer = L.Layer.extend({
 				icon: 'warning',
 				message: msg
 			});
+		} catch (e) {
+			this._map.fire('warn', {msg: _(textMsg)});
+		}
+	},
+
+	// 顯示公告訊息
+	_onAnnounceMsg: function (textMsg) {
+		textMsg = textMsg.substring('announce:'.length + 1).trim();
+		this._map.hideBusy();
+		try {
+			var alertObj = {};
+			var json = JSON.parse(textMsg);
+			// 顯示標題
+			if (json.title) {
+				alertObj.title = json.title;
+			}
+
+			// 圖示
+			if (json.type) {
+				alertObj.icon = json.type;
+			}
+
+			// 顯示訊息
+			if (json.message) {
+				alertObj.message = json.message;
+			}
+
+			L.dialog.alert(alertObj);
 		} catch (e) {
 			this._map.fire('warn', {msg: _(textMsg)});
 		}
