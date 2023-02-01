@@ -1,0 +1,20 @@
+<config>
+    <module type="bool" enable="true">
+        <load>announce.so</load>
+        <detail>
+            <name>Announce</name>
+	    <serviceURI>/oxool/announce</serviceURI>
+            <version>0.0.1</version>
+            <summary>Send an announcement to notify all editing users.</summary>
+            <author>OSSII R&amp;D Team. &lt;https://www.ossii.com.tw/&gt;</author>
+            <license>Mozilla Public License, version 2.0 &lt;https://www.mozilla.org/MPL/2.0/&gt;</license>
+            <description>The transmission format is as follows:
+{
+"title": "Title",
+"type": "error" or "information" or "question" or "success", or "warning",
+"message": "Display content"
+}</description>
+            <adminPrivilege desc="Requires admin authentication." type="bool" default="false">false</adminPrivilege>
+        </detail>
+    </module>
+</config>

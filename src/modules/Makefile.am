@@ -1,2 +1,2 @@
 
-SUBDIRS = Alive
+SUBDIRS = Alive Announce
