@@ -39,12 +39,6 @@ Requires:       poco-crypto >= 1.7.5 poco-data >= 1.7.5 poco-encodings >= 1.7.5 
 
 %description
 
-%package	modules
-Summary:	Expansion modules for OxOffice Online.
-Requires:	%{name} = %{version}
-%description	modules
-Expansion modules for OxOffice Online.
-
 %package	devel
 Summary:	Files for build OxOffice Online Editor.
 Requires:	%{name} = %{version}
@@ -110,8 +104,6 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %config /etc/%{name}/oxoolkitconfig.xcu
 %config(noreplace) /etc/%{name}/*.pem
 %config %attr(440, root, root) /etc/sudoers.d/lool
-
-%files modules
 %{_libdir}/@PACKAGE_NAME@/*.so
 /etc/%{name}/conf.d/*
 /usr/share/%{name}/modules
