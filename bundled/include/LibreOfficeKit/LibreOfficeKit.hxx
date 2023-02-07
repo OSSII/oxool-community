@@ -819,6 +819,20 @@ public:
     {
         mpDoc->pClass->initUnoStatus(mpDoc, pCommands);
     }
+
+    /**
+     * Post the text input from external input window, like IME, to given windowId
+     *
+     * @param nWindowId Specify the window id to post the input event to. If
+     * nWindow is 0, the event is posted into the document
+     * @param nType see LibreOfficeKitExtTextInputType
+     * @param pText Text for LOK_EXT_TEXTINPUT
+     * @param nCursorPos text Cursor position
+     */
+    void postWindowExtTextInputEventWithCursorPosition(unsigned nWindowId, int nType, const char* pText, int nCursorPos)
+    {
+        mpDoc->pClass->postWindowExtTextInputEventWithCursorPosition(mpDoc, nWindowId, nType, pText, nCursorPos);
+    }
     //-----------------------------------------
 
 #endif // defined LOK_USE_UNSTABLE_API || defined LIBO_INTERNAL_ONLY

@@ -1443,7 +1443,20 @@ bool ChildSession::insertPicture(const StringVector& tokens, bool isChange)
 
 bool ChildSession::extTextInputEvent(const StringVector& tokens)
 {
-    int id = -1, type = -1;
+    // Does it support cursor position?
+    static int supportCursorPosition = -1;
+    if (supportCursorPosition == -1)
+    {
+        char *versionInfo = getLOKit()->getVersionInfo();
+        const std::string versionString(versionInfo);
+        free(versionInfo); // No longer needed.
+        if (versionString.find("postWindowExtTextInputEventWithCursorPosition") != std::string::npos)
+            supportCursorPosition = 1;
+        else
+            supportCursorPosition = 0;
+    }
+
+    int id = -1, type = -1, cursorPos = -1;
     std::string text;
     bool error = false;
 
@@ -1460,6 +1473,9 @@ bool ChildSession::extTextInputEvent(const StringVector& tokens)
             error = !getTokenString(tokens[3], "text", text);
         else // normal path:
             error = !getTokenString(tokens[2], "text", text);
+
+        if (supportCursorPosition && tokens.size() >= 5)
+            getTokenInteger(tokens[4], "cursor", cursorPos);
     }
 
     if (error)
@@ -1474,7 +1490,10 @@ bool ChildSession::extTextInputEvent(const StringVector& tokens)
     getLOKitDocument()->setView(_viewId);
     if (type >= 0)
     {
-        getLOKitDocument()->postWindowExtTextInputEvent(id, type, decodedText.c_str());
+        if (supportCursorPosition && cursorPos >= 0)
+            getLOKitDocument()->postWindowExtTextInputEventWithCursorPosition(id, type, decodedText.c_str(), cursorPos);
+        else
+            getLOKitDocument()->postWindowExtTextInputEvent(id, type, decodedText.c_str());
     }
     else
     {
