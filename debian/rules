@@ -5,7 +5,7 @@ DPKG_EXPORT_BUILDFLAGS = 1
 
 include /usr/share/dpkg/default.mk
 
-CONFFLAGS = --enable-silent-rules --prefix=/usr --localstatedir=/var --sysconfdir=/etc --with-lokit-path=`pwd`/bundled/include --disable-setcap --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192 --with-lo-path=/opt/oxoffice $(CONFIG_OPTIONS)
+CONFFLAGS = --enable-silent-rules --prefix=/usr --libdir=/usr/lib --localstatedir=/var --sysconfdir=/etc --with-lokit-path=`pwd`/bundled/include --disable-setcap --disable-debug --enable-ssl -with-max-documents=8192 --with-max-connections=8192 --with-lo-path=/opt/oxoffice $(CONFIG_OPTIONS)
 
 # main packaging script based on dh7 syntax
 %:

@@ -1,4 +1,11 @@
 etc/
+etc/fonts/
+etc/oxool/
+etc/sudoers.d/
+etc/sysconfig/
 usr/bin/
 usr/lib/
+usr/lib/*.so*
+usr/lib/pkgconfig/
+usr/lib/oxool/*.so
 usr/share/
