@@ -16,7 +16,9 @@ L.Map.StateChangeHandler = L.Handler.extend({
 		// Stores the last received value from core ('true', 'false', 'enabled', 'disabled')
 		this._items = {};
 
-		this._commandCallbacks = {};
+		this._commandCallbacks = {
+			'NONAME': {}
+		};
 	},
 
 	addHooks: function () {
@@ -90,37 +92,95 @@ L.Map.StateChangeHandler = L.Handler.extend({
 	 * @param {*} bind
 	 */
 	on: function(cmd, func, bind) {
-		if (typeof(cmd) !== 'string' && typeof(func) !== 'function') {
-			window.app.console.debug('Warning! map.stateChangeHandler.on(""command", callback[, bind])');
-			return this;
-		}
 		// 建立新的 callback function 物件
-		var callbackFunc = {function: func};
-		// 有 bind 對象也一併建立
-		if (bind !== undefined) {
-			callbackFunc.bind = bind;
+		var callbackObject = this._createCallback(cmd, func, bind);
+		if (callbackObject === null) {
+			console.debug('Warning! map.stateChangeHandler.onn("command", callback[, bind])');
+			return this;
 		}
 
 		// 是否已有有這個命令的 callback
-		var callbacks = this._commandCallbacks[cmd];
+		var callbacks = this._commandCallbacks['NONAME'][cmd];
 		// 沒有的話新增這個命令的 callbacks
 		if (callbacks === undefined) {
 			callbacks = [];
-			this._commandCallbacks[cmd] = callbacks;
+			this._commandCallbacks['NONAME'][cmd] = callbacks;
 		}
 
 		// 檢查新的 callback function 是否存在
 		var callbackExist = false;
 		for (var i = 0 ; i < callbacks.length ; i++) {
-			if (callbacks[i].function === callbackFunc.function &&
-				callbacks[i].bind === callbackFunc.bind) {
+			if (callbacks[i].function === callbackObject.function &&
+				callbacks[i].bind === callbackObject.bind) {
+				callbackExist = true;
+				break;
+			}
+		}
+
+		// 不存在的話就新增
+		if (!callbackExist) {
+			callbacks.push(callbackObject);
+		} else {
+			console.debug('command callback:' + cmd + ' exists!');
+		}
+
+		return this;
+	},
+
+	/**
+	 * 建立特定指令的 callback object
+	 * @param {string} cmd - 需狀態回報的指令名稱
+	 * @param {function} func - callback function
+	 * @param {object} bind - bind object
+	 * @returns object
+	 */
+	_createCallback: function(cmd, func, bind) {
+		if (typeof(cmd) !== 'string' && typeof(func) !== 'function') {
+			return null;
+		}
+
+		// 建立新的 callback object
+		var callbackObject = {function: func};
+		// 有 bind 也一併建立
+		if (bind !== undefined) {
+			callbackObject.bind = bind;
+		}
+
+		return callbackObject;
+	},
+
+	classOn: function(className, cmd, func, bind) {
+		// 建立新的 callback function 物件
+		var callbackObject = this._createCallback(cmd, func, bind);
+		if (typeof(className) !== 'string' || callbackObject === null) {
+			console.debug('Warning! map.stateChangeHandler.classOn("class name", "command", callback[, bind])');
+		}
+
+		// 沒有這個 class 就建一個空物件
+		if (this._commandCallbacks[className] === undefined) {
+			this._commandCallbacks[className] = {};
+		}
+
+		// class 是否已有有這個命令的 callback
+		var callbacks = this._commandCallbacks[className][cmd];
+		// 沒有的話新增這個命令的 callbacks
+		if (callbacks === undefined) {
+			callbacks = [];
+			this._commandCallbacks[className][cmd] = callbacks;
+		}
+
+		// 檢查新的 callback function 是否存在
+		var callbackExist = false;
+		for (var i = 0 ; i < callbacks.length ; i++) {
+			if (callbacks[i].function === callbackObject.function &&
+				callbacks[i].bind === callbackObject.bind) {
 				callbackExist = true;
 				break;
 			}
 		}
 		// 不存在的話就新增
 		if (!callbackExist) {
-			callbacks.push(callbackFunc);
+			callbacks.push(callbackObject);
 		}
 
 		return this;
@@ -136,9 +196,10 @@ L.Map.StateChangeHandler = L.Handler.extend({
 	 */
 	off: function(cmd, func, bind) {
 		// 是否已有有這個命令的 callbacks
-		var callbacks = this._commandCallbacks[cmd];
+		var callbacks = this._commandCallbacks['NONAME'][cmd];
 		// 沒有就結束
-		if (callbacks === undefined) return this;
+		if (callbacks === undefined)
+			return this;
 
 		// 檢查 callback function 是否存在
 		for (var i = 0 ; i < callbacks.length ; i++) {
@@ -151,7 +212,19 @@ L.Map.StateChangeHandler = L.Handler.extend({
 
 		// 若 callbacks 為空陣列的話，將這個指令也從 _commandCallbacks 移除
 		if (callbacks.length === 0) {
-			delete this._commandCallbacks[cmd];
+			delete this._commandCallbacks['NONAME'][cmd];
+		}
+
+		return this;
+	},
+
+	/**
+	 * 移除特定狀態類別的所有 callbacks
+	 * @param {string} className - 類別名稱
+	 */
+	classOff: function(className) {
+		if (this._commandCallbacks[className] !== undefined) {
+			delete this._commandCallbacks[className];
 		}
 
 		return this;
@@ -180,17 +253,26 @@ L.Map.StateChangeHandler = L.Handler.extend({
 	 * 執行已註冊的命令
 	 */
 	_launch: function(event) {
-		// 是否已註冊這個命令
-		var callbacks = this._commandCallbacks[event.commandName];
-		if (callbacks !== undefined) {
-			// 有的話依序執行已註冊的功能
-			callbacks.forEach(function(cb) {
-				if (cb.bind === undefined) {
-					cb.function(event);
-				} else {
-					cb.function.call(cb.bind, event);
-				}
-			}.bind(this));
+		// 到每個類別裡面找
+		for (var className in this._commandCallbacks) {
+			var classObj = this._commandCallbacks[className];
+			// 是否已註冊這個命令
+			var callbacks = classObj[event.commandName];
+			if (callbacks !== undefined) {
+				// 有的話依序執行已註冊的功能
+				callbacks.forEach(function(cb) {
+					try {
+						if (cb.bind === undefined) {
+							cb.function(event);
+						} else {
+							cb.function.call(cb.bind, event);
+						}
+					} catch (e) {
+						console.debug('State change callback error!', e);
+					}
+
+				}.bind(this));
+			}
 		}
 	},
 
