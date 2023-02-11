@@ -329,6 +329,12 @@ L.Control.Menubar = L.Control.extend({
 		map.on('commandvalues', this._onInitLanguagesMenu, this);
 		map.on('updatetoolbarcommandvalues', this._onStyleMenu, this);
 
+		// 監控指定的指令狀態
+		/* .uno:Undo, .uno:Redo, .uno:Repeat 會隨著編輯狀態改變，需要反應在選單名稱上 */
+		this._map.stateChangeHandler.on('.uno:Undo', this._onChangeItemName, this);
+		this._map.stateChangeHandler.on('.uno:Redo', this._onChangeItemName, this);
+		this._map.stateChangeHandler.on('.uno:Repeat', this._onChangeItemName, this);
+
 		this._resetOverflow();
 	},
 
@@ -338,6 +344,10 @@ L.Control.Menubar = L.Control.extend({
 		this._map.off('addmenu', this._addMenu, this);
 		this._map.off('commandvalues', this._onInitLanguagesMenu, this);
 		this._map.off('updatetoolbarcommandvalues', this._onStyleMenu, this);
+
+		this._map.stateChangeHandler.off('.uno:Undo', this._onChangeItemName, this);
+		this._map.stateChangeHandler.off('.uno:Redo', this._onChangeItemName, this);
+		this._map.stateChangeHandler.off('.uno:Repeat', this._onChangeItemName, this);
 
 		this._menubarCont.remove();
 		this._menubarCont = null;
@@ -504,12 +514,6 @@ L.Control.Menubar = L.Control.extend({
 
 	_onDocLayerInit: function() {
 		this._onRefresh();
-
-		// 監控指定的指令狀態
-		/* .uno:Undo, .uno:Redo, .uno:Repeat 會隨著編輯狀態改變，需要反應在選單名稱上 */
-		this._map.stateChangeHandler.on('.uno:Undo', this._onChangeItemName, this);
-		this._map.stateChangeHandler.on('.uno:Redo', this._onChangeItemName, this);
-		this._map.stateChangeHandler.on('.uno:Repeat', this._onChangeItemName, this);
 
 		if (window.mode.isMobile()) {
 			$('#main-menu').parent().css('height', '0');

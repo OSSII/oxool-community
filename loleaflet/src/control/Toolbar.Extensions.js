@@ -103,10 +103,6 @@ L.Map.include({
 				{id: 'inserttable'}, // inserttable
 			]
 		},
-		// 工具列的 uno 指令
-		toolbarHolding: [
-
-		],
 		pausedInitCmd: '',
 		// 系統指令白名單
 		system: {
@@ -284,9 +280,7 @@ L.Map.include({
 				that.createAllowCommand(that._allowedCommands.contextMenu.general);
 				// 3. 把該類文件右鍵指令加入系統白名單
 				that.createAllowCommand(that._allowedCommands.contextMenu[docType]);
-				// 4. 把工具列須執行的 uno 指令加入系統白名單
-				that.createAllowCommand(that._allowedCommands.toolbarHolding);
-				// 5. 把暫存未初始狀態的指令，一次送給 server
+				// 4. 把暫存未初始狀態的指令，一次送給 server
 				if (that._isOxOffice && that._allowedCommands.pausedInitCmd !== '') {
 					app.socket.sendMessage('initunostatus ' + that._allowedCommands.pausedInitCmd);
 				}
@@ -409,10 +403,16 @@ L.Map.include({
 	 * @returns true: 成功, false: 重複
 	 */
 	addAllowCommand: function(command, dontInitStatus) {
+		var id = command.id; // id 是必要項目
+
+		// 重複的話就不處理
+		if (this._allowedCommands.system[id]) {
+			return false;
+		}
+
 		if (dontInitStatus !== true) {
 			dontInitStatus = false;
 		}
-		var id = command.id; // id 是必要項目
 
 		// 有 id 且沒有被隱藏
 		if (id && command.hide !== true) {
@@ -436,10 +436,6 @@ L.Map.include({
 				return false;
 			}
 
-			// 重複的話就不處理
-			if (this._allowedCommands.system[id]) {
-				return false;
-			}
 			var hotkey = command.hotkey;
 
 			// 有 hotkey 的話，另外存入 hotkeys 命令列表
@@ -507,7 +503,7 @@ L.Map.include({
 		}
 
 		if (this._allowedCommands.system[command] === undefined) {
-			window.app.console.debug('Warning! ' + command + ' not in white list and allowed commands!\n', '{id: \'' + command + '\'}, // ' + _UNO(command, this.getDocType(), true));
+			console.debug('Warning! ' + command + ' not in white list and allowed commands!\n', '{id: \'' + command + '\'}, // ' + _UNO(command, this.getDocType(), true));
 			return false;
 		}
 		return true;
@@ -600,8 +596,6 @@ L.Map.include({
 		var map = this;
 		var toolbar = options.toolbar;
 		var isRemove = options.remove === true ? true : false;
-		// 是否運作在手機上？
-		var isMobile = window.mode.isMobile();
 
 		var rewrite = function(toolbar, items, remove) {
 			items.forEach(function(item) {
@@ -619,10 +613,7 @@ L.Map.include({
 					} else { // 新增指令狀態回報
 						map.stateChangeHandler.on(commandName, item.stateChange, item);
 						// 加入白名單
-						if (isMobile)
-							map.addAllowCommand({id: commandName});
-						else
-							map._allowedCommands.toolbarHolding.push({id: commandName});
+						map.addAllowCommand({id: commandName});
 					}
 				// stateChange 是 object 的話，必須含有 commandName 及 callback 兩個結構
 				// commandName 要監控的指令，若有多個，用空白分隔
@@ -639,10 +630,7 @@ L.Map.include({
 						} else { // 新增指令狀態回報
 							map.stateChangeHandler.on(commands[i], item.stateChange.callback, item);
 							// 加入白名單
-							if (isMobile)
-								map.addAllowCommand({id: commands[i]});
-							else
-								map._allowedCommands.toolbarHolding.push({id: commands[i]});
+							map.addAllowCommand({id: commands[i]});
 						}
 					}
 				// stateChange 是 string 的話，表示該字串就是 command
@@ -653,10 +641,7 @@ L.Map.include({
 					} else { // 新增指令狀態回報
 						map.stateChangeHandler.on(item.stateChange, map.simpleStateChangeChecker, item);
 						// 加入白名單
-						if (isMobile)
-							map.addAllowCommand({id: item.stateChange});
-						else
-							map._allowedCommands.toolbarHolding.push({id: item.stateChange});
+						map.addAllowCommand({id: item.stateChange});
 					}
 				// stateChange 是 true，而且有 uno
 				} else if (item.stateChange === true && item.uno) {
@@ -667,10 +652,7 @@ L.Map.include({
 						// 直接賦予 onStateChange
 						map.stateChangeHandler.on(item.uno, map.simpleStateChangeChecker, item);
 						// 加入白名單
-						if (isMobile)
-							map.addAllowCommand({id: item.uno});
-						else
-							map._allowedCommands.toolbarHolding.push({id: item.uno});
+						map.addAllowCommand({id: item.uno});
 					}
 				}
 

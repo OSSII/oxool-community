@@ -268,7 +268,7 @@ L.Control.JSDialogBuilder = L.Control.extend({
 		if (builder.map.uiManager.isUIBlocked())
 			return;
 
-		window.app.console.debug('control: \'' + objectType + '\' id:\'' + object.id + '\' event: \'' + eventType + '\' state: \'' + data + '\'');
+		console.debug('control: \'' + objectType + '\' id:\'' + object.id + '\' event: \'' + eventType + '\' state: \'' + data + '\'');
 
 		if (builder.wizard.setCurrentScrollPosition)
 			builder.wizard.setCurrentScrollPosition();
@@ -2459,6 +2459,8 @@ L.Control.JSDialogBuilder = L.Control.extend({
 			}
 
 			if (data.command) {
+				builder.map.addAllowCommand({id: data.command});
+
 				var updateFunction = function() {
 					var items = builder.map['stateChangeHandler'];
 					var state = items.getItemValue(data.command);
@@ -2480,10 +2482,11 @@ L.Control.JSDialogBuilder = L.Control.extend({
 
 				updateFunction();
 
-				builder.map.on('commandstatechanged', function(e) {
-					if (e.commandName === data.command)
+				if (div.classList.contains('notebookbar')) {
+					builder.map.stateChangeHandler.classOn('notebookbar', data.command, function(/*e*/) {
 						updateFunction();
-				}, this);
+					}, controls);
+				}
 			}
 
 			if (data.enabled === 'false' || data.enabled === false)
@@ -2745,10 +2748,11 @@ L.Control.JSDialogBuilder = L.Control.extend({
 
 		updateFunction();
 
-		builder.map.on('commandstatechanged', function(e) {
-			if (e.commandName === data.command)
+		if (sectionTitle.classList.contains('notebookbar')) {
+			builder.map.stateChangeHandler.classOn('notebookbar', data.command, function(/*e*/) {
 				updateFunction();
-		}, this);
+			}, sectionTitle);
+		}
 
 		if (builder.options.noLabelsForUnoButtons !== true) {
 			var titleSpan = L.DomUtil.create('span', titleClass, leftDiv);
@@ -2849,10 +2853,14 @@ L.Control.JSDialogBuilder = L.Control.extend({
 			}
 		};
 
-		builder.map.on('commandstatechanged', function(e) {
-			if (e.commandName === '.uno:BorderOuter' || e.commandName === '.uno:BorderInner')
+		if (bordercontrollabel.classList.contains('notebookbar')) {
+			builder.map.stateChangeHandler.classOn('notebookbar', '.uno:BorderOuter', function(/*e*/) {
 				updateFunction();
-		}, this);
+			}, bordercontrollabel);
+			builder.map.stateChangeHandler.classOn('notebookbar', '.uno:BorderInner', function(/*e*/) {
+				updateFunction();
+			}, bordercontrollabel);
+		}
 	},
 
 	_colorControl: function(parentContainer, data, builder) {
@@ -2906,10 +2914,11 @@ L.Control.JSDialogBuilder = L.Control.extend({
 
 			updateFunction();
 
-			builder.map.on('commandstatechanged', function(e) {
-				if (e.commandName === data.command)
+			if (div.classList.contains('notebookbar')) {
+				builder.map.stateChangeHandler.classOn('notebookbar', data.command, function(/*e*/) {
 					updateFunction();
-			}, this);
+				}, div);
+			}
 
 			var noColorControl = (data.command !== '.uno:FontColor' && data.command !== '.uno:Color');
 
