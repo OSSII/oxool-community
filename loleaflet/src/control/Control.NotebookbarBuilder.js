@@ -62,14 +62,6 @@ L.Control.NotebookbarBuilder = L.Control.JSDialogBuilder.extend({
 		this._toolitemHandlers['.uno:DrawText'] = this._insertTextBoxControl;
 		this._toolitemHandlers['.uno:VerticalText'] = this._insertTextBoxControl;
 		this._toolitemHandlers['.uno:ShowResolvedAnnotations'] = this._showResolvedAnnotationsControl;
-		this._toolitemHandlers['.uno:OnlineHelp'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:ForumHelp'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:KeyboardShortcuts'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:ReportIssue'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:LatestUpdates'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:Feedback'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:About'] = this._onlineHelpControl;
-		this._toolitemHandlers['.uno:FullScreen'] = this._onlineHelpControl;
 		this._toolitemHandlers['.uno:LanguageMenu'] = this._languageMenu;
 
 		this._toolitemHandlers['.uno:SelectWidth'] = function() {};
@@ -568,17 +560,6 @@ L.Control.NotebookbarBuilder = L.Control.JSDialogBuilder.extend({
 			var val = items.getItemValue('.uno:ShowResolvedAnnotations');
 			val = (val === 'true' || val === true);
 			builder.map.showResolvedComments(!val);
-		});
-		builder._preventDocumentLosingFocusOnClick(control.container);
-	},
-
-	_onlineHelpControl: function(parentContainer, data, builder) {
-		var originalDataId = data.id; // builder can change this
-		var control = builder._unoToolButton(parentContainer, data, builder);
-
-		$(control.container).unbind('click.toolbutton');
-		$(control.container).click(function () {
-			L.control.menubar()._executeAction.bind({_map: builder.options.map})(undefined, {id: originalDataId});
 		});
 		builder._preventDocumentLosingFocusOnClick(control.container);
 	},

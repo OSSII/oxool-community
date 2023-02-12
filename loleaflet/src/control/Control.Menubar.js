@@ -778,6 +778,8 @@ L.Control.Menubar = L.Control.extend({
 		this._map._docLayer._openMobileWizard(data);
 	},
 
+	// 以下僅供參考，實際不會也不要到這裡執行，若有需要新增類似程序，
+	// 請在 Control.AlternativeCommand.js 中實作
 	_executeAction: function(itNode, itWizard) {
 		var id, postmessage;
 		if (itNode === undefined)
@@ -1321,7 +1323,8 @@ L.Control.Menubar = L.Control.extend({
 					}
 
 					if (!self._map.executeAllowedCommand(id)) {
-						self._executeAction(undefined, {id: id});
+						// self._executeAction(undefined, {id: id});
+						console.debug('Error! can not execute action: ' + id);
 					}
 				}
 			},

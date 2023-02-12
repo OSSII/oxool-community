@@ -372,6 +372,12 @@ L.Control.AlternativeCommand = L.Control.extend({
 			L.dialog.run('ShowHelp', {id: 'keyboard-shortcuts'});
 		},
 		/**
+		 * 問題回報
+		 */
+		'report-an-issue': function() {
+			window.open('https://github.com/OSSII/oxool-community/issues', '_blank');
+		},
+		/**
 		 * 顯示「關於」對話框
 		 */
 		'about': function() {
