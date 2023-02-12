@@ -1031,11 +1031,10 @@ void LOOLWSD::innerInitialize(Application& self)
     }
 #endif
 
-#if ENABLE_DEBUG
-    Util::setApplicationPath(DEBUG_ABSSRCDIR);
-#else
+    // Modified by Firefly <firefly@ossii.com.tw>
+    // 設定 oxoolwsd 所在路徑為也是其他應用程式路徑
+    // Set the path of oxoolwsd to be the path of other applications.
     Util::setApplicationPath(Poco::Path(Application::instance().commandPath()).parent().toString());
-#endif
 
     if (!UnitWSD::init(UnitWSD::UnitType::Wsd, UnitTestLibrary))
     {
@@ -2197,7 +2196,7 @@ bool LOOLWSD::createForKit()
     std::unique_lock<std::mutex> newChildrenLock(NewChildrenMutex);
 
     StringVector args;
-    std::string parentPath = Path(Application::instance().commandPath()).parent().toString();
+    std::string parentPath = Util::getApplicationPath();
 
 #if STRACE_LOOLFORKIT
     // if you want to use this, you need to sudo setcap cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep /usr/bin/strace
@@ -2264,11 +2263,7 @@ bool LOOLWSD::createForKit()
 #elif VALGRIND_LOOLFORKIT
     std::string forKitPath = "/usr/bin/valgrind";
 #else
-#if ENABLE_DEBUG
-    std::string forKitPath = DEBUG_ABSSRCDIR "/oxoolforkit";
-#else
     std::string forKitPath = parentPath + "oxoolforkit";
-#endif
 #endif
 
     // Always reap first, in case we haven't done so yet.
@@ -4662,12 +4657,5 @@ void dump_state()
     fprintf(stderr, "%s\n", msg.c_str());
     LOG_TRC(msg);
 }
-
-// Avoid this in the Util::isFuzzing() case because libfuzzer defines its own main().
-#if !MOBILEAPP && !LIBFUZZER
-
-POCO_SERVER_MAIN(LOOLWSD)
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
