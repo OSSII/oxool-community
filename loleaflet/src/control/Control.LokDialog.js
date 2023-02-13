@@ -491,7 +491,12 @@ L.Control.LokDialog = L.Control.extend({
 		L.DomUtil.setStyle(dialogCursor, 'display', cursorVisible ? 'block' : 'none');
 		// set the position of the cursor container element
 		L.DomUtil.setStyle(dialog.cursor, 'left', x + 'px');
-		L.DomUtil.setStyle(dialog.cursor, 'top', y + 'px');
+		var yOfficeset = 0;
+		if (this.isCalcInputBar(dlgId)) {
+			var uiMode = this._map.uiManager.getCurrentMode();
+			yOfficeset = (uiMode === 'classic' ? 7 : 70);
+		}
+		L.DomUtil.setStyle(dialog.cursor, 'top', (y - yOfficeset) + 'px');
 
 		// 也更新組字區位置
 		var left = parseInt(L.DomUtil.getStyle(dialog.cursor, 'left'));
