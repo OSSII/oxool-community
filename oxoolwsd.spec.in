@@ -42,6 +42,7 @@ Requires:       poco-crypto >= 1.7.5 poco-data >= 1.7.5 poco-encodings >= 1.7.5 
 %package	devel
 Summary:	Files for build OxOffice Online Editor.
 Requires:	%{name} = %{version}
+Requires:	poco-devel >= 1.7.5
 %description	devel
 Files for build OxOffice Online Editor.
 

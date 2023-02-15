@@ -34,5 +34,5 @@ Description: OxOffice Online WebSocket Daemon
 Package: oxool-dev
 Architecture: any
 Multi-Arch: same
-Depends: oxool
+Depends: oxool, libpoco-dev
 Description: Files for build OxOffice Online Editor.
