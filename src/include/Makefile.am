@@ -8,7 +8,8 @@ OxOOL_include_HEADERS = \
 	OxOOL/L10NTranslator.h \
 	OxOOL/XMLConfig.h \
 	OxOOL/ConvertBroker.h \
-	OxOOL/Util.h
+	OxOOL/Util.h \
+	OxOOL/Util/OptionlValidator.h
 
 OxOOL_Module_includedir = $(includedir)/OxOOL/Module
 OxOOL_Module_include_HEADERS = \
