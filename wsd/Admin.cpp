@@ -249,13 +249,21 @@ int privateKeyValid(const std::string& filePath, const std::string& password="")
 
     // 測試 private key
     FILE *fp = fopen(filePath.c_str(), "r");
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
     RSA *privateRsa = PEM_read_RSAPrivateKey(fp, NULL, passwordCB, NULL);
+#else
+    EVP_PKEY *privateRsa = PEM_read_PrivateKey(fp, NULL, passwordCB, NULL);
+#endif
     fclose(fp);
 
     // 沒錯
     if (privateRsa != NULL)
     {
+#if OPENSSL_VERSION_NUMBER < 0x30000000
         RSA_free(privateRsa);
+#else
+	EVP_PKEY_free(privateRsa);
+#endif
         return SSL_FILE_VALID; // 回覆
     }
 
