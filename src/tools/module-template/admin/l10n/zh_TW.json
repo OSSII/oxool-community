@@ -1,0 +1,19 @@
+{
+	"Admin item": "管理範例",
+	"This is an example of module management.": "這是模組管理範例。",
+	"Module Details:": "模組詳細資訊：",
+	"Name of the setting": "設定的名稱",
+	"Exposition": "解釋",
+	"Setting value": "設定內容",
+	"Name": "名稱",
+	"Service URI": "服務位址",
+	"Version": "版本",
+	"Summary": "簡介",
+	"Author": "作者",
+	"License": "授權",
+	"Description": "詳細說明",
+	"Whether Service URI requires admin Privilege?": "Service URI 是否需要管理員權限？",
+	"Admin item icon": "後臺管理選項圖示（<a href=\"https://icons.getbootstrap.com/\" target=_blank>參考</a>）",
+	"Admin item text": "後臺管理選項文字",
+	"Admin service URI": "後臺管理位址"
+}

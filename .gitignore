@@ -104,3 +104,4 @@ fonts/00-oxool.conf
 support/oxool.db
 oxool-*.tar.gz
 src/include/OxOOL/OxOOL.h
+src/tools/oxool-module-maker

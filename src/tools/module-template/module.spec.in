@@ -1,0 +1,43 @@
+
+%define ENABLE_ADMIN @ENABLE_ADMIN@
+
+Name:           @PACKAGE_NAME@
+Version:        @PACKAGE_VERSION@
+Release:        1%{?dist}
+Summary:        @MODULE_SUMMARY@
+
+License:        @MODULE_LICENSE@
+URL:            %URL%
+Source0:        @PACKAGE_TARNAME@-%{version}.tar.gz
+
+BuildRequires:  poco-devel >= 1.7.5, oxool-devel >= 4.2.0
+Requires:       oxool >= 4.2.0
+
+%description
+@MODULE_DESCRIPTION@
+
+
+%prep
+%setup -q -n @PACKAGE_TARNAME@-%{version}
+
+
+%build
+%configure
+%make_build
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%make_install
+find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
+
+
+%files
+%config(noreplace) %attr(640, lool, root) @OXOOL_MODULE_CONFIG_DIR@/*
+@OXOOL_MODULES_DIR@/*
+%if "%{ENABLE_ADMIN}" == "true"
+@OXOOL_MODULE_DATA_DIR@/*
+%endif
+
+
+%changelog

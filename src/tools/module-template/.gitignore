@@ -1,0 +1,36 @@
+# Editor backup files etc
+*~
+\#*
+
+/*.xml
+/*.spec
+
+# Autofoo
+.deps
+.libs
+.dirstamp
+.vscode
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+config.h
+config.h.in
+config.log
+config.guess
+config.status
+config.sub
+configure
+compile
+depcomp
+install-sh
+libtool
+ltmain.sh
+missing
+stamp-h1
+m4
+
+*.o
+*.lo
+*.la
+*.tar.gz

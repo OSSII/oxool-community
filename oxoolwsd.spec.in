@@ -82,7 +82,13 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
+%{_bindir}/oxoolconfig
+%{_bindir}/oxoolconvert
+%{_bindir}/oxoolforkit
+%{_bindir}/oxoolmount
+%{_bindir}/oxoolwsd
+%{_bindir}/oxoolwsd-generate-proof-key
+%{_bindir}/oxoolwsd-systemplate-setup
 %{_libdir}/*.so.*
 %dir /usr/share/%{name}
 /usr/share/%{name}/loleaflet
@@ -113,6 +119,8 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_bindir}/oxool-module-maker
+/usr/share/%{name}/module-template
 
 %pre
 getent group lool >/dev/null || groupadd -r lool
