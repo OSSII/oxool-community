@@ -1,2 +1,2 @@
 
-SUBDIRS = include lib modules development-tools
+SUBDIRS = include lib tools modules development-tools

@@ -10,6 +10,7 @@ usr/bin/oxoolmount
 usr/bin/oxoolwsd
 usr/bin/oxoolwsd-generate-proof-key
 usr/bin/oxoolwsd-systemplate-setup
+usr/bin/oxool-xml-config
 usr/lib/*.so.*
 usr/lib/oxool/*.so
 usr/share/oxool/loleaflet

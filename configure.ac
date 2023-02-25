@@ -849,7 +849,7 @@ AC_CHECK_FUNCS(ppoll)
 # Search all Makefile.am and *.in files under it,
 # Avoid recording one by one.
 AC_CONFIG_FILES(m4_esyscmd_s([
-find src/ ! -path "src/tools/module-template/*" -type f -name "Makefile.am" -or -name "OxOOL.h.in" |
+find src/ ! -path "src/development-tools/module-template/*" -type f -name "Makefile.am" -or -name "OxOOL.h.in" |
 while read file
 do
     DIRNAME=`dirname "$file"`

@@ -89,6 +89,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %{_bindir}/oxoolwsd
 %{_bindir}/oxoolwsd-generate-proof-key
 %{_bindir}/oxoolwsd-systemplate-setup
+%{_bindir}/oxool-xml-config
 %{_libdir}/*.so.*
 %dir /usr/share/%{name}
 /usr/share/%{name}/loleaflet
