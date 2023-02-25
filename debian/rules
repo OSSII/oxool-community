@@ -12,7 +12,6 @@ CONFFLAGS = --enable-silent-rules --prefix=/usr --libdir=/usr/lib --localstatedi
 	dh $@ --with=systemd --parallel
 
 override_dh_auto_configure:
-	./autogen.sh
 	./configure $(CONFFLAGS)
 
 override_dh_auto_test:

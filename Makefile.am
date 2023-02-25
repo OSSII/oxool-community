@@ -308,7 +308,8 @@ EXTRA_DIST = discovery.xml \
              debian/compat \
              debian/control \
              debian/copyright \
-             debian/oxool.cron.d \
+             debian/oxool.install \
+             debian/oxool-dev.install \
              debian/oxool.postinst \
              debian/oxool.postrm \
              debian/oxool.preinst \

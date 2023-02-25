@@ -2,15 +2,14 @@ Source: oxool
 Section: web
 Priority: optional
 Maintainer: Firefly <firefly@ossii.com.tw>
-Build-Depends: debhelper (>= 9.20160709), dh-systemd (>= 1.3), libcap-dev, libcap2-bin, libpcre3-dev, libpng-dev, linux-libc-dev, nodejs, python3-polib, python3-lxml, fontconfig, libpam-dev, libcppunit-dev, pkg-config, devscripts, m4, libpoco-dev
+Build-Depends: debhelper (>= 9.20160709), libcap-dev, libcap2-bin, libpcre3-dev, libpng-dev, linux-libc-dev, nodejs, python3-polib, python3-lxml, fontconfig, libpam-dev, libcppunit-dev, pkg-config, devscripts, m4, libpoco-dev
 Standards-Version: 3.9.7
 
 Package: oxool
 Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
- adduser, expat, fontconfig, cpio, libcap2-bin, openssh-client, systemd,
- libsm6, libodbc1, libxinerama1, libxrender1, libcairo2, libgl1-mesa-glx, libcups2, libdbus-glib-1-2,
+ adduser, fontconfig, cpio, libcap2-bin, openssh-client, systemd,
  oxofficelib-calc,
  oxofficelib-core,
  oxofficelib-graphicfilter,
