@@ -119,7 +119,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_bindir}/oxool-module-maker
+%{_bindir}/%{name}-module-maker
 /usr/share/%{name}/module-template
 
 %pre

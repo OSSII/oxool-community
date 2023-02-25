@@ -10,14 +10,14 @@ include_paths = -I$(abs_top_builddir)/src/include \
                 -I$(abs_top_builddir)/net \
                 -I$(abs_top_builddir)/wsd
 
-bin_PROGRAMS = oxool-module-maker
+bin_PROGRAMS = @PACKAGE_NAME@-module-maker
 
-oxool_module_maker_CPPFLAGS = -pthread \
+@PACKAGE_NAME@_module_maker_CPPFLAGS = -pthread \
 			      -DMODULE_TEMPLATE_DIR='"${MODULE_TEMPLATE_DIR}"' \
 			      ${include_paths}
 
-oxool_module_maker_LDADD = $(abs_top_builddir)/libOxOOL.la
-oxool_module_maker_SOURCES = oxool-module-maker.cpp
+@PACKAGE_NAME@_module_maker_LDADD = $(abs_top_builddir)/libOxOOL.la
+@PACKAGE_NAME@_module_maker_SOURCES = ModuleMaker.cpp
 
 EXTRA_DIST = module-template/*
 
