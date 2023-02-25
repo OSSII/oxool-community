@@ -142,7 +142,8 @@ oxoolextra_sources = \
 	src/lib/OxOOL/XMLConfig.cpp \
 	src/lib/OxOOL/ConvertBroker.cpp \
 	src/lib/OxOOL/Util.cpp \
-	src/lib/OxOOL/Util/OptionlValidator.cpp
+	src/lib/OxOOL/Util/OptionlValidator.cpp \
+	src/lib/OxOOL/Util/FileValidator.cpp
 
 lib_LTLIBRARIES = libOxOOL.la
 
