@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
     configure)
-	setcap cap_net_bind_service=+ep /usr/bin/@PACKAGE_NAME@wsd || true
+	setcap cap_dac_override,cap_net_bind_service=+ep /usr/bin/@PACKAGE_NAME@wsd || true
 	setcap cap_fowner,cap_chown,cap_mknod,cap_sys_chroot=ep /usr/bin/@PACKAGE_NAME@forkit || true
 	setcap cap_sys_admin=ep /usr/bin/@PACKAGE_NAME@mount || true
 
