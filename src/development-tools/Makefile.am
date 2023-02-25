@@ -1,6 +1,6 @@
 
 if ENABLE_DEBUG
-MODULE_TEMPLATE_DIR = $(abs_top_builddir)/src/tools/module-template
+MODULE_TEMPLATE_DIR = $(abs_top_builddir)/src/development-tools/module-template
 else
 MODULE_TEMPLATE_DIR = $(pkgdatadir)/module-template
 endif
