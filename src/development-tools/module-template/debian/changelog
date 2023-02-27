@@ -1,0 +1,5 @@
+%OXOOL_NAME%-module-%MODULE_NAME% (%MODULE_VERSION%-1) unstable; urgency=low
+
+  * Initialize module.
+
+ -- %MODULE_AUTHOR%  %GENERATE_DATETIME%

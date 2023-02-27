@@ -1,0 +1,17 @@
+<config>
+    <module type="bool" enable="true">
+        <load></load>
+        <detail>
+            <name></name>
+            <serviceURI></serviceURI>
+            <version></version>
+            <summary></summary>
+            <author></author>
+            <license></license>
+            <description></description>
+            <adminPrivilege desc="Requires admin authentication." type="bool" default="false"></adminPrivilege>
+            <adminIcon desc="Please refer to https://icons.getbootstrap.com/ for icon names."></adminIcon>
+            <adminItem>ODF report template</adminItem>
+        </detail>
+    </module>
+</config>

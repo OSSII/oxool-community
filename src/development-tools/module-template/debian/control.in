@@ -1,0 +1,12 @@
+Source: @PACKAGE_TARNAME@
+Section: web
+Priority: optional
+Maintainer: @PACKAGE_BUGREPORT@
+Build-Depends: @OXOOL_NAME@-dev (>= 4.0.0)
+Standards-Version: 3.9.7
+
+Package: @PACKAGE_NAME@
+Section: web
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, @OXOOL_NAME@ (>= 4.0.0)
+Description: @MODULE_DESCRIPTION@

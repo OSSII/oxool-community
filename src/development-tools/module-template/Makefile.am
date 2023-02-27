@@ -3,8 +3,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = .
 
-EXTRA_DIST = Package.settings \
-	     @PACKAGE_TARNAME@.spec
+EXTRA_DIST = \
+	@PACKAGE_TARNAME@.spec \
+	debian/changelog \
+	debian/compat \
+	debian/control.in \
+	debian/rules \
+	debian/source/*
 
 MODULE_DATA_DIR = @OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@
 
