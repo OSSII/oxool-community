@@ -64,6 +64,14 @@ if test "$use_fontconfig" = "no" ; then
     AC_MSG_ERROR([Need fontconfig, but not found or version too old.])
 fi
 
+#-----------------------------------------------------------------------
+# Check for libgit2 support
+#-----------------------------------------------------------------------
+PKG_CHECK_MODULES(GIT2, libgit2, use_git2="yes", use_git2="no")
+if test "$use_git2" = "no" ; then
+    AC_MSG_ERROR([Requires the libgit2 development kit.])
+fi
+
 # check for python modules
 for MODULE in lxml polib; do
     AC_MSG_CHECKING([for ${MODULE} for python3])
