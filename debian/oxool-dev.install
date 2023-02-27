@@ -2,4 +2,4 @@ usr/include/OxOOL/
 usr/lib/*.so
 usr/lib/pkgconfig/*.pc
 usr/bin/oxool-module-maker
-usr/share/oxool/module-template/
+usr/share/doc/oxool-devel/module-template/

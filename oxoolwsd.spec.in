@@ -123,7 +123,7 @@ echo "account    required     pam_unix.so" >>  %{buildroot}/etc/pam.d/%{name}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_bindir}/%{name}-module-maker
-/usr/share/%{name}/module-template
+%{_docdir}/%{name}-devel/module-template
 
 %pre
 getent group lool >/dev/null || groupadd -r lool

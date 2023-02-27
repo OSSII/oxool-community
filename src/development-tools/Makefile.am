@@ -2,7 +2,7 @@
 if ENABLE_DEBUG
 MODULE_TEMPLATE_DIR = $(abs_top_builddir)/src/development-tools/module-template
 else
-MODULE_TEMPLATE_DIR = $(pkgdatadir)/module-template
+MODULE_TEMPLATE_DIR = ${datarootdir}/doc/@PACKAGE_NAME@-devel/module-template
 endif
 
 include_paths = -I$(abs_top_builddir)/src/include \
@@ -14,9 +14,10 @@ bin_PROGRAMS = @PACKAGE_NAME@-module-maker
 
 @PACKAGE_NAME@_module_maker_CPPFLAGS = -pthread \
 			      -DMODULE_TEMPLATE_DIR='"${MODULE_TEMPLATE_DIR}"' \
-			      ${include_paths}
+			      ${include_paths} \
+			      $(GIT2_CFLAGS)
 
-@PACKAGE_NAME@_module_maker_LDADD = $(abs_top_builddir)/libOxOOL.la
+@PACKAGE_NAME@_module_maker_LDADD = $(GIT2_LIBS) $(abs_top_builddir)/libOxOOL.la
 @PACKAGE_NAME@_module_maker_SOURCES = ModuleMaker.cpp
 
 EXTRA_DIST = module-template/*
