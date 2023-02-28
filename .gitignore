@@ -36,7 +36,6 @@ ltmain.sh
 missing
 stamp-h1
 m4
-debian/loolwsd.postinst
 common/support-public-key.hpp
 
 # Test stuff
@@ -104,4 +103,5 @@ fonts/00-oxool.conf
 support/oxool.db
 oxool-*.tar.gz
 src/include/OxOOL/OxOOL.h
-src/tools/oxool-module-maker
+src/tools/oxool-xml-config
+src/development-tools/oxool-module-maker
