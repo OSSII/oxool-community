@@ -7,9 +7,17 @@ EXTRA_DIST = \
 	@PACKAGE_TARNAME@.spec \
 	debian/changelog \
 	debian/compat \
-	debian/control.in \
+	debian/control \
 	debian/rules \
 	debian/source/*
+
+if CUSTOM_HTML
+EXTRA_DIST += html/*
+endif
+
+if ENABLE_ADMIN
+EXTRA_DIST += admin/*
+endif
 
 MODULE_DATA_DIR = @OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@
 
@@ -22,16 +30,24 @@ moduledir = @OXOOL_MODULES_DIR@
 module_LTLIBRARIES = @MODULE_NAME@.la
 @MODULE_NAME@_la_CPPFLAGS = -pthread -I$(abs_top_builddir) $(OXOOL_CFLAGS)
 @MODULE_NAME@_la_LDFLAGS = -avoid-version -module $(OXOOL_LIBS)
-@MODULE_NAME@_la_SOURCES = src/OxModule.cpp
+@MODULE_NAME@_la_SOURCES = \
+	src/Module.hpp \
+	src/Module.cpp
 
-# Module admin console
+install-data-local:
+if CUSTOM_HTML
+	$(MKDIR_P) $(DESTDIR)/$(MODULE_DATA_DIR)/html
+	cp -aR html/* $(DESTDIR)/$(MODULE_DATA_DIR)/html
+endif
 if ENABLE_ADMIN
-admindir = $(MODULE_DATA_DIR)/admin
-dist_admin_DATA = \
-	admin/admin.html \
-	admin/admin.js \
-	admin/localizations.json
+	$(MKDIR_P) $(DESTDIR)/$(MODULE_DATA_DIR)/admin
+	cp -aR admin/* $(DESTDIR)/$(MODULE_DATA_DIR)/admin
+endif
 
-adminl10ndir = $(MODULE_DATA_DIR)/admin/l10n
-dist_adminl10n_DATA = admin/l10n/*
+uninstall-local:
+if CUSTOM_HTML
+	rm -fr $(DESTDIR)/$(MODULE_DATA_DIR)/html
+endif
+if ENABLE_ADMIN
+	rm -fr $(DESTDIR)/$(MODULE_DATA_DIR)/admin
 endif

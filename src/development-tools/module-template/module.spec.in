@@ -1,7 +1,8 @@
 
+%define CUSTOM_HTML @CUSTOM_HTML@
 %define ENABLE_ADMIN @ENABLE_ADMIN@
 
-Name:           @PACKAGE_NAME@
+Name:           @PACKAGE_TARNAME@
 Version:        @PACKAGE_VERSION@
 Release:        1%{?dist}
 Summary:        @MODULE_SUMMARY@
@@ -35,8 +36,13 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %files
 %config(noreplace) %attr(640, lool, root) @OXOOL_MODULE_CONFIG_DIR@/*
 @OXOOL_MODULES_DIR@/*
+
+%if "%{CUSTOM_HTML}" == "true"
+@OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@/html/*
+%endif
+
 %if "%{ENABLE_ADMIN}" == "true"
-@OXOOL_MODULE_DATA_DIR@/*
+@OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@/admin/*
 %endif
 
 

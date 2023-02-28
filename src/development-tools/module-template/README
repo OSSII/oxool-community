@@ -1,0 +1,63 @@
+OxOffice Online Module.
+=======================
+
+This project has several components:
+
+src/
+	C++ based shared library for module.
+	Automatically loaded during OxOOL execution time,
+	and manage the specified service URI.
+	The service URI is defined in module.xml.in.
+
+html/
+	If you don't want to implement a C++ module,
+	you can leave <load>xxxx.so<load> in module.xml.in blank,
+	and in the html directory, create a normal type of webpage,
+	OxOOL will manage it automatically.
+
+	The default web page name is index.html or index.php.
+	Yes, OxOOL supports PHP.
+
+admin/
+	If you have a console management interface,
+	Please enter the name of the option to be displayed,
+	Defined in <adminItem> in module.xml.in.
+
+	This will allow you to see your admin interface at the following URL:
+	http(s)://yourhost:9980/loleaflet/dist/admin/admin.html
+
+module.xml.in
+	Module definition configuration file in XML format.
+	All module behaviors are defined here.
+
+	Please refer to the content of this file for
+	the purpose of each definition.
+
+	If you want to change settings or attributes,
+	please use the 'oxool-xml-config' command
+	to avoid conflicts with XML-specific characters.
+
+
+Build the module manually:
+==========================
+1. ./autogen.sh
+2. ./configure
+3. make
+
+Compile the RPM package steps:
+==============================
+1. ./autogen.sh
+2. ./configure
+3. make dist
+4. rpmbuild -tb oxool-module-[name]....tag.rz
+Then you will see oxool-module-[name]-...x86_64.rpm in ~/rpmbuild/RPMS/x86_64/
+
+Compile the DEB package steps:
+==============================
+1. ./autogen.sh
+2. ./configure
+3. dpkg-buildpackage -b -rfakeroot -uc -us
+Then you will see oxool-module-[name]-...-1.x86_64.rpm in perent directory.
+
+
+Enjoy.

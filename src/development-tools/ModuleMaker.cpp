@@ -221,6 +221,17 @@ protected:
         if (moduleName.empty())
             fatal("Module name must be specified.");
 
+        // 檢查 serivce URI 是否符合規定
+        // 有指定 service URI 且長度必須大於 2 且第一個字必須是 '/'
+        const std::string serviceURI = config().getString("module-serviceURI");
+        if (!serviceURI.empty() && (serviceURI.size() <= 2 || serviceURI.at(0) != '/'))
+            fatal("Service URI length must be greater than 2 characters, and must start with '/'.");
+
+        // 檢查模組簡介
+        const std::string summary = config().getString("module-summary");
+        if (summary.empty())
+            fatal("Module summary is required.");
+
         // 專案輸出路徑
         Poco::Path projectPath(config().getString("output-path"));
         projectPath.append(PACKAGE_NAME "-module-" + config().getString("module-name"));
@@ -236,7 +247,8 @@ protected:
         const std::vector<std::string> requiredFiles =
         {
             "configure.ac",
-            "debian/changelog"
+            "debian/changelog",
+            "debian/control",
         };
         for (auto file : requiredFiles)
         {
@@ -269,13 +281,13 @@ protected:
             _xmlConfig->setString("module.load", "@MODULE_NAME@.so");
             _xmlConfig->setString("module.detail.name", "@MODULE_NAME@");
             // 服務位址
-            _xmlConfig->setString("module.detail.serviceURI", config().getString("module-serviceURI"));
+            _xmlConfig->setString("module.detail.serviceURI", serviceURI);
             // 版本編號依據 configure.ac 所訂
             _xmlConfig->setString("module.detail.version", "@PACKAGE_VERSION@");
             // 簡介
-            _xmlConfig->setString("module.detail.summary", config().getString("module-summary"));
+            _xmlConfig->setString("module.detail.summary", summary);
             // 作者依據 configure.ac 所訂
-            _xmlConfig->setString("module.detail.author", "@PACKAGE_BUGREPORT@");
+            _xmlConfig->setString("module.detail.author", config().getString("module-author"));
             // 授權
             _xmlConfig->setString("module.detail.license", config().getString("module-license"));
             // 詳細說明
@@ -294,8 +306,10 @@ protected:
              */
             if (initGitRepository(projectPath.toString()))
             {
-                std::cout << "The project is created successfully, and the directory is located at:\n"
-                          << "\t" << projectPath.toString() << std::endl;
+                std::cout << std::endl
+                          << "Project are created in the following directorie:" << std::endl
+                          << "    " << projectPath.toString() << std::endl
+                          << "A git repository is also created. Please read the project's README first." << std::endl;
             }
             else // 失敗就移除已經建立的專案目錄
             {
@@ -347,6 +361,10 @@ private:
         const static std::string moduleVersion = config().getString("module-version");
         // 模組作者
         const static std::string moduleAuthor = config().getString("module-author");
+        // 詳細說明
+        const static std::string moduleDescription = config().getString("module-description");
+        // 轉成小寫的套件名稱
+        const static std::string packageTarName = Poco::toLower(std::string(PACKAGE_NAME) + "-module-" + moduleName);
 
         // 1.從範本目錄讀取檔案
         const std::string file = templatePath + "/" + filename;
@@ -358,8 +376,10 @@ private:
         std::string newContent = Poco::replace(outStr.str(), std::string("%MODULE_NAME%"), moduleName);
         newContent = Poco::replace(newContent, std::string("%GENERATE_DATETIME%"), GENERATE_DATETIME);
         newContent = Poco::replace(newContent, std::string("%OXOOL_NAME%"), std::string(PACKAGE_NAME));
+        newContent = Poco::replace(newContent, std::string("%PACKAGE_TARNAME%"), packageTarName);
         newContent = Poco::replace(newContent, std::string("%MODULE_VERSION%"), moduleVersion);
         newContent = Poco::replace(newContent, std::string("%MODULE_AUTHOR%"), moduleAuthor);
+        newContent = Poco::replace(newContent, std::string("%MODULE_DESCRIPTION%"), moduleDescription);
         // 3.存入專案目錄
         std::ofstream fileOut(projectPath + "/" + filename);
         fileOut << newContent;

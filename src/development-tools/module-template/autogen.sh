@@ -37,4 +37,3 @@ Result: All went OK, please run $srcdir/configure (with the appropriate paramete
 
 EOF
 
-./configure

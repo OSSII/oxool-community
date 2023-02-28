@@ -46,12 +46,17 @@ fi
 
 # Checks for library functions.
 
-XML_CONFIG_CMD="${OXOOL_NAME}-xml-config"
+XML_CONFIG_CMD=`which "${OXOOL_NAME}-xml-config"`
 AC_SUBST([XML_CONFIG_CMD])
+
+MODULE_SERVICE_URI=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.serviceURI 2> /dev/null`
+AC_SUBST([MODULE_SERVICE_URI])
 
 MODULE_SUMMARY=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.summary 2> /dev/null`
 AC_SUBST([MODULE_SUMMARY])
-
+if test -z "${MODULE_SUMMARY}" ; then
+    AC_MSG_ERROR([Module summary is required. Please define in module.xml.in])
+fi
 
 MODULE_LICENSE=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.license 2> /dev/null`
 AC_SUBST([MODULE_LICENSE])
@@ -59,6 +64,19 @@ AC_SUBST([MODULE_LICENSE])
 
 MODULE_DESCRIPTION=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.description 2> /dev/null`
 AC_SUBST([MODULE_DESCRIPTION])
+
+# 是否有自定義的 html 目錄
+CUSTOM_HTML=false
+if test -d ./html ; then
+    if test -f "html/index.html" || test -f "html/index.php" ; then
+        CUSTOM_HTML=true
+        AC_DEFINE([CUSTOM_HTML], [1], [Has a defined html directory.])
+    else
+        AC_DEFINE([CUSTOM_HTML], [0], [The html directory is not defined.])
+    fi
+fi
+AC_SUBST([CUSTOM_HTML])
+AM_CONDITIONAL([CUSTOM_HTML], [test "${CUSTOM_HTML}" = "true"])
 
 # 是否需包含後臺管理範本
 ENABLE_ADMIN=false
@@ -77,12 +95,25 @@ AC_CONFIG_FILES([
         Makefile
         ${MODULE_NAME}.xml:module.xml.in
         ${PACKAGE_TARNAME}.spec:module.spec.in
-        debian/control
 ])
 AC_OUTPUT
 
 AC_MSG_RESULT([
+Configuration:
+    ${MODULE_NAME}-xml-config   ${XML_CONFIG_CMD}
+    Customize html directory:   ${CUSTOM_HTML}
     Enable console admin:       ${ENABLE_ADMIN}
+
+Module details:
+    name            ${MODULE_NAME}
+    serviceURI      ${MODULE_SERVICE_URI}
+    version         ${PACKAGE_VERSION}
+    summary         ${MODULE_SUMMARY}
+    author          ${PACKAGE_BUGREPORT}
+    license         ${MODULE_LICENSE}
+    description     ${MODULE_DESCRIPTION}
+
+\$ make # to compile
 ])
 
 dnl vim:set shiftwidth=4 softtabstop=4 expandtab:

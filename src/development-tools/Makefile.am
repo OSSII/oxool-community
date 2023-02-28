@@ -2,7 +2,7 @@
 if ENABLE_DEBUG
 MODULE_TEMPLATE_DIR = $(abs_top_builddir)/src/development-tools/module-template
 else
-MODULE_TEMPLATE_DIR = ${datarootdir}/doc/@PACKAGE_NAME@-devel/module-template
+MODULE_TEMPLATE_DIR = ${datarootdir}/@PACKAGE_NAME@-devel/module-template
 endif
 
 include_paths = -I$(abs_top_builddir)/src/include \
