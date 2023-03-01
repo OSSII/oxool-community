@@ -88,14 +88,12 @@ public:
     /// @brief 處理前端 Client 的請求
     ///        Handle requests from the front-end Client.
     /// @param request
-    /// @param requestDetails
     /// @param socket
     virtual void handleRequest(const Poco::Net::HTTPRequest& request,
                                const std::shared_ptr<StreamSocket>& socket);
 
     /// @brief 處理控制臺 Client 的請求
     /// @param request
-    /// @param requestDetails
     /// @param socket
     virtual void handleAdminRequest(const Poco::Net::HTTPRequest& request,
                                     const std::shared_ptr<StreamSocket>& socket);
