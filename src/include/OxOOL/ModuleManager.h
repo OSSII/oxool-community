@@ -25,7 +25,6 @@
 
 #include <net/Socket.hpp>
 #include <net/WebSocketHandler.hpp>
-#include <wsd/RequestDetails.hpp>
 #include <wsd/Admin.hpp>
 
 namespace OxOOL
@@ -167,11 +166,9 @@ public:
 
     /// @brief 傳遞 request 給相應的模組處理
     /// @param request
-    /// @param RequestDetails
     /// @param disposition
     /// @return true: request 已被某個模組處理
     bool handleRequest(const Poco::Net::HTTPRequest& request,
-                       const RequestDetails& requestDetails,
                        SocketDisposition& disposition);
 
     /// @brief 處理模組後臺管理 Web socket 請求
@@ -216,7 +213,7 @@ private:
     /// @return nullptr - fail
     OxOOL::Module::Ptr loadModule(const std::string& moduleFile);
 
-    OxOOL::Module::Ptr handleByModule(const RequestDetails& requestDetails);
+    OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
 
 private:
     /// @brief key: module file, value: module class

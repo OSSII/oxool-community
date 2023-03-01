@@ -217,20 +217,17 @@ void ModuleAgent::startRunning()
     {
         setModuleRunning(true);
 
-        // 製作 requestDetails，這裡不用 ModuleManager 的 requestDetails 的原因，是因為進入 thread 後，
-        // ModuleManager 的 requestDetails 會被 destroy，在 thread 之後的結果就不正確
-        RequestDetails requestDetails(mRequest, LOOLWSD::ServiceRoot);
         // 是否為 admin service
-        const bool isAdminService = mpSavedModule->isAdminService(requestDetails);
+        const bool isAdminService = mpSavedModule->isAdminService(mRequest);
 
         // 不需要認證或已認證通過
         if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket, isAdminService))
         {
             // 依據 service uri 決定要給哪個 reauest 處理
             if (isAdminService)
-                mpSavedModule->handleAdminRequest(mRequest, requestDetails, mpSavedSocket); // 管理介面
+                mpSavedModule->handleAdminRequest(mRequest, mpSavedSocket); // 管理介面
             else
-                mpSavedModule->handleRequest(mRequest, requestDetails, mpSavedSocket); // Restful API
+                mpSavedModule->handleRequest(mRequest, mpSavedSocket); // Restful API
         }
         stopRunning();
     });
@@ -444,13 +441,18 @@ bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
 }
 
 bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
-                                  const RequestDetails& requestDetails,
                                   SocketDisposition& disposition)
 {
+    // 進到這裡的 Poco::Net::HTTPRequest 的 URI 已經被改寫，
+    // 去掉 service root 了(如果  oxoolwsd.xml 有指定的話)
+
+    std::vector<std::string> segments;
+    Poco::URI(request.getURI()).getPathSegments(segments);
+
     // 是否爲後臺模組管理要求升級 Websocket
-    if (requestDetails.size() == 3 &&
-        requestDetails.equals(RequestDetails::Field::Type, "lool") &&
-        requestDetails.equals(1, "adminws"))
+    if (segments.size() == 3 &&
+        segments[0] == "lool" &&
+        segments[1] == "adminws")
     {
         LOG_INF("Admin module request: " << request.getURI());
 
@@ -458,7 +460,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
         const std::weak_ptr<StreamSocket> socketWeak =
               std::static_pointer_cast<StreamSocket>(disposition.getSocket());
         // URL: /lool/adminws/<模組名稱>
-        const std::string& moduleName = requestDetails[2];
+        const std::string& moduleName = segments[2];
         if (handleAdminWebsocketRequest(moduleName, socketWeak, request))
         {
             disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
@@ -472,7 +474,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
     }
 
     // 取得處理該 request 的模組，可能是 serverURI 或 adminServerURI(如果有的話)
-    if (OxOOL::Module::Ptr module = handleByModule(requestDetails); module != nullptr)
+    if (OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
     {
         std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
         // 尋找可用的模組代理
@@ -687,13 +689,13 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
     return nullptr;
 }
 
-OxOOL::Module::Ptr ModuleManager::handleByModule(const RequestDetails& requestDetails)
+OxOOL::Module::Ptr ModuleManager::handleByModule(const Poco::Net::HTTPRequest& request)
 {
     // 找出是哪個 module 要處理這個請求
     for (auto& it : mpModules)
     {
         OxOOL::Module::Ptr module = it.second;
-        if (module->isService(requestDetails) || module->isAdminService(requestDetails))
+        if (module->isService(request) || module->isAdminService(request))
             return module;
     }
     return nullptr;

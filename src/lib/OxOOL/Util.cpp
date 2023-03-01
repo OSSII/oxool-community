@@ -17,6 +17,8 @@
 #include <Poco/DateTimeFormat.h>
 #include <Poco/Timestamp.h>
 
+#include <wsd/LOOLWSD.hpp>
+
 namespace OxOOL
 {
 namespace Util
@@ -54,6 +56,11 @@ namespace Util
     {
         return Poco::DateTimeFormatter::format(
                 Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT);
+    }
+
+    std::string getServiceRoot()
+    {
+        return LOOLWSD::ServiceRoot;
     }
 
 } // namespace Util

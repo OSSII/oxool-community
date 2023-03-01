@@ -12,7 +12,6 @@
 #include <OxOOL/ModuleManager.h>
 #include <OxOOL/Util.h>
 
-#include <wsd/ServerURL.hpp>
 #include <wsd/FileServer.hpp>
 
 namespace OxOOL
@@ -55,60 +54,57 @@ Poco::JSON::Object::Ptr Base::getAdminDetailJson(const std::string& langTag)
     return json;
 }
 
-bool Base::isService(const RequestDetails& requestDetails) const
+bool Base::isService(const Poco::Net::HTTPRequest& request) const
 {
-    // 非 Websocket
-    if (!requestDetails.isWebSocket())
+    // 實際請求位址
+    std::string requestURI = request.getURI();
+    // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
+    if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
+        requestURI.resize(queryPos);
+
+    /* serviceURI 有兩種格式：
+        一、 end point 格式：
+            例如 /lool/endpoint 最後非 '/' 結尾)
+            此種格式用途單一，只有一個位址，適合簡單功能的 restful api
+
+        二、 目錄格式，最後爲 '/' 結尾：
+            例如 /lool/drawio/
+            此種格式，模組可自由管理 /lool/drawio/ 之後所有位址，適合複雜的 restful api
+        */
+    // 取得該模組指定的 service uri, uri 長度至少 2 個字元
+    if (std::string serviceURI = mDetail.serviceURI; serviceURI.length() > 1)
     {
-        // 實際請求位址
-        std::string requestURI = requestDetails.getURI();
-        // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
-        if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
-            requestURI.resize(queryPos);
+        bool correctModule = false; // 預設該模組非正確模組
 
-        /* serviceURI 有兩種格式：
-            一、 end point 格式：
-                例如 /lool/endpoint 最後非 '/' 結尾)
-                此種格式用途單一，只有一個位址，適合簡單功能的 restful api
+        // service uri 是否為 End point?(最後字元不是 '/')
+        bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
 
-            二、 目錄格式，最後爲 '/' 結尾：
-                例如 /lool/drawio/
-                此種格式，模組可自由管理 /lool/drawio/ 之後所有位址，適合複雜的 restful api
-         */
-        // 取得該模組指定的 service uri, uri 長度至少 2 個字元
-        if (std::string serviceURI = mDetail.serviceURI; serviceURI.length() > 1)
+        // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
+        if (isEndPoint)
         {
-            bool correctModule = false; // 預設該模組非正確模組
-
-            // service uri 是否為 End point?(最後字元不是 '/')
-            bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
-
-            // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
-            if (isEndPoint)
-            {
-                correctModule = (serviceURI == requestURI);
-            }
-            else
-            {
-                // 該位址可以為 "/endpoint" or "/endpoint/"
-                std::string endpoint(serviceURI);
-                endpoint.pop_back(); // 移除最後的 '/' 字元，轉成 /endpoint
-
-                // 位址列開始爲 "/endpoint/" 或等於 "/endpoint"，視為正確位址
-                correctModule = (requestURI.find(serviceURI, 0) == 0 || requestURI == endpoint);
-            }
-
-            return correctModule;
+            correctModule = (serviceURI == requestURI);
         }
+        else
+        {
+            // 該位址可以為 "/endpoint" or "/endpoint/"
+            std::string endpoint(serviceURI);
+            endpoint.pop_back(); // 移除最後的 '/' 字元，轉成 /endpoint
+
+            // 位址列開始爲 "/endpoint/" 或等於 "/endpoint"，視為正確位址
+            correctModule = (requestURI.find(serviceURI, 0) == 0 || requestURI == endpoint);
+        }
+
+        return correctModule;
     }
+
     return false;
 }
 
-bool Base::isAdminService(const RequestDetails& requestDetails) const
+bool Base::isAdminService(const Poco::Net::HTTPRequest& request) const
 {
-    // 非 Websocket 且有管理界面 URI
-    if (!requestDetails.isWebSocket() && !mDetail.adminServiceURI.empty())
-        return requestDetails.getURI().find(mDetail.adminServiceURI, 0) == 0;
+    // 有管理界面 URI
+    if (!mDetail.adminServiceURI.empty())
+        return request.getURI().find(mDetail.adminServiceURI, 0) == 0;
 
     return false;
 }
@@ -143,10 +139,9 @@ bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
 }
 
 void Base::handleRequest(const Poco::Net::HTTPRequest& request,
-                         const RequestDetails& requestDetails,
                          const std::shared_ptr<StreamSocket>& socket)
 {
-    const std::string realURI = parseRealURI(requestDetails);
+    const std::string realURI = parseRealURI(request);
 
     Poco::Path requestFile(maRootPath + "/html" + realURI);
     if (requestFile.isDirectory())
@@ -156,11 +151,10 @@ void Base::handleRequest(const Poco::Net::HTTPRequest& request,
 }
 
 void Base::handleAdminRequest(const Poco::Net::HTTPRequest& request,
-                              const RequestDetails& requestDetails,
                               const std::shared_ptr<StreamSocket>& socket)
 {
 
-    std::string requestURI = requestDetails.getURI();
+    std::string requestURI = request.getURI();
     size_t stripLength = mDetail.adminServiceURI.length();
     // 去掉 request 前導的 adminServiceURI
     std::string realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
@@ -178,7 +172,7 @@ void Base::handleAdminRequest(const Poco::Net::HTTPRequest& request,
     // GET html 格式的檔案，需要內嵌到 admintemplate.html 中
     if (OxOOL::HttpHelper::isGET(request) && requestFile.getExtension() == "html")
     {
-        preprocessAdminFile(requestFile.toString(), request, requestDetails, socket);
+        preprocessAdminFile(requestFile.toString(), request, socket);
     }
     else
     {
@@ -194,10 +188,10 @@ std::string Base::handleAdminMessage(const StringVector& tokens)
 }
 
 // PROTECTED METHODS
-std::string Base::parseRealURI(const RequestDetails& requestDetails) const
+std::string Base::parseRealURI(const Poco::Net::HTTPRequest& request) const
 {
     // 完整請求位址
-    std::string requestURI = requestDetails.getURI();
+    std::string requestURI = request.getURI();
     // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
     if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
         requestURI.resize(queryPos);
@@ -247,7 +241,6 @@ void Base::sendFile(const std::string& requestFile,
 
 void Base::preprocessAdminFile(const std::string& adminFile,
                                const Poco::Net::HTTPRequest& request,
-                               const RequestDetails &requestDetails,
                                const std::shared_ptr<StreamSocket>& socket)
 {
     // 取得 admintemplate.html
@@ -262,9 +255,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
 
     // 製作完整 HTML 頁面
     Poco::replaceInPlace(templateFile, std::string("<!--%MAIN_CONTENT%-->"), mainContent.str()); // Now template has the main content..
-
-    ServerURL cnxDetails(requestDetails);
-    std::string responseRoot = cnxDetails.getResponseRoot();
+    std::string responseRoot = OxOOL::Util::getServiceRoot();
 
     // 帶入模組的多國語系設定檔
     static const std::string l10nJSON("<link rel=\"localizations\" href=\"%s/loleaflet/dist/admin/module/%s/localizations.json\" type=\"application/vnd.oftn.l10n+json\"/>");

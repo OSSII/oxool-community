@@ -18,7 +18,6 @@
 #include <Poco/MemoryStream.h>
 #include <Poco/JSON/Object.h>
 
-#include <wsd/RequestDetails.hpp>
 #include <net/Socket.hpp>
 #include <common/StringVector.hpp>
 
@@ -64,14 +63,14 @@ public:
     const std::string& getDocumentRoot() const { return maRootPath; }
 
     /// @brief 請求是否是本模組處理
-    /// @param requestDetails
+    /// @param request
     /// @return true 該要求屬於這個模組處理
-    bool isService(const RequestDetails& requestDetails) const;
+    bool isService(const Poco::Net::HTTPRequest& request) const;
 
     /// @brief 請求是否是本模組的管理介面處理
-    /// @param requestDetails
+    /// @param request
     /// @return true 該要求屬於這個模組的管理介面處理
-    bool isAdminService(const RequestDetails& requestDetails) const;
+    bool isAdminService(const Poco::Net::HTTPRequest& request) const;
 
     /// @brief 需要管理員身份驗證
     /// @param request
@@ -92,7 +91,6 @@ public:
     /// @param requestDetails
     /// @param socket
     virtual void handleRequest(const Poco::Net::HTTPRequest& request,
-                               const RequestDetails& requestDetails,
                                const std::shared_ptr<StreamSocket>& socket);
 
     /// @brief 處理控制臺 Client 的請求
@@ -100,7 +98,6 @@ public:
     /// @param requestDetails
     /// @param socket
     virtual void handleAdminRequest(const Poco::Net::HTTPRequest& request,
-                                    const RequestDetails& requestDetails,
                                     const std::shared_ptr<StreamSocket>& socket);
 
     /// @brief 處理控制臺 Websocket 的訊息
@@ -114,9 +111,9 @@ protected:
     std::string logTitle() const { return "[" + mDetail.name + "] "; }
 
     /// @brief 解析模組實際請求位址
-    /// @param requestDetails
+    /// @param request
     /// @return 實際的請求位址
-    std::string parseRealURI(const RequestDetails& requestDetails) const;
+    std::string parseRealURI(const Poco::Net::HTTPRequest& request) const;
 
     /// @brief 傳送檔案
     /// @param requestFile
@@ -129,7 +126,6 @@ protected:
 
     void preprocessAdminFile(const std::string& adminFile,
                              const Poco::Net::HTTPRequest& request,
-                             const RequestDetails &requestDetails,
                              const std::shared_ptr<StreamSocket>& socket);
 
 private:

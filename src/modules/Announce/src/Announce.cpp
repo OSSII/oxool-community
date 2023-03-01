@@ -16,7 +16,6 @@ class Announce : public OxOOL::Module::Base
 {
 public:
     void handleRequest(const Poco::Net::HTTPRequest& request,
-                       const RequestDetails& /* requestDetails */,
                        const std::shared_ptr<StreamSocket>& socket) override
     {
         Poco::Net::HTTPResponse::HTTPStatus statusCode = Poco::Net::HTTPResponse::HTTP_OK;

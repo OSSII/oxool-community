@@ -28,6 +28,11 @@ namespace Util
     /// @return std::string
     std::string getHttpTimeNow();
 
+    /// @brief  取得所有頁面位址的前置字串
+    /// Get the prefix string of all page.
+    /// @return std::string
+    std::string getServiceRoot();
+
 } // namespace Util
 } // namespace OxOOL
 
