@@ -11,7 +11,6 @@
 #include <OxOOL/Module/Base.h>
 
 namespace Poco { namespace Net{ class HTTPRequest; }}
-class RequestDetails;
 class Socket;
 
 class Module : public OxOOL::Module::Base
@@ -31,7 +30,6 @@ public:
     /// @brief 處理前端 Client 的請求
     /// Handle requests from the front-end Client.
     void handleRequest(const Poco::Net::HTTPRequest& request,
-                       const RequestDetails& requestDetails,
                        const std::shared_ptr<StreamSocket>& socket) override;
 
 #if ENABLE_ADMIN
@@ -39,7 +37,6 @@ public:
     /// If there is no admin management, or if you don't want to manage it yourself,
     /// you can remove this code.
     void handleAdminRequest(const Poco::Net::HTTPRequest& request,
-                            const RequestDetails& requestDetails,
                             const std::shared_ptr<StreamSocket>& socket) override;
 
     /// @brief 處理控制臺 Websocket 的訊息(沒有後臺管理請直接移除)

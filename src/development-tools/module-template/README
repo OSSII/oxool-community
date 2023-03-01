@@ -15,8 +15,8 @@ html/
 	and in the html directory, create a normal type of webpage,
 	OxOOL will manage it automatically.
 
-	The default web page name is index.html or index.php.
-	Yes, OxOOL supports PHP.
+	The default web page name is index.html
+	or index.php (will be supported in the future).
 
 admin/
 	If you have a console management interface,
@@ -25,6 +25,10 @@ admin/
 
 	This will allow you to see your admin interface at the following URL:
 	http(s)://yourhost:9980/loleaflet/dist/admin/admin.html
+
+	Console management uses some fremawork:
+	JQuery, JQuery-UI, and bootstrap 5.
+	You can also include other javascript packages in your project.
 
 module.xml.in
 	Module definition configuration file in XML format.

@@ -12,7 +12,6 @@
 #include <Poco/Net/HTTPRequest.h>
 
 #include <OxOOL/HttpHelper.h>
-#include <OxOOL/wsd/RequestDetails.hpp>
 #include <OxOOL/net/Socket.hpp>
 
 /// @brief Module constructor.
@@ -38,7 +37,6 @@ void Module::initialize()
 /// @brief 處理前端 Client 的請求
 /// Handle requests from the front-end Client.
 void Module::handleRequest(const Poco::Net::HTTPRequest& request,
-                           const RequestDetails& requestDetails,
                            const std::shared_ptr<StreamSocket>& socket)
 {
     OxOOL::HttpHelper::sendResponseAndShutdown(socket, "<H1>This is an example module.</H1>",
@@ -50,10 +48,9 @@ void Module::handleRequest(const Poco::Net::HTTPRequest& request,
     /// If there is no admin management, or if you don't want to manage it yourself,
 /// you can remove this code.
 void Module::handleAdminRequest(const Poco::Net::HTTPRequest& request,
-                                const RequestDetails& requestDetails,
                                 const std::shared_ptr<StreamSocket>& socket)
 {
-    OxOOL::Module::Base::handleAdminRequest(request, requestDetails, socket);
+    OxOOL::Module::Base::handleAdminRequest(request, socket);
 }
 
 /// @brief 處理控制臺 Websocket 的訊息(沒有後臺管理請直接移除)
