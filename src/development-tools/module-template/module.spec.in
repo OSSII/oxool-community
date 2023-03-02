@@ -1,4 +1,5 @@
 
+%define BUILD_SHARED_LIBRARY @BUILD_SHARED_LIBRARY@
 %define CUSTOM_HTML @CUSTOM_HTML@
 %define ENABLE_ADMIN @ENABLE_ADMIN@
 
@@ -35,7 +36,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 %files
 %config(noreplace) %attr(640, lool, root) @OXOOL_MODULE_CONFIG_DIR@/*
+%if "%{BUILD_SHARED_LIBRARY}" == "true"
 @OXOOL_MODULES_DIR@/*
+%endif
 
 %if "%{CUSTOM_HTML}" == "true"
 @OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@/html/*

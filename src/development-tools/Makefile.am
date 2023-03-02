@@ -20,11 +20,11 @@ bin_PROGRAMS = @PACKAGE_NAME@-module-maker
 @PACKAGE_NAME@_module_maker_LDADD = $(GIT2_LIBS) $(abs_top_builddir)/libOxOOL.la
 @PACKAGE_NAME@_module_maker_SOURCES = ModuleMaker.cpp
 
-EXTRA_DIST = module-template/*
+EXTRA_DIST = module-template
 
 install-data-hook:
 	mkdir -p $(DESTDIR)$(MODULE_TEMPLATE_DIR)
-	cp -aR module-template/* $(DESTDIR)$(MODULE_TEMPLATE_DIR)/
+	cp -aR module-template/. $(DESTDIR)$(MODULE_TEMPLATE_DIR)/
 
 uninstall-hook:
 	rm -fr $(DESTDIR)$(MODULE_TEMPLATE_DIR)

@@ -61,9 +61,26 @@ fi
 MODULE_LICENSE=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.license 2> /dev/null`
 AC_SUBST([MODULE_LICENSE])
 
-
 MODULE_DESCRIPTION=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.description 2> /dev/null`
 AC_SUBST([MODULE_DESCRIPTION])
+
+MODULE_ADMIN_PRIVILAGE=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.adminPrivilege 2> /dev/null`
+AC_SUBST([MODULE_ADMIN_PRIVILAGE])
+
+MODULE_ADMIN_ICON=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.adminIcon 2> /dev/null`
+AC_SUBST([MODULE_ADMIN_ICON])
+
+MODULE_ADMIN_ITEM=`${XML_CONFIG_CMD} -f module.xml.in --get module.detail.adminItem 2> /dev/null`
+AC_SUBST([MODULE_ADMIN_ITEM])
+
+# 是否編譯 shared library
+BUILD_SHARED_LIBRARY=true
+MODULE_LOAD=`${XML_CONFIG_CMD} -f module.xml.in --get module.load 2> /dev/null`
+if test -z "${MODULE_LOAD}" ; then
+    BUILD_SHARED_LIBRARY=false
+fi
+AC_SUBST([BUILD_SHARED_LIBRARY])
+AM_CONDITIONAL([BUILD_SHARED_LIBRARY], [test -n "${MODULE_LOAD}"])
 
 # 是否有自定義的 html 目錄
 CUSTOM_HTML=false
@@ -100,7 +117,7 @@ AC_OUTPUT
 
 AC_MSG_RESULT([
 Configuration:
-    ${MODULE_NAME}-xml-config   ${XML_CONFIG_CMD}
+    ${OXOOL_NAME}-xml-config    ${XML_CONFIG_CMD}
     Customize html directory:   ${CUSTOM_HTML}
     Enable console admin:       ${ENABLE_ADMIN}
 
@@ -112,6 +129,9 @@ Module details:
     author          ${PACKAGE_BUGREPORT}
     license         ${MODULE_LICENSE}
     description     ${MODULE_DESCRIPTION}
+    adminPrivilege  ${MODULE_ADMIN_PRIVILAGE}
+    adminIcon       ${MODULE_ADMIN_ICON}
+    adminItem       ${MODULE_ADMIN_ITEM}
 
 \$ make # to compile
 ])

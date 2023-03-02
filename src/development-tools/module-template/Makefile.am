@@ -25,6 +25,7 @@ MODULE_DATA_DIR = @OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@
 configdir = @OXOOL_MODULE_CONFIG_DIR@
 dist_config_DATA = @MODULE_NAME@.xml
 
+if BUILD_SHARED_LIBRARY
 # Module install path
 moduledir = @OXOOL_MODULES_DIR@
 module_LTLIBRARIES = @MODULE_NAME@.la
@@ -33,6 +34,7 @@ module_LTLIBRARIES = @MODULE_NAME@.la
 @MODULE_NAME@_la_SOURCES = \
 	src/Module.hpp \
 	src/Module.cpp
+endif
 
 install-data-local:
 if CUSTOM_HTML
