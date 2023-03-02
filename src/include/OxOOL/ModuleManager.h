@@ -142,7 +142,7 @@ public:
 
     /// @brief 遞迴載入指定目錄下所有副檔名爲 .xml 的模組
     /// @param modulePath
-    void loadModulesFromDirectory(const std::string& modulePath, const std::string& type = "xml");
+    void loadModulesFromDirectory(const std::string& configPath);
 
     /// @brief 載入模組組態檔
     /// @param moduleFile 模組檔案(.xml)完整路徑
@@ -158,11 +158,6 @@ public:
     /// @param moduleName - 模組名稱
     /// @return nullptr: 不存在，否則爲模組 class
     OxOOL::Module::Ptr getModuleByName(const std::string& moduleName);
-
-    /// @brief 模組檔案是否已載入過
-    /// @param moduleFile - 檔案完整路徑
-    /// @return true: 載入過
-    bool alreadyLoaded(const std::string& moduleFile);
 
     /// @brief 傳遞 request 給相應的模組處理
     /// @param request
@@ -202,12 +197,6 @@ public:
     void dump();
 
 private:
-    /// @brief 遞迴尋找指定檔名的模組
-    /// @param path 指定的目錄
-    /// @param name 模組名稱
-    /// @return 該檔案所在的完整路徑含檔名
-    std::string findModule(const std::string& path, const std::string& name);
-
     /// @brief 載入模組
     /// @param moduleFile 模組檔案(.so)完整路徑
     /// @return nullptr - fail
@@ -216,6 +205,7 @@ private:
     OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
 
 private:
+    std::mutex mModulesMutex;
     /// @brief key: module file, value: module class
     std::map<std::string, OxOOL::Module::Ptr> mpModules;
 

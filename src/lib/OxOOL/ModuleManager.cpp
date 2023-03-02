@@ -154,6 +154,7 @@ void ModuleAgent::handleRequest(OxOOL::Module::Ptr module,
             stopRunning();
             return;
         }
+        mRequest.setURI(request.getURI());
     }
 #else // 否則直接複製
     mRequest = request;
@@ -266,32 +267,25 @@ void ModuleManager::pollingThread()
     }
 }
 
-void ModuleManager::loadModulesFromDirectory(const std::string& modulePath, const std::string& type)
+void ModuleManager::loadModulesFromDirectory(const std::string& configPath)
 {
     // 載入所有模組
-    const Poco::File dir(modulePath);
+    const Poco::File dir(configPath);
     if (dir.exists() && dir.isDirectory())
     {
-        LOG_DBG("Load modules from Directory: " << modulePath);
+        LOG_DBG("Load modules from Directory: " << configPath);
         // 掃描目錄下所有的檔案
         for (auto it = Poco::DirectoryIterator(dir); it != Poco::DirectoryIterator(); ++it)
         {
             // 如果是子目錄的話，遞迴載入子目錄下的模組
             if (it->isDirectory())
             {
-                loadModulesFromDirectory(it->path(), type);
+                loadModulesFromDirectory(it->path());
             }
             // 否則載入該檔案
             else
             {
-                if (type == "xml")
-                {
-                    loadModuleConfig(it->path()); // 載入模組組態檔
-                }
-                else
-                {
-                    loadModule(it->path()); // 載入模組
-                }
+                loadModuleConfig(it->path()); // 載入模組組態檔
             }
         }
     }
@@ -299,20 +293,29 @@ void ModuleManager::loadModulesFromDirectory(const std::string& modulePath, cons
 
 bool ModuleManager::loadModuleConfig(const std::string& configFile)
 {
-    const Poco::Path oxoolModuleConfig(configFile);
-    // 不是檔案或副檔名不是 .xml，不處理
-    if (!oxoolModuleConfig.isFile() || oxoolModuleConfig.getExtension() != "xml")
+
+    // 不是 OxOOL module config 不處理
+    OxOOL::XMLConfig config(configFile);
+    if (!config.has("module"))
         return false;
 
-    OxOOL::XMLConfig config(configFile);
-    // 不是 OxOOL module config 不處理
-    if (!config.has("module[@enable]"))
+    bool isModuleEnable = true;
+    try
+    {
+        isModuleEnable = config.getBool("module[@enable]", true);
+    }
+    catch(const std::exception& e)
+    {
+        LOG_ERR(configFile << ": Parse error. [" << e.what() << "]");
         return false;
+    }
 
     OxOOL::Module::Detail detail;
     // 模組啟用
-    if (config.getBool("module[@enable]"))
+    if (isModuleEnable)
     {
+        OxOOL::Module::Ptr module = nullptr;
+
         // 讀取模組詳細資訊
         detail.name = config.getString("module.detail.name", "");
         detail.serviceURI = config.getString("module.detail.serviceURI", "");
@@ -332,78 +335,48 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile)
         // 有指定載入模組檔案
         if (const std::string loadFile = config.getString("module.load", ""); !loadFile.empty())
         {
-            std::string foundPath = findModule(OxOOL::ENV::ModuleDir, loadFile);
-            if (!foundPath.empty())
+#if ENABLE_DEBUG
+            const std::string sharedLibraryPath = documentRoot + "/.libs/" + loadFile;
+#else
+            const std::string sharedLibraryPath = OxOOL::ENV::ModuleDir + "/" + loadFile;
+#endif
+
+            const Poco::File sharedLibrary(sharedLibraryPath);
+            if (sharedLibrary.exists() && sharedLibrary.isFile())
             {
-                // 載入模組
-                OxOOL::Module::Ptr module = loadModule(foundPath);
                 // 模組載入成功，覆寫模組設定
-                if (module != nullptr)
+                if (module = loadModule(sharedLibrary.path()); module == nullptr)
                 {
-                    OxOOL::Module::Detail origDetail = module->getDetail();
-                    if (!detail.name.empty())
-                        origDetail.name = detail.name;
-
-                    if (!detail.serviceURI.empty())
-                        origDetail.serviceURI = detail.serviceURI;
-
-                    if (!detail.version.empty())
-                        origDetail.version = detail.version;
-
-                    if (!detail.summary.empty())
-                        origDetail.summary = detail.summary;
-
-                    if (!detail.author.empty())
-                        origDetail.author = detail.author;
-
-                    if (!detail.license.empty())
-                        origDetail.license = detail.license;
-
-                    if (!detail.description.empty())
-                        origDetail.description = detail.description;
-
-                    if (origDetail.adminPrivilege != detail.adminPrivilege)
-                        origDetail.adminPrivilege = detail.adminPrivilege;
-
-                    if (!detail.adminIcon.empty())
-                        origDetail.adminIcon = detail.adminIcon;
-
-                    if (!detail.adminItem.empty())
-                        origDetail.adminItem = detail.adminItem;
-
-                    module->maRootPath = documentRoot; // 設定模組文件絕對路徑
-
-                    // 檢查是否有後臺管理(需在模組目錄下有 admin 目錄，且 admin 目錄下還有 admin.html 及 admin.js)
-                    if (Poco::File(documentRoot + "/admin/admin.html").exists() &&
-                        Poco::File(documentRoot + "/admin/admin.js").exists())
-                    {
-                        origDetail.adminServiceURI = "/loleaflet/dist/admin/module/" + origDetail.name + "/";
-                    }
-
-                    module->mDetail = origDetail; // 重新複寫設定
-
-                    module->initialize();
-                }
-                else
-                {
-                    LOG_ERR("Can not load module:" << foundPath);
+                    LOG_ERR("Can not load module:" << sharedLibraryPath);
                 }
             }
             else
             {
-                LOG_ERR("In the " << OxOOL::ENV::ModuleDir << " directory, " << loadFile
-                                  << " is not found.");
+                LOG_ERR(sharedLibraryPath << " is not found.");
             }
         }
-        else
+        else // 沒有載入模組，就用基本模組
         {
-            // 沒有載入模組，就用基本模組
-            OxOOL::Module::Ptr module = std::make_shared<OxOOL::Module::Base>();
-            module->mDetail = detail; // 重新複寫設定
-            module->maRootPath = documentRoot; // 設定模組文件絕對路徑
-            mpModules[configFile] = module;
-            module->initialize();
+            module = std::make_shared<OxOOL::Module::Base>();
         }
+
+        // 檢查是否有後臺管理(需在模組目錄下有 admin 目錄，且 admin 目錄下還有 admin.html 及 admin.js)
+        if (Poco::File(documentRoot + "/admin/admin.html").exists() &&
+            Poco::File(documentRoot + "/admin/admin.js").exists())
+        {
+            detail.adminServiceURI = "/loleaflet/dist/admin/module/" + detail.name + "/";
+        }
+
+        // 讀取模組詳細資訊
+        module->mDetail = detail;
+        // 設定模組文件絕對路徑
+        module->maRootPath = documentRoot;
+
+        std::unique_lock<std::mutex> modulesLock(mModulesMutex);
+        mpModules[configFile] = module;
+        modulesLock.unlock();
+
+        module->initialize(); // 執行模組的 initialize()
     }
 
     return true;
@@ -435,44 +408,13 @@ OxOOL::Module::Ptr ModuleManager::getModuleByName(const std::string& moduleName)
     return nullptr;
 }
 
-bool ModuleManager::alreadyLoaded(const std::string& moduleFile)
-{
-    return mpModules.find(moduleFile) != mpModules.end() ? true : false;
-}
-
 bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
                                   SocketDisposition& disposition)
 {
     // 進到這裡的 Poco::Net::HTTPRequest 的 URI 已經被改寫，
-    // 去掉 service root 了(如果  oxoolwsd.xml 有指定的話)
+    // 去掉 service root 了(如果 oxoolwsd.xml 有指定的話)
 
-    std::vector<std::string> segments;
-    Poco::URI(request.getURI()).getPathSegments(segments);
-
-    // 是否爲後臺模組管理要求升級 Websocket
-    if (segments.size() == 3 &&
-        segments[0] == "lool" &&
-        segments[1] == "adminws")
-    {
-        LOG_INF("Admin module request: " << request.getURI());
-
-        // 轉成 std::weak_ptr
-        const std::weak_ptr<StreamSocket> socketWeak =
-              std::static_pointer_cast<StreamSocket>(disposition.getSocket());
-        // URL: /lool/adminws/<模組名稱>
-        const std::string& moduleName = segments[2];
-        if (handleAdminWebsocketRequest(moduleName, socketWeak, request))
-        {
-            disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
-            {
-                // Hand the socket over to self poll.
-                insertNewSocket(moveSocket);
-            });
-            return true;
-        }
-        return false;
-    }
-
+    // 1. 優先處理一般 request
     // 取得處理該 request 的模組，可能是 serverURI 或 adminServerURI(如果有的話)
     if (OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
     {
@@ -498,6 +440,33 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
 
         return true;
     }
+
+    // 2. 再看看是否爲後臺模組管理要求升級 Websocket
+    std::vector<std::string> segments;
+    Poco::URI(request.getURI()).getPathSegments(segments);
+    if (segments.size() == 3 &&
+        segments[0] == "lool" &&
+        segments[1] == "adminws")
+    {
+        LOG_INF("Admin module request: " << request.getURI());
+
+        // 轉成 std::weak_ptr
+        const std::weak_ptr<StreamSocket> socketWeak =
+              std::static_pointer_cast<StreamSocket>(disposition.getSocket());
+        // URL: /lool/adminws/<模組名稱>
+        const std::string& moduleName = segments[2];
+        if (handleAdminWebsocketRequest(moduleName, socketWeak, request))
+        {
+            disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
+            {
+                // Hand the socket over to self poll.
+                insertNewSocket(moveSocket);
+            });
+            return true;
+        }
+        return false;
+    }
+
     return false;
 }
 
@@ -612,40 +581,6 @@ void ModuleManager::dump()
 
 //------------------ Private mtehods ----------------------------------
 
-std::string ModuleManager::findModule(const std::string& path, const std::string& name)
-{
-    std::string returnPath;
-
-    const Poco::File dir(path);
-
-    if (dir.exists() && dir.isDirectory())
-    {
-        LOG_DBG("Scan Directory: " << path);
-        // 掃描目錄下所有的檔案
-        for (auto it = Poco::DirectoryIterator(dir); it != Poco::DirectoryIterator(); ++it)
-        {
-            // 如果是子目錄的話，遞迴掃描
-            if (it->isDirectory())
-            {
-                returnPath = findModule(it->path(), name);
-            }
-            else
-            {
-                // 否則檢查檔案是否存在
-                const Poco::File file(path + "/" + name);
-                if (file.exists())
-                {
-                    returnPath = file.path();
-                }
-            }
-
-            if (!returnPath.empty())
-                break;
-        }
-    }
-
-    return returnPath;
-}
 
 OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
 {
@@ -653,13 +588,6 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
     // 不是檔案或副檔名不是 .so，不處理
     if (!oxoolModule.isFile() || oxoolModule.getExtension() != "so")
         return nullptr;
-
-    // 檔案已經載入過了
-    if (alreadyLoaded(moduleFile))
-    {
-        LOG_WRN("Warning! '" << moduleFile << "' already loaded.");
-        return nullptr;
-    }
 
     // 開啟 share library file.
     void* handle = dlopen(moduleFile.c_str(), RTLD_LAZY);
@@ -670,8 +598,7 @@ OxOOL::Module::Ptr ModuleManager::loadModule(const std::string& moduleFile)
             = reinterpret_cast<OxOOLModuleEntry>(dlsym(handle, OXOOL_MODULE_ENTRY_SYMBOL));
         if (char* dlsym_error = dlerror(); !dlsym_error)
         {
-            mpModules[moduleFile] = moduleEntry(); // 取得模組
-            return mpModules[moduleFile];
+            return moduleEntry(); // 取得模組
         }
         else
         {

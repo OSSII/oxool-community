@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <Poco/Net/NetException.h>
+#include <Poco/URI.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
 
@@ -56,11 +57,9 @@ Poco::JSON::Object::Ptr Base::getAdminDetailJson(const std::string& langTag)
 
 bool Base::isService(const Poco::Net::HTTPRequest& request) const
 {
-    // 實際請求位址
-    std::string requestURI = request.getURI();
-    // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
-    if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
-        requestURI.resize(queryPos);
+    // 不含查詢字串的實際請求位址
+    std::string requestURI = Poco::URI(request.getURI()).getPath();
+
 
     /* serviceURI 有兩種格式：
         一、 end point 格式：
