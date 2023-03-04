@@ -10,6 +10,7 @@
 
 #include <common/Util.hpp>
 #include <net/NetUtil.hpp>
+#include <net/Socket.hpp>
 #include <wsd/HostUtil.hpp>
 
 class Announce : public OxOOL::Module::Base
