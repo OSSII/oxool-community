@@ -34,15 +34,15 @@ OXOOLWSD_PID=`pgrep oxoolwsd`
 if test -n ${OXOOLWSD_PID} ; then
     PID=${OXOOLWSD_PID}
 fi
-    
+
 if test -z "${PID}" ; then
     echo -e "${RED}'oxoolwsd' or 'modaodfweb' are not executed.${NC}"
     exit 4;
 fi
 
-TESTING_URL=`cat /tmp/cat /tmp/.oxoolmoduletesting 2> /dev/null`
+TESTING_URL=`cat /tmp/.oxoolmoduletesting 2> /dev/null`
 if test -z "$TESTING_URL" ; then
-    echo -e "${RED}''/tmp/.oxoolmoduletesting does not exist, cannot get test URL.${NC}"
+    echo -e "${RED}'/tmp/.oxoolmoduletesting' does not exist, cannot get test URL.${NC}"
     exit 5;
 fi
 
