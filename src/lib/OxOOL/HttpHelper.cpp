@@ -20,6 +20,7 @@
 #include <Poco/TemporaryFile.h>
 #include <Poco/StreamCopier.h>
 
+#include <wsd/LOOLWSD.hpp>
 #include <common/Common.hpp>
 #include <common/FileUtil.hpp>
 #include <common/Util.hpp>
@@ -231,6 +232,16 @@ void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std:
             sendDeflatedFileContent(socket, path, st.size());
     }
     socket->shutdown();
+}
+
+std::string getProtocol()
+{
+    return (LOOLWSD::isSSLEnabled() || LOOLWSD::isSSLTermination()) ? "https://" : "http://";
+}
+
+int getPortNumber()
+{
+    return LOOLWSD::getClientPortNumber();
 }
 
 std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
