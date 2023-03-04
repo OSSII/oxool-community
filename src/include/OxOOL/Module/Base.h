@@ -1,13 +1,9 @@
-
-// Base.h
-//
-// Library: OxOOL
-//
-// Definition of the Module class interface.
-//
-// Copyright (c) 2022, OSS Integeral Institute Co Ltd.
-// and Contributors.
-//
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 100 -*- */
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 #pragma once
 #include <OxOOL/OxOOL.h>
@@ -18,10 +14,10 @@
 #include <Poco/MemoryStream.h>
 #include <Poco/JSON/Object.h>
 
-#include <net/Socket.hpp>
-#include <common/StringVector.hpp>
-
 #define MODULE_METHOD_IS_ABSTRACT "@OxOOL::Module::Base"
+
+class StringVector;
+class StreamSocket;
 
 namespace OxOOL
 {
@@ -144,3 +140,5 @@ typedef OxOOL::Module::Ptr (*OxOOLModuleEntry)();
 
 #define OXOOL_MODULE_EXPORT(ClassName) \
     extern "C" OxOOL::Module::Ptr OXOOL_MODULE_ENTRY_FUNC { return std::make_shared<ClassName>(); }
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

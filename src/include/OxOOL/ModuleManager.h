@@ -127,7 +127,7 @@ class ModuleManager : public SocketPoll
     ModuleManager();
 
 public:
-    virtual ~ModuleManager() {}
+    virtual ~ModuleManager();
 
     static ModuleManager& instance()
     {
@@ -145,14 +145,21 @@ public:
     void loadModulesFromDirectory(const std::string& configPath);
 
     /// @brief 載入模組組態檔
-    /// @param moduleFile 模組檔案(.xml)完整路徑
+    /// @param configFile 模組設定檔(.xml)絕對路徑
+    /// @param userModuleFile 強制搭配的模組當檔案絕對路徑
     /// @return true: 成功
-    bool loadModuleConfig(const std::string& configFile);
+    bool loadModuleConfig(const std::string& configFile,
+                          const std::string& userLibraryPath = std::string());
 
     /// @brief 以模組名稱查詢模組是否已經存在
     /// @param moduleName - 模組名稱
     /// @return true: 已存在, false: 不存在
     bool hasModule(const std::string& moduleName);
+
+    /// @brief 以 xml config 絕對路徑，取得模組物件
+    /// @param configFile
+    /// @return nullptr: 不存在，否則爲模組 class
+    OxOOL::Module::Ptr getModuleByConfigFile(const std::string& configFile);
 
     /// @brief 取得指定名稱的模組
     /// @param moduleName - 模組名稱
@@ -185,30 +192,13 @@ public:
     /// @brief 取得有後臺管理的模組資訊列表
     std::string getAdminModuleDetailsJsonString(const std::string& langTag) const;
 
-    /// @brief 是否有載入任何模組
-    /// @return
-    bool empty() const { return mpModules.empty(); }
-
-    /// @brief 載入模組的數量
-    /// @return
-    std::size_t size() const { return mpModules.size(); }
-
     /// @brief 列出所有的模組
     void dump();
 
 private:
-    /// @brief 載入模組
-    /// @param moduleFile 模組檔案(.so)完整路徑
-    /// @return nullptr - fail
-    OxOOL::Module::Ptr loadModule(const std::string& moduleFile);
-
     OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
 
 private:
-    std::mutex mModulesMutex;
-    /// @brief key: module file, value: module class
-    std::map<std::string, OxOOL::Module::Ptr> mpModules;
-
     std::mutex mAgentsMutex;
     std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
 };
