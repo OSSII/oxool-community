@@ -41,6 +41,7 @@
 #include "Exceptions.hpp"
 
 #include <OxOOL/ModuleManager.h>
+#include <OxOOL/HttpHelper.h>
 
 #include "Auth.hpp"
 #include <Common.hpp>
