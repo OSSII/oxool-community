@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <map>
+#include <chrono>
+#include <memory>
+#include <mutex>
+#include <thread>
+
+#include <OxOOL/OxOOL.h>
 #include <OxOOL/ModuleManager.h>
+#include <OxOOL/ConvertBroker.h>
 #include <OxOOL/XMLConfig.h>
 #include <OxOOL/HttpHelper.h>
 
@@ -15,10 +23,17 @@
 #include <Poco/Exception.h>
 #include <Poco/SharedLibrary.h>
 #include <Poco/SortedDirectoryIterator.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/Net/HTTPRequest.h>
+#include <Poco/Net/HTTPResponse.h>
 
+#include <common/Protocol.hpp>
+#include <common/StringVector.hpp>
 #include <common/SigUtil.hpp>
 #include <common/Log.hpp>
-
+#include <net/Socket.hpp>
+#include <net/WebSocketHandler.hpp>
+#include <wsd/Auth.hpp>
 
 /// @brief 模組 Library 管理
 class ModuleLibrary
@@ -26,23 +41,16 @@ class ModuleLibrary
 public:
     ModuleLibrary() : mpClass(nullptr)
     {
-        std::cout << "ModuleLibrary ctor.\n";
     }
 
     ~ModuleLibrary()
     {
-        std::cout << "ModuleLibrary dtor.\n";
         // 先讓模組物件解構
         mpClass = nullptr;
-
-        // 如果 Library 已經載入，就卸載
+        // 再卸載 Library，否則會 crash
         if (mLibrary.isLoaded())
-        {
-            std::cout << "Unloading '" <<  mLibrary.getPath() << "'\n";
-            // 再卸載 Library，否則會 crash
             mLibrary.unload();
         }
-    }
 
     /// @brief 載入 Library
     /// @param path Library 絕對路徑
@@ -54,34 +62,32 @@ public:
             mLibrary.load(path);
             if (mLibrary.hasSymbol(OXOOL_MODULE_ENTRY_SYMBOL))
             {
-                std::cout << "'" <<  mLibrary.getPath() << "' loaded.\n";
                 auto moduleEntry = reinterpret_cast<OxOOLModuleEntry>(mLibrary.getSymbol(OXOOL_MODULE_ENTRY_SYMBOL));
                 mpClass = moduleEntry(); // 取得模組
+                LOG_DBG("Successfully loaded '" << path << "'.");
                 return true;
             }
             else // 不是 OxOOL 模組物件就卸載
             {
+                LOG_DBG("'" << path << "' is not a valid OxOOL module.");
                 mLibrary.unload();
             }
         }
         // 已經載入過了
         catch(const Poco::LibraryAlreadyLoadedException& e)
         {
-            std::cerr << "'" << path << "' has already been loaded.\n";
+            LOG_ERR(path << "' has already been loaded.");
         }
         // 無法載入
         catch(const Poco::LibraryLoadException& e)
         {
-            std::cerr << "'" << path << "' cannot be loaded.\n";
+            LOG_ERR(path << "' cannot be loaded.");
         }
 
         return false;
     }
 
-    OxOOL::Module::Ptr getModule() const
-    {
-        return mpClass;
-    }
+    OxOOL::Module::Ptr getModule() const { return mpClass; }
 
     void useBaseModule()
     {
@@ -99,235 +105,308 @@ std::map<std::string, std::shared_ptr<ModuleLibrary>> moduleMap;
 namespace OxOOL
 {
 
-void ModuleAdminSocketHandler::handleMessage(const std::vector<char> &payload)
+/// @brief 處理模組 client 的 admin Websocket 請求和回覆
+class ModuleAdminSocketHandler : public WebSocketHandler
 {
-    // FIXME: check fin, code etc.
-    const std::string firstLine = LOOLProtocol::getFirstLine(payload.data(), payload.size());
-
-    const StringVector tokens(StringVector::tokenize(firstLine, ' '));
-    LOG_DBG("Module:[" << mpModule->getDetail().name << "] Recv: " << firstLine << " tokens " << tokens.size());
-
-    // 一定要有資料
-    if (tokens.empty())
+public:
+    ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
+                             const std::weak_ptr<StreamSocket>& socket,
+                             const Poco::Net::HTTPRequest& request)
+        : WebSocketHandler(socket.lock(), request)
+        , mpModule(module)
+        , mbIsAuthenticated(false)
     {
-        LOG_TRC("too few tokens");
-        return;
     }
 
-    if (tokens.equals(0, "auth"))
+    /// @brief 處理收到的 web socket 訊息，並傳送給模組處理
+    /// @param payload
+    void handleMessage(const std::vector<char> &payload) override
     {
-        if (tokens.size() < 2)
+        // FIXME: check fin, code etc.
+        const std::string firstLine = LOOLProtocol::getFirstLine(payload.data(), payload.size());
+
+        const StringVector tokens(StringVector::tokenize(firstLine, ' '));
+        LOG_DBG("Module:[" << mpModule->getDetail().name << "] Recv: " << firstLine << " tokens " << tokens.size());
+
+        // 一定要有資料
+        if (tokens.empty())
         {
-            LOG_DBG("Auth command without any token");
-            sendMessage("InvalidAuthToken");
+            LOG_TRC("too few tokens");
+            return;
+        }
+
+        if (tokens.equals(0, "auth"))
+        {
+            if (tokens.size() < 2)
+            {
+                LOG_DBG("Auth command without any token");
+                sendMessage("InvalidAuthToken");
+                shutdown();
+                ignoreInput();
+                return;
+            }
+            std::string jwtToken;
+            LOOLProtocol::getTokenString(tokens[1], "jwt", jwtToken);
+
+            LOG_INF("Verifying JWT token: " << jwtToken);
+            JWTAuth authAgent("admin", "admin", "admin");
+            if (authAgent.verify(jwtToken))
+            {
+                LOG_TRC("JWT token is valid");
+                mbIsAuthenticated = true;
+                return;
+            }
+            else
+            {
+                LOG_DBG("Invalid auth token");
+                sendMessage("InvalidAuthToken");
+                shutdown();
+                ignoreInput();
+                return;
+            }
+        }
+
+        // 未認證過就擋掉
+        if (!mbIsAuthenticated)
+        {
+            LOG_DBG("Not authenticated - message is '" << firstLine << "' " <<
+                    tokens.size() << " first: '" << tokens[0] << '\'');
+            sendMessage("NotAuthenticated");
             shutdown();
             ignoreInput();
             return;
         }
-        std::string jwtToken;
-        LOOLProtocol::getTokenString(tokens[1], "jwt", jwtToken);
 
-        LOG_INF("Verifying JWT token: " << jwtToken);
-        JWTAuth authAgent("admin", "admin", "admin");
-        if (authAgent.verify(jwtToken))
+        // 取得模組詳細資訊
+        if (tokens.equals(0, "getModuleInfo"))
         {
-            LOG_TRC("JWT token is valid");
-            mbIsAuthenticated = true;
-            return;
+            sendTextFrame("moduleInfo " + getModuleInfoJson());
+        }
+        else // 交給模組處理
+        {
+            std::string result = mpModule->handleAdminMessage(tokens);
+            // 傳回結果
+            if (!result.empty())
+                sendTextFrame(result);
+            else // 紀錄收到未知指令
+                LOG_WRN("Admin Module [" << mpModule->getDetail().name
+                                        << "] received an unknown command: '"
+                                        << firstLine);
+        }
+    }
+
+private:
+    /// @brief 送出文字給已認證過的 client.
+    /// @param message 文字訊息
+    /// @param flush The data will be sent out immediately, the default is false.
+    void sendTextFrame(const std::string& message, bool flush = false)
+    {
+        if (mbIsAuthenticated)
+        {
+            LOG_DBG("Send admin module text frame '" << message << '\'');
+            sendMessage(message.c_str(), message.size(), WSOpCode::Text, flush);
         }
         else
+            LOG_WRN("Skip sending message to non-authenticated admin module client: '" << message << '\'');
+    }
+
+    /// @brief  取得模組詳細資訊
+    /// @return JSON 字串
+    std::string getModuleInfoJson()
+    {
+        std::ostringstream oss;
+        mpModule->getAdminDetailJson()->stringify(oss);
+        return oss.str();
+    }
+
+private:
+    /// @brief 模組 Class
+    OxOOL::Module::Ptr mpModule;
+    /// @brief 是否已認證過
+    bool mbIsAuthenticated;
+};
+
+class ModuleAgent : public SocketPoll
+{
+
+public:
+    ModuleAgent(const std::string& threadName) : SocketPoll(threadName)
+    {
+        purge();
+        startThread();
+    }
+
+    ~ModuleAgent() {}
+
+    static constexpr std::chrono::microseconds AgentTimeoutMicroS = std::chrono::seconds(60);
+
+    void handleRequest(OxOOL::Module::Ptr module,
+                       const Poco::Net::HTTPRequest& request,
+                       SocketDisposition& disposition)
+    {
+        setBusy(true); // 設定忙碌狀態
+
+        mpSavedModule = module;
+        mpSavedSocket = std::static_pointer_cast<StreamSocket>(disposition.getSocket());
+// Poco 版本小於 1.10，mRequest 必須 parse 才能產生
+#if POCO_VERSION < 0x010A0000
         {
-            LOG_DBG("Invalid auth token");
-            sendMessage("InvalidAuthToken");
-            shutdown();
-            ignoreInput();
-            return;
+            (void)request;
+            StreamSocket::MessageMap map;
+            Poco::MemoryInputStream message(&mpSavedSocket->getInBuffer()[0],
+                                            mpSavedSocket->getInBuffer().size());
+            if (!mpSavedSocket->parseHeader("Client", message, mRequest, &map))
+            {
+                LOG_ERR("Create HTTPRequest fail! stop running");
+                stopRunning();
+                return;
+            }
+            mRequest.setURI(request.getURI());
         }
+#else // 否則直接複製
+        mRequest = request;
+#endif
+
+        disposition.setMove([=](const std::shared_ptr<Socket>& moveSocket)
+        {
+            insertNewSocket(moveSocket);
+            startRunning();
+        });
     }
 
-    // 未認證過就擋掉
-    if (!mbIsAuthenticated)
+    void pollingThread() override
     {
-        LOG_DBG("Not authenticated - message is '" << firstLine << "' " <<
-                tokens.size() << " first: '" << tokens[0] << '\'');
-        sendMessage("NotAuthenticated");
-        shutdown();
-        ignoreInput();
-        return;
-    }
+        while (SocketPoll::continuePolling() && !SigUtil::getTerminationFlag())
+        {
+            // 正在處理請求
+            if (isBusy())
+            {
+                if ((mpSavedSocket != nullptr && mpSavedSocket->isClosed()) && !isModuleRunning())
+                {
+                    purge(); // 清理資料，恢復閒置狀態，可以再利用
+                }
+            }
+            int64_t rc = poll(AgentTimeoutMicroS);
+            if (rc == 0) // polling timeout.
+            {
+                // 現在時間
+                std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+                auto durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime);
+                // 閒置超過預設時間，就脫離迴圈
+                if (durationTime >= AgentTimeoutMicroS)
+                {
+                    break;
+                }
+            }
+            else if (rc > 0) // Number of Events signalled.
+            {
+                // 被 wakeup，紀錄目前時間
+                mpLastIdleTime = std::chrono::steady_clock::now();
+            }
+            else // error
+            {
+                // do nothing.
+            }
+        }
 
-    // 取得模組詳細資訊
-    if (tokens.equals(0, "getModuleInfo"))
+        // 執行緒已經結束，觸發清理程序
+        OxOOL::ModuleManager &manager = OxOOL::ModuleManager::instance();
+        manager.cleanupDeadAgents();
+
+        // 觸發 ConvertBroker 清理程序
+        OxOOL::ConvertBroker::cleanup();
+    }
+    bool isIdle() const { return isAlive() && !isBusy(); }
+
+private:
+    /// @brief 從執行緒代理請求
+    void startRunning()
     {
-        sendTextFrame("moduleInfo " + getModuleInfoJson());
+        // 讓 thread 執行，流程交還給 Main thread.
+        // 凡是加進 Callback 執行的 function 都是在 agent thread 排隊執行
+        addCallback([this]()
+        {
+            setModuleRunning(true);
+
+            // 是否為 admin service
+            const bool isAdminService = mpSavedModule->isAdminService(mRequest);
+
+            // 不需要認證或已認證通過
+            if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket, isAdminService))
+            {
+                // 依據 service uri 決定要給哪個 reauest 處理
+                if (isAdminService)
+                    mpSavedModule->handleAdminRequest(mRequest, mpSavedSocket); // 管理介面
+                else
+                    mpSavedModule->handleRequest(mRequest, mpSavedSocket); // Restful API
+            }
+            stopRunning();
+        });
     }
-    else // 交給模組處理
+
+    /// @brief 代理請求結束
+    void stopRunning()
     {
-        std::string result = mpModule->handleAdminMessage(tokens);
-        // 傳回結果
-        if (!result.empty())
-            sendTextFrame(result);
-        else // 紀錄收到未知指令
-            LOG_WRN("Admin Module [" << mpModule->getDetail().name
-                                     << "] received an unknown command: '"
-                                     << firstLine);
+        setModuleRunning(false); // 模組已經結束
+        wakeup();  // 喚醒 thread.(就是 ModuleAgent::pollingThread() loop)
     }
-}
 
-ModuleAdminSocketHandler::ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
-                                                   const std::weak_ptr<StreamSocket>& socket,
-                                                   const Poco::Net::HTTPRequest& request)
-    : WebSocketHandler(socket.lock(), request),
-      mpModule(module),
-      mbIsAuthenticated(false)
-{
-}
+    /// @brief 設定是否忙碌旗標
+    /// @param onOff
+    void setBusy(bool onOff) { mbBusy = onOff; }
 
-void ModuleAdminSocketHandler::sendTextFrame(const std::string& message, bool flush)
-{
-    if (mbIsAuthenticated)
+    /// @brief 是否忙碌
+    /// @return true: 是
+    bool isBusy() const { return mbBusy; }
+
+    /// @brief 設定模組是否執行中
+    /// @param onOff
+    void setModuleRunning(bool onOff)
     {
-        LOG_DBG("Send admin module text frame '" << message << '\'');
-        sendMessage(message.c_str(), message.size(), WSOpCode::Text, flush);
+        mbModuleRunning = onOff;
     }
-    else
-        LOG_WRN("Skip sending message to non-authenticated admin module client: '" << message << '\'');
-}
 
-std::string ModuleAdminSocketHandler::getModuleInfoJson()
-{
-    std::ostringstream oss;
-    mpModule->getAdminDetailJson()->stringify(oss);
-    return oss.str();
-}
+    /// @brief 模組是否正在執行
+    /// @return true: 是
+    bool isModuleRunning() const
+    {
+        return mbModuleRunning;
+    }
+
+    /// @brief 清除最近代理的資料，並恢復閒置狀態
+    void purge()
+    {
+        // 觸發 ConvertBroker 清理程序
+        OxOOL::ConvertBroker::cleanup();
+
+        mpSavedModule = nullptr;
+        mpSavedSocket = nullptr;
+        setModuleRunning(false);
+        setBusy(false);
+        mpLastIdleTime = std::chrono::steady_clock::now(); // 紀錄最近閒置時間
+    }
+
+    /// @brief 最近閒置時間
+    std::chrono::steady_clock::time_point mpLastIdleTime;
+
+    /// @brief 與 Client 的 socket
+    std::shared_ptr<StreamSocket> mpSavedSocket;
+
+    /// @brief 要代理的模組
+    OxOOL::Module::Ptr mpSavedModule;
+    /// @brief HTTP Request
+    Poco::Net::HTTPRequest mRequest;
+
+    /// @brief 是否正在代理請求
+    std::atomic<bool> mbBusy;
+    /// @brief 模組正在處理代理送去的請求
+    std::atomic<bool> mbModuleRunning;
+};
 
 constexpr std::chrono::microseconds ModuleAgent::AgentTimeoutMicroS;
 
-ModuleAgent::ModuleAgent(const std::string& threadName) :
-    SocketPoll(threadName)
-{
-    purge();
-    startThread();
-}
-
-void ModuleAgent::handleRequest(OxOOL::Module::Ptr module,
-                                const Poco::Net::HTTPRequest& request,
-                                SocketDisposition& disposition)
-{
-    setBusy(true); // 設定忙碌狀態
-
-    mpSavedModule = module;
-    mpSavedSocket = std::static_pointer_cast<StreamSocket>(disposition.getSocket());
-// Poco 版本小於 1.10，mRequest 必須 parse 才能產生
-#if POCO_VERSION < 0x010A0000
-    {
-        (void)request;
-        StreamSocket::MessageMap map;
-        Poco::MemoryInputStream message(&mpSavedSocket->getInBuffer()[0],
-                                        mpSavedSocket->getInBuffer().size());
-        if (!mpSavedSocket->parseHeader("Client", message, mRequest, &map))
-        {
-            LOG_ERR("Create HTTPRequest fail! stop running");
-            stopRunning();
-            return;
-        }
-        mRequest.setURI(request.getURI());
-    }
-#else // 否則直接複製
-    mRequest = request;
-#endif
-
-    disposition.setMove([=](const std::shared_ptr<Socket>& moveSocket)
-    {
-        insertNewSocket(moveSocket);
-        startRunning();
-    });
-}
-
-void ModuleAgent::pollingThread()
-{
-    while (SocketPoll::continuePolling() && !SigUtil::getTerminationFlag())
-    {
-        // 正在處理請求
-        if (isBusy())
-        {
-            if ((mpSavedSocket != nullptr && mpSavedSocket->isClosed()) && !isModuleRunning())
-            {
-                purge(); // 清理資料，恢復閒置狀態，可以再利用
-            }
-        }
-        int64_t rc = poll(AgentTimeoutMicroS);
-        if (rc == 0) // polling timeout.
-        {
-            // 現在時間
-            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-            auto durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime);
-            // 閒置超過預設時間，就脫離迴圈
-            if (durationTime >= AgentTimeoutMicroS)
-            {
-                break;
-            }
-        }
-        else if (rc > 0) // Number of Events signalled.
-        {
-            // 被 wakeup，紀錄目前時間
-            mpLastIdleTime = std::chrono::steady_clock::now();
-        }
-        else // error
-        {
-            // do nothing.
-        }
-    }
-
-    // 執行緒已經結束，觸發清理程序
-    OxOOL::ModuleManager &manager = OxOOL::ModuleManager::instance();
-    manager.cleanupDeadAgents();
-
-    // 觸發 ConvertBroker 清理程序
-    OxOOL::ConvertBroker::cleanup();
-}
-
-void ModuleAgent::startRunning()
-{
-    // 讓 thread 執行，流程交還給 Main thread.
-    // 凡是加進 Callback 執行的 function 都是在 agent thread 排隊執行
-    addCallback([this]()
-    {
-        setModuleRunning(true);
-
-        // 是否為 admin service
-        const bool isAdminService = mpSavedModule->isAdminService(mRequest);
-
-        // 不需要認證或已認證通過
-        if (!mpSavedModule->needAdminAuthenticate(mRequest, mpSavedSocket, isAdminService))
-        {
-            // 依據 service uri 決定要給哪個 reauest 處理
-            if (isAdminService)
-                mpSavedModule->handleAdminRequest(mRequest, mpSavedSocket); // 管理介面
-            else
-                mpSavedModule->handleRequest(mRequest, mpSavedSocket); // Restful API
-        }
-        stopRunning();
-    });
-}
-
-void ModuleAgent::stopRunning()
-{
-    setModuleRunning(false); // 模組已經結束
-    wakeup();  // 喚醒 thread.(就是 ModuleAgent::pollingThread() loop)
-}
-
-void ModuleAgent::purge()
-{
-    // 觸發 ConvertBroker 清理程序
-    OxOOL::ConvertBroker::cleanup();
-
-    mpSavedModule = nullptr;
-    mpSavedSocket = nullptr;
-    setModuleRunning(false);
-    setBusy(false);
-    mpLastIdleTime = std::chrono::steady_clock::now(); // 紀錄最近閒置時間
-}
+std::mutex mAgentsMutex;
+std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
 
 
 ModuleManager::ModuleManager() :
@@ -379,6 +458,10 @@ void ModuleManager::loadModulesFromDirectory(const std::string& configPath)
 bool ModuleManager::loadModuleConfig(const std::string& configFile,
                                      const std::string& userLibraryPath)
 {
+    // 副檔名不是 xml 不處理
+    if (Poco::Path(configFile).getExtension() != "xml")
+        return false;
+
     // 不是 OxOOL module config 不處理
     OxOOL::XMLConfig config(configFile);
     if (!config.has("module"))
@@ -560,13 +643,14 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
             moduleAgent = std::make_shared<ModuleAgent>("Module Agent");
             mpAgentsPool.push_back(moduleAgent);
         }
-        moduleAgent->handleRequest(module, request, disposition);
         agentsLock.unlock();
+        moduleAgent->handleRequest(module, request, disposition);
 
         return true;
     }
 
     // 2. 再看看是否爲後臺模組管理要求升級 Websocket
+    // URL: /lool/adminws/<模組名稱>
     std::vector<std::string> segments;
     Poco::URI(request.getURI()).getPathSegments(segments);
     if (segments.size() == 3 &&
@@ -574,12 +658,11 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
         segments[1] == "adminws")
     {
         LOG_INF("Admin module request: " << request.getURI());
+        const std::string& moduleName = segments[2];
 
         // 轉成 std::weak_ptr
         const std::weak_ptr<StreamSocket> socketWeak =
               std::static_pointer_cast<StreamSocket>(disposition.getSocket());
-        // URL: /lool/adminws/<模組名稱>
-        const std::string& moduleName = segments[2];
         if (handleAdminWebsocketRequest(moduleName, socketWeak, request))
         {
             disposition.setMove([this](const std::shared_ptr<Socket> &moveSocket)
@@ -589,7 +672,6 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
             });
             return true;
         }
-        return false;
     }
 
     return false;

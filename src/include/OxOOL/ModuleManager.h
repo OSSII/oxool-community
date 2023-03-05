@@ -6,119 +6,23 @@
 
 #pragma once
 
-#include <OxOOL/OxOOL.h>
-#include <OxOOL/ConvertBroker.h>
-#include <OxOOL/Module/Base.h>
-#include <OxOOL/HttpHelper.h>
-
 #include <string>
-#include <map>
 #include <vector>
-#include <chrono>
-#include <memory>
-#include <thread>
-#include <mutex>
 
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/HTTPResponse.h>
-#include <Poco/JSON/Object.h>
+#include <OxOOL/Module/Base.h>
 
 #include <net/Socket.hpp>
-#include <net/WebSocketHandler.hpp>
-#include <wsd/Admin.hpp>
+
+namespace Poco
+{
+namespace Net
+{
+    class HTTPRequest;
+} // namespace Net
+} // namespace Poco
 
 namespace OxOOL
 {
-
-/// @brief 處理模組 client 的 Websocket 請求和回覆
-class ModuleAdminSocketHandler : public WebSocketHandler
-{
-public:
-    ModuleAdminSocketHandler(const OxOOL::Module::Ptr& module,
-                             const std::weak_ptr<StreamSocket>& socket,
-                             const Poco::Net::HTTPRequest& request);
-
-    /// @brief 處理收到的 web socket 訊息，並傳送給模組處理
-    /// @param data
-    void handleMessage(const std::vector<char> &data) override;
-
-private:
-    /// @brief 送出文字給已認證過的 client.
-    /// @param message 文字訊息
-    /// @param flush The data will be sent out immediately, the default is false.
-    void sendTextFrame(const std::string& message, bool flush = false);
-
-    /// @brief  取得模組詳細資訊
-    /// @return JSON 字串
-    std::string getModuleInfoJson();
-
-private:
-    /// @brief 模組 Class
-    OxOOL::Module::Ptr mpModule;
-    /// @brief 是否已認證過
-    bool mbIsAuthenticated;
-};
-
-class ModuleAgent : public SocketPoll
-{
-
-public:
-    ModuleAgent(const std::string& threadName);
-
-    ~ModuleAgent() {}
-
-    static constexpr std::chrono::microseconds AgentTimeoutMicroS = std::chrono::seconds(60);
-
-    void handleRequest(OxOOL::Module::Ptr module,
-                       const Poco::Net::HTTPRequest& request,
-                       SocketDisposition& disposition);
-
-    void pollingThread() override;
-
-    bool isIdle() const { return isAlive() && !isBusy(); }
-
-private:
-    /// @brief 從執行緒代理請求
-    void startRunning();
-
-    /// @brief 代理請求結束
-    void stopRunning();
-
-    /// @brief 設定是否忙碌旗標
-    /// @param onOff
-    void setBusy(bool onOff) { mbBusy = onOff; }
-
-    /// @brief 是否忙碌
-    /// @return true: 是
-    bool isBusy() const { return mbBusy; }
-
-    /// @brief 設定模組是否執行中
-    /// @param onOff
-    void setModuleRunning(bool onOff) { mbModuleRunning = onOff; }
-
-    /// @brief 模組是否正在執行
-    /// @return true: 是
-    bool isModuleRunning() const { return mbModuleRunning; }
-
-    /// @brief 清除最近代理的資料，並恢復閒置狀態
-    void purge();
-
-    /// @brief 最近閒置時間
-    std::chrono::steady_clock::time_point mpLastIdleTime;
-
-    /// @brief 與 Client 的 socket
-    std::shared_ptr<StreamSocket> mpSavedSocket;
-
-    /// @brief 要代理的模組
-    OxOOL::Module::Ptr mpSavedModule;
-    /// @brief HTTP Request
-    Poco::Net::HTTPRequest mRequest;
-
-    /// @brief 是否正在代理請求
-    std::atomic<bool> mbBusy;
-    /// @brief 模組正在處理代理送去的請求
-    std::atomic<bool> mbModuleRunning;
-};
 
 class ModuleManager : public SocketPoll
 {
@@ -197,10 +101,6 @@ public:
 
 private:
     OxOOL::Module::Ptr handleByModule(const Poco::Net::HTTPRequest& request);
-
-private:
-    std::mutex mAgentsMutex;
-    std::vector<std::shared_ptr<ModuleAgent>> mpAgentsPool;
 };
 
 } // namespace OxOOL
