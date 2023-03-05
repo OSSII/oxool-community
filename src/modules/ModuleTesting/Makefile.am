@@ -1,4 +1,4 @@
-
+if ENABLE_DEBUG
 include_paths = -I$(abs_top_builddir)/src/include \
 		-I$(abs_top_builddir)/common \
 		-I$(abs_top_builddir)/net \
@@ -16,4 +16,4 @@ ModuleTesting_la_CPPFLAGS = -pthread ${include_paths}
 ModuleTesting_la_LDFLAGS = -avoid-version -module
 
 ModuleTesting_la_SOURCES = src/ModuleTesting.cpp
-
+endif

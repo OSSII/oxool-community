@@ -18,6 +18,7 @@
 
 #include <net/Socket.hpp>
 #include <net/NetUtil.hpp>
+#include <common/Log.hpp>
 
 /**
  * @brief 用於模組開發階段使用
@@ -51,6 +52,7 @@ public:
         std::string clentAddress = socket->clientAddress();
         if (!net::isLocalhost(clentAddress))
         {
+            LOG_ERR(logTitle() << "Deny module testing requests from non-localhost.");
             OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_FORBIDDEN, socket);
             return;
         }
@@ -121,13 +123,20 @@ private:
     /// @brief 建立測試 URL 檔
     void createTestingFile()
     {
-        std::ofstream out(maTestingFile);
-
-        out << OxOOL::HttpHelper::getProtocol()
-            << "localhost:" << OxOOL::HttpHelper::getPortNumber()
-            << getDetail().serviceURI
-            << "?config=";
-        out.close();
+        std::ofstream out(maTestingFile, std::ios::trunc|std::ios::out|std::ios::binary);
+        if (out.is_open())
+        {
+            out << OxOOL::HttpHelper::getProtocol()
+                << "localhost:" << OxOOL::HttpHelper::getPortNumber()
+                << getDetail().serviceURI
+                << "?config=";
+            out.close();
+            LOG_DBG(logTitle() << maTestingFile << " create successfully.");
+        }
+        else
+        {
+            LOG_ERR(logTitle() << "Unable to create" << maTestingFile);
+        }
     }
 
 private:
