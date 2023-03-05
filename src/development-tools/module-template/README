@@ -65,9 +65,7 @@ Then you will see oxool-module-[name]-...-1.x86_64.rpm in perent directory.
 
 Test during development:
 ========================
-You can start oxoolwsd on the local side,
-It is not recommended to test in a formal environment,
-Start oxoolwsd with 'make run'.
+Please use 'maek run' to enable the test environment.
 
 Then in the project directory, modify and compile the code,
 To view the results locally, you can enter the command:
