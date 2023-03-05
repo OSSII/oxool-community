@@ -1,6 +1,6 @@
 /* -*- js-indent-level: 8 -*- */
 /* Stringtable for Admin Console User Interface */
-/* global _ _UNO SERVICE_ROOT */
+/* global $ _ _UNO SERVICE_ROOT */
 var l10nstrings = {
 	productName: 'OxOffice Online Community',
 	/**
@@ -18,7 +18,7 @@ var l10nstrings = {
 		var trAttrs = ['_', '_UNO', 'title', 'placeholder'];
 		DOM.querySelectorAll('[' + trAttrs.join('],[') + ']').forEach(function(el) {
 			for (var idx in trAttrs) {
-				var attrName = trAttrs[idx]
+				var attrName = trAttrs[idx];
 				if (el.hasAttribute(attrName)) {
 					// 讀取該 attribute 字串
 					var origStr = el.getAttribute(attrName);
@@ -60,21 +60,21 @@ var l10nstrings = {
 		var mainMenu = document.getElementById('mainMenu');
 
 		mainMenuArray.forEach(function(item) {
-            var menuItem = document.createElement('a');
-            menuItem.classList.add('list-group-item', 'list-group-item-action');
-            menuItem.id = 'admin-' + item.file;
-            menuItem.href = SERVICE_ROOT + '/loleaflet/dist/admin/' + item.file
+			var menuItem = document.createElement('a');
+			menuItem.classList.add('list-group-item', 'list-group-item-action');
+			menuItem.id = 'admin-' + item.file;
+			menuItem.href = SERVICE_ROOT + '/loleaflet/dist/admin/' + item.file;
 
-            var menuIcon = document.createElement('i');
-            menuIcon.classList.add('bi');
-            if (item.icon !== undefined && item.icon !== '') {
-                menuIcon.classList.add('bi-' + item.icon);
-                menuIcon.innerHTML = '&nbsp;&nbsp;'
-            }
-            menuItem.appendChild(menuIcon);
-            menuItem.appendChild(document.createTextNode(item.name));
-            mainMenu.appendChild(menuItem);
-        }.bind(this));
+			var menuIcon = document.createElement('i');
+			menuIcon.classList.add('bi');
+			if (item.icon !== undefined && item.icon !== '') {
+				menuIcon.classList.add('bi-' + item.icon);
+				menuIcon.innerHTML = '&nbsp;&nbsp;';
+			}
+			menuItem.appendChild(menuIcon);
+			menuItem.appendChild(document.createTextNode(item.name));
+			mainMenu.appendChild(menuItem);
+		}.bind(this));
 	},
 
 	/**
@@ -86,36 +86,36 @@ var l10nstrings = {
 		var mainMenu = document.getElementById('mainMenu');
 
 		moduleMenuArray.forEach(function(item) {
-            var menuItem = document.createElement('a');
-            menuItem.classList.add('list-group-item', 'list-group-item-action');
-            menuItem.id = 'admin-' + item.name;
-            menuItem.href = SERVICE_ROOT + item.adminServiceURI;
+			var menuItem = document.createElement('a');
+			menuItem.classList.add('list-group-item', 'list-group-item-action');
+			menuItem.id = 'admin-' + item.name;
+			menuItem.href = SERVICE_ROOT + item.adminServiceURI;
 
-            var menuIcon = document.createElement('i');
-            menuIcon.classList.add('bi');
-            if (item.adminIcon !== undefined && item.adminIcon !== '') {
-                menuIcon.classList.add('bi-' + item.adminIcon);
-                menuIcon.innerHTML = '&nbsp;&nbsp;'
-            }
-            menuItem.appendChild(menuIcon);
-            menuItem.appendChild(document.createTextNode(_(item.adminItem)));
-            mainMenu.appendChild(menuItem);
-        }.bind(this));
+			var menuIcon = document.createElement('i');
+			menuIcon.classList.add('bi');
+			if (item.adminIcon !== undefined && item.adminIcon !== '') {
+				menuIcon.classList.add('bi-' + item.adminIcon);
+				menuIcon.innerHTML = '&nbsp;&nbsp;';
+			}
+			menuItem.appendChild(menuIcon);
+			menuItem.appendChild(document.createTextNode(_(item.adminItem)));
+			mainMenu.appendChild(menuItem);
+		}.bind(this));
 	},
 
 	setActiveItem: function() {
 		var menuList = $('#mainMenu .list-group-item');
-        // 找出與本頁相符的 item
-        for (var i=0 ; i < menuList.length ; i++) {
-            var element = menuList[i];
-            if (element.href === window.location.href)
-            {
-                document.title = this.productName + ' - ' + _('Admin console') + ' / ' + element.innerText;
-                $('#functionTitle').html(element.innerHTML); // 更新導行列標題
-                element.classList.add('active'); // 設定這個 item 是 active
-                break;
-            }
-        }
+		// 找出與本頁相符的 item
+		for (var i=0 ; i < menuList.length ; i++) {
+			var element = menuList[i];
+			if (element.href === window.location.href)
+			{
+				document.title = this.productName + ' - ' + _('Admin console') + ' / ' + element.innerText;
+				$('#functionTitle').html(element.innerHTML); // 更新導行列標題
+				element.classList.add('active'); // 設定這個 item 是 active
+				break;
+			}
+		}
 	},
 
 	// 內部翻譯的字串陣列
