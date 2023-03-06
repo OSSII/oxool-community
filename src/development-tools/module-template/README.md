@@ -32,9 +32,9 @@ Module definition configuration file in XML format.
 
 All module behaviors are defined here.
 
-Please refer to the content of this file forthe purpose of each definition.
-
 If you want to change settings or attributes, please use the 'oxool-xml-config' command to avoid conflicts with XML-specific characters.
+
+For details, please refer to the __ModuleConfiguration.md__ description.
 
 ##### __Build the module manually:__
 
