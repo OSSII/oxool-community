@@ -27,7 +27,7 @@ admin/
 	http(s)://yourhost:9980/loleaflet/dist/admin/admin.html
 
 	Console management uses some fremawork:
-	JQuery, JQuery-UI, and bootstrap 5.
+	JQuery, JQuery-UI, and Bootstrap 5.
 	You can also include other javascript packages in your project.
 
 module.xml.in
