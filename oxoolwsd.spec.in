@@ -17,6 +17,7 @@ Summary:        OxOffice Online WebSocket Daemon for @LOOLWSD_BRANCH@
 License:        MPL
 Provides:       oxoolwsd
 Obsoletes:	    oxoolwsd
+Obsoletes:	    %{name}-modules
 Source0:        @PACKAGE_NAME@-%{version}-@LOOLWSD_BRANCH@.tar.gz
 BuildRequires:  libcap-devel libpng-devel pam-devel gcc-c++ cppunit-devel make
 BuildRequires:  poco-devel >= 1.7.5
