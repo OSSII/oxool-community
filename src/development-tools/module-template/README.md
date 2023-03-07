@@ -50,7 +50,7 @@ make
 ./autogen.sh
 ./configure
 make dist
-rpmbuild -tb oxool-module-[name]....tag.rz
+rpmbuild -tb oxool-module-[name]....tag.gz
 ```
 
 Then you will see oxool-module-[name]-...x86_64.rpm in \~/rpmbuild/RPMS/x86_64/
@@ -63,7 +63,7 @@ Then you will see oxool-module-[name]-...x86_64.rpm in \~/rpmbuild/RPMS/x86_64/
 dpkg-buildpackage -b -rfakeroot -uc -us
 ```
 
-Then you will see oxool-module-[name]-...-1.x86_64.rpm in perent directory.
+Then you will see oxool-module-[name]\_...-1.amd64.deb in perent directory.
 
 ##### __Test during development:__
 

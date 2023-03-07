@@ -31,9 +31,7 @@ moduledir = @OXOOL_MODULES_DIR@
 module_LTLIBRARIES = @MODULE_NAME@.la
 @MODULE_NAME@_la_CPPFLAGS = -pthread -I$(abs_top_builddir) $(OXOOL_CFLAGS)
 @MODULE_NAME@_la_LDFLAGS = -avoid-version -module $(OXOOL_LIBS)
-@MODULE_NAME@_la_SOURCES = \
-	src/Module.hpp \
-	src/Module.cpp
+@MODULE_NAME@_la_SOURCES = src/Module.cpp
 endif
 
 install-data-local:

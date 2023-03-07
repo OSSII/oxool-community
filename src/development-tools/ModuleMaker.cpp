@@ -249,6 +249,7 @@ protected:
             "configure.ac",
             "debian/changelog",
             "debian/control",
+            "src/Module.cpp"
         };
         for (auto file : requiredFiles)
         {
