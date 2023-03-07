@@ -159,8 +159,8 @@ void Base::handleAdminRequest(const Poco::Net::HTTPRequest& request,
                               const std::shared_ptr<StreamSocket>& socket)
 {
 
-    std::string requestURI = request.getURI();
-    size_t stripLength = mDetail.adminServiceURI.length();
+    std::string requestURI = Poco::URI(request.getURI()).getPath();
+    std::size_t stripLength = mDetail.adminServiceURI.length();
     // 去掉 request 前導的 adminServiceURI
     std::string realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
     Poco::Path requestFile(maRootPath + "/admin" + realURI);
