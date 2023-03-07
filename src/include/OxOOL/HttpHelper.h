@@ -107,6 +107,7 @@ std::string getProtocol();
 int getPortNumber();
 
 /// @brief 取得 Client 端的語系
+/// 優先從網址列取得 lang= 所指定的語系，沒有的話，再判斷 request header 的 Accept-Language
 /// @param request
 /// @return std::string 語系，如 zh-TW, en 等，空字串表示未知
 std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request);

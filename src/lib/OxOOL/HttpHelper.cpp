@@ -15,8 +15,10 @@
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/Net/NameValueCollection.h>
+#include <Poco/URI.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
+#include <Poco/String.h>
 #include <Poco/TemporaryFile.h>
 #include <Poco/StreamCopier.h>
 
@@ -246,7 +248,18 @@ int getPortNumber()
 
 std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
 {
-    // header 是否有帶 Accept-Language
+    // 1. 讀取網址列是否有帶 lang=xx_XX 的參數，"lang" 一律轉小寫
+    const auto queryVec = Poco::URI(request.getURI()).getQueryParameters();
+    if (!queryVec.empty())
+    {
+        for (auto it : queryVec)
+        {
+            if (Poco::toLower(it.first) == "lang" && !it.second.empty())
+                return it.second;
+        }
+    }
+
+    // 2. 再看看 header 是否有帶 Accept-Language
     if (request.has("Accept-Language"))
     {
         const std::string &acceptLanguage = request.get("Accept-Language");
