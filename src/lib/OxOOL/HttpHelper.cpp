@@ -19,6 +19,7 @@
 #include <Poco/Path.h>
 #include <Poco/File.h>
 #include <Poco/String.h>
+#include <Poco/DateTimeFormatter.h>
 #include <Poco/TemporaryFile.h>
 #include <Poco/StreamCopier.h>
 
@@ -246,6 +247,11 @@ int getPortNumber()
     return LOOLWSD::getClientPortNumber();
 }
 
+std::string getServiceRoot()
+{
+    return LOOLWSD::ServiceRoot;
+}
+
 std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
 {
     // 1. 讀取網址列是否有帶 lang=xx_XX 的參數，"lang" 一律轉小寫
@@ -271,6 +277,12 @@ std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
     }
 
     return "";
+}
+
+std::string getHttpTimeNow()
+{
+    return Poco::DateTimeFormatter::format(Poco::Timestamp(),
+        Poco::DateTimeFormat::HTTP_FORMAT);
 }
 
 std::string getMimeType(const std::string& fileName)

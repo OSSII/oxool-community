@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include <Poco/Util/XMLConfiguration.h>
 
@@ -16,6 +17,8 @@ namespace OxOOL
 class XMLConfig final : public Poco::Util::XMLConfiguration
 {
 public:
+	using Ptr = std::shared_ptr<XMLConfig>;
+
 	XMLConfig() {}
 
 	XMLConfig(const std::string& configFile);

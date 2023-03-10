@@ -7,6 +7,7 @@
 
 #pragma once
 #include <OxOOL/OxOOL.h>
+#include <OxOOL/XMLConfig.h>
 
 #include <memory>
 
@@ -56,6 +57,16 @@ public:
     /// @return Poco::JSON::Object::Ptr
     Poco::JSON::Object::Ptr getAdminDetailJson(const std::string& langTag = std::string());
 
+    /// @brief 傳回模組配置檔(XML)的位置
+    /// @return
+    const std::string& getConfigFile() const { return maConfigFile; }
+
+    /// @brief 傳回操作配置檔的物件
+    /// @return
+    OxOOL::XMLConfig::Ptr getConfig();
+
+    /// @brief 傳回模組在本機所在的絕對路徑
+    /// @return
     const std::string& getDocumentRoot() const { return maRootPath; }
 
     /// @brief 請求是否是本模組處理
@@ -124,6 +135,7 @@ protected:
 
 private:
     Detail mDetail;
+    std::string maConfigFile; // 模組的配置檔
     std::string maRootPath; // 模組文件絕對路徑
 };
 

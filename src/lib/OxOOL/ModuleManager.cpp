@@ -568,6 +568,8 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
 
         // 設定模組詳細資訊
         module->getModule()->mDetail = detail;
+        // 紀錄這個模組的配置檔位置
+        module->getModule()->maConfigFile = configFile;
         // 設定模組文件絕對路徑
         module->getModule()->maRootPath = documentRoot;
 

@@ -11,29 +11,22 @@
 
 #include <string>
 
-namespace OxOOL
+namespace OxOOL::Util
 {
-namespace Util
-{
+/// 以 AES 256 加密字串
+std::string encryptAES256(const std::string& text,
+                            const std::string& password = std::string());
 
-    /// 以 AES 256 加密字串
-    std::string encryptAES256(const std::string& text,
-                              const std::string& password = std::string());
+/// 以 AES 256 解密字串
+std::string decryptAES256(const std::string& text,
+                            const std::string& password = std::string());
 
-    /// 以 AES 256 解密字串
-    std::string decryptAES256(const std::string& text,
-                              const std::string& password = std::string());
+/// @brief 將字串轉成 bool
+/// 如果字串內容是 "true"、"yes" "on" 或是數字非 "0"，則傳回 true，否則為 false
+/// @param str - 不分大小寫字串
+/// @return true / false
+bool stringToBool(const std::string& str);
 
-    /// @brief  取得用於 http 標頭的日期時間字串
-    /// @return std::string
-    std::string getHttpTimeNow();
-
-    /// @brief  取得所有頁面位址的前置字串
-    /// Get the prefix string of all page.
-    /// @return std::string
-    std::string getServiceRoot();
-
-} // namespace Util
-} // namespace OxOOL
+} // namespace OxOOL::Util
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

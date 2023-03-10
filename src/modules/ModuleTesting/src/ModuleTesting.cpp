@@ -67,7 +67,7 @@ public:
         {
             responseMsg = "Usage:\n"
                         + OxOOL::HttpHelper::getProtocol()
-                        + request.getHost() + OxOOL::Util::getServiceRoot()
+                        + request.getHost() + OxOOL::HttpHelper::getServiceRoot()
                         + getDetail().serviceURI + "?config={The module's xml config absolute path.}";
         }
         else

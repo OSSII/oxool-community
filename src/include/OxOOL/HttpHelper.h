@@ -106,11 +106,20 @@ std::string getProtocol();
 /// @return port number
 int getPortNumber();
 
+/// @brief  取得所有頁面位址的前置字串
+/// Get the prefix string of all page.
+/// @return std::string
+std::string getServiceRoot();
+
 /// @brief 取得 Client 端的語系
 /// 優先從網址列取得 lang= 所指定的語系，沒有的話，再判斷 request header 的 Accept-Language
 /// @param request
 /// @return std::string 語系，如 zh-TW, en 等，空字串表示未知
 std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request);
+
+/// @brief  取得用於 http 標頭的日期時間字串
+/// @return std::string
+std::string getHttpTimeNow();
 
 /// @brief 取得檔案的 Mime type
 /// @param fileName

@@ -6,6 +6,8 @@
  */
 
 #include <config.h>
+
+#include <string>
 #include <memory>
 
 #include <Poco/Net/NetException.h>
@@ -61,11 +63,19 @@ Poco::JSON::Object::Ptr Base::getAdminDetailJson(const std::string& langTag)
     return json;
 }
 
+OxOOL::XMLConfig::Ptr Base::getConfig()
+{
+    if (Poco::File(maConfigFile).exists())
+    {
+        return std::make_shared<OxOOL::XMLConfig>(maConfigFile);
+    }
+    return nullptr;
+}
+
 bool Base::isService(const Poco::Net::HTTPRequest& request) const
 {
     // 不含查詢字串的實際請求位址
     std::string requestURI = Poco::URI(request.getURI()).getPath();
-
 
     /* serviceURI 有兩種格式：
         一、 end point 格式：
@@ -81,11 +91,8 @@ bool Base::isService(const Poco::Net::HTTPRequest& request) const
     {
         bool correctModule = false; // 預設該模組非正確模組
 
-        // service uri 是否為 End point?(最後字元不是 '/')
-        bool isEndPoint = serviceURI.at(serviceURI.length() - 1) != '/';
-
-        // service uri 爲 end pointer，表示 request uri 和 service uri 需相符
-        if (isEndPoint)
+        // service uri 爲 end pointer(最後字元不是 '/')，表示 request uri 和 service uri 需相符
+        if (*serviceURI.rbegin() != '/')
         {
             correctModule = (serviceURI == requestURI);
         }
@@ -196,24 +203,20 @@ std::string Base::handleAdminMessage(const StringVector& tokens)
 std::string Base::parseRealURI(const Poco::Net::HTTPRequest& request) const
 {
     // 完整請求位址
-    std::string requestURI = request.getURI();
-    // 若帶有 '?key1=asd&key2=xxx' 參數字串，去除參數字串，只保留完整位址
-    if (size_t queryPos = requestURI.find_first_of('?'); queryPos != std::string::npos)
-        requestURI.resize(queryPos);
-
-    // service uri 是否為 End point?(最後字元不是 '/')
-    bool isEndPoint = mDetail.serviceURI.at(mDetail.serviceURI.length() - 1) != '/';
+    const std::string requestURI = Poco::URI(request.getURI()).getPath();
 
     std::string realURI = mDetail.serviceURI;
-    // 該位址是 end point，表示要取得最右邊 '/' 之後的字串
-    if (isEndPoint)
+
+    // 模組 service uri 是否為 endpoint?(最後字元不是 '/')
+    // 如果是 endpoint，表示要取得最右邊 '/' 之後的字串
+    if (*mDetail.serviceURI.rbegin() != '/')
     {
-        if (size_t lastPathSlash = requestURI.rfind('/'); lastPathSlash != std::string::npos)
+        if (std::size_t lastPathSlash = requestURI.rfind('/'); lastPathSlash != std::string::npos)
             realURI = requestURI.substr(lastPathSlash);
     }
     else
     {
-        size_t stripLength = mDetail.serviceURI.length();
+        std::size_t stripLength = mDetail.serviceURI.length();
         // 去掉前導的 serviceURI
         realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
     }
@@ -260,7 +263,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
 
     // 製作完整 HTML 頁面
     Poco::replaceInPlace(templateFile, std::string("<!--%MAIN_CONTENT%-->"), mainContent.str()); // Now template has the main content..
-    std::string responseRoot = OxOOL::Util::getServiceRoot();
+    std::string responseRoot = OxOOL::HttpHelper::getServiceRoot();
 
     // 帶入模組的多國語系設定檔
     static const std::string l10nJSON("<link rel=\"localizations\" href=\"%s/loleaflet/dist/admin/module/%s/localizations.json\" type=\"application/vnd.oftn.l10n+json\"/>");
@@ -288,7 +291,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     response.add("Referrer-Policy", "no-referrer");
     response.add("X-Content-Type-Options", "nosniff");
     response.set("Server", OxOOL::ENV::HttpServerString);
-    response.set("Date", OxOOL::Util::getHttpTimeNow());
+    response.set("Date", OxOOL::HttpHelper::getHttpTimeNow());
 
     response.setContentType("text/html");
     response.setChunkedTransferEncoding(false);
