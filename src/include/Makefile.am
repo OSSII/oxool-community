@@ -14,7 +14,8 @@ OxOOL_include_HEADERS = \
 
 OxOOL_Module_includedir = $(includedir)/OxOOL/Module
 OxOOL_Module_include_HEADERS = \
-	OxOOL/Module/Base.h
+	OxOOL/Module/Base.h \
+	OxOOL/Module/Map.h
 
 OxOOL_Net_includedir = $(includedir)/OxOOL/Net
 OxOOL_Net_include_HEADERS = \
