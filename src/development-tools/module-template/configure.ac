@@ -44,6 +44,9 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 
+CXXFLAGS="$CXXFLAGS -std=c++17"
+LIBS="$LIBS -lstdc++fs"
+
 # Checks for library functions.
 
 XML_CONFIG_CMD=`which "${OXOOL_NAME}-xml-config"`
