@@ -49,8 +49,7 @@ public:
                        const std::shared_ptr<StreamSocket>& socket) override
     {
         // 檢查是否來自 localhost
-        std::string clentAddress = socket->clientAddress();
-        if (!net::isLocalhost(clentAddress))
+        if (!net::isLocalhost(socket->clientAddress()))
         {
             LOG_ERR(logTitle() << "Deny module testing requests from non-localhost.");
             OxOOL::HttpHelper::sendErrorAndShutdown(Poco::Net::HTTPResponse::HTTP_FORBIDDEN, socket);

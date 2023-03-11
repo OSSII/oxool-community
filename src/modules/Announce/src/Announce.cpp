@@ -22,12 +22,7 @@ public:
         Poco::Net::HTTPResponse::HTTPStatus statusCode = Poco::Net::HTTPResponse::HTTP_OK;
 
         // 檢查是否來自 WOPI host
-        std::string clentAddress = socket->clientAddress();
-        if (Util::startsWith(clentAddress, "::ffff:"))
-            clentAddress = clentAddress.substr(7);
-        else if (clentAddress == "::1")
-            clentAddress = "127.0.0.1";
-
+        const std::string clentAddress = socket->clientAddress();
         // 非允許的 WOPI 主機，送出 403
         if (!HostUtil::allowedWopiHost(clentAddress) && !net::isLocalhost(clentAddress))
             statusCode = Poco::Net::HTTPResponse::HTTP_FORBIDDEN;
