@@ -20,6 +20,7 @@
 #include <Poco/Version.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
+#include <Poco/String.h>
 #include <Poco/Exception.h>
 #include <Poco/SharedLibrary.h>
 #include <Poco/SortedDirectoryIterator.h>
@@ -327,6 +328,14 @@ private:
         addCallback([this]()
         {
             setModuleRunning(true);
+
+            // 去掉 IPv4 前置的 ":ffff::"，如果有的話
+            // Remove IPv4 leading ":ffff::", if any.
+            if (Poco::startsWith(mpSavedSocket->clientAddress(), std::string("::ffff:")))
+            {
+                const std::string ipv4ClientAddress = mpSavedSocket->clientAddress().substr(7);
+                mpSavedSocket->setClientAddress(ipv4ClientAddress);
+            }
 
             // 是否為 admin service
             const bool isAdminService = mpSavedModule->isAdminService(mRequest);
