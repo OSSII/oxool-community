@@ -19,7 +19,8 @@ OxOOL_Module_include_HEADERS = \
 
 OxOOL_Net_includedir = $(includedir)/OxOOL/Net
 OxOOL_Net_include_HEADERS = \
-	OxOOL/Net/PrivateKeyHandler.h
+	OxOOL/Net/PrivateKeyHandler.h \
+	OxOOL/Net/Util.h
 
 # LibreOfficeKit headers
 lokit_headers = \

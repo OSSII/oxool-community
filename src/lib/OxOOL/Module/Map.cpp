@@ -36,7 +36,7 @@ void Map::setServiceURI(const std::string& serviceURI)
     maServiceURI = serviceURI;
 }
 
-void Map::set(const std::string& uri, RequestMethod allowedMethods, Callback callback)
+void Map::set(const std::string& uri, std::size_t allowedMethods, Callback callback)
 {
     // 第一的字元不是 '/' 就補上
     const std::string subURI = *uri.begin() == '/' ? uri : ('/' + uri);

@@ -12,6 +12,7 @@
 
 
 #include <Poco/String.h>
+#include <Poco/RegularExpression.h>
 #include <Poco/Crypto/Crypto.h>
 #include <Poco/Crypto/Cipher.h>
 #include <Poco/Crypto/CipherKey.h>
@@ -65,6 +66,38 @@ bool stringToBool(const std::string& str)
     {
         // do nothing.
     }
+    return false;
+}
+
+bool matchRegex(const std::set<std::string>& set, const std::string& subject)
+{
+    if (set.find(subject) != set.end())
+    {
+        return true;
+    }
+
+    // Not a perfect match, try regex.
+    for (const auto& value : set)
+    {
+        try
+        {
+            // Not performance critical to warrant caching.
+            Poco::RegularExpression re(value, Poco::RegularExpression::RE_CASELESS);
+            Poco::RegularExpression::Match reMatch;
+
+            // Must be a full match.
+            if (re.match(subject, reMatch) && reMatch.offset == 0 &&
+                reMatch.length == subject.size())
+            {
+                return true;
+            }
+        }
+        catch (const std::exception& exc)
+        {
+            // Nothing to do; skip.
+        }
+    }
+
     return false;
 }
 

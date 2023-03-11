@@ -9,6 +9,7 @@
 
 #include <OxOOL/OxOOL.h>
 
+#include <set>
 #include <string>
 
 namespace OxOOL::Util
@@ -26,6 +27,86 @@ std::string decryptAES256(const std::string& text,
 /// @param str - 不分大小寫字串
 /// @return true / false
 bool stringToBool(const std::string& str);
+
+/// Return true if the subject matches in given set. It uses regex
+/// Mainly used to match WOPI hosts patterns
+bool matchRegex(const std::set<std::string>& set, const std::string& subject);
+
+/// Given one or more patterns to allow, and one or more to deny,
+/// the match member will return true if, and only if, the subject
+/// matches the allowed list, but not the deny.
+/// By default, everything is denied.
+class RegexListMatcher
+{
+public:
+    RegexListMatcher() :
+        _allowByDefault(false)
+    {
+    }
+
+    RegexListMatcher(const bool allowByDefault) :
+        _allowByDefault(allowByDefault)
+    {
+    }
+
+    RegexListMatcher(std::initializer_list<std::string> allowed) :
+        _allowByDefault(false),
+        _allowed(allowed)
+    {
+    }
+
+    RegexListMatcher(std::initializer_list<std::string> allowed,
+                        std::initializer_list<std::string> denied) :
+        _allowByDefault(false),
+        _allowed(allowed),
+        _denied(denied)
+    {
+    }
+
+    RegexListMatcher(const bool allowByDefault,
+                        std::initializer_list<std::string> denied) :
+        _allowByDefault(allowByDefault),
+        _denied(denied)
+    {
+    }
+
+    void allow(const std::string& pattern) { _allowed.insert(pattern); }
+    void deny(const std::string& pattern)
+    {
+        _allowed.erase(pattern);
+        _denied.insert(pattern);
+    }
+
+    void clear()
+    {
+        _allowed.clear();
+        _denied.clear();
+    }
+
+    bool match(const std::string& subject) const
+    {
+        return (_allowByDefault ||
+                matchRegex(_allowed, subject)) &&
+                !matchRegex(_denied, subject);
+    }
+
+    // whether a match exist within both _allowed and _denied
+    bool matchExist(const std::string& subject) const
+    {
+        return (matchRegex(_allowed, subject) ||
+                matchRegex(_denied, subject));
+    }
+
+    bool empty() const
+    {
+        return _allowed.empty() && _denied.empty();
+    }
+
+private:
+    const bool _allowByDefault;
+    std::set<std::string> _allowed;
+    std::set<std::string> _denied;
+};
 
 } // namespace OxOOL::Util
 

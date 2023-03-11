@@ -61,7 +61,7 @@ public:
     /// @param uri - 去掉 serviceURI 後剩餘的 URI，需以 '/' 開頭
     /// @param allowedMethods - RequestMethod 所列舉項目，可多項，例如 GET | POST
     /// @param callback - 指定的 class method，可用簡化定義描述，例如 CALLBACK(&ClassName::MethodName)
-    void set(const std::string& uri, RequestMethod allowedMethods, Callback callback);
+    void set(const std::string& uri, std::size_t allowedMethods, Callback callback);
 
     /// @brief 分析請求的 URI，交給對應的程序處理
     /// @param request
