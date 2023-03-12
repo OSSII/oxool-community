@@ -12,11 +12,11 @@ EXTRA_DIST = \
 	debian/source/*
 
 if CUSTOM_HTML
-EXTRA_DIST += html/*
+EXTRA_DIST += html
 endif
 
 if ENABLE_ADMIN
-EXTRA_DIST += admin/*
+EXTRA_DIST += admin
 endif
 
 MODULE_DATA_DIR = @OXOOL_MODULE_DATA_DIR@/@MODULE_NAME@
@@ -37,11 +37,11 @@ endif
 install-data-local:
 if CUSTOM_HTML
 	$(MKDIR_P) $(DESTDIR)/$(MODULE_DATA_DIR)/html
-	cp -aR html/* $(DESTDIR)/$(MODULE_DATA_DIR)/html
+	cp -aR html/. $(DESTDIR)/$(MODULE_DATA_DIR)/html
 endif
 if ENABLE_ADMIN
 	$(MKDIR_P) $(DESTDIR)/$(MODULE_DATA_DIR)/admin
-	cp -aR admin/* $(DESTDIR)/$(MODULE_DATA_DIR)/admin
+	cp -aR admin/. $(DESTDIR)/$(MODULE_DATA_DIR)/admin
 endif
 
 uninstall-local:
