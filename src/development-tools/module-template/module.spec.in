@@ -12,8 +12,8 @@ License:        @MODULE_LICENSE@
 URL:            %URL%
 Source0:        @PACKAGE_TARNAME@-%{version}.tar.gz
 
-BuildRequires:  poco-devel >= 1.7.5, oxool-devel >= 4.2.0
-Requires:       oxool >= 4.2.0
+BuildRequires:  poco-devel >= 1.7.5, oxool-devel >= 4.0.0
+Requires:       oxool >= 4.0.0
 
 %description
 @MODULE_DESCRIPTION@
