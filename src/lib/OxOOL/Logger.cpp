@@ -28,7 +28,6 @@ namespace OxOOL
 
 Logger::~Logger()
 {
-
     // 停止日誌紀錄
     if (!maName.empty())
     {
@@ -38,6 +37,7 @@ Logger::~Logger()
 }
 
 Logger::Logger(OxOOL::XMLConfig::Ptr config)
+    : mnChannelType(None)
 {
     // 未啟用日誌就結束
     if (config->getString("logging[@enable]", "false") != "true")
@@ -47,7 +47,10 @@ Logger::Logger(OxOOL::XMLConfig::Ptr config)
     maName = config->getString("logging.name", "");
     // 沒有指定就結束
     if (maName.empty())
+    {
+        std::cerr << "Error! No log name specified, please view 'logging.name'" << std::endl;
         return;
+    }
 
     // 讀取 log level
     const std::string level = config->getString("logging.level", "trace");
@@ -57,6 +60,7 @@ Logger::Logger(OxOOL::XMLConfig::Ptr config)
     // 記錄到檔案
     if (config->getString("logging.file[@enable]", "false") == "true")
     {
+        // 參考 /usr/include/Poco/FileChannel.h
         channel = static_cast<Poco::Channel*>(new Poco::FileChannel());
         for (std::size_t i = 0; ; ++i)
         {
@@ -68,13 +72,33 @@ Logger::Logger(OxOOL::XMLConfig::Ptr config)
             const std::string value = config->getString(propKey, "");
 
             if (!name.empty())
+            {
                 channel->setProperty(name, value);
+
+                // 紀錄日誌所在路徑
+                if (name == "path")
+                    maLogFile = value;
+            }
         }
+
+        // 沒有指定日誌檔存放路徑
+        if (maLogFile.empty())
+        {
+            std::cerr << "Error! No log file storage path specified. "
+                      << "Please see 'logging.file.property[name=path]'" << std::endl;
+            return;
+        }
+
+        mnChannelType = FileChannel;
     }
     // 記錄到 syslog
     else if (config->getString("logging.syslog[@enable]", "false") == "true")
     {
+        // TODO: 未完成
+        // 參考 /usr/include/Poco/SyslogChannel.h
+        channel = static_cast<Poco::Channel*>(new Poco::SyslogChannel(maName));
 
+        mnChannelType = SyslogChannel;
     }
     // 否則輸出到螢幕(若是彩色輸出，請參考 /usr/include/Poco/ConsoleChannel.h)
     else
@@ -83,6 +107,8 @@ Logger::Logger(OxOOL::XMLConfig::Ptr config)
             channel = static_cast<Poco::Channel*>(new Poco::ColorConsoleChannel());
         else
             channel = static_cast<Poco::Channel*>(new Poco::ConsoleChannel());
+
+        mnChannelType = ConsoleChannel;
     }
 
     channel->open();
