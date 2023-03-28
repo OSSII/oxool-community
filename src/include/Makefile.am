@@ -6,6 +6,7 @@ OxOOL_include_HEADERS = \
 	OxOOL/ModuleManager.h \
 	OxOOL/HttpHelper.h \
 	OxOOL/L10NTranslator.h \
+	OxOOL/Logger.h \
 	OxOOL/XMLConfig.h \
 	OxOOL/ConvertBroker.h \
 	OxOOL/Util.h \

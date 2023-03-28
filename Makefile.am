@@ -141,6 +141,7 @@ oxoolextra_sources = \
 	src/lib/OxOOL/ModuleManager.cpp \
 	src/lib/OxOOL/HttpHelper.cpp \
 	src/lib/OxOOL/L10NTranslator.cpp \
+	src/lib/OxOOL/Logger.cpp \
 	src/lib/OxOOL/XMLConfig.cpp \
 	src/lib/OxOOL/ConvertBroker.cpp \
 	src/lib/OxOOL/Util.cpp \
