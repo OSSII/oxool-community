@@ -283,8 +283,6 @@ protected:
             _xmlConfig->setString("module.detail.name", "@MODULE_NAME@");
             // 服務位址
             _xmlConfig->setString("module.detail.serviceURI", serviceURI);
-            // 版本編號依據 configure.ac 所訂
-            _xmlConfig->setString("module.detail.version", "@PACKAGE_VERSION@");
             // 簡介
             _xmlConfig->setString("module.detail.summary", summary);
             // 作者依據 configure.ac 所訂

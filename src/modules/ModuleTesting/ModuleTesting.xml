@@ -4,7 +4,6 @@
         <detail>
             <name>ModuleTesting</name>
             <serviceURI>/module/testing</serviceURI>
-            <version>0.0.1</version>
             <summary>Used for testing during module development.</summary>
             <author>OSSII R&amp;D Team. &lt;https://www.ossii.com.tw/&gt;</author>
             <license>Mozilla Public License, version 2.0 &lt;https://www.mozilla.org/MPL/2.0/&gt;</license>

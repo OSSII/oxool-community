@@ -496,7 +496,6 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
         // 讀取模組詳細資訊
         detail.name = config.getString("module.detail.name", "");
         detail.serviceURI = config.getString("module.detail.serviceURI", "");
-        detail.version = config.getString("module.detail.version", "");
         detail.summary = config.getString("module.detail.summary", "");
         detail.author = config.getString("module.detail.author", "");
         detail.license = config.getString("module.detail.license", "");
@@ -576,6 +575,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
         }
 
         // 設定模組詳細資訊
+        detail.version = module->getModule()->getVersion();
         module->getModule()->mDetail = detail;
         // 紀錄這個模組的配置檔位置
         module->getModule()->maConfigFile = configFile;

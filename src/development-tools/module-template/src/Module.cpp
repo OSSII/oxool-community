@@ -28,6 +28,13 @@ public:
         // Put your code here.
     }
 
+    /// @brief 傳回模組版號
+    /// Returns the module version number.
+    std::string getVersion() override
+    {
+        return PACKAGE_VERSION;
+    }
+
     /// @brief 模組載入完畢後，初始化工作，只會在載入完畢後呼叫一次
     /// After the module is loaded, the initialization work will only be called once after
     /// the module is loaded.

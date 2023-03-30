@@ -88,6 +88,8 @@ public:
                                const std::shared_ptr<StreamSocket>& socket,
                                const bool callByAdmin = false);
 public:
+    /// @brief 取得模組版本編號
+    virtual std::string getVersion();
 
     /// @brief 模組載入完畢後，初始化工作，只會在載入完畢後呼叫一次
     virtual void initialize() {}

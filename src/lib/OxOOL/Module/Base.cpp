@@ -150,6 +150,11 @@ bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
     return needAuthenticate;
 }
 
+std::string Base::getVersion()
+{
+    return PACKAGE_VERSION;
+}
+
 void Base::handleRequest(const Poco::Net::HTTPRequest& request,
                          const std::shared_ptr<StreamSocket>& socket)
 {

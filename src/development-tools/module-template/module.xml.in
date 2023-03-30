@@ -4,7 +4,6 @@
         <detail>
             <name></name>
             <serviceURI></serviceURI>
-            <version></version>
             <summary></summary>
             <author></author>
             <license></license>
@@ -14,4 +13,25 @@
             <adminItem>ODF report template</adminItem>
         </detail>
     </module>
+
+    <!-- If you want to have the module's own log, please enable logggin enable="true". -->
+    <logging enable="false">
+		<name>@PACKAGE_TARNAME@</name>
+		<level desc="Can be 0-8, or none (turns off logging), fatal, critical, error, warning, notice, information, debug, trace" default="trace">information</level>
+		<file enable="true">
+			<property name="path" desc="Log file path.">/var/log/@PACKAGE_TARNAME@.log</property>
+			<property name="rotation" desc="Log file rotation strategy. See Poco FileChannel.">monthly</property>
+			<property name="archive" desc="Append either timestamp or number to the archived log filename.">timestamp</property>
+			<property name="times" desc="Specifies whether times for rotation are treated as local or UTC. Valid values are local and utc.">local</property>
+			<property name="compress" desc="Enable/disable log file compression.">true</property>
+			<property name="purgeAge" desc="The maximum age of log files to preserve. See Poco FileChannel.">10 days</property>
+			<property name="purgeCount" desc="The maximum number of log archives to preserve. Use 'none' to disable purging. See Poco FileChannel.">4</property>
+			<property name="rotateOnOpen" desc="Enable/disable log file rotation on opening.">true</property>
+			<property name="flush" desc="Enable/disable flushing after logging each line. May harm performance. Note that without flushing after each line, the log lines from the different processes will not appear in chronological order.">false</property>
+		</file>
+		<syslog enable="false">
+		</syslog>
+		<!-- If neither file nor syslog logging is enabled, console output will be used. -->
+		<color type="bool">true</color>
+	</logging>
 </config>

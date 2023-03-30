@@ -4,7 +4,6 @@
         <detail>
             <name>Alive</name>
             <serviceURI>/alive</serviceURI>
-            <version>0.0.1</version>
             <summary>Check if OxOOL server is alive.</summary>
             <author>OSSII R&amp;D Team. &lt;https://www.ossii.com.tw/&gt;</author>
             <license>Mozilla Public License, version 2.0 &lt;https://www.mozilla.org/MPL/2.0/&gt;</license>
