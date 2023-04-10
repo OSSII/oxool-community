@@ -822,7 +822,6 @@ L.Control.NotebookbarBuilder = L.Control.JSDialogBuilder.extend({
 	},
 
 	_downloadAsControl: function(parentContainer, data, builder) {
-		console.debug('haha  data',  data);
 		var options = {hasDropdownArrow: true};
 		var control = builder._unoToolButton(parentContainer, data, builder, options);
 

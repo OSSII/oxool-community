@@ -69,7 +69,6 @@ L.Control.ReadonlyBar = L.Control.extend({
 	},
 
 	getShortcutsBarData: function() {
-		console.debug('haha : ', this._map['wopi']);
 		var wopi = this._map['wopi'];
 		var shortcutsBarData = [
 			{
