@@ -215,7 +215,7 @@ L.Map.Mouse = L.Handler.extend({
 			this._mouseOverTimeout = setTimeout(L.bind(function() {
 				docLayer._postMouseEvent('move', Math.trunc(mousePos.x), Math.trunc(mousePos.y), 1, 0, modifier);
 			  }, this),
-			15);
+			100);
 		}
 		else if (e.type === 'dblclick' || e.type === 'trplclick' || e.type === 'qdrplclick') {
 			var clicks = {
