@@ -4200,7 +4200,13 @@ int LOOLWSD::innerMain()
     // We can open files with non-ASCII names just fine on iOS without this, and this code is
     // heavily Linux-specific anyway.
 
-    std::pair<std::string, std::string> sysLocale = Util::split(std::string(std::getenv("LANG")), '.');
+    char* LANG = std::getenv("LANG");
+
+    // If no language is set, the default is zh_TW.UTF-8.
+    if (LANG == NULL)
+        LANG = (char*)"zh_TW.UTF-8";
+
+    std::pair<std::string, std::string> sysLocale = Util::split(std::string(LANG), '.');
     std::string newLocale(sysLocale.first + ".UTF-8"); // Force UTF-8 encoding
 
     char* locale = std::setlocale(LC_ALL, newLocale.c_str());
