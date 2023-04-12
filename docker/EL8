@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1.4
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+FROM rockylinux:8
+
+# Environment variables
+ENV LC_CTYPE C.UTF-8
+
+# Setup scripts for OxOffice Online
+COPY /scripts/install-oxoffice-online-el8.sh /
+RUN bash install-oxoffice-online-el8.sh
+RUN rm -rf /install-oxoffice-online-el8.sh
+
+# Start script for OxOffice Online
+COPY --chmod=755 /scripts/start-oxoffice-online.sh /
+COPY --chmod=755 /scripts/start-oxoffice-online.pl /
+
+EXPOSE 9980
+
+# switch to lool user (use numeric user id to be compatible with Kubernetes Pod Security Policies)
+USER lool
+
+# Entry point
+CMD ["/start-oxoffice-online.sh"]
