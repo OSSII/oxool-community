@@ -22,6 +22,7 @@
 #include <OxOOL/Util/FileValidator.h>
 #include <OxOOL/Util/OptionlValidator.h>
 
+#include <Poco/Version.h>
 #include <Poco/String.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>

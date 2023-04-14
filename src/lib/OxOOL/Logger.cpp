@@ -13,6 +13,7 @@
 #include <OxOOL/Logger.h>
 #include <OxOOL/Util.h>
 
+#include <Poco/Version.h>
 #include <Poco/Channel.h>
 #include <Poco/ConsoleChannel.h>
 #include <Poco/FileChannel.h>
