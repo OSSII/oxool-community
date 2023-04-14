@@ -263,7 +263,14 @@ protected:
             /*
              * 一、複製範本目錄到專案目錄，若目標檔案已存在，會拋出例外
              */
+#if POCO_VERSION < 0x010A0000
+            if (Poco::File(projectPath.toString()).exists())
+                throw Poco::FileExistsException(projectPath.toString() + " already exists.");
+
+            templatePath.copyTo(projectPath.toString());
+#else
             templatePath.copyTo(projectPath.toString(), Poco::File::OPT_FAIL_ON_OVERWRITE);
+#endif
 
             /*
              * 二、更改指定範本檔的預設值

@@ -13,6 +13,7 @@
 #include <OxOOL/Logger.h>
 #include <OxOOL/Util.h>
 
+#include <Poco/Channel.h>
 #include <Poco/ConsoleChannel.h>
 #include <Poco/FileChannel.h>
 #include <Poco/SyslogChannel.h>
@@ -55,7 +56,11 @@ Logger::Logger(OxOOL::XMLConfig::Ptr config)
     // 讀取 log level
     const std::string level = config->getString("logging.level", "trace");
 
+#if POCO_VERSION < 0x010A0000
+    Poco::AutoPtr<Poco::Channel> channel;
+#else
     Poco::Channel::Ptr channel;
+#endif
 
     // 記錄到檔案
     if (config->getString("logging.file[@enable]", "false") == "true")

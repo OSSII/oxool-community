@@ -20,7 +20,6 @@
 #include <Poco/Version.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
-#include <Poco/String.h>
 #include <Poco/Exception.h>
 #include <Poco/SharedLibrary.h>
 #include <Poco/SortedDirectoryIterator.h>
@@ -32,6 +31,7 @@
 #include <common/StringVector.hpp>
 #include <common/SigUtil.hpp>
 #include <common/Log.hpp>
+#include <common/Util.hpp>
 #include <net/Socket.hpp>
 #include <net/WebSocketHandler.hpp>
 #include <wsd/Auth.hpp>
@@ -331,7 +331,7 @@ private:
 
             // 去掉 IPv4 前置的 ":ffff::"，如果有的話
             // Remove IPv4 leading ":ffff::", if any.
-            if (Poco::startsWith(mpSavedSocket->clientAddress(), std::string("::ffff:")))
+            if (Util::startsWith(mpSavedSocket->clientAddress(), "::ffff:"))
             {
                 const std::string ipv4ClientAddress = mpSavedSocket->clientAddress().substr(7);
                 mpSavedSocket->setClientAddress(ipv4ClientAddress);
