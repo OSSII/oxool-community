@@ -30,7 +30,7 @@ apt-get -y install curl
 # Add OxOffice Online repos
 curl http://www.oxoffice.com.tw/deb/OSSII-2022.key | apt-key add
 cd /etc/apt/sources.list.d/
-sudo wget http://www.oxoffice.com.tw/deb/oxool-community-v4-focal.list
+wget http://www.oxoffice.com.tw/deb/oxool-community-v4-focal.list
 apt-get update
 
 # Install the OxOffice Online packages
