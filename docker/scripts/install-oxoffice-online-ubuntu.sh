@@ -18,14 +18,17 @@ apt-get -y install fonts-open-sans
 # Install gnupg for apt-key
 apt-get -y install gnupg
 
-# install ca-certificates
+# Install ca-certificates
 apt-get -y install ca-certificates
 
-# install ssh-keygen binary for the WOPI proof key
+# Install ssh-keygen binary for the WOPI proof key
 apt-get -y install openssh-client
 
 # Install curl for simple healthchecks
 apt-get -y install curl
+
+# Install wget for fetching oxool repos list
+apt-get -y install wget
 
 # Add OxOffice Online repos
 curl http://www.oxoffice.com.tw/deb/OSSII-2022.key | apt-key add
