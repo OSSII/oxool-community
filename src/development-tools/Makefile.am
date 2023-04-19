@@ -17,7 +17,7 @@ bin_PROGRAMS = @PACKAGE_NAME@-module-maker
 			      ${include_paths} \
 			      $(GIT2_CFLAGS)
 
-@PACKAGE_NAME@_module_maker_LDADD = $(GIT2_LIBS) $(abs_top_builddir)/libOxOOL.la
+@PACKAGE_NAME@_module_maker_LDADD = $(GIT2_LIBS) $(abs_top_builddir)/@LIB_NAME@.la
 @PACKAGE_NAME@_module_maker_SOURCES = ModuleMaker.cpp
 
 EXTRA_DIST = module-template

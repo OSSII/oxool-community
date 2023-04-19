@@ -10,5 +10,5 @@ bin_PROGRAMS = @PACKAGE_NAME@-xml-config
 @PACKAGE_NAME@_xml_config_CPPFLAGS = -pthread \
 			      ${include_paths}
 
-@PACKAGE_NAME@_xml_config_LDADD = $(abs_top_builddir)/libOxOOL.la
+@PACKAGE_NAME@_xml_config_LDADD = $(abs_top_builddir)/@LIB_NAME@.la
 @PACKAGE_NAME@_xml_config_SOURCES = XmlConfig.cpp
