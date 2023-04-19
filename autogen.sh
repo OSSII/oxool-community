@@ -36,6 +36,6 @@ Result: All went OK, please run $srcdir/configure (with the appropriate paramete
 
 EOF
 
-./configure --with-lo-path=/opt/oxoffice --enable-ssl  --with-max-documents=10240 --with-max-connections=10240 --enable-debug
+./configure --with-lo-path=/opt/oxoffice --enable-ssl --with-lokit-path=bundled/include --with-max-documents=10240 --with-max-connections=10240 --enable-debug
 
 cd "$olddir"
