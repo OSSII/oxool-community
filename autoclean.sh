@@ -6,9 +6,10 @@ fi
 
 find -name "Makefile.in" -exec rm -f {} \;
 rm -f stamp-h1
-rm -f  config.*
+rm -f config*.h
+rm -f config.log
+rm -f config.status
 rm -f *.log
-rm -f .in
 rm -f aclocal.m4
 rm -f install-sh
 rm -f libtool
