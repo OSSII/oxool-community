@@ -41,6 +41,8 @@ AC_SUBST([LOOLWSD_VERSION_HASH])
 
 AC_DEFINE_UNQUOTED([LOOLWSD_VERSION_HASH],[["$LOOLWSD_VERSION_HASH"]],[OxOffice Online git hash if present])
 
+WSD_NAME="oxoolwsd"
+AC_SUBST([WSD_NAME])
 LIB_LINK_NAME="OxOOL"
 LIB_NAME="lib${LIB_LINK_NAME}"
 AC_SUBST([LIB_NAME])
@@ -882,6 +884,7 @@ AC_CONFIG_FILES([Makefile
                  fonts/00-oxool.conf
                  support/Makefile
                  oxoolwsd.xml
+                 $WSD_NAME.service:online.service.in
                  $PACKAGE_NAME.spec:online.spec.in
                  $PACKAGE_NAME.pc:online.pc.in
                  debian/oxool.postinst])
