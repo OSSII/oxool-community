@@ -15,9 +15,10 @@
 **/.cache
 Makefile
 Makefile.in
-oxoolwsd.spec
+*.spec
+*.service
 oxoolwsd.xml
-oxool.pc
+*.pc
 aclocal.m4
 autom4te.cache
 config.h
