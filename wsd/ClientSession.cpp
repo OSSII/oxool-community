@@ -1324,6 +1324,12 @@ bool ClientSession::filterMessage(const std::string& message) const
         {
             allowed = true;
         }
+        // Readonly 但未禁止複製的話，讓 mouse 事件通過
+        else if (_wopiFileInfo && !_wopiFileInfo->getDisableCopy())
+        {
+            if (tokens.equals(0, "mouse"))
+                allowed = true;
+        }
     }
 
     return allowed;

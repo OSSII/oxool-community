@@ -75,7 +75,7 @@ OxOOL::XMLConfig::Ptr Base::getConfig()
 bool Base::isService(const Poco::Net::HTTPRequest& request) const
 {
     // 不含查詢字串的實際請求位址
-    std::string requestURI = Poco::URI(request.getURI()).getPath();
+    const std::string requestURI = Poco::URI(request.getURI()).getPath();
 
     /* serviceURI 有兩種格式：
         一、 end point 格式：
@@ -129,7 +129,7 @@ bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
     // 該 Service URI 需要有管理者權限，或是被 admin Service URI 需要
     if (mDetail.adminPrivilege || callByAdmin)
     {
-        std::shared_ptr<Poco::Net::HTTPResponse> response
+        const std::shared_ptr<Poco::Net::HTTPResponse> response
             = std::make_shared<Poco::Net::HTTPResponse>();
 
         try
@@ -140,7 +140,7 @@ bool Base::needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
         catch (const Poco::Net::NotAuthenticatedException& exc)
         {
             needAuthenticate = true;
-            OxOOL::HttpHelper::KeyValueMap extraHeader
+            const OxOOL::HttpHelper::KeyValueMap extraHeader
                 = { { "WWW-authenticate", "Basic realm=\"OxOffice Online\"" } };
             OxOOL::HttpHelper::sendErrorAndShutdown(
                 Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED, socket, "", "",
@@ -171,10 +171,10 @@ void Base::handleAdminRequest(const Poco::Net::HTTPRequest& request,
                               const std::shared_ptr<StreamSocket>& socket)
 {
 
-    std::string requestURI = Poco::URI(request.getURI()).getPath();
-    std::size_t stripLength = mDetail.adminServiceURI.length();
+    const std::string requestURI = Poco::URI(request.getURI()).getPath();
+    const std::size_t stripLength = mDetail.adminServiceURI.length();
     // 去掉 request 前導的 adminServiceURI
-    std::string realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
+    const std::string realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
     Poco::Path requestFile(maRootPath + "/admin" + realURI);
     // 如果要求的是目錄(不帶檔名)
     if (requestFile.isDirectory())
@@ -216,12 +216,12 @@ std::string Base::parseRealURI(const Poco::Net::HTTPRequest& request) const
     // 如果是 endpoint，表示要取得最右邊 '/' 之後的字串
     if (*mDetail.serviceURI.rbegin() != '/')
     {
-        if (std::size_t lastPathSlash = requestURI.rfind('/'); lastPathSlash != std::string::npos)
+        if (const std::size_t lastPathSlash = requestURI.rfind('/'); lastPathSlash != std::string::npos)
             realURI = requestURI.substr(lastPathSlash);
     }
     else
     {
-        std::size_t stripLength = mDetail.serviceURI.length();
+        const std::size_t stripLength = mDetail.serviceURI.length();
         // 去掉前導的 serviceURI
         realURI = stripLength >= requestURI.length() ? "/" : requestURI.substr(stripLength - 1);
     }
@@ -239,9 +239,9 @@ void Base::sendFile(const std::string& requestFile,
         if (mimeType.empty())
             mimeType = "text/plane";
 
-        bool isHead = request.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD;
+        const bool isHead = request.getMethod() == Poco::Net::HTTPRequest::HTTP_HEAD;
         // 是否令 client chche 該檔案，如果是 admin 或 URI 帶有 ? 查詢字元的位址，就不 cache
-        bool noCache = callByAdmin || request.getURI().find('?') != std::string::npos;
+        const bool noCache = callByAdmin || request.getURI().find('?') != std::string::npos;
 
         OxOOL::HttpHelper::sendFileAndShutdown(socket, requestFile, mimeType, nullptr,
                                                noCache, false, isHead);
@@ -268,16 +268,16 @@ void Base::preprocessAdminFile(const std::string& adminFile,
 
     // 製作完整 HTML 頁面
     Poco::replaceInPlace(templateFile, std::string("<!--%MAIN_CONTENT%-->"), mainContent.str()); // Now template has the main content..
-    std::string responseRoot = OxOOL::HttpHelper::getServiceRoot();
+    const std::string responseRoot = OxOOL::HttpHelper::getServiceRoot();
 
     // 帶入模組的多國語系設定檔
     static const std::string l10nJSON("<link rel=\"localizations\" href=\"%s/loleaflet/dist/admin/module/%s/localizations.json\" type=\"application/vnd.oftn.l10n+json\"/>");
-    std::string moduleL10NJSON(Poco::format(l10nJSON, responseRoot, mDetail.name));
+    const std::string moduleL10NJSON(Poco::format(l10nJSON, responseRoot, mDetail.name));
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_L10N%-->"), moduleL10NJSON);
 
     // 帶入模組的 admin.js
     const std::string moduleAdminJS("<script src=\"%s" + mDetail.adminServiceURI + "admin.js\"></script>");
-    std::string moduleScriptJS(Poco::format(moduleAdminJS, responseRoot));
+    const std::string moduleScriptJS(Poco::format(moduleAdminJS, responseRoot));
     Poco::replaceInPlace(templateFile, std::string("<!--%MODULE_ADMIN_JS%-->"), moduleScriptJS);
 
     Poco::replaceInPlace(templateFile, std::string("%VERSION%"), OxOOL::ENV::VersionHash);
@@ -285,7 +285,7 @@ void Base::preprocessAdminFile(const std::string& adminFile,
     Poco::replaceInPlace(templateFile, std::string("%MODULE_NAME%"), mDetail.name);
 
     // 傳入有管理界面的模組列表
-    std::string langTag = OxOOL::HttpHelper::getAcceptLanguage(request);
+    const std::string langTag = OxOOL::HttpHelper::getAcceptLanguage(request);
     Poco::replaceInPlace(templateFile, std::string("%ADMIN_MODULES%"),
         OxOOL::ModuleManager::instance().getAdminModuleDetailsJsonString(langTag));
 

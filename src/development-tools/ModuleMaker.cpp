@@ -74,24 +74,24 @@ protected:
         const std::string author(userName + " <" + userEmail + ">");
 
         // 設定 config 預設值
-        std::map<std::string, std::string> defaultConfig = {
-            {"user-name", userName},
-            {"user-email", userEmail},
-            {"module-name", ""},
-            {"module-serviceURI", ""},
-            {"module-version", "0.0.1"},
-            {"module-summary", ""},
-            {"module-author", author},
-            {"module-license", "MPLv2.0"},
-            {"module-description", ""},
-            {"module-adminPrivilege", "false"},
-            {"module-adminIcon", "bug-fill"},
-            {"module-adminItem", ""},
-            {"template-path", _defaultTemplatePath},
-            {"output-path", "~/"}, // 新專案所在目錄
+        const std::map<std::string, std::string> defaultConfig = {
+            { "user-name", userName },
+            { "user-email", userEmail },
+            { "module-name", "" },
+            { "module-serviceURI", "" },
+            { "module-version", "0.0.1" },
+            { "module-summary", "" },
+            { "module-author", author },
+            { "module-license", "MPLv2.0" },
+            { "module-description", "" },
+            { "module-adminPrivilege", "false" },
+            { "module-adminIcon", "bug-fill" },
+            { "module-adminItem", "" },
+            { "template-path", _defaultTemplatePath },
+            { "output-path", "~/" }, // 新專案所在目錄
         };
 
-        for (auto item : defaultConfig)
+        for (const auto& item : defaultConfig)
         {
             config().setString(item.first, item.second);
         }
@@ -242,7 +242,7 @@ protected:
             fatal("Project directory: '" + projectPath.toString() + "' already exists.");
 
         // 模組範本路徑
-        Poco::File templatePath(config().getString("template-path"));
+        const Poco::File templatePath(config().getString("template-path"));
 
         // 範本目錄內，需有如下檔案
         const std::vector<std::string> requiredFiles =
@@ -252,7 +252,7 @@ protected:
             "debian/control",
             "src/Module.cpp"
         };
-        for (auto file : requiredFiles)
+        for (const auto& file : requiredFiles)
         {
             const std::string requiredFile = templatePath.path() + "/" + file;
             if (!Poco::File(requiredFile).exists())
@@ -276,7 +276,7 @@ protected:
             /*
              * 二、更改指定範本檔的預設值
              */
-            for (auto file : requiredFiles)
+            for (const auto& file : requiredFiles)
             {
                 convertTemplate2Project(templatePath.path(), projectPath.toString(), file);
             }
@@ -444,7 +444,7 @@ private:
                 if (!error)
                 {
                     char *paths[] = {(char *)"."};
-                    git_strarray arr = {paths, 1};
+                    const git_strarray arr = {paths, 1};
                     struct print_payload payload;
                     payload.options = print_options::NONE;
                     payload.repo = repo;
@@ -518,10 +518,7 @@ private:
         return false;
     }
 
-private:
-
     std::shared_ptr<OxOOL::XMLConfig> _xmlConfig;
-
     static std::string _defaultTemplatePath;
 };
 

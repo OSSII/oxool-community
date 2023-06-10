@@ -185,7 +185,7 @@ public:
         }
         else // 交給模組處理
         {
-            std::string result = mpModule->handleAdminMessage(tokens);
+            const std::string result = mpModule->handleAdminMessage(tokens);
             // 傳回結果
             if (!result.empty())
                 sendTextFrame(result);
@@ -220,7 +220,6 @@ private:
         return oss.str();
     }
 
-private:
     /// @brief 模組 Class
     OxOOL::Module::Ptr mpModule;
     /// @brief 是否已認證過
@@ -287,11 +286,11 @@ public:
                     purge(); // 清理資料，恢復閒置狀態，可以再利用
                 }
             }
-            int64_t rc = poll(AgentTimeoutMicroS);
+            const int64_t rc = poll(AgentTimeoutMicroS);
             if (rc == 0) // polling timeout.
             {
                 // 現在時間
-                std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+                const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
                 auto durationTime = std::chrono::duration_cast<std::chrono::microseconds>(now - mpLastIdleTime);
                 // 閒置超過預設時間，就脫離迴圈
                 if (durationTime >= AgentTimeoutMicroS)
@@ -472,7 +471,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
         return false;
 
     // 不是 OxOOL module config 不處理
-    OxOOL::XMLConfig config(configFile);
+    const OxOOL::XMLConfig config(configFile);
     if (!config.has("module"))
         return false;
 
@@ -491,7 +490,7 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
     // 模組啟用
     if (isModuleEnable)
     {
-        std::shared_ptr<ModuleLibrary> module = std::make_shared<ModuleLibrary>();
+        const std::shared_ptr<ModuleLibrary> module = std::make_shared<ModuleLibrary>();
 
         // 讀取模組詳細資訊
         detail.name = config.getString("module.detail.name", "");
@@ -635,7 +634,7 @@ bool ModuleManager::handleRequest(const Poco::Net::HTTPRequest& request,
 
     // 1. 優先處理一般 request
     // 取得處理該 request 的模組，可能是 serverURI 或 adminServerURI(如果有的話)
-    if (OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
+    if (const OxOOL::Module::Ptr module = handleByModule(request); module != nullptr)
     {
         std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
         // 尋找可用的模組代理
@@ -700,7 +699,7 @@ bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
     }
 
     // Socket 不存在
-    std::shared_ptr<StreamSocket> socket = socketWeak.lock();
+    const std::shared_ptr<StreamSocket> socket = socketWeak.lock();
     if (!socket)
     {
         LOG_ERR("Invalid socket while reading initial request.");
@@ -708,7 +707,7 @@ bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
     }
 
     // 沒有指定名稱的模組
-    OxOOL::Module::Ptr module = getModuleByName(moduleName);
+    const OxOOL::Module::Ptr module = getModuleByName(moduleName);
     if (module == nullptr)
     {
         LOG_ERR("No module named '" << moduleName << "'");
@@ -716,7 +715,7 @@ bool ModuleManager::handleAdminWebsocketRequest(const std::string& moduleName,
     }
 
     const std::string& requestURI = request.getURI();
-    StringVector pathTokens(StringVector::tokenize(requestURI, '/'));
+    const StringVector pathTokens(StringVector::tokenize(requestURI, '/'));
     // 要升級連線爲 Web socket
     if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
     {
@@ -735,7 +734,7 @@ void ModuleManager::cleanupDeadAgents()
     // 交給 module manager thread 執行清理工作，避免搶走 main thread
     addCallback([this]()
     {
-        std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
+        const std::unique_lock<std::mutex> agentsLock(mAgentsMutex);
         // 有 agents 才進行清理工作
         if (const int beforeClean = mpAgentsPool.size(); beforeClean > 0)
         {
@@ -759,8 +758,8 @@ void ModuleManager::cleanupDeadAgents()
 
 const std::vector<OxOOL::Module::Detail> ModuleManager::getAllModuleDetails() const
 {
-    std::vector<OxOOL::Module::Detail> detials;
-    for (auto it : moduleMap)
+    std::vector<OxOOL::Module::Detail> detials(moduleMap.size());
+    for (auto &it : moduleMap)
     {
         detials.push_back(it.second->getModule()->getDetail());
     }
@@ -771,9 +770,9 @@ std::string ModuleManager::getAdminModuleDetailsJsonString(const std::string& la
 {
     std::string jsonString("[");
     std::size_t count = 0;
-    for (auto it : moduleMap)
+    for (auto &it : moduleMap)
     {
-        OxOOL::Module::Ptr module = it.second->getModule();
+        const OxOOL::Module::Ptr module = it.second->getModule();
         // 只取有後臺管理的模組
         if (!module->getDetail().adminServiceURI.empty())
         {

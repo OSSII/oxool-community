@@ -90,7 +90,7 @@ void sendResponse(const std::shared_ptr<StreamSocket>& socket,
     // 需增加額外標頭
     if (!extraHeader.empty())
     {
-        for (auto it : extraHeader)
+        for (auto &it : extraHeader)
         {
             response.set(it.first, it.second);
         }
@@ -137,7 +137,7 @@ void sendUncompressedFileContent(const std::shared_ptr<StreamSocket>& socket,
                                  const std::string& path, const int bufferSize)
 {
     std::ifstream file(path, std::ios::binary);
-    std::unique_ptr<char[]> buf(new char[bufferSize]);
+    const std::unique_ptr<char[]> buf(new char[bufferSize]);
     do
     {
         file.read(&buf[0], bufferSize);
@@ -159,13 +159,13 @@ void sendDeflatedFileContent(const std::shared_ptr<StreamSocket>& socket, const 
     if (fileSize > 0)
     {
         std::ifstream file(path, std::ios::binary);
-        std::unique_ptr<char[]> buf(new char[fileSize]);
+        const std::unique_ptr<char[]> buf(new char[fileSize]);
         file.read(&buf[0], fileSize);
 
         static const unsigned int Level = 1;
         const long unsigned int size = file.gcount();
         long unsigned int compSize = compressBound(size);
-        std::unique_ptr<char[]> cbuf(new char[compSize]);
+        const std::unique_ptr<char[]> cbuf(new char[compSize]);
         compress2((Bytef*)&cbuf[0], &compSize, (Bytef*)&buf[0], size, Level);
 
         if (size > 0)
@@ -182,7 +182,7 @@ void sendFileAndShutdown(const std::shared_ptr<StreamSocket>& socket, const std:
     if (!response)
         response = &localResponse;
 
-    FileUtil::Stat st(path);
+    const FileUtil::Stat st(path);
     if (st.bad())
     {
         LOG_WRN('#' << socket->getFD() << ": Failed to stat [" << path
@@ -258,7 +258,7 @@ std::string getAcceptLanguage(const Poco::Net::HTTPRequest& request)
     const auto queryVec = Poco::URI(request.getURI()).getQueryParameters();
     if (!queryVec.empty())
     {
-        for (auto it : queryVec)
+        for (auto &it : queryVec)
         {
             if (Poco::toLower(it.first) == "lang" && !it.second.empty())
                 return it.second;
@@ -447,7 +447,7 @@ void PartHandler::handlePart(const Poco::Net::MessageHeader& header,
     Poco::Net::NameValueCollection params;
     if (header.has("Content-Disposition"))
     {
-        std::string cd = header.get("Content-Disposition");
+        const std::string cd = header.get("Content-Disposition");
         header.splitParameters(cd, disp, params);
     }
 
@@ -490,7 +490,7 @@ std::string PartHandler::getFilename(const std::string& name) const
 
 void PartHandler::removeFiles()
 {
-    for (auto it : mpReceivedFiles)
+    for (auto &it : mpReceivedFiles)
     {
         try
         {
@@ -507,11 +507,12 @@ void PartHandler::removeFiles()
 
 std::vector<std::string> PartHandler::getReceivedFiles() const
 {
-    std::vector<std::string> files;
-    for (auto it : mpReceivedFiles)
+    std::vector<std::string> files(mpReceivedFiles.size());
+    for (auto &it : mpReceivedFiles)
     {
         files.push_back(it.second);
     }
+
     return files;
 }
 
@@ -525,7 +526,7 @@ void PartHandler::dumpReceivedFiles()
 
     std::cout << "Received files:" << std::endl
               << "===============" << std::endl;
-    for (auto it : mpReceivedFiles)
+    for (auto &it : mpReceivedFiles)
     {
         std::cout << it.first << "\t" << it.second << std::endl;
     }

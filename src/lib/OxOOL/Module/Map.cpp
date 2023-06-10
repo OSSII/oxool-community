@@ -56,7 +56,7 @@ bool Map::handled(const Poco::Net::HTTPRequest& request,
 
     // 依序找出是哪個程序要處理
     std::string hitURI;
-    for (auto it : mpUriMap)
+    for (const auto& it : mpUriMap)
     {
         // 取得欲比對的 URI
         const std::string subURI = it.first;
@@ -88,7 +88,7 @@ bool Map::handled(const Poco::Net::HTTPRequest& request,
     if (!hitURI.empty())
     {
         auto hitMap = mpUriMap.find(hitURI);
-        std::size_t allowedMethods = hitMap->second.first;
+        const std::size_t allowedMethods = hitMap->second.first;
         // 只是 HEAD 就不需實際執行 callback，簡單回應 200 OK
         if (OxOOL::HttpHelper::isHEAD(request))
         {
@@ -96,7 +96,7 @@ bool Map::handled(const Poco::Net::HTTPRequest& request,
             return true;
         }
 
-        Callback callback = hitMap->second.second;
+        const Callback callback = hitMap->second.second;
 
         // 檢查 request method
         std::size_t checkMethod = 0;
@@ -129,7 +129,7 @@ bool Map::handled(const Poco::Net::HTTPRequest& request,
 void Map::dump()
 {
     std::cout << "Map size: " << mpUriMap.size() << std::endl;
-    for (auto it : mpUriMap)
+    for (const auto& it : mpUriMap)
     {
         std::cout << "\tSub uri : " << it.first << std::endl;
     }

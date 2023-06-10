@@ -87,7 +87,6 @@ public:
     bool needAdminAuthenticate(const Poco::Net::HTTPRequest& request,
                                const std::shared_ptr<StreamSocket>& socket,
                                const bool callByAdmin = false);
-public:
     /// @brief 取得模組版本編號
     virtual std::string getVersion();
 

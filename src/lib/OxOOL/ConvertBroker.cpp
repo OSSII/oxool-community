@@ -11,9 +11,11 @@
 #include <wsd/DocumentBroker.hpp>
 #include <wsd/ClientSession.hpp>
 
+namespace
+{
 static std::mutex BrokersMutex;
 static std::map<std::string, std::shared_ptr<DocumentBroker>> Brokers;
-
+} // anonymous namespace
 namespace OxOOL
 {
 
@@ -35,13 +37,13 @@ ConvertBroker::ConvertBroker(const std::string& uri,
 
 bool ConvertBroker::loadDocument(const std::shared_ptr<StreamSocket>& socket, const bool isReadOnly)
 {
-    std::shared_ptr<ConvertBroker> docBroker =
+    const std::shared_ptr<ConvertBroker> docBroker =
         std::static_pointer_cast<ConvertBroker>(shared_from_this());
 
-    std::string id("ConvertBroker-" + std::to_string(socket->getFD()));
+    const std::string id("ConvertBroker-" + std::to_string(socket->getFD()));
     // FIXME: associate this with moveSocket (?)
-    std::shared_ptr<ProtocolHandlerInterface> nullPtr;
-    RequestDetails requestDetails("convert-broker");
+    const std::shared_ptr<ProtocolHandlerInterface> nullPtr;
+    const RequestDetails requestDetails("convert-broker");
     _clientSession = std::make_shared<ClientSession>(nullPtr, id, docBroker,
         getPublicUri(), isReadOnly, requestDetails);
     _clientSession->construct();
@@ -120,7 +122,7 @@ void ConvertBroker::saveAsDocument()
 
 void ConvertBroker::sendMessageToKit(const std::string& command)
 {
-    std::vector<char> message(command.begin(), command.end());
+    const std::vector<char> message(command.begin(), command.end());
     _clientSession->handleMessage(message);
 }
 
@@ -136,8 +138,8 @@ ConvertBroker::create(const std::string& fromFile,
                       const std::string& toFormat,
                       const std::string& saveAsOptions)
 {
-    std::unique_lock<std::mutex> brokersLock(BrokersMutex);
-    Poco::URI uriPublic = RequestDetails::sanitizeURI(fromFile);
+    const std::unique_lock<std::mutex> brokersLock(BrokersMutex);
+    const Poco::URI uriPublic = RequestDetails::sanitizeURI(fromFile);
     const std::string docKey = RequestDetails::getDocKey(uriPublic);
     auto docBroker = std::make_shared<ConvertBroker>(fromFile, uriPublic, docKey,
                                                      toFormat, saveAsOptions);
@@ -150,13 +152,13 @@ void ConvertBroker::cleanup()
 {
     std::thread([&]
     {
-        std::unique_lock<std::mutex> brokersLock(BrokersMutex);
+        const std::unique_lock<std::mutex> brokersLock(BrokersMutex);
         // 有 Brokers 才進行清理工作
         if (const int beforeClean = Brokers.size(); beforeClean > 0)
         {
             for (auto it = Brokers.begin(); it != Brokers.end();)
             {
-                std::shared_ptr<DocumentBroker> docBroker = it->second;
+                const std::shared_ptr<DocumentBroker> docBroker = it->second;
                 if (!docBroker->isAlive())
                 {
                     docBroker->dispose();

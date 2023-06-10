@@ -183,8 +183,8 @@ void Logger::log(const std::string& msg, Poco::Message::Priority priority)
     const std::string prioName = it != prioMap.end() ? it->second : " UNKNOW ";
 
     Poco::LogStream stream(maName, priority);
-    Poco::LocalDateTime time;
-    int tzd = time.tzd();
+    const Poco::LocalDateTime time;
+    const int tzd = time.tzd();
     stream << time.year() << '-'
            << std::setw(2) << std::setfill('0') << time.month() << '-'
            << std::setw(2) << std::setfill('0') << time.day() << ' '

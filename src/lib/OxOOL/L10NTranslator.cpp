@@ -47,7 +47,7 @@ void L10NTranslator::makeTranslator(const bool isAdmin)
     if (mpModule == nullptr)
         return;
 
-    std::string rootPath = mpModule->getDocumentRoot() + (isAdmin ? "/admin" : "/html");
+    const std::string rootPath = mpModule->getDocumentRoot() + (isAdmin ? "/admin" : "/html");
     // 有取得 client 的語系
     if (!maLanguage.empty())
     {
@@ -72,7 +72,7 @@ void L10NTranslator::makeTranslator(const bool isAdmin)
                 if (L10NJSON->has(maLanguage))
                 {
                     // 該語系檔案所在位置
-                    Poco::File langFile(rootPath + "/" + L10NJSON->getValue<std::string>(maLanguage));
+                    const Poco::File langFile(rootPath + "/" + L10NJSON->getValue<std::string>(maLanguage));
 
                     // 語系檔案存在，就讀入內容
                     if (langFile.exists())
