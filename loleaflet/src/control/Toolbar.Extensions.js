@@ -323,10 +323,10 @@ L.Map.include({
 		if (version)
 			this._officeVersion = version;
 
-		if (this._officeVersion.ProductName === 'OxOffice' ||
-			this._officeVersion.ProductName === 'ndcodfsys') {
-			this._isOxOffice = true;
-		}
+		// 如果 this._officeVersion.ProductName 有 'OxOffice' 或 'modaodfsys' 或 'MODA' 字串，就是 OxOffice
+		this._isOxOffice = (this._officeVersion.ProductName.indexOf('OxOffice') >= 0 ||
+			this._officeVersion.ProductName.indexOf('modaodfsys') >= 0) ||
+			this._officeVersion.ProductName.indexOf('MODA') >= 0;
 	},
 
 	/**
