@@ -327,10 +327,13 @@ private:
         addCallback([this]()
         {
             setModuleRunning(true);
-
-            // 去掉 IPv4 前置的 ":ffff::"，如果有的話
-            // Remove IPv4 leading ":ffff::", if any.
-            if (Util::startsWith(mpSavedSocket->clientAddress(), "::ffff:"))
+            // client address equals to "::1", it means the client is localhost.
+            if (mpSavedSocket->clientAddress() == "::1")
+            {
+                mpSavedSocket->setClientAddress("127.0.0.1");
+            }
+            // client address prefix is "::ffff:", it means the client is IPv4.
+            else if (Util::startsWith(mpSavedSocket->clientAddress(), "::ffff:"))
             {
                 const std::string ipv4ClientAddress = mpSavedSocket->clientAddress().substr(7);
                 mpSavedSocket->setClientAddress(ipv4ClientAddress);
