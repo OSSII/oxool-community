@@ -588,7 +588,10 @@ bool ModuleManager::loadModuleConfig(const std::string& configFile,
         moduleMap[configFile] = module;
         modulesLock.unlock();
 
-        module->getModule()->initialize(); // 執行模組的 initialize()
+        // 用執行緒執行模組的 initialize()，避免被卡住
+        std::thread([module]() {
+            module->getModule()->initialize();
+        }).detach();
     }
 
     return true;
