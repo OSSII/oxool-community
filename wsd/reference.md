@@ -166,18 +166,21 @@ PutFile headers
 PutFile additionally indicates whether the user has modified the document before the save, or if they just pressed the Save button without any modification.  The following header:
 
     X-LOOL-WOPI-IsModifiedByUser
+    X-OXOOL-WOPI-IsModifiedByUser
 
 will have the value 'true' or 'false' accordingly.
 
 To distinguish autosave vs. explicit user requests to save, the following header:
 
     X-LOOL-WOPI-IsAutosave
+    X-OXOOL-WOPI-IsAutosave
 
 will have the value 'true' when the PutFile is triggered by autosave, and 'false' when triggered by explicit user operation (Save button or menu entry).
 
 When the document gets cleaned up from memory (e.g. when all users disconnect), an automatic save will be triggered. In this case the following header will be set to "true":
 
     X-LOOL-WOPI-IsExitSave
+    X-OXOOL-WOPI-IsExitSave
 
 Detecting external document change
 ----------------------------------
@@ -193,6 +196,7 @@ To support this feature, the host implementation has to specify LastModifiedTime
 Additionally, hosts must check for a header in PutFile response:
 
     X-LOOL-WOPI-Timestamp
+    X-OXOOL-WOPI-Timestamp
 
 This header contains the ISO8601 round-trip formatted time of file’s last modified time in storage, as known by LibreOffice Online. In case this header is present and its value does not match the file’s modified time in storage, it indicates that document being edited is not the one that is present in the storage.
 

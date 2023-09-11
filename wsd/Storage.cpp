@@ -600,6 +600,7 @@ void WopiStorage::initHttpRequest(Poco::Net::HTTPRequest& request, const Poco::U
 
     // Helps wrt. debugging cluster cases from the logs
     request.set("X-LOOL-WOPI-ServerId", Util::getProcessIdentifier());
+    request.set("X-OXOOL-WOPI-ServerId", Util::getProcessIdentifier());
 }
 
 http::Request WopiStorage::initHttpRequest(const Poco::URI& uri, const Authorization& auth) const
@@ -926,7 +927,7 @@ bool WopiStorage::updateLockState(const Authorization& auth, LockContext& lockCt
         if (!attribs.getExtendedData().empty())
         {
             request.set("X-LOOL-WOPI-ExtendedData", attribs.getExtendedData());
-            request.set("X-LOOL-WOPI-ExtendedData", attribs.getExtendedData());
+            request.set("X-OXOOL-WOPI-ExtendedData", attribs.getExtendedData());
         }
 
         // IIS requires content-length for POST requests: see https://forums.iis.net/t/1119456.aspx
@@ -1224,24 +1225,24 @@ void WopiStorage::uploadLocalFileToStorageAsync(const Authorization& auth, LockC
             // normal save
             httpHeader.set("X-WOPI-Override", "PUT");
             httpHeader.set("X-LOOL-WOPI-IsModifiedByUser", attribs.isUserModified() ? "true" : "false");
-            httpHeader.set("X-LOOL-WOPI-IsModifiedByUser", attribs.isUserModified() ? "true" : "false");
+            httpHeader.set("X-OXOOL-WOPI-IsModifiedByUser", attribs.isUserModified() ? "true" : "false");
             httpHeader.set("X-LOOL-WOPI-IsAutosave", attribs.isAutosave() ? "true" : "false");
-            httpHeader.set("X-LOOL-WOPI-IsAutosave", attribs.isAutosave() ? "true" : "false");
+            httpHeader.set("X-OXOOL-WOPI-IsAutosave", attribs.isAutosave() ? "true" : "false");
             httpHeader.set("X-LOOL-WOPI-IsExitSave", attribs.isExitSave() ? "true" : "false");
-            httpHeader.set("X-LOOL-WOPI-IsExitSave", attribs.isExitSave() ? "true" : "false");
+            httpHeader.set("X-OXOOL-WOPI-IsExitSave", attribs.isExitSave() ? "true" : "false");
             if (attribs.isExitSave())
                 httpHeader.set("Connection", "close"); // Don't maintain the socket if we are exiting.
             if (!attribs.getExtendedData().empty())
             {
                 httpHeader.set("X-LOOL-WOPI-ExtendedData", attribs.getExtendedData());
-                httpHeader.set("X-LOOL-WOPI-ExtendedData", attribs.getExtendedData());
+                httpHeader.set("X-OXOOL-WOPI-ExtendedData", attribs.getExtendedData());
             }
 
             if (!attribs.isForced())
             {
                 // Request WOPI host to not overwrite if timestamps mismatch
                 httpHeader.set("X-LOOL-WOPI-Timestamp", getFileInfo().getLastModifiedTime());
-                httpHeader.set("X-LOOL-WOPI-Timestamp", getFileInfo().getLastModifiedTime());
+                httpHeader.set("X-OXOOL-WOPI-Timestamp", getFileInfo().getLastModifiedTime());
             }
         }
         else
