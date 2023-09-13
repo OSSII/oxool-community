@@ -78,8 +78,9 @@ void sendResponse(const std::shared_ptr<StreamSocket>& socket,
 {
     Poco::Net::HTTPResponse response;
 
-    response.setStatus(statusCode);
-    response.setReason(Poco::Net::HTTPResponse::getReasonForStatus(statusCode));
+    // 設定回應的狀態碼
+    response.setVersion(Poco::Net::HTTPResponse::HTTP_1_1);
+    response.setStatusAndReason(statusCode); // 設定回應的狀態碼及原因
     response.setContentLength(body.size());
     // 有要回應的內容，才設定 Content-Type
     if (body.size())
