@@ -458,7 +458,7 @@ bool FileServerRequestHandler::isConfigAuthMatch(const std::string& userProvided
                     httpResponse.setBody(
                         "{\"LOOLStatusCode\":" +
                         std::to_string(static_cast<int>(LocalFileInfo::LOOLStatusCode::DocChanged)) + ',' +
-                        "{\"LOOLStatusCode\":" +
+                        "\"OXOOLStatusCode\":" +
                         std::to_string(static_cast<int>(LocalFileInfo::LOOLStatusCode::DocChanged)) + '}');
                     socket->send(httpResponse);
                     return;
