@@ -182,6 +182,10 @@ debian/control
 debian/copyright
 debian/rules
 debian/oxool*
+*.rpm
 
 # Ignore Vagrant state files
 /.vagrant/
+
+# Ignore Git worktrees in development environments
+/.worktree/
