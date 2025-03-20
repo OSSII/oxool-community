@@ -1,0 +1,50 @@
+# Docker Compose configuration file for creating a development environment environment of this project
+#
+# References:
+#
+# * Compose Specification | Compose file reference | Reference | Docker Docs
+#   https://docs.docker.com/compose/compose-file/
+#
+# Copyright 2025 Buo-ren Lin (OSSII) <buoren.lin@ossii.com.tw>
+# SPDX-License-Identifier: MPL-2.0+
+name: oxool-community
+services:
+  redhat-pkg:
+    container_name: oxool-community-rhpkg
+    hostname: oxool-community-rhpkg
+    image: rockylinux:8
+    volumes:
+      - type: bind
+        source: ./
+        target: /project
+    environment:
+      - http_proxy
+      - https_proxy
+      - HTTP_PROXY
+      - HTTPS_PROXY
+
+      # Set this environment variable to your local timezone settings
+      # for proper operation timestamp
+      #- TZ=CST-8
+    init: true
+    command: sleep infinity
+
+  redhat-test:
+    container_name: oxool-community-rhtest
+    hostname: oxool-community-rhtest
+    image: rockylinux:8
+    volumes:
+      - type: bind
+        source: ./
+        target: /project
+    environment:
+      - http_proxy
+      - https_proxy
+      - HTTP_PROXY
+      - HTTPS_PROXY
+
+      # Set this environment variable to your local timezone settings
+      # for proper operation timestamp
+      #- TZ=CST-8
+    init: true
+    command: sleep infinity
