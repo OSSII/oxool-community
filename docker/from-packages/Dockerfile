@@ -23,15 +23,15 @@ RUN --mount=type=bind,source=.,target=/build-context \
 # Install dependencies for setting up external repositories
     dnf install -y curl && \
 # Setup OxOffice Online v4 repo(only for the poco library)
-    curl --output /etc/yum.repos.d/oxool-community-v4-el8.repo http://www.oxoffice.com.tw/rpm/el/oxool-community-v4-el8.repo && \
+    curl --output /etc/yum.repos.d/oxool-community-v5-el8.repo http://www.oxoffice.com.tw/rpm/el/oxool-community-v5-el8.repo && \
 # Setup EPEL software repository(provides POCO's dependency)
     dnf install -y epel-release && \
 # Install libpoco runtime dependencies
     dnf install -y poco-crypto poco-data poco-encodings poco-foundation poco-json poco-mongodb poco-mysql poco-net poco-netssl poco-odbc poco-pagecompiler poco-sqlite poco-util poco-xml poco-zip libiodbc && \
 # Install OxOffice R10
-    dnf install -y /build-context/oxoffice-10.*-dev/*.rpm && \
+    dnf install -y oxoffice* && \
 # Install built OxOffice Online V5 package
-    dnf install -y /build-context/oxool-*.COMMUNITY.el8.*.rpm && \
+    dnf install -y oxool && \
 # Install dependency for the start script
     dnf install -y openssl && \
 # Fix ownership of config directory that will be modified on start of the container by lool user

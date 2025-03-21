@@ -127,14 +127,14 @@ if ! dnf install -y "${runtime_dependency_pkgs[@]}"; then
 fi
 
 printf \
-    'Info: Configuring the Yum repository of OxOffice Online v4...\n'
+    'Info: Configuring the Yum repository of OxOffice Online v5...\n'
 wget_opts=(
     --directory-prefix /etc/yum.repos.d
 )
 if ! wget "${wget_opts[@]}" \
-    http://www.oxoffice.com.tw/rpm/el/oxool-community-v4-el8.repo; then
+    http://www.oxoffice.com.tw/rpm/el/oxool-community-v5-el8.repo; then
     printf \
-        'Error: Unable to configure the Yum repository of OxOffice Online v4.\n' \
+        'Error: Unable to configure the Yum repository of OxOffice Online v5.\n' \
         1>&2
     exit 2
 fi

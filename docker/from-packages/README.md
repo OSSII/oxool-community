@@ -12,10 +12,6 @@ The following prerequisites must be satisfied in order to run the instructions i
 
 * Docker Engine  
   Must be a version that implements the BuildKit Docker Build backend.
-* A pre-built OxOffice R10 server edition RPM packages.  
-  Must be acquired externally, it should be extracted to the `oxoffice-10.0.1-dev` directory right under the one hosting this document.
-* A pre-built OxOffice Online Community V5 RPM package.  
-  Must be acquired externally, it should be placed to the directory hosting this document.
 * Your container host must not have an existing `oxool-community-5` container, stop and remove the container in advance.
 
 The final layout of this directory should be like the following `tree` output:
@@ -24,18 +20,11 @@ The final layout of this directory should be like the following `tree` output:
 .
 ├── docker-compose.yaml
 ├── Dockerfile
-├── oxoffice-10.0.1-dev
-│   ├── oxoffice-10.0.1-1.x86_64.rpm
-│
-│   ...stripped...
-│
-│   └── oxoffice-zh-TW-10.0.1-1.x86_64.rpm
-├── oxool-5.0.0-1.COMMUNITY.el8.x86_64.rpm
 ├── README.md
 └── scripts
     └── docker-entrypoint.sh
 
-3 directories, 31 files
+3 directories, 4 files
 ```
 
 ### Container image building process
