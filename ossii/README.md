@@ -22,7 +22,7 @@ Refer to the following instructions to build RPM packages from source, you shoul
 1. Run the following command to build the binary RPM packages from the source distribution tarball(replace the `X.Y.Z` placeholder version string to the actual version):
 
     ```bash
-    rpmbuild -tb oxool-X.Y.Z-ossii.tar.gz
+    rpmbuild -tb oxool-X.Y.Z.tar.gz
     ```
 
    After building you should be able to locate the built binary RPM packages at the `~/rpmbuild/RPMS` directory.
