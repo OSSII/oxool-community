@@ -11,7 +11,7 @@
 
 set -eu
 
-# if first arg looks like a flag, assume we want to run postgres server
+# if the first arg looks like a flag, assume we want to run the service executable itself
 if test "${1:0:1}" = '-'; then
     set -- oxoolwsd "$@"
 fi
