@@ -184,7 +184,6 @@ oxool_build_dep_pkgs=(
     fontconfig-devel
     gcc-c++
     git
-    'gumbo*'
     libcap-devel
     libgit2-devel
     libpcap
