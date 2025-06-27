@@ -15,6 +15,7 @@
 #include <LibreOfficeKit/LibreOfficeKitInit.h>
 #include <LibreOfficeKit/LibreOfficeKit.hxx>
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
+#include <JsonUtil.hpp>
 #include <vector>
 #include <Log.hpp>
 #include <cstdlib>
@@ -31,12 +32,32 @@ public:
         , _text(Util::replace(text, "\\n", "\n"))
         , _font("Carlito")
         , _alphaLevel(opacity)
+        , _angle(45) // Default angle for watermark
     {
         if (_loKitDoc == nullptr)
         {
             LOG_ERR("Watermark rendering requested without a valid document. Watermarking will be disabled.");
             assert(_loKitDoc && "Valid loKitDoc is required for Watermark.");
         }
+
+        // OxOOL Enhance Watermark
+        Poco::JSON::Object::Ptr userWatermark;
+        if (JsonUtil::parseJSON(text, userWatermark))
+        {
+            if (userWatermark->has("opacity"))
+            {
+                _alphaLevel = userWatermark->getValue<double>("opacity");
+            }
+            if (userWatermark->has("angle"))
+            {
+                _angle = userWatermark->getValue<int>("angle");
+            }
+        }
+        else
+        {
+            LOG_ERR("Failed to parse watermark text as JSON: " << text);
+        }
+        // End of OxOOL Enhance Watermark
     }
 
     void blending(unsigned char* tilePixmap,
@@ -142,10 +163,13 @@ private:
         */
         // Create the white blurred background
         // Use box blur, it's enough for our purposes
-
-        // PI / 4 (45 degrees): sin = cos = 1/sqrt(2)
-        const double sin = 0.707106781186547524;
-        const double cos = sin;
+        // OxOOL Enhanced
+        const double PI = 3.14159265359;
+        // 角度轉成弧度(角度 × π / 180°)
+        const double RADIAN = _angle * PI / 180;
+        const double sin = std::sin(RADIAN);
+        const double cos = std::cos(RADIAN);
+        // End of OxOOL Enhanced
 
         const double x0 = width / 2.0;
         const double y0 = height / 2.0;
@@ -221,7 +245,10 @@ private:
     const std::shared_ptr<lok::Document> _loKitDoc;
     const std::string _text;
     const std::string _font;
-    const double _alphaLevel;
+    // OxOOL Enhanced
+    double _alphaLevel;
+    int _angle;
+    // End of OxOOL Enhanced
     std::unordered_map<size_t, std::vector<unsigned char>> _pixmaps;
 };
 
