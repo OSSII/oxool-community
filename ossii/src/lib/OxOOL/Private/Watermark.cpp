@@ -119,7 +119,7 @@ void Watermark::loadSysWatermark()
         {"printing", "bool", "false"},
         {"text", "string", ""},
         {"opacity", "double", "0.2"},
-        {"angle", "uint", "45"},
+        {"angle", "int", "45"},
         {"familyname", "string", "Liberation Sans"},
         {"color", "string", "#000000"},
         {"bold", "bool", "false"},
@@ -145,8 +145,8 @@ void Watermark::loadSysWatermark()
                 maSysWatermark.set(key[0], config.getBool(nodeName, Util::stringToBool(key[2])));
             else if (key[1] == "double")
                 maSysWatermark.set(key[0], config.getDouble(nodeName, std::stod(key[2])));
-            else if (key[1] == "uint")
-                maSysWatermark.set(key[0], config.getUInt(nodeName, std::stoul(key[2])));
+            else if (key[1] == "int")
+                maSysWatermark.set(key[0], config.getInt(nodeName, std::stoi(key[2])));
             else if (key[1] == "string" || key[1].empty())
                 maSysWatermark.set(key[0], config.getString(nodeName, key[2]));
             else
