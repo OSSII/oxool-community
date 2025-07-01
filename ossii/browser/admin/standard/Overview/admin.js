@@ -2,7 +2,7 @@
 /*
 	Socket to be intialized on opening the overview page in Admin console
 */
-/* global vex _ $ Util */
+/* global _ $ Util */
 L.AdminModule.Overview = L.AdminModule.extend({
 
 	_l10n: [
@@ -239,18 +239,15 @@ L.AdminModule.Overview = L.AdminModule.extend({
 			sessionCloseCell.style.cursor = 'pointer';
 			row.appendChild(sessionCloseCell);
 			sessionCloseCell.onclick = function() {
-				vex.dialog.confirm({
-					message: _('Are you sure you want to terminate this session?'),
-					buttons: [
-						$.extend({}, vex.dialog.buttons.YES, { text: _('OK') }),
-						$.extend({}, vex.dialog.buttons.NO, { text: _('Cancel') })
-					],
-					callback: function (value) {
-						if (value) {
-							that.sendMessage('kill ' + doc['pid']);
-						}
-					}
-				});
+                L.Dialog.confirm({
+                    title: _('Terminate session'),
+                    content: _('Are you sure you want to terminate this session?'),
+                    callback: function (value) {
+                        if (value) {
+                            that.sendMessage('kill ' + doc['pid']);
+                        }
+                    }
+                });
 			};
 			// WOPI Host 欄位
 			var wopiHostCell = document.createElement('td');
