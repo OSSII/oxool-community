@@ -7,15 +7,54 @@
 				"comment": "替代指令",
 				"hotkey": "Ctrl+S"
 			},
-			{
+            {
 				"id": ".uno:SaveAs",
-				"comment": "替代指令"
+				"menu": [
+					{
+                        "icon": "downloadas-odt",
+						"name": "ODF text document (.odt)",
+						"id": "saveas-odt"
+					},
+					{
+                        "icon": "downloadas-rtf",
+						"name": "Rich Text (.rtf)",
+						"id": "saveas-rtf"
+					},
+					{
+                        "icon": "downloadas-doc",
+						"name": "Word 2003 Document (.doc)",
+						"id": "saveas-doc"
+					},
+					{
+                        "icon": "downloadas-docx",
+						"name": "Word Document (.docx)",
+						"id": "saveas-docx"
+					}
+				]
 			},
+            {
+                "id": ".uno:ExportTo",
+                "menu": [
+                    {
+                        "icon": "downloadas-pdf",
+                        "name": "Export to PDF",
+                        "id": "exportas-pdf"
+                    },
+                    {
+                        "icon": "downloadas-epub",
+                        "name": "Export to EPUB",
+                        "id": "exportas-epub"
+                    }
+                ]
+            },
 			{
 				"id": "renamedocument",
 				"name": "Rename Document",
 				"comment": "替代指令"
 			},
+            {
+                "type": "--"
+            },
 			{
 				"icon": ".uno:ShareDocument",
 				"name": "Share",

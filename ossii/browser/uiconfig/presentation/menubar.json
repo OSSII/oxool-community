@@ -9,13 +9,42 @@
 			},
 			{
 				"id": ".uno:SaveAs",
-				"comment": "替代指令"
+				"menu": [
+					{
+                        "icon": "downloadas-odp",
+						"name": "ODF presentation (.odp)",
+						"id": "saveas-odp"
+					},
+					{
+                        "icon": "downloadas-ppt",
+						"name": "PowerPoint 2003 Presentation (.ppt)",
+						"id": "saveas-ppt"
+					},
+					{
+                        "icon": "downloadas-pptx",
+						"name": "PowerPoint Presentation (.pptx)",
+						"id": "saveas-pptx"
+					}
+				]
 			},
+            {
+                "id": ".uno:ExportTo",
+                "menu": [
+                    {
+                        "icon": "downloadas-pdf",
+                        "name": "Export to PDF",
+                        "id": "exportas-pdf"
+                    }
+                ]
+            },
 			{
 				"id": "renamedocument",
 				"name": "Rename Document",
 				"comment": "替代指令"
 			},
+            {
+                "type": "--"
+            },
 			{
 				"icon": ".uno:ShareDocument",
 				"name": "Share",

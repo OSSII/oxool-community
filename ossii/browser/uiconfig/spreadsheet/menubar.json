@@ -7,15 +7,44 @@
 				"comment": "替代指令",
 				"hotkey": "Ctrl+S"
 			},
-			{
+            {
 				"id": ".uno:SaveAs",
-				"comment": "替代指令"
+				"menu": [
+					{
+                        "icon": "downloadas-ods",
+						"name": "ODF spreadsheet (.ods)",
+						"id": "saveas-ods"
+					},
+					{
+                        "icon": "downloadas-xls",
+						"name": "Excel 2003 Spreadsheet (.xls)",
+						"id": "saveas-xls"
+					},
+					{
+                        "icon": "downloadas-xlsx",
+						"name": "Excel Spreadsheet (.xlsx)",
+						"id": "saveas-xlsx"
+					}
+				]
 			},
+            {
+                "id": ".uno:ExportTo",
+                "menu": [
+                    {
+                        "icon": "downloadas-pdf",
+                        "name": "Export to PDF",
+                        "id": "exportas-pdf"
+                    }
+                ]
+            },
 			{
 				"id": "renamedocument",
 				"name": "Rename Document",
 				"comment": "替代指令"
 			},
+            {
+                "type": "--"
+            },
 			{
 				"icon": ".uno:ShareDocument",
 				"name": "Share...",
