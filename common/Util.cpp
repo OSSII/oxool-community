@@ -73,6 +73,8 @@
 #include <Poco/Util/Application.h>
 #include <Poco/URI.h>
 
+#include <OxOOL/HttpHelper.h>
+
 #include "Common.hpp"
 #include "Log.hpp"
 #include "Protocol.hpp"
@@ -1012,7 +1014,7 @@ namespace Util
 
     std::string getHttpTimeNow()
     {
-        return getTimeNow("%a, %d %b %Y %T");
+        return OxOOL::HttpHelper::getHttpTimeNow();
     }
 
     std::string getHttpTime(std::chrono::system_clock::time_point time)
