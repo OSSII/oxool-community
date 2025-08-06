@@ -1,6 +1,10 @@
 # ossii
 
-OSSII-specific assets.
+OSSII-specific assets and implementations, including but not limited to:
+
+* Custom frontend
+* Custom backend
+* Custom module architecture
 
 ## Build RPM package
 
