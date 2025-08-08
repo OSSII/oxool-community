@@ -45,34 +45,30 @@ void Watermark::enhanceWatermark(const std::shared_ptr<ClientSession>& clientSes
     }
 
     // Parse UserExtraInfo to JSON object
-    Poco::JSON::Object::Ptr userExtraInfo;
+    Poco::JSON::Parser parser;
+    Poco::JSON::Object userExtraInfo;
     try
     {
-        Poco::JSON::Parser parser;
-        userExtraInfo = parser.parse(clientSession->getUserExtraInfo()).extract<Poco::JSON::Object::Ptr>();
+        userExtraInfo = parser.parse(clientSession->getUserExtraInfo()).extract<Poco::JSON::Object>();
     }
     catch (const Poco::Exception& exc)
     {
         LOG_ERR("Error parsing userExtraInfo: " << exc.displayText());
     }
 
-    bool hasUserWatermark = true; // Check if userExtraInfo has watermark
-    // Check userExtraInfo has watermark
-    if (!userExtraInfo->has("watermark") || !userExtraInfo->isObject("watermark"))
+    // User watermark object
+    Poco::JSON::Object userWatermark;
+    if (userExtraInfo.has("watermark") && userExtraInfo.isObject("watermark"))
     {
-        LOG_WRN("No watermark in userExtraInfo or not an object");
-        hasUserWatermark = false;
+        userWatermark = *userExtraInfo.getObject("watermark");
+    }
+    else
+    {
+        LOG_WRN("UserExtraInfo does not contain 'watermark' object, using empty watermark.");
     }
 
     // Check if userExtraInfo has ip property
-    const std::string ip = userExtraInfo->optValue<std::string>("ip", "");
-
-    // User watermark object
-    Poco::JSON::Object userWatermark;
-    if (hasUserWatermark)
-    {
-        userWatermark = *userExtraInfo->getObject("watermark");
-    }
+    const std::string ip = userExtraInfo.optValue<std::string>("ip", "");
 
     // Merge system watermark with user watermark
     for (const auto& key : maSysWatermark)
