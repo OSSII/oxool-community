@@ -8,7 +8,7 @@ m4_define([package_NAME], [oxool])
 # Daemon name(若非 oxool，請和 package_NAME 同)
 m4_define([wsd_NAME], [oxoolwsd])
 # Package Version
-m4_define([package_VERSION], [5.0.1])
+m4_define([package_VERSION], [5.0.2])
 # Bug Report URL(Report Bugs)
 m4_define([bug_REPORT], [https://github.com/OSSII/oxool-community/issues])
 # Package URL(Homepage)
